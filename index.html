@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BOD Dashboard v3.1 Fixed - SharePoint Sync</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .projects-list {
+            background: white;
+        }
+
+        .project-card {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+        }
+
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #56ab2f;
+        }
+
+        .toast.error {
+            border-left: 4px solid #eb3349;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: lime;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            max-width: 300px;
+            z-index: 9999;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <p style="color: white; margin-top: 20px;">Đang khởi tạo Dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Debug Info -->
+    <div class="debug-info" id="debug-info">
+        🔧 Debug: Initializing...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span style="font-size: 2em;">☁️</span>
+                BOD Dashboard <span style="font-size: 0.5em; opacity: 0.8;">v3.1 Fixed</span>
+            </h1>
+            <div class="header-actions">
+                <div class="sync-status" id="sync-status">
+                    <span id="sync-icon">💾</span>
+                    <span id="sync-text">Chế độ Local</span>
+                </div>
+                <button class="btn btn-warning" id="import-btn-header">
+                    <span>📥</span>
+                    Import Data
+                </button>
+                <input type="file" id="import-file-header" accept=".json,.txt" style="display: none;">
+                <button class="btn" id="export-btn-header">
+                    <span>💾</span>
+                    Export Data
+                </button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="overview">📈 Tổng quan</button>
+            <button class="nav-tab" data-tab="projects">📁 Dự án</button>
+            <button class="nav-tab" data-tab="team">👥 Nhân sự</button>
+            <button class="nav-tab" data-tab="settings">⚙️ Cài đặt</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <h2>Chưa có dữ liệu</h2>
+                <p style="margin: 20px 0;">Click nút "Import Data" ở trên để tải dữ liệu từ file backup</p>
+                <button class="btn btn-primary" id="import-btn-overview">
+                    <span>📥</span>
+                    Import Data Ngay
+                </button>
+            </div>
+        </div>
+
+        <div id="projects" class="tab-content">
+            <div class="empty-state">
+                <div class="empty-state-icon">📁</div>
+                <h2>Chưa có dự án</h2>
+                <p>Import dữ liệu hoặc thêm dự án mới</p>
+            </div>
+        </div>
+
+        <div id="team" class="tab-content">
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <h2>Chưa có nhân sự</h2>
+                <p>Import dữ liệu hoặc thêm nhân sự mới</p>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="info-box">
+                <strong>⚠️ Chưa có dữ liệu</strong>
+                <p style="margin-top: 8px;">Vui lòng import file JSON backup để bắt đầu sử dụng dashboard.</p>
+            </div>
+
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">📥 Import Dữ liệu</h3>
+                <button class="btn btn-success" id="import-btn-settings" style="width: 100%; justify-content: center;">
+                    <span>📥</span>
+                    Chọn file JSON để Import
+                </button>
+            </div>
+
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px;">
+                <h3 style="margin-bottom: 15px;">💾 Export Dữ liệu</h3>
+                <button class="btn" id="export-btn-settings" style="width: 100%; justify-content: center;">
+                    <span>📤</span>
+                    Export JSON
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <span id="toast-icon"></span>
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // Debug Logger
+        function debugLog(message) {
+            console.log('🔧 [BOD Dashboard]', message);
+            const debugEl = document.getElementById('debug-info');
+            if (debugEl) {
+                debugEl.textContent = '🔧 ' + message;
+            }
+        }
+
+        debugLog('Script started');
+
+        // Global state
+        window.BODDashboard = {
+            projects: [],
+            teamMembers: [],
+            initialized: false
+        };
+
+        // Toast function
+        function showToast(message, type = 'success') {
+            debugLog('Toast: ' + message);
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            
+            if (icon && msg && toast) {
+                icon.textContent = icons[type] || icons.success;
+                msg.textContent = message;
+                toast.className = 'toast ' + type;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // Tab switching
+        function initTabs() {
+            debugLog('Initializing tabs');
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    debugLog('Tab clicked: ' + this.getAttribute('data-tab'));
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Hide all content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show selected content
+                    const tabName = this.getAttribute('data-tab');
+                    const content = document.getElementById(tabName);
+                    if (content) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+            debugLog('Tabs initialized');
+        }
+
+        // Import handler
+        function handleImport(event) {
+            debugLog('Import triggered');
+            const file = event.target.files[0];
+            if (!file) {
+                debugLog('No file selected');
+                return;
+            }
+
+            debugLog('Reading file: ' + file.name);
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    debugLog('Parsing JSON');
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (!data.projects && !data.teamMembers) {
+                        throw new Error('Invalid data format');
+                    }
+
+                    debugLog('Data parsed successfully');
+                    window.BODDashboard.projects = data.projects || [];
+                    window.BODDashboard.teamMembers = data.teamMembers || [];
+                    
+                    // Save to localStorage
+                    localStorage.setItem('bod_dashboard_data', JSON.stringify({
+                        projects: window.BODDashboard.projects,
+                        teamMembers: window.BODDashboard.teamMembers,
+                        lastUpdate: new Date().toISOString()
+                    }));
+                    
+                    debugLog('Rendering data');
+                    renderAll();
+                    showToast('✅ Import dữ liệu thành công! Có ' + window.BODDashboard.projects.length + ' dự án', 'success');
+                    
+                } catch (error) {
+                    debugLog('Import error: ' + error.message);
+                    showToast('❌ Lỗi: File không đúng định dạng!', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+            
+            reader.onerror = function() {
+                debugLog('File read error');
+                showToast('❌ Không thể đọc file!', 'error');
+            };
+            
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Export handler
+        function handleExport() {
+            debugLog('Export triggered');
+            
+            if (window.BODDashboard.projects.length === 0 && window.BODDashboard.teamMembers.length === 0) {
+                showToast('⚠️ Chưa có dữ liệu để export!', 'warning');
+                return;
+            }
+
+            const data = {
+                projects: window.BODDashboard.projects,
+                teamMembers: window.BODDashboard.teamMembers,
+                exportDate: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const dateStr = new Date().toISOString().split('T')[0];
+            link.download = 'BOD-Dashboard-Export-' + dateStr + '.json';
+            
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            debugLog('Export completed');
+            showToast('✅ Đã xuất file thành công!', 'success');
+        }
+
+        // Render all data
+        function renderAll() {
+            debugLog('Rendering all data');
+            
+            const projectCount = window.BODDashboard.projects.length;
+            const teamCount = window.BODDashboard.teamMembers.length;
+            
+            debugLog('Projects: ' + projectCount + ', Team: ' + teamCount);
+
+            // Update overview
+            const overview = document.getElementById('overview');
+            if (projectCount > 0) {
+                overview.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">Dự án đang thực hiện (${projectCount})</h2>
+                    <div class="projects-list">
+                        ${window.BODDashboard.projects.map(p => `
+                            <div class="project-card">
+                                <h3 style="color: #2d3748; margin-bottom: 10px;">${p.name}</h3>
+                                <p style="color: #718096;">${p.description || 'Không có mô tả'}</p>
+                                <p style="margin-top: 10px; font-size: 0.9em; color: #718096;">
+                                    📅 ${p.createdDate || 'N/A'}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Update projects tab
+            const projectsTab = document.getElementById('projects');
+            if (projectCount > 0) {
+                projectsTab.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">Tất cả dự án (${projectCount})</h2>
+                    <div class="projects-list">
+                        ${window.BODDashboard.projects.map(p => `
+                            <div class="project-card">
+                                <h3 style="color: #2d3748; margin-bottom: 10px;">${p.name}</h3>
+                                <p style="color: #718096;">${p.description || 'Không có mô tả'}</p>
+                                <p style="margin-top: 10px; font-size: 0.9em; color: #718096;">
+                                    📅 ${p.createdDate || 'N/A'}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Update team tab
+            const teamTab = document.getElementById('team');
+            if (teamCount > 0) {
+                teamTab.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">Nhân sự (${teamCount})</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        ${window.BODDashboard.teamMembers.map(m => `
+                            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; text-align: center;">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; font-weight: 600;">
+                                    ${m.name ? m.name.substring(0, 2).toUpperCase() : '??'}
+                                </div>
+                                <div style="font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 5px;">${m.name}</div>
+                                <div style="color: #718096; font-size: 0.9em; margin-bottom: 10px;">${m.role || 'N/A'}</div>
+                                <div style="font-size: 0.85em; color: #718096;">📧 ${m.email || 'N/A'}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            debugLog('Render completed');
+        }
+
+        // Load from localStorage
+        function loadFromStorage() {
+            debugLog('Loading from localStorage');
+            try {
+                const stored = localStorage.getItem('bod_dashboard_data');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    window.BODDashboard.projects = data.projects || [];
+                    window.BODDashboard.teamMembers = data.teamMembers || [];
+                    debugLog('Loaded from storage: ' + window.BODDashboard.projects.length + ' projects');
+                    renderAll();
+                } else {
+                    debugLog('No data in localStorage');
+                }
+            } catch (error) {
+                debugLog('Storage load error: ' + error.message);
+            }
+        }
+
+        // Initialize everything
+        function initialize() {
+            debugLog('Initializing dashboard');
+
+            try {
+                // Init tabs
+                initTabs();
+
+                // Load existing data
+                loadFromStorage();
+
+                // Bind import buttons
+                const importBtns = [
+                    document.getElementById('import-btn-header'),
+                    document.getElementById('import-btn-overview'),
+                    document.getElementById('import-btn-settings')
+                ];
+
+                const fileInput = document.getElementById('import-file-header');
+
+                importBtns.forEach(btn => {
+                    if (btn) {
+                        btn.addEventListener('click', function() {
+                            debugLog('Import button clicked');
+                            fileInput.click();
+                        });
+                    }
+                });
+
+                if (fileInput) {
+                    fileInput.addEventListener('change', handleImport);
+                }
+
+                // Bind export buttons
+                const exportBtns = [
+                    document.getElementById('export-btn-header'),
+                    document.getElementById('export-btn-settings')
+                ];
+
+                exportBtns.forEach(btn => {
+                    if (btn) {
+                        btn.addEventListener('click', handleExport);
+                    }
+                });
+
+                window.BODDashboard.initialized = true;
+                debugLog('✅ Dashboard initialized successfully!');
+                showToast('Dashboard đã sẵn sàng! Click "Import Data" để bắt đầu.', 'success');
+
+                // Hide loading overlay
+                hideLoading();
+
+            } catch (error) {
+                debugLog('❌ Initialization error: ' + error.message);
+                console.error('Init error:', error);
+                hideLoading();
+                showToast('❌ Lỗi khởi tạo: ' + error.message, 'error');
+            }
+        }
+
+        // Multiple initialization attempts
+        debugLog('Setting up initialization');
+
+        // Try 1: DOMContentLoaded
+        if (document.readyState === 'loading') {
+            debugLog('Waiting for DOMContentLoaded');
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            debugLog('DOM already loaded, initializing immediately');
+            initialize();
+        }
+
+        // Try 2: Window load (fallback)
+        window.addEventListener('load', function() {
+            if (!window.BODDashboard.initialized) {
+                debugLog('Fallback: Initializing on window.load');
+                initialize();
+            }
+        });
+
+        // Try 3: Timeout fallback
+        setTimeout(function() {
+            if (!window.BODDashboard.initialized) {
+                debugLog('Timeout fallback: Force initialize');
+                initialize();
+            }
+        }, 2000);
+
+        debugLog('Script loaded successfully');
+    </script>
+</body>
+</html>
