@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard - Enhanced Project Management System</title>
+    <title>BOD Dashboard v3.4 - Cloud Sync Enabled</title>
     <style>
         * {
             margin: 0;
@@ -1172,14 +1172,30 @@
             let currentDate = new Date();
             const STORAGE_KEY = 'bod_dashboard_data_v2';
 
+            // Azure Blob Storage Configuration
+            const AZURE_CONFIG = {
+                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/bod-dashboard-data?sp=rwl&st=2025-10-29T02:26:05Z&se=2026-10-29T10:41:05Z&spr=https&sv=2024-11-04&sr=c&sig=FKsg1X0mCKKsWQQ0%2Fq8zvqeIKSLklsIr%2BJlYkWVoNxI%3D',
+                blobName: 'dashboard-data.json',
+                enabled: true
+            };
+
+            // Blob sync state
+            let isSyncing = false;
+            let lastBlobSync = null;
+            let syncDebounceTimer = null;
+
+
             // Initialize
-            document.addEventListener('DOMContentLoaded', function() {
-                loadFromStorage();
+            document.addEventListener('DOMContentLoaded', async function() {
+                await loadFromStorage();
                 initializeTabs();
                 initializeDragDrop();
                 renderAll();
                 updateStats();
                 updateSyncStatus();
+                
+                // Periodic sync status update (every 30 seconds)
+                setInterval(updateSyncStatus, 30000);
             });
 
             // Drag and Drop
@@ -1218,6 +1234,91 @@
                 }
             }
 
+
+            // Azure Blob Storage Functions
+            async function loadFromBlob() {
+                if (!AZURE_CONFIG.enabled) return null;
+                
+                try {
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const response = await fetch(blobUrl, {
+                        method: 'GET',
+                        headers: {
+                            'x-ms-blob-type': 'BlockBlob'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        console.log('✅ Loaded data from Azure Blob Storage');
+                        return data;
+                    } else if (response.status === 404) {
+                        console.log('ℹ️ No data in blob yet (404 - first time)');
+                        return null;
+                    } else {
+                        console.error('Blob load error:', response.status, response.statusText);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Error loading from blob:', error);
+                    return null;
+                }
+            }
+
+            async function saveToBlob(data) {
+                if (!AZURE_CONFIG.enabled) return false;
+                
+                try {
+                    isSyncing = true;
+                    updateSyncStatus();
+                    
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const jsonData = JSON.stringify(data, null, 2);
+                    
+                    const response = await fetch(blobUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'x-ms-blob-type': 'BlockBlob',
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonData
+                    });
+                    
+                    if (response.ok) {
+                        lastBlobSync = new Date();
+                        isSyncing = false;
+                        console.log('✅ Saved to Azure Blob Storage');
+                        updateSyncStatus();
+                        return true;
+                    } else {
+                        console.error('Blob save error:', response.status, response.statusText);
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error saving to blob:', error);
+                    isSyncing = false;
+                    updateSyncStatus();
+                    return false;
+                }
+            }
+
+            function debouncedSaveToBlob() {
+                if (syncDebounceTimer) {
+                    clearTimeout(syncDebounceTimer);
+                }
+                syncDebounceTimer = setTimeout(() => {
+                    const data = {
+                        projects: projects,
+                        teamMembers: teamMembers,
+                        lastSave: new Date().toISOString()
+                    };
+                    saveToBlob(data);
+                }, 2000); // Wait 2 seconds after last change
+            }
+
             // Storage Functions
             function saveToStorage() {
                 const data = {
@@ -1225,52 +1326,87 @@
                     teamMembers: teamMembers,
                     lastSave: new Date().toISOString()
                 };
+                // Save to localStorage immediately (backup)
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                
+                // Save to Azure Blob (debounced)
+                debouncedSaveToBlob();
+                
                 updateSyncStatus();
                 showToast('Đã lưu dữ liệu thành công!', 'success');
                 updateStats();
             }
 
-            function loadFromStorage() {
+            async function loadFromStorage() {
+                // Try loading from Azure Blob first
+                const blobData = await loadFromBlob();
+                
+                if (blobData) {
+                    projects = blobData.projects || [];
+                    teamMembers = blobData.teamMembers || [];
+                    // Also save to localStorage as backup
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                    showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    return;
+                }
+                
+                // Fallback to localStorage if blob fails
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     try {
                         const data = JSON.parse(stored);
                         projects = data.projects || [];
                         teamMembers = data.teamMembers || [];
-                        showToast('Đã tải dữ liệu từ storage', 'success');
+                        showToast('📁 Đã tải dữ liệu từ local storage', 'info');
+                        
+                        // Try to sync to blob for first time
+                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
+                            console.log('Syncing local data to blob...');
+                            saveToBlob(data);
+                        }
                     } catch (e) {
                         console.error('Error loading data:', e);
                         showToast('Lỗi khi tải dữ liệu', 'error');
                     }
+                } else {
+                    showToast('ℹ️ Chưa có dữ liệu', 'info');
                 }
             }
 
             function updateSyncStatus() {
-                const stored = localStorage.getItem(STORAGE_KEY);
                 const statusEl = document.getElementById('sync-status');
                 const textEl = document.getElementById('sync-text');
                 
-                if (stored) {
-                    const data = JSON.parse(stored);
-                    const lastSave = new Date(data.lastSave);
+                if (isSyncing) {
+                    textEl.textContent = '🔄 Đang đồng bộ...';
+                    statusEl.className = 'sync-status syncing';
+                    return;
+                }
+                
+                if (lastBlobSync) {
                     const now = new Date();
-                    const diffMinutes = Math.floor((now - lastSave) / 60000);
+                    const diffMinutes = Math.floor((now - lastBlobSync) / 60000);
                     
                     if (diffMinutes < 1) {
-                        textEl.textContent = 'Vừa lưu';
+                        textEl.textContent = '☁️ Đã đồng bộ';
                         statusEl.className = 'sync-status connected';
                     } else if (diffMinutes < 60) {
-                        textEl.textContent = `Lưu ${diffMinutes} phút trước`;
+                        textEl.textContent = `☁️ Đồng bộ ${diffMinutes}p trước`;
                         statusEl.className = 'sync-status connected';
                     } else {
                         const hours = Math.floor(diffMinutes / 60);
-                        textEl.textContent = `Lưu ${hours} giờ trước`;
+                        textEl.textContent = `☁️ Đồng bộ ${hours}h trước`;
                         statusEl.className = 'sync-status warning';
                     }
                 } else {
-                    textEl.textContent = 'Chưa có dữ liệu';
-                    statusEl.className = 'sync-status';
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        textEl.textContent = '📁 Chỉ lưu local';
+                        statusEl.className = 'sync-status warning';
+                    } else {
+                        textEl.textContent = 'Chưa có dữ liệu';
+                        statusEl.className = 'sync-status';
+                    }
                 }
             }
 
