@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOD Dashboard v4.1 ULTIMATE - Azure Sync</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 0.9em;
+        }
+
+        .sync-status.syncing {
+            animation: pulse 1.5s infinite;
+        }
+
+        .sync-status.connected {
+            background: rgba(56, 239, 125, 0.3);
+        }
+
+        .sync-status.warning {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card.green {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .project-card {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+            cursor: pointer;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .project-title h3 {
+            font-size: 1.4em;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .project-title p {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .milestone-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 200px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .milestone-row:hover {
+            background: #e9ecef;
+        }
+
+        .milestone-name {
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .milestone-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .calendar-month {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #718096;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .calendar-day.other-month {
+            background: #f8f9fa;
+            opacity: 0.5;
+        }
+
+        .calendar-day.today {
+            border-color: #667eea;
+            border-width: 3px;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .day-assignment {
+            padding: 5px 8px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            font-size: 0.75em;
+            color: #1976d2;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .team-member-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .team-member-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .member-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: 600;
+            margin: 0 auto 15px;
+        }
+
+        .member-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .member-role {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8em;
+            color: #2d3748;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #2d3748;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .milestone-form-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .milestone-form-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 1fr 1fr 100px;
+            gap: 10px;
+            align-items: end;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 0.95em;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .file-drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .file-drop-zone:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+
+        .file-drop-zone.drag-over {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #764ba2;
+            border-width: 4px;
+        }
+
+        .file-drop-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .settings-section {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            font-size: 1.3em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.success {
+            border-left: 4px solid #56ab2f;
+        }
+
+        .toast.error {
+            border-left: 4px solid #eb3349;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .milestone-row, .milestone-form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="header-icon">🎯</div>
+                BOD Project Dashboard <span style="font-size: 0.5em; opacity: 0.8;">v4.1 ULTIMATE - Azure Sync</span>
+            </h1>
+            <div class="header-actions">
+                <div class="sync-status" id="sync-status">
+                    <span>🔄</span>
+                    <span id="sync-text">Đang tải...</span>
+                </div>
+                <button class="btn btn-warning" onclick="document.getElementById('import-file-header').click()">
+                    <span>📤</span>
+                    Nhập Dữ Liệu
+                </button>
+                <input type="file" id="import-file-header" accept=".json,.txt" style="display: none;" onchange="importBackupData(event)">
+                <button class="btn btn-success" onclick="exportData()">
+                    <span>📥</span>
+                    Xuất Dữ Liệu
+                </button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="overview">📊 Tổng Quan</button>
+            <button class="nav-tab" data-tab="projects">📁 Dự Án</button>
+            <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
+            <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
+            <button class="nav-tab" data-tab="settings">⚙️ Cài Đặt</button>
+        </div>
+
+        <!-- Tổng Quan Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid" id="stats-grid"></div>
+            <h2 style="color: #2d3748; margin: 30px 0 20px;">📋 Dự Án Đang Thực Hiện</h2>
+            <div id="overview-projects"></div>
+            <div id="show-all-container" style="text-align: center; margin: 20px 0; display: none;">
+                <button class="btn btn-primary" onclick="showAllProjects()">
+                    Xem tất cả <span id="total-project-count"></span> dự án
+                </button>
+            </div>
+        </div>
+
+        <!-- Dự Án Tab -->
+        <div id="projects" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div class="search-box">
+                    <input type="text" id="project-search" placeholder="Tìm kiếm dự án..." onkeyup="filterProjects()">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <button class="btn btn-primary" onclick="openProjectModal()">
+                    <span>➕</span>
+                    Thêm Dự Án Mới
+                </button>
+            </div>
+            <div id="projects-list"></div>
+        </div>
+
+        <!-- Lịch Làm Việc Tab -->
+        <div id="calendar" class="tab-content">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="btn" onclick="previousMonth()">◀</button>
+                    <div class="calendar-month" id="calendar-month"></div>
+                    <button class="btn" onclick="nextMonth()">▶</button>
+                    <button class="btn" onclick="todayMonth()">Hôm Nay</button>
+                </div>
+                <select id="calendar-filter" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;">
+                    <option value="all">Tất cả nhân sự</option>
+                </select>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+
+        <!-- Nhân Sự Tab -->
+        <div id="team" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2d3748;">Quản Lý Nhân Sự</h2>
+                <button class="btn btn-primary" onclick="openTeamModal()">
+                    <span>➕</span>
+                    Thêm Nhân Sự
+                </button>
+            </div>
+            <div class="team-grid" id="team-grid"></div>
+        </div>
+
+        <!-- Cài Đặt Tab -->
+        <div id="settings" class="tab-content">
+            <div class="settings-section">
+                <h3>📥 Import / Export Dữ Liệu</h3>
+                <div class="file-drop-zone" id="drop-zone" onclick="document.getElementById('import-file').click()">
+                    <div class="file-drop-icon">📂</div>
+                    <h3>Kéo thả file JSON backup vào đây</h3>
+                    <p style="color: #718096; margin-top: 10px;">Hoặc click để chọn file</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="exportToJSON()">
+                        <span>📥</span>
+                        Xuất JSON
+                    </button>
+                    <button class="btn btn-warning" onclick="document.getElementById('import-file').click()">
+                        <span>📤</span>
+                        Import từ File
+                    </button>
+                    <button class="btn" onclick="exportToCSV()">
+                        <span>📊</span>
+                        Xuất Excel (CSV)
+                    </button>
+                    <input type="file" id="import-file" accept=".json,.txt" style="display: none;" onchange="importData(event)">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>💾 Quản Lý Dữ Liệu</h3>
+                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <strong>⚠️ Lưu ý:</strong> Dashboard này đồng bộ dữ liệu qua Azure Blob Storage. 
+                    Để đồng bộ giữa các thiết bị, hãy sử dụng chức năng Export/Import.
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="saveToStorage()">
+                        <span>💾</span>
+                        Lưu Thủ Công
+                    </button>
+                    <button class="btn btn-warning" onclick="loadFromStorage()">
+                        <span>🔄</span>
+                        Tải Lại từ Storage
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>📊 Thống Kê Hệ Thống</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #1976d2;" id="stat-projects">0</div>
+                        <div style="color: #718096;">Tổng số dự án</div>
+                    </div>
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #388e3c;" id="stat-team">0</div>
+                        <div style="color: #718096;">Nhân sự</div>
+                    </div>
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #f57c00;" id="stat-milestones">0</div>
+                        <div style="color: #718096;">Milestones</div>
+                    </div>
+                    <div style="background: #fce4ec; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 1.2em; font-weight: bold; color: #c2185b;" id="stat-last-save">Chưa lưu</div>
+                        <div style="color: #718096;">Lần lưu cuối</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>🗑️ Xóa Dữ Liệu</h3>
+                <button class="btn btn-danger" onclick="clearAllData()">
+                    <span>⚠️</span>
+                    Xóa Tất Cả Dữ Liệu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Thêm Dự Án Mới</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="project-form" onsubmit="saveProject(event)">
+                <div class="form-group">
+                    <label>Tên Dự Án (IQR Code) *</label>
+                    <input type="text" id="project-name" required placeholder="VD: IQR25101908 - Tên dự án...">
+                    <div id="iqr-error" class="error-message" style="display: none;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Mô Tả</label>
+                    <textarea id="project-description" placeholder="Mô tả chi tiết dự án..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Người Phụ Trách *</label>
+                    <select id="project-manager" required>
+                        <option value="">Chọn người phụ trách</option>
+                    </select>
+                </div>
+                <h3 style="margin: 30px 0 20px; color: #2d3748;">📍 9 Bước Chuẩn (Milestones)</h3>
+                <div class="milestone-form-grid" id="milestone-form-grid"></div>
+                <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span>
+                        Lưu Dự Án
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Modal -->
+    <div id="team-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Thêm Nhân Sự</h2>
+                <button class="close-modal" onclick="closeTeamModal()">&times;</button>
+            </div>
+            <form id="team-form" onsubmit="saveTeamMember(event)">
+                <div class="form-group">
+                    <label>Họ và Tên *</label>
+                    <input type="text" id="member-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Chức Vụ</label>
+                    <input type="text" id="member-role" placeholder="VD: Project Manager, Engineer, ...">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="member-email">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closeTeamModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span>
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div id="project-detail-modal" class="modal">
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-header">
+                <h2 id="detail-project-title">Chi Tiết Dự Án</h2>
+                <button class="close-modal" onclick="closeProjectDetail()">&times;</button>
+            </div>
+            <div id="project-detail-content"></div>
+            <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: space-between;">
+                <button class="btn btn-danger" id="delete-project-btn" onclick="deleteCurrentProject()">
+                    <span>🗑️</span>
+                    Xóa Dự Án
+                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" onclick="closeProjectDetail()">Đóng</button>
+                    <button class="btn btn-primary" id="edit-detail-project-btn">
+                        <span>✏️</span>
+                        Sửa Dự Án
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toast-icon"></span>
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+            
+            // Standard Milestones
+            const STANDARD_MILESTONES = [
+                { id: 'survey', name: 'Survey', icon: '🔍' },
+                { id: 'design', name: 'Design', icon: '✏️' },
+                { id: 'bom', name: 'BOM Drawing', icon: '📐' },
+                { id: 'bidding', name: 'Bidding', icon: '💼' },
+                { id: 'order', name: 'Order', icon: '📦' },
+                { id: 'assembly', name: 'Assembly', icon: '🔧' },
+                { id: 'installation', name: 'Installation', icon: '⚙️' },
+                { id: 'commissioning', name: 'Commissioning', icon: '🔌' },
+                { id: 'handover', name: 'Handover', icon: '✅' }
+            ];
+
+            // Azure Blob Storage Configuration
+            const AZURE_CONFIG = {
+                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/bod-dashboard-data?sp=rwl&st=2025-10-29T02:26:05Z&se=2026-10-29T10:41:05Z&spr=https&sv=2024-11-04&sr=c&sig=FKsg1X0mCKKsWQQ0%2Fq8zvqeIKSLklsIr%2BJlYkWVoNxI%3D',
+                blobName: 'dashboard-data.json',
+                enabled: true
+            };
+
+            // Data Storage
+            let projects = [];
+            let teamMembers = [];
+            let currentEditingProject = null;
+            let currentViewingProject = null;
+            let currentDate = new Date();
+            let isSyncing = false;
+            let lastBlobSync = null;
+            let syncDebounceTimer = null;
+            const STORAGE_KEY = 'bod_dashboard_data_v4.1';
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', async function() {
+                await loadFromStorage();
+                initializeTabs();
+                initializeDragDrop();
+                renderAll();
+                updateStats();
+                updateSyncStatus();
+                
+                // Periodic sync status update
+                setInterval(updateSyncStatus, 30000);
+            });
+
+            // Azure Blob Storage Functions
+            async function loadFromBlob() {
+                if (!AZURE_CONFIG.enabled) return null;
+                
+                try {
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const response = await fetch(blobUrl, {
+                        method: 'GET',
+                        headers: {
+                            'x-ms-blob-type': 'BlockBlob'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        console.log('✅ Loaded data from Azure Blob Storage');
+                        return data;
+                    } else if (response.status === 404) {
+                        console.log('ℹ️ No data in blob yet (404 - first time)');
+                        return null;
+                    } else {
+                        console.error('Blob load error:', response.status, response.statusText);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Error loading from blob:', error);
+                    return null;
+                }
+            }
+
+            async function saveToBlob(data) {
+                if (!AZURE_CONFIG.enabled) return false;
+                
+                try {
+                    isSyncing = true;
+                    updateSyncStatus();
+                    
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const jsonData = JSON.stringify(data, null, 2);
+                    
+                    const response = await fetch(blobUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'x-ms-blob-type': 'BlockBlob',
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonData
+                    });
+                    
+                    if (response.ok) {
+                        lastBlobSync = new Date();
+                        isSyncing = false;
+                        console.log('✅ Saved to Azure Blob Storage');
+                        updateSyncStatus();
+                        return true;
+                    } else {
+                        console.error('Blob save error:', response.status, response.statusText);
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error saving to blob:', error);
+                    isSyncing = false;
+                    updateSyncStatus();
+                    return false;
+                }
+            }
+
+            function debouncedSaveToBlob() {
+                if (syncDebounceTimer) {
+                    clearTimeout(syncDebounceTimer);
+                }
+                syncDebounceTimer = setTimeout(() => {
+                    const data = {
+                        projects: projects,
+                        teamMembers: teamMembers,
+                        lastSave: new Date().toISOString()
+                    };
+                    saveToBlob(data);
+                }, 2000);
+            }
+
+            function updateSyncStatus() {
+                const statusEl = document.getElementById('sync-status');
+                const textEl = document.getElementById('sync-text');
+                
+                if (isSyncing) {
+                    textEl.textContent = '🔄 Đang đồng bộ...';
+                    statusEl.className = 'sync-status syncing';
+                    return;
+                }
+                
+                if (lastBlobSync) {
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - lastBlobSync) / 60000);
+                    
+                    if (diffMinutes < 1) {
+                        textEl.textContent = '✅ Đã đồng bộ';
+                        statusEl.className = 'sync-status connected';
+                    } else if (diffMinutes < 60) {
+                        textEl.textContent = `✅ Đồng bộ ${diffMinutes}p trước`;
+                        statusEl.className = 'sync-status connected';
+                    } else {
+                        const hours = Math.floor(diffMinutes / 60);
+                        textEl.textContent = `⚠️ Đồng bộ ${hours}h trước`;
+                        statusEl.className = 'sync-status warning';
+                    }
+                } else {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        textEl.textContent = '⚠️ Chỉ lưu local';
+                        statusEl.className = 'sync-status warning';
+                    } else {
+                        textEl.textContent = 'Chưa có dữ liệu';
+                        statusEl.className = 'sync-status';
+                    }
+                }
+            }
+
+            // Drag and Drop
+            function initializeDragDrop() {
+                const dropZone = document.getElementById('drop-zone');
+                
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, preventDefaults, false);
+                });
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, () => {
+                        dropZone.classList.add('drag-over');
+                    }, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, () => {
+                        dropZone.classList.remove('drag-over');
+                    }, false);
+                });
+
+                dropZone.addEventListener('drop', handleDrop, false);
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    handleFileImport(files[0]);
+                }
+            }
+
+            function handleFileImport(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        projects = imported.projects || [];
+                        teamMembers = imported.teamMembers || [];
+                        saveToStorage();
+                        renderAll();
+                        updateStats();
+                        showToast('✅ Đã nhập dữ liệu thành công!', 'success');
+                    } catch (error) {
+                        showToast('❌ Lỗi: File không đúng định dạng!', 'error');
+                        console.error('Import error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // Storage Functions
+            function saveToStorage() {
+                const data = {
+                    projects: projects,
+                    teamMembers: teamMembers,
+                    lastSave: new Date().toISOString()
+                };
+                // Save to localStorage immediately (backup)
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                
+                // Save to Azure Blob (debounced)
+                debouncedSaveToBlob();
+                
+                updateSyncStatus();
+                updateStats();
+            }
+
+            async function loadFromStorage() {
+                // Try loading from Azure Blob first
+                const blobData = await loadFromBlob();
+                
+                if (blobData) {
+                    projects = blobData.projects || [];
+                    teamMembers = blobData.teamMembers || [];
+                    // Also save to localStorage as backup
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                    showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    return;
+                }
+                
+                // Fallback to localStorage if blob fails
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        projects = data.projects || [];
+                        teamMembers = data.teamMembers || [];
+                        
+                        // Try to sync to blob for first time
+                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
+                            console.log('Syncing local data to blob...');
+                            saveToBlob(data);
+                        }
+                    } catch (e) {
+                        console.error('Error loading data:', e);
+                    }
+                }
+            }
+
+            window.clearAllData = function() {
+                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA TẤT CẢ DỮ LIỆU?\n\nHành động này không thể hoàn tác!')) {
+                    if (confirm('⚠️ XÁC NHẬN LẦN CUỐI!\n\nTất cả dự án và nhân sự sẽ bị xóa vĩnh viễn!')) {
+                        projects = [];
+                        teamMembers = [];
+                        localStorage.removeItem(STORAGE_KEY);
+                        
+                        // Also clear Azure Blob
+                        const data = {
+                            projects: [],
+                            teamMembers: [],
+                            lastSave: new Date().toISOString()
+                        };
+                        saveToBlob(data);
+                        
+                        renderAll();
+                        updateStats();
+                        showToast('✅ Đã xóa tất cả dữ liệu!', 'success');
+                    }
+                }
+            };
+
+            // Tab Management
+            function initializeTabs() {
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        const tabName = this.getAttribute('data-tab');
+                        switchTab(tabName);
+                    });
+                });
+            }
+
+            function switchTab(tabName) {
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+
+                if (tabName === 'overview') renderOverview();
+                if (tabName === 'projects') renderProjectsList();
+                if (tabName === 'calendar') renderCalendar();
+                if (tabName === 'team') renderTeamGrid();
+            }
+
+            // IQR Validation
+            function extractIQRCode(projectName) {
+                const match = projectName.match(/IQR\d{8}/);
+                return match ? match[0] : null;
+            }
+
+            function validateIQR(projectName, excludeProjectId = null) {
+                const iqrCode = extractIQRCode(projectName);
+                
+                if (!iqrCode) {
+                    return { valid: false, message: 'Tên dự án phải chứa mã IQR (VD: IQR25101908)!' };
+                }
+
+                const duplicate = projects.find(p => {
+                    const existingIQR = extractIQRCode(p.name);
+                    return existingIQR === iqrCode && p.id !== excludeProjectId;
+                });
+                
+                if (duplicate) {
+                    return { valid: false, message: `Mã IQR "${iqrCode}" đã tồn tại trong dự án "${duplicate.name}"!` };
+                }
+
+                return { valid: true };
+            }
+
+            // Real-time IQR validation
+            document.addEventListener('DOMContentLoaded', () => {
+                const nameInput = document.getElementById('project-name');
+                if (nameInput) {
+                    nameInput.addEventListener('input', (e) => {
+                        const errorDiv = document.getElementById('iqr-error');
+                        const value = e.target.value;
+                        
+                        if (value.length >= 3) {
+                            const validation = validateIQR(value, currentEditingProject?.id);
+                            if (!validation.valid) {
+                                errorDiv.textContent = validation.message;
+                                errorDiv.style.display = 'block';
+                            } else {
+                                errorDiv.style.display = 'none';
+                            }
+                        } else {
+                            errorDiv.style.display = 'none';
+                        }
+                    });
+                }
+            });
+
+            // Render Functions
+            function renderAll() {
+                renderOverview();
+                renderProjectsList();
+                renderCalendar();
+                renderTeamGrid();
+                updateCalendarFilter();
+            }
+
+            function renderOverview() {
+                // Stats
+                const statsHtml = `
+                    <div class="stat-card">
+                        <h3>📁 Tổng Số Dự Án</h3>
+                        <div class="value">${projects.length}</div>
+                    </div>
+                    <div class="stat-card green">
+                        <h3>✅ Đang Thực Hiện</h3>
+                        <div class="value">${projects.filter(p => p.milestones.some(m => m.status === 'in-progress')).length}</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <h3>👥 Nhân Sự</h3>
+                        <div class="value">${teamMembers.length}</div>
+                    </div>
+                    <div class="stat-card red">
+                        <h3>⏰ Milestones</h3>
+                        <div class="value">${projects.reduce((sum, p) => sum + p.milestones.filter(m => m.planDate).length, 0)}</div>
+                    </div>
+                `;
+                document.getElementById('stats-grid').innerHTML = statsHtml;
+
+                // Recent projects (max 5)
+                const recentProjects = projects.slice(0, 5);
+                const projectsHtml = recentProjects.map(p => createProjectCard(p)).join('');
+                document.getElementById('overview-projects').innerHTML = projectsHtml || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p>';
+
+                // Show "View All" button if more than 5 projects
+                const showAllContainer = document.getElementById('show-all-container');
+                if (projects.length > 5) {
+                    showAllContainer.style.display = 'block';
+                    document.getElementById('total-project-count').textContent = projects.length;
+                } else {
+                    showAllContainer.style.display = 'none';
+                }
+            }
+
+            window.showAllProjects = function() {
+                switchTab('projects');
+            };
+
+            function renderProjectsList() {
+                const html = projects.map(p => createProjectCard(p, true)).join('');
+                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào. Hãy tạo dự án mới!</p>';
+            }
+
+            window.filterProjects = function() {
+                const query = document.getElementById('project-search').value.toLowerCase();
+                const filtered = projects.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    (p.description && p.description.toLowerCase().includes(query))
+                );
+                const html = filtered.map(p => createProjectCard(p, true)).join('');
+                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #718096; padding: 40px;">Không tìm thấy dự án nào</p>';
+            };
+
+            function createProjectCard(project, showActions = false) {
+                const manager = teamMembers.find(m => m.id === project.manager);
+                const managerName = manager ? manager.name : 'Chưa phân công';
+
+                const milestonesHtml = project.milestones
+                    .filter(m => m.planDate)
+                    .map(m => {
+                        const milestone = STANDARD_MILESTONES.find(sm => sm.id === m.id);
+                        const person = teamMembers.find(p => p.id === m.person);
+                        const personName = person ? person.name : 'Chưa phân công';
+
+                        return `
+                            <div class="milestone-row">
+                                <div class="milestone-name">
+                                    <div class="milestone-icon">${milestone?.icon || '📌'}</div>
+                                    ${milestone?.name || m.id}
+                                </div>
+                                <div>
+                                    <strong>Plan:</strong> ${m.planDate ? new Date(m.planDate).toLocaleDateString('vi-VN') : 'N/A'}
+                                </div>
+                                <div>
+                                    <strong>Actual:</strong> ${m.actualDate ? new Date(m.actualDate).toLocaleDateString('vi-VN') : 'Chưa hoàn thành'}
+                                </div>
+                                <div>
+                                    <strong>👤</strong> ${personName}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                return `
+                    <div class="project-card" onclick="viewProject('${project.id}')">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <h3>${project.name}</h3>
+                                <p>${project.description || 'Không có mô tả'}</p>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9em; color: #718096;">
+                                    <strong>👤 Quản lý:</strong> ${managerName}<br>
+                                    <strong>📅 Tạo:</strong> ${new Date(project.createdDate).toLocaleDateString('vi-VN')}
+                                </div>
+                            </div>
+                        </div>
+                        ${milestonesHtml ? `
+                            <div style="margin-top: 20px;">
+                                <h4 style="margin-bottom: 15px; color: #2d3748;">📍 Milestones</h4>
+                                ${milestonesHtml}
+                            </div>
+                        ` : ''}
+                        ${showActions ? `
+                            <div style="display: flex; gap: 10px; margin-top: 20px;" onclick="event.stopPropagation()">
+                                <button class="btn btn-primary" onclick="editProject('${project.id}')" style="flex: 1;">✏️ Sửa</button>
+                                <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;">🗑️ Xóa</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            // Project Detail Modal
+            window.viewProject = function(projectId) {
+                currentViewingProject = projects.find(p => p.id === projectId);
+                if (!currentViewingProject) return;
+
+                const manager = teamMembers.find(m => m.id === currentViewingProject.manager);
+                const managerName = manager ? manager.name : 'Chưa phân công';
+
+                const milestonesHtml = STANDARD_MILESTONES.map(ms => {
+                    const m = currentViewingProject.milestones.find(mil => mil.id === ms.id) || {};
+                    const person = teamMembers.find(p => p.id === m.person);
+                    const personName = person ? person.name : 'Chưa phân công';
+                    const statusBadge = m.status === 'completed' ? '✅ Hoàn thành' : m.status === 'in-progress' ? '🔄 Đang làm' : '⏳ Chờ';
+
+                    return `
+                        <div class="milestone-row">
+                            <div class="milestone-name">
+                                <div class="milestone-icon">${ms.icon}</div>
+                                ${ms.name}
+                            </div>
+                            <div>
+                                <strong>Plan:</strong> ${m.planDate ? new Date(m.planDate).toLocaleDateString('vi-VN') : 'N/A'}
+                            </div>
+                            <div>
+                                <strong>Actual:</strong> ${m.actualDate ? new Date(m.actualDate).toLocaleDateString('vi-VN') : 'N/A'}
+                            </div>
+                            <div>
+                                <strong>👤</strong> ${personName}<br>
+                                <span style="font-size: 0.9em;">${statusBadge}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('detail-project-title').textContent = currentViewingProject.name;
+                document.getElementById('project-detail-content').innerHTML = `
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Thông Tin Dự Án</h3>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <p><strong>Mô tả:</strong> ${currentViewingProject.description || 'Không có mô tả'}</p>
+                            <p style="margin-top: 10px;"><strong>Quản lý:</strong> ${managerName}</p>
+                            <p style="margin-top: 10px;"><strong>Ngày tạo:</strong> ${new Date(currentViewingProject.createdDate).toLocaleDateString('vi-VN')}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #2d3748; margin-bottom: 15px;">📍 Milestones Chi Tiết</h3>
+                        ${milestonesHtml}
+                    </div>
+                `;
+
+                document.getElementById('edit-detail-project-btn').onclick = () => {
+                    closeProjectDetail();
+                    editProject(projectId);
+                };
+
+                document.getElementById('project-detail-modal').classList.add('active');
+            };
+
+            window.closeProjectDetail = function() {
+                document.getElementById('project-detail-modal').classList.remove('active');
+                currentViewingProject = null;
+            };
+
+            window.deleteCurrentProject = function() {
+                if (currentViewingProject && confirm('Bạn có chắc muốn xóa dự án này?')) {
+                    projects = projects.filter(p => p.id !== currentViewingProject.id);
+                    saveToStorage();
+                    closeProjectDetail();
+                    renderAll();
+                    showToast('✅ Đã xóa dự án!', 'success');
+                }
+            };
+
+            // Calendar Functions - WITH SMART DISPLAY
+            function renderCalendar() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                
+                document.getElementById('calendar-month').textContent = `Tháng ${month + 1}/${year}`;
+
+                const firstDay = new Date(year, month, 1);
+                const startDate = new Date(firstDay);
+                startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+                const filterPerson = document.getElementById('calendar-filter')?.value;
+
+                let html = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                    .map(day => `<div class="calendar-day-header">${day}</div>`)
+                    .join('');
+
+                let currentDateIter = new Date(startDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                for (let i = 0; i < 42; i++) {
+                    const isCurrentMonth = currentDateIter.getMonth() === month;
+                    const isToday = currentDateIter.getTime() === today.getTime();
+                    const dateStr = currentDateIter.toISOString().split('T')[0];
+                    
+                    // SMART CALENDAR: Get LAST assignment for this date
+                    const assignment = getLastAssignmentForDate(dateStr, filterPerson);
+                    
+                    html += `
+                        <div class="calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}">
+                            <div class="day-number">${currentDateIter.getDate()}</div>
+                            ${assignment ? `
+                                <div class="day-assignment">
+                                    <strong>${assignment.projectCode}</strong>
+                                    <span>${assignment.personName}</span>
+                                    <span>${assignment.milestoneIcon} ${assignment.milestoneName}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    currentDateIter.setDate(currentDateIter.getDate() + 1);
+                }
+
+                document.getElementById('calendar-grid').innerHTML = html;
+            }
+
+            // SMART CALENDAR LOGIC: Get last assignment for specific date
+            function getLastAssignmentForDate(dateStr, filterPerson) {
+                const assignments = [];
+                
+                projects.forEach(project => {
+                    const iqrCode = extractIQRCode(project.name);
+                    project.milestones.forEach(m => {
+                        if (m.planDate === dateStr && m.person) {
+                            if (filterPerson === 'all' || filterPerson === m.person) {
+                                const milestone = STANDARD_MILESTONES.find(sm => sm.id === m.id);
+                                const person = teamMembers.find(p => p.id === m.person);
+                                const milestoneIndex = STANDARD_MILESTONES.findIndex(sm => sm.id === m.id);
+                                
+                                assignments.push({
+                                    projectCode: iqrCode || project.name.substring(0, 20),
+                                    personName: person ? person.name : 'Unknown',
+                                    milestoneName: milestone?.name || m.id,
+                                    milestoneIcon: milestone?.icon || '📌',
+                                    milestoneIndex: milestoneIndex
+                                });
+                            }
+                        }
+                    });
+                });
+
+                // Sort by milestone index (descending) and return first (last milestone)
+                if (assignments.length > 0) {
+                    assignments.sort((a, b) => b.milestoneIndex - a.milestoneIndex);
+                    return assignments[0];
+                }
+                
+                return null;
+            }
+
+            window.previousMonth = function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            };
+
+            window.nextMonth = function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            };
+
+            window.todayMonth = function() {
+                currentDate = new Date();
+                renderCalendar();
+            };
+
+            function updateCalendarFilter() {
+                const select = document.getElementById('calendar-filter');
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="all">Tất cả nhân sự</option>' +
+                        teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+                    select.value = currentValue;
+                }
+            }
+
+            // Team Functions
+            function renderTeamGrid() {
+                const html = teamMembers.map(member => {
+                    const initial = member.name.charAt(0).toUpperCase();
+                    const projectCount = projects.filter(p => 
+                        p.manager === member.id || 
+                        p.milestones.some(m => m.person === member.id)
+                    ).length;
+
+                    return `
+                        <div class="team-member-card">
+                            <div class="member-avatar-large">${initial}</div>
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-role">${member.role || 'Nhân viên'}</div>
+                            <div style="font-size: 0.9em; color: #718096;">
+                                📧 ${member.email || 'Chưa có email'}
+                            </div>
+                            <div style="margin-top: 15px; font-weight: 600; color: #667eea;">
+                                ${projectCount} dự án
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                <button class="btn btn-primary" onclick="editTeamMember('${member.id}')" style="flex: 1;">✏️ Sửa</button>
+                                <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;">🗑️ Xóa</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('team-grid').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có nhân sự nào</p>';
+            }
+
+            // Project Modal Functions
+            window.openProjectModal = function(projectId = null) {
+                currentEditingProject = projectId ? projects.find(p => p.id === projectId) : null;
+                
+                document.getElementById('modal-title').textContent = currentEditingProject ? 'Sửa Dự Án' : 'Thêm Dự Án Mới';
+                document.getElementById('project-name').value = currentEditingProject?.name || '';
+                document.getElementById('project-description').value = currentEditingProject?.description || '';
+                
+                const managerSelect = document.getElementById('project-manager');
+                managerSelect.innerHTML = '<option value="">Chọn người phụ trách</option>' +
+                    teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+                managerSelect.value = currentEditingProject?.manager || '';
+
+                renderMilestoneForm();
+
+                document.getElementById('project-modal').classList.add('active');
+            };
+
+            function renderMilestoneForm() {
+                const html = STANDARD_MILESTONES.map(milestone => {
+                    const existing = currentEditingProject?.milestones.find(m => m.id === milestone.id) || {};
+                    
+                    return `
+                        <div class="milestone-form-row">
+                            <div>
+                                <label style="font-size: 0.9em; font-weight: 600; color: #2d3748;">
+                                    ${milestone.icon} ${milestone.name}
+                                </label>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8em; color: #718096;">Người thực hiện</label>
+                                <select class="milestone-person" data-milestone="${milestone.id}">
+                                    <option value="">Chọn người...</option>
+                                    ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8em; color: #718096;">Ngày dự kiến</label>
+                                <input type="date" class="milestone-plan" data-milestone="${milestone.id}" value="${existing.planDate || ''}">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8em; color: #718096;">Ngày hoàn thành</label>
+                                <input type="date" class="milestone-actual" data-milestone="${milestone.id}" value="${existing.actualDate || ''}">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8em; color: #718096;">Trạng thái</label>
+                                <select class="milestone-status" data-milestone="${milestone.id}">
+                                    <option value="pending" ${existing.status === 'pending' ? 'selected' : ''}>⏳ Chờ</option>
+                                    <option value="in-progress" ${existing.status === 'in-progress' ? 'selected' : ''}>🔄 Đang làm</option>
+                                    <option value="completed" ${existing.status === 'completed' ? 'selected' : ''}>✅ Xong</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('milestone-form-grid').innerHTML = html;
+            }
+
+            window.closeModal = function() {
+                document.getElementById('project-modal').classList.remove('active');
+                currentEditingProject = null;
+            };
+
+            window.saveProject = function(event) {
+                event.preventDefault();
+
+                const name = document.getElementById('project-name').value.trim();
+                const description = document.getElementById('project-description').value.trim();
+                const manager = document.getElementById('project-manager').value;
+
+                if (!name || !manager) {
+                    showToast('❌ Vui lòng điền đầy đủ thông tin!', 'error');
+                    return;
+                }
+
+                const validation = validateIQR(name, currentEditingProject?.id);
+                if (!validation.valid) {
+                    document.getElementById('iqr-error').textContent = validation.message;
+                    document.getElementById('iqr-error').style.display = 'block';
+                    return;
+                }
+
+                const milestones = [];
+                STANDARD_MILESTONES.forEach(milestone => {
+                    const person = document.querySelector(`.milestone-person[data-milestone="${milestone.id}"]`)?.value;
+                    const planDate = document.querySelector(`.milestone-plan[data-milestone="${milestone.id}"]`)?.value;
+                    const actualDate = document.querySelector(`.milestone-actual[data-milestone="${milestone.id}"]`)?.value;
+                    const status = document.querySelector(`.milestone-status[data-milestone="${milestone.id}"]`)?.value || 'pending';
+
+                    milestones.push({
+                        id: milestone.id,
+                        person: person || '',
+                        planDate: planDate || '',
+                        actualDate: actualDate || '',
+                        status: status
+                    });
+                });
+
+                if (currentEditingProject) {
+                    currentEditingProject.name = name;
+                    currentEditingProject.description = description;
+                    currentEditingProject.manager = manager;
+                    currentEditingProject.milestones = milestones;
+                } else {
+                    projects.push({
+                        id: 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        name: name,
+                        description: description,
+                        manager: manager,
+                        createdDate: new Date().toISOString().split('T')[0],
+                        milestones: milestones
+                    });
+                }
+
+                saveToStorage();
+                closeModal();
+                renderAll();
+                showToast('✅ Đã lưu dự án thành công!', 'success');
+            };
+
+            window.editProject = function(projectId) {
+                openProjectModal(projectId);
+            };
+
+            window.deleteProject = function(projectId) {
+                if (confirm('Bạn có chắc muốn xóa dự án này?')) {
+                    projects = projects.filter(p => p.id !== projectId);
+                    saveToStorage();
+                    renderAll();
+                    showToast('✅ Đã xóa dự án!', 'success');
+                }
+            };
+
+            // Team Modal Functions
+            window.openTeamModal = function(memberId = null) {
+                const member = memberId ? teamMembers.find(m => m.id === memberId) : null;
+                
+                document.getElementById('member-name').value = member?.name || '';
+                document.getElementById('member-role').value = member?.role || '';
+                document.getElementById('member-email').value = member?.email || '';
+
+                document.getElementById('team-modal').classList.add('active');
+                document.getElementById('team-modal').dataset.editId = memberId || '';
+            };
+
+            window.closeTeamModal = function() {
+                document.getElementById('team-modal').classList.remove('active');
+            };
+
+            window.saveTeamMember = function(event) {
+                event.preventDefault();
+
+                const name = document.getElementById('member-name').value.trim();
+                const role = document.getElementById('member-role').value.trim();
+                const email = document.getElementById('member-email').value.trim();
+                const editId = document.getElementById('team-modal').dataset.editId;
+
+                if (!name) {
+                    showToast('❌ Vui lòng nhập tên nhân sự!', 'error');
+                    return;
+                }
+
+                if (editId) {
+                    const member = teamMembers.find(m => m.id === editId);
+                    if (member) {
+                        member.name = name;
+                        member.role = role;
+                        member.email = email;
+                    }
+                } else {
+                    teamMembers.push({
+                        id: 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        name: name,
+                        role: role,
+                        email: email
+                    });
+                }
+
+                saveToStorage();
+                closeTeamModal();
+                renderAll();
+                showToast('✅ Đã lưu nhân sự!', 'success');
+            };
+
+            window.editTeamMember = function(memberId) {
+                openTeamModal(memberId);
+            };
+
+            window.deleteTeamMember = function(memberId) {
+                if (confirm('Bạn có chắc muốn xóa nhân sự này?')) {
+                    teamMembers = teamMembers.filter(m => m.id !== memberId);
+                    saveToStorage();
+                    renderAll();
+                    showToast('✅ Đã xóa nhân sự!', 'success');
+                }
+            };
+
+            // Import/Export Functions
+            window.exportData = function() {
+                exportToJSON();
+            };
+
+            window.exportToJSON = function() {
+                const data = {
+                    projects: projects,
+                    teamMembers: teamMembers,
+                    exportDate: new Date().toISOString()
+                };
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `BOD-Dashboard-Export-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showToast('✅ Đã xuất file JSON thành công!', 'success');
+            };
+
+            window.exportToCSV = function() {
+                let csv = 'Project Name,Manager,Created Date,Milestone,Plan Date,Actual Date,Person,Status\n';
+                
+                projects.forEach(project => {
+                    const manager = teamMembers.find(m => m.id === project.manager);
+                    const managerName = manager ? manager.name : 'N/A';
+                    
+                    project.milestones.forEach(milestone => {
+                        const ms = STANDARD_MILESTONES.find(m => m.id === milestone.id);
+                        const milestoneName = ms ? ms.name : milestone.id;
+                        const person = teamMembers.find(p => p.id === milestone.person);
+                        const personName = person ? person.name : 'N/A';
+                        
+                        csv += `"${project.name}","${managerName}","${project.createdDate}","${milestoneName}","${milestone.planDate}","${milestone.actualDate}","${personName}","${milestone.status}"\n`;
+                    });
+                });
+                
+                const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `BOD-Dashboard-Export-${new Date().toISOString().split('T')[0]}.csv`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showToast('✅ Đã xuất file CSV thành công!', 'success');
+            };
+
+            window.importData = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                handleFileImport(file);
+                event.target.value = '';
+            };
+
+            window.importBackupData = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                handleFileImport(file);
+                event.target.value = '';
+            };
+
+            // Update Stats
+            function updateStats() {
+                document.getElementById('stat-projects').textContent = projects.length;
+                document.getElementById('stat-team').textContent = teamMembers.length;
+                document.getElementById('stat-milestones').textContent = 
+                    projects.reduce((sum, p) => sum + p.milestones.filter(m => m.planDate).length, 0);
+                
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        if (data.lastSave) {
+                            const date = new Date(data.lastSave);
+                            document.getElementById('stat-last-save').textContent = 
+                                date.toLocaleString('vi-VN');
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            // Toast Function
+            function showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                const icon = document.getElementById('toast-icon');
+                const msg = document.getElementById('toast-message');
+
+                icon.textContent = type === 'success' ? '✅' : '❌';
+                msg.textContent = message;
+                toast.className = `toast ${type} show`;
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        })();
+    </script>
+</body>
+</html>
