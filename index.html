@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v4.2 ULTIMATE - Azure Sync [FIXED]</title>
+    <title>BOD Dashboard v5.2 FINAL - ABSOLUTELY COMPLETE - Full Featured Edition</title>
     <style>
         * {
             margin: 0;
@@ -284,131 +284,6 @@
             font-size: 0.9em;
         }
 
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .calendar-month {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 600;
-            color: #718096;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .calendar-day {
-            min-height: 100px;
-            padding: 10px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-day:hover {
-            border-color: #667eea;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
-        }
-
-        .calendar-day.other-month {
-            background: #f8f9fa;
-            opacity: 0.5;
-        }
-
-        .calendar-day.today {
-            border-color: #667eea;
-            border-width: 3px;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .day-number {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-
-        .day-assignment {
-            padding: 5px 8px;
-            background: #e3f2fd;
-            border-radius: 5px;
-            font-size: 0.75em;
-            color: #1976d2;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .team-member-card {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .team-member-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-            transform: translateY(-5px);
-        }
-
-        .member-avatar-large {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2em;
-            font-weight: 600;
-            margin: 0 auto 15px;
-        }
-
-        .member-name {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 5px;
-        }
-
-        .member-role {
-            color: #718096;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -498,22 +373,6 @@
             min-height: 80px;
         }
 
-        .milestone-form-grid {
-            display: grid;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .milestone-form-row {
-            display: grid;
-            grid-template-columns: 180px 1fr 1fr 1fr 100px;
-            gap: 10px;
-            align-items: end;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
         .error-message {
             background: #f8d7da;
             color: #721c24;
@@ -523,74 +382,256 @@
             border: 1px solid #f5c6cb;
         }
 
-        .search-box {
+        /* ============= ADVANCED FEATURES STYLES v5.1 ============= */
+        
+        /* Multi-Select Dropdown */
+        .multi-select-container {
             position: relative;
-            max-width: 400px;
         }
 
-        .search-box input {
+        .multi-select-trigger {
             width: 100%;
-            padding: 12px 40px 12px 15px;
+            padding: 12px;
             border: 2px solid #e9ecef;
-            border-radius: 25px;
-            font-size: 0.95em;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
         }
 
-        .search-box input:focus {
-            outline: none;
+        .multi-select-trigger:hover {
             border-color: #667eea;
         }
 
-        .search-icon {
+        .multi-select-trigger.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .multi-select-dropdown {
             position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #718096;
-        }
-
-        .file-drop-zone {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background: rgba(102, 126, 234, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .file-drop-zone:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #764ba2;
-        }
-
-        .file-drop-zone.drag-over {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #764ba2;
-            border-width: 4px;
-        }
-
-        .file-drop-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .settings-section {
+            top: 100%;
+            left: 0;
+            right: 0;
             background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin-top: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
 
-        .settings-section h3 {
-            font-size: 1.3em;
-            color: #2d3748;
-            margin-bottom: 15px;
+        .multi-select-dropdown.show {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s ease;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .multi-select-option:hover {
+            background: #f8f9fa;
+        }
+
+        .multi-select-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .selected-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .selected-item-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .selected-item-badge .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .selected-item-badge .remove:hover {
+            opacity: 1;
+        }
+
+        /* Survey Tabs */
+        .survey-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .survey-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .survey-tab:hover {
+            color: #667eea;
+        }
+
+        .survey-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .survey-round-content {
+            display: none;
+        }
+
+        .survey-round-content.active {
+            display: block;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #718096;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        /* Member Badge */
+        .member-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .leader-badge {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Workload Indicator */
+        .workload-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .workload-low {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .workload-medium {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .workload-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Project Team Section */
+        .project-team-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .team-members-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        /* Milestone Dates Grid */
+        .milestone-dates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .date-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .date-field label {
+            font-size: 0.75em;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .milestone-form-row {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
 
         .toast {
@@ -632,9 +673,12 @@
         }
 
         @media (max-width: 1200px) {
-            .milestone-row, .milestone-form-row {
+            .milestone-row {
                 grid-template-columns: 1fr;
-                gap: 10px;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -643,8 +687,9 @@
     <div class="container">
         <div class="header">
             <h1>
-                <div class="header-icon">🎯</div>
-                BOD Project Dashboard <span style="font-size: 0.5em; opacity: 0.8;">v4.2 ULTIMATE - Azure Sync [FIXED]</span>
+                <div class="header-icon">📊</div>
+                BOD Dashboard
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.2 FINAL - ABSOLUTELY COMPLETE</span>
             </h1>
             <div class="header-actions">
                 <div class="sync-status" id="sync-status">
@@ -676,20 +721,58 @@
             <div class="stats-grid" id="stats-grid"></div>
             <h2 style="color: #2d3748; margin: 30px 0 20px;">📋 Dự Án Đang Thực Hiện</h2>
             <div id="overview-projects"></div>
-            <div id="show-all-container" style="text-align: center; margin: 20px 0; display: none;">
-                <button class="btn btn-primary" onclick="showAllProjects()">
-                    Xem tất cả <span id="total-project-count"></span> dự án
-                </button>
-            </div>
         </div>
 
         <!-- Dự Án Tab -->
         <div id="projects" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                <div class="search-box">
-                    <input type="text" id="project-search" placeholder="Tìm kiếm dự án..." onkeyup="filterProjects()">
-                    <span class="search-icon">🔍</span>
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>🔍 Tìm kiếm</label>
+                    <input type="text" id="filter-search" placeholder="Tên dự án, IQR code...">
                 </div>
+                <div class="filter-group">
+                    <label>👤 Leader</label>
+                    <select id="filter-leader">
+                        <option value="">Tất cả</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>👥 Member</label>
+                    <select id="filter-member">
+                        <option value="">Tất cả</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>🏢 Khách hàng</label>
+                    <input type="text" id="filter-customer" placeholder="Tên khách hàng...">
+                </div>
+                <div class="filter-group">
+                    <label>💼 Sale</label>
+                    <select id="filter-sale">
+                        <option value="">Tất cả</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>📊 Trạng thái</label>
+                    <select id="filter-status">
+                        <option value="">Tất cả</option>
+                        <option value="planning">📝 Planning</option>
+                        <option value="in-progress">🔄 In Progress</option>
+                        <option value="on-hold">⏸️ On Hold</option>
+                        <option value="delayed">⚠️ Delayed</option>
+                        <option value="completed">✅ Completed</option>
+                        <option value="cancelled">❌ Cancelled</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="applyFilters()">Lọc</button>
+                    <button class="btn" onclick="clearFilters()">Xóa Bộ Lọc</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h3 style="color: #2d3748;">Danh Sách Dự Án (<span id="project-count">0</span>)</h3>
                 <button class="btn btn-primary" onclick="openProjectModal()">
                     <span>➕</span>
                     Thêm Dự Án Mới
@@ -700,18 +783,18 @@
 
         <!-- Lịch Làm Việc Tab -->
         <div id="calendar" class="tab-content">
-            <div class="calendar-header">
-                <div class="calendar-nav">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
                     <button class="btn" onclick="previousMonth()">◀</button>
-                    <div class="calendar-month" id="calendar-month"></div>
+                    <div style="font-size: 1.5em; font-weight: 600; color: #2d3748; min-width: 200px; text-align: center;" id="calendar-month"></div>
                     <button class="btn" onclick="nextMonth()">▶</button>
                     <button class="btn" onclick="todayMonth()">Hôm Nay</button>
                 </div>
-                <select id="calendar-filter" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;">
-                    <option value="all">Tất cả nhân sự</option>
+                <select id="calendar-filter-person" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;">
+                    <option value="">Tất cả nhân sự</option>
                 </select>
             </div>
-            <div class="calendar-grid" id="calendar-grid"></div>
+            <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;"></div>
         </div>
 
         <!-- Nhân Sự Tab -->
@@ -723,18 +806,13 @@
                     Thêm Nhân Sự
                 </button>
             </div>
-            <div class="team-grid" id="team-grid"></div>
+            <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
         </div>
 
         <!-- Cài Đặt Tab -->
         <div id="settings" class="tab-content">
-            <div class="settings-section">
-                <h3>📥 Import / Export Dữ Liệu</h3>
-                <div class="file-drop-zone" id="drop-zone" onclick="document.getElementById('import-file').click()">
-                    <div class="file-drop-icon">📂</div>
-                    <h3>Kéo thả file JSON backup vào đây</h3>
-                    <p style="color: #718096; margin-top: 10px;">Hoặc click để chọn file</p>
-                </div>
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">📥 Import / Export Dữ Liệu</h3>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="btn btn-success" onclick="exportToJSON()">
                         <span>📥</span>
@@ -744,19 +822,14 @@
                         <span>📤</span>
                         Import từ File
                     </button>
-                    <button class="btn" onclick="exportToCSV()">
-                        <span>📊</span>
-                        Xuất Excel (CSV)
-                    </button>
-                    <input type="file" id="import-file" accept=".json,.txt" style="display: none;" onchange="importData(event)">
+                    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3>💾 Quản Lý Dữ Liệu</h3>
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">💾 Quản Lý Dữ Liệu</h3>
                 <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                    <strong>⚠️ Lưu ý:</strong> Dashboard này đồng bộ dữ liệu qua Azure Blob Storage. 
-                    Để đồng bộ giữa các thiết bị, hãy sử dụng chức năng Export/Import.
+                    <strong>⚠️ Lưu ý:</strong> Dashboard này đồng bộ dữ liệu qua Azure Blob Storage.
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="btn btn-primary" onclick="saveToStorage()">
@@ -770,30 +843,8 @@
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3>📊 Thống Kê Hệ Thống</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px;">
-                        <div style="font-size: 2em; font-weight: bold; color: #1976d2;" id="stat-projects">0</div>
-                        <div style="color: #718096;">Tổng số dự án</div>
-                    </div>
-                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px;">
-                        <div style="font-size: 2em; font-weight: bold; color: #388e3c;" id="stat-team">0</div>
-                        <div style="color: #718096;">Nhân sự</div>
-                    </div>
-                    <div style="background: #fff3e0; padding: 15px; border-radius: 10px;">
-                        <div style="font-size: 2em; font-weight: bold; color: #f57c00;" id="stat-milestones">0</div>
-                        <div style="color: #718096;">Milestones</div>
-                    </div>
-                    <div style="background: #fce4ec; padding: 15px; border-radius: 10px;">
-                        <div style="font-size: 1.2em; font-weight: bold; color: #c2185b;" id="stat-last-save">Chưa lưu</div>
-                        <div style="color: #718096;">Lần lưu cuối</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>🗑️ Xóa Dữ Liệu</h3>
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">🗑️ Xóa Dữ Liệu</h3>
                 <button class="btn btn-danger" onclick="clearAllData()">
                     <span>⚠️</span>
                     Xóa Tất Cả Dữ Liệu
@@ -810,23 +861,156 @@
                 <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
             <form id="project-form" onsubmit="saveProject(event)">
+                <!-- BASIC INFO -->
                 <div class="form-group">
                     <label>Tên Dự Án (IQR Code) *</label>
                     <input type="text" id="project-name" required placeholder="VD: IQR25101908 - Tên dự án...">
                     <div id="iqr-error" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-group">
+                    <label>Khách Hàng</label>
+                    <input type="text" id="project-customer" placeholder="Tên khách hàng...">
+                </div>
+                <div class="form-group">
+                    <label>💼 Sale</label>
+                    <select id="project-sale">
+                        <option value="">Chọn Sale...</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Mô Tả</label>
                     <textarea id="project-description" placeholder="Mô tả chi tiết dự án..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Người Phụ Trách *</label>
-                    <select id="project-manager" required>
-                        <option value="">Chọn người phụ trách</option>
-                    </select>
+                
+                <!-- TEAM SECTION -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">👥 Phân Công Nhân Sự</h3>
+                    
+                    <div class="form-group">
+                        <label>🎯 Leader (Người Phụ Trách Chính) *</label>
+                        <select id="project-leader" required>
+                            <option value="">Chọn Leader...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>👥 Members (Thành Viên Tham Gia)</label>
+                        <div class="multi-select-container">
+                            <div class="multi-select-trigger" id="members-trigger">
+                                <span id="members-trigger-text">Chọn members...</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="multi-select-dropdown" id="members-dropdown"></div>
+                        </div>
+                        <div class="selected-items" id="selected-members"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📊 Trạng Thái Dự Án</label>
+                        <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
+                            <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
+                            <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
+                            <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
+                            <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
+                            <option value="completed">✅ Completed (Hoàn thành)</option>
+                            <option value="cancelled">❌ Cancelled (Đã hủy)</option>
+                        </select>
+                    </div>
                 </div>
-                <h3 style="margin: 30px 0 20px; color: #2d3748;">📍 9 Bước Chuẩn (Milestones)</h3>
-                <div class="milestone-form-grid" id="milestone-form-grid"></div>
+                
+                <!-- SURVEY SECTION -->
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin: 20px 0;">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Survey (3 Vòng Khảo Sát)</h3>
+                    
+                    <div class="survey-tabs">
+                        <button type="button" class="survey-tab active" onclick="switchSurveyTab(1)">Survey 1</button>
+                        <button type="button" class="survey-tab" onclick="switchSurveyTab(2)">Survey 2</button>
+                        <button type="button" class="survey-tab" onclick="switchSurveyTab(3)">Survey 3</button>
+                    </div>
+                    
+                    <div id="survey-1" class="survey-round-content active">
+                        <div class="form-group">
+                            <label>Người Thực Hiện</label>
+                            <select id="survey1-person">
+                                <option value="">Chọn người...</option>
+                            </select>
+                        </div>
+                        <div class="milestone-dates">
+                            <div class="date-field">
+                                <label>Ngày Bắt Đầu</label>
+                                <input type="date" id="survey1-start">
+                            </div>
+                            <div class="date-field">
+                                <label>Ngày Hoàn Thành</label>
+                                <input type="date" id="survey1-complete">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>📝 Ghi Chú</label>
+                            <textarea id="survey1-notes" rows="3" 
+                                      placeholder="Nhập ghi chú về khảo sát lần 1..."
+                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                                             border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="survey-2" class="survey-round-content">
+                        <div class="form-group">
+                            <label>Người Thực Hiện</label>
+                            <select id="survey2-person">
+                                <option value="">Chọn người...</option>
+                            </select>
+                        </div>
+                        <div class="milestone-dates">
+                            <div class="date-field">
+                                <label>Ngày Bắt Đầu</label>
+                                <input type="date" id="survey2-start">
+                            </div>
+                            <div class="date-field">
+                                <label>Ngày Hoàn Thành</label>
+                                <input type="date" id="survey2-complete">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>📝 Ghi Chú</label>
+                            <textarea id="survey2-notes" rows="3" 
+                                      placeholder="Nhập ghi chú về khảo sát lần 2..."
+                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                                             border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="survey-3" class="survey-round-content">
+                        <div class="form-group">
+                            <label>Người Thực Hiện</label>
+                            <select id="survey3-person">
+                                <option value="">Chọn người...</option>
+                            </select>
+                        </div>
+                        <div class="milestone-dates">
+                            <div class="date-field">
+                                <label>Ngày Bắt Đầu</label>
+                                <input type="date" id="survey3-start">
+                            </div>
+                            <div class="date-field">
+                                <label>Ngày Hoàn Thành</label>
+                                <input type="date" id="survey3-complete">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>📝 Ghi Chú</label>
+                            <textarea id="survey3-notes" rows="3" 
+                                      placeholder="Nhập ghi chú về khảo sát lần 3..."
+                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                                             border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MILESTONES SECTION -->
+                <h3 style="margin: 30px 0 20px; color: #2d3748;">🔖 Các Bước Tiếp Theo (Milestones)</h3>
+                <div id="milestone-form-grid"></div>
+                
                 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closeModal()">Hủy</button>
                     <button type="submit" class="btn btn-primary">
@@ -869,27 +1053,25 @@
         </div>
     </div>
 
-    <!-- Project Detail Modal -->
-    <div id="project-detail-modal" class="modal">
-        <div class="modal-content" style="max-width: 1200px;">
+    <!-- Delayed Projects Modal -->
+    <div id="delayed-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
-                <h2 id="detail-project-title">Chi Tiết Dự Án</h2>
-                <button class="close-modal" onclick="closeProjectDetail()">&times;</button>
+                <h2>⚠️ Dự Án Trễ Tiến Độ</h2>
+                <button class="close-modal" onclick="closeDelayedModal()">&times;</button>
             </div>
-            <div id="project-detail-content"></div>
-            <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: space-between;">
-                <button class="btn btn-danger" id="delete-project-btn" onclick="deleteCurrentProject()">
-                    <span>🗑️</span>
-                    Xóa Dự Án
-                </button>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" onclick="closeProjectDetail()">Đóng</button>
-                    <button class="btn btn-primary" id="edit-detail-project-btn">
-                        <span>✏️</span>
-                        Sửa Dự Án
-                    </button>
-                </div>
+            <div id="delayed-projects-list"></div>
+        </div>
+    </div>
+
+    <!-- Conflicts Modal -->
+    <div id="conflicts-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>⚡ Xung Đột Lịch Trình</h2>
+                <button class="close-modal" onclick="closeConflictsModal()">&times;</button>
             </div>
+            <div id="conflicts-list"></div>
         </div>
     </div>
 
@@ -903,11 +1085,11 @@
         (function() {
             'use strict';
             
-            // Standard Milestones
+            // Standard Milestones (excluding Survey - handled separately)
             const STANDARD_MILESTONES = [
-                { id: 'survey', name: 'Survey', icon: '🔍' },
                 { id: 'design', name: 'Design', icon: '✏️' },
-                { id: 'bom', name: 'BOM Drawing', icon: '📐' },
+                { id: 'bom', name: 'BOM Drawing', icon: '📋' },
+                { id: 'price_calc', name: 'Price Calculation', icon: '💰' },
                 { id: 'bidding', name: 'Bidding', icon: '💼' },
                 { id: 'order', name: 'Order', icon: '📦' },
                 { id: 'assembly', name: 'Assembly', icon: '🔧' },
@@ -919,7 +1101,7 @@
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
                 sasUrl: 'https://boddashboardstorage.blob.core.windows.net/bod-dashboard-data?sp=rwl&st=2025-10-29T02:26:05Z&se=2026-10-29T10:41:05Z&spr=https&sv=2024-11-04&sr=c&sig=FKsg1X0mCKKsWQQ0%2Fq8zvqeIKSLklsIr%2BJlYkWVoNxI%3D',
-                blobName: 'dashboard-data.json',
+                blobName: 'dashboard-data-v5.2.json',
                 enabled: true
             };
 
@@ -927,274 +1109,29 @@
             let projects = [];
             let teamMembers = [];
             let currentEditingProject = null;
-            let currentViewingProject = null;
             let currentDate = new Date();
             let isSyncing = false;
             let lastBlobSync = null;
             let syncDebounceTimer = null;
-            const STORAGE_KEY = 'bod_dashboard_data_v2';
+            const STORAGE_KEY = 'bod_dashboard_data_v5_2';
+            const DATA_VERSION = 5.2;
+            
+            // Selected members for multi-select
+            let selectedMembers = [];
 
             // Initialize
             document.addEventListener('DOMContentLoaded', async function() {
                 await loadFromStorage();
                 initializeTabs();
-                initializeDragDrop();
                 renderAll();
-                updateStats();
                 updateSyncStatus();
+                setupMultiSelect();
                 
-                // Periodic sync status update
+                // Periodic sync
                 setInterval(updateSyncStatus, 30000);
             });
 
-            // Azure Blob Storage Functions
-            async function loadFromBlob() {
-                if (!AZURE_CONFIG.enabled) return null;
-                
-                try {
-                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
-                    const response = await fetch(blobUrl, {
-                        method: 'GET',
-                        headers: {
-                            'x-ms-blob-type': 'BlockBlob'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        lastBlobSync = new Date();
-                        console.log('✅ Loaded data from Azure Blob Storage');
-                        return data;
-                    } else if (response.status === 404) {
-                        console.log('ℹ️ No data in blob yet (404 - first time)');
-                        return null;
-                    } else {
-                        console.error('Blob load error:', response.status, response.statusText);
-                        return null;
-                    }
-                } catch (error) {
-                    console.error('Error loading from blob:', error);
-                    return null;
-                }
-            }
-
-            async function saveToBlob(data) {
-                if (!AZURE_CONFIG.enabled) return false;
-                
-                try {
-                    isSyncing = true;
-                    updateSyncStatus();
-                    
-                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
-                    const jsonData = JSON.stringify(data, null, 2);
-                    
-                    const response = await fetch(blobUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'x-ms-blob-type': 'BlockBlob',
-                            'Content-Type': 'application/json'
-                        },
-                        body: jsonData
-                    });
-                    
-                    if (response.ok) {
-                        lastBlobSync = new Date();
-                        isSyncing = false;
-                        console.log('✅ Saved to Azure Blob Storage');
-                        updateSyncStatus();
-                        return true;
-                    } else {
-                        console.error('Blob save error:', response.status, response.statusText);
-                        isSyncing = false;
-                        updateSyncStatus();
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('Error saving to blob:', error);
-                    isSyncing = false;
-                    updateSyncStatus();
-                    return false;
-                }
-            }
-
-            function debouncedSaveToBlob() {
-                if (syncDebounceTimer) {
-                    clearTimeout(syncDebounceTimer);
-                }
-                syncDebounceTimer = setTimeout(() => {
-                    const data = {
-                        projects: projects,
-                        teamMembers: teamMembers,
-                        lastSave: new Date().toISOString()
-                    };
-                    saveToBlob(data);
-                }, 2000);
-            }
-
-            function updateSyncStatus() {
-                const statusEl = document.getElementById('sync-status');
-                const textEl = document.getElementById('sync-text');
-                
-                if (isSyncing) {
-                    textEl.textContent = '🔄 Đang đồng bộ...';
-                    statusEl.className = 'sync-status syncing';
-                    return;
-                }
-                
-                if (lastBlobSync) {
-                    const now = new Date();
-                    const diffMinutes = Math.floor((now - lastBlobSync) / 60000);
-                    
-                    if (diffMinutes < 1) {
-                        textEl.textContent = '✅ Đã đồng bộ';
-                        statusEl.className = 'sync-status connected';
-                    } else if (diffMinutes < 60) {
-                        textEl.textContent = `✅ Đồng bộ ${diffMinutes}p trước`;
-                        statusEl.className = 'sync-status connected';
-                    } else {
-                        const hours = Math.floor(diffMinutes / 60);
-                        textEl.textContent = `⚠️ Đồng bộ ${hours}h trước`;
-                        statusEl.className = 'sync-status warning';
-                    }
-                } else {
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    if (stored) {
-                        textEl.textContent = '⚠️ Chỉ lưu local';
-                        statusEl.className = 'sync-status warning';
-                    } else {
-                        textEl.textContent = 'Chưa có dữ liệu';
-                        statusEl.className = 'sync-status';
-                    }
-                }
-            }
-
-            // Drag and Drop
-            function initializeDragDrop() {
-                const dropZone = document.getElementById('drop-zone');
-                
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, preventDefaults, false);
-                });
-
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, () => {
-                        dropZone.classList.add('drag-over');
-                    }, false);
-                });
-
-                ['dragleave', 'drop'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, () => {
-                        dropZone.classList.remove('drag-over');
-                    }, false);
-                });
-
-                dropZone.addEventListener('drop', handleDrop, false);
-            }
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
-                    handleFileImport(files[0]);
-                }
-            }
-
-            function handleFileImport(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        projects = imported.projects || [];
-                        teamMembers = imported.teamMembers || [];
-                        saveToStorage();
-                        renderAll();
-                        updateStats();
-                        showToast('✅ Đã nhập dữ liệu thành công!', 'success');
-                    } catch (error) {
-                        showToast('❌ Lỗi: File không đúng định dạng!', 'error');
-                        console.error('Import error:', error);
-                    }
-                };
-                reader.readAsText(file);
-            }
-
-            // Storage Functions
-            function saveToStorage() {
-                const data = {
-                    projects: projects,
-                    teamMembers: teamMembers,
-                    lastSave: new Date().toISOString()
-                };
-                // Save to localStorage immediately (backup)
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                
-                // Save to Azure Blob (debounced)
-                debouncedSaveToBlob();
-                
-                updateSyncStatus();
-                updateStats();
-            }
-
-            async function loadFromStorage() {
-                // Try loading from Azure Blob first
-                const blobData = await loadFromBlob();
-                
-                if (blobData) {
-                    projects = blobData.projects || [];
-                    teamMembers = blobData.teamMembers || [];
-                    // Also save to localStorage as backup
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                    showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
-                    return;
-                }
-                
-                // Fallback to localStorage if blob fails
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    try {
-                        const data = JSON.parse(stored);
-                        projects = data.projects || [];
-                        teamMembers = data.teamMembers || [];
-                        
-                        // Try to sync to blob for first time
-                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
-                            console.log('Syncing local data to blob...');
-                            saveToBlob(data);
-                        }
-                    } catch (e) {
-                        console.error('Error loading data:', e);
-                    }
-                }
-            }
-
-            window.clearAllData = function() {
-                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA TẤT CẢ DỮ LIỆU?\n\nHành động này không thể hoàn tác!')) {
-                    if (confirm('⚠️ XÁC NHẬN LẦN CUỐI!\n\nTất cả dự án và nhân sự sẽ bị xóa vĩnh viễn!')) {
-                        projects = [];
-                        teamMembers = [];
-                        localStorage.removeItem(STORAGE_KEY);
-                        
-                        // Also clear Azure Blob
-                        const data = {
-                            projects: [],
-                            teamMembers: [],
-                            lastSave: new Date().toISOString()
-                        };
-                        saveToBlob(data);
-                        
-                        renderAll();
-                        updateStats();
-                        showToast('✅ Đã xóa tất cả dữ liệu!', 'success');
-                    }
-                }
-            };
-
-            // Tab Management
+            // ============= TABS ============= //
             function initializeTabs() {
                 document.querySelectorAll('.nav-tab').forEach(tab => {
                     tab.addEventListener('click', function() {
@@ -1217,171 +1154,570 @@
                 if (tabName === 'team') renderTeamGrid();
             }
 
-            // IQR Validation
-            function extractIQRCode(projectName) {
-                const match = projectName.match(/IQR\d{8}/);
-                return match ? match[0] : null;
-            }
-
-            function validateIQR(projectName, excludeProjectId = null) {
-                const iqrCode = extractIQRCode(projectName);
+            // ============= MULTI-SELECT ============= //
+            function setupMultiSelect() {
+                const trigger = document.getElementById('members-trigger');
+                const dropdown = document.getElementById('members-dropdown');
                 
-                if (!iqrCode) {
-                    return { valid: false, message: 'Tên dự án phải chứa mã IQR (VD: IQR25101908)!' };
-                }
-
-                const duplicate = projects.find(p => {
-                    const existingIQR = extractIQRCode(p.name);
-                    return existingIQR === iqrCode && p.id !== excludeProjectId;
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                    trigger.classList.toggle('active');
                 });
                 
-                if (duplicate) {
-                    return { valid: false, message: `Mã IQR "${iqrCode}" đã tồn tại trong dự án "${duplicate.name}"!` };
-                }
-
-                return { valid: true };
+                // Close when clicking outside
+                document.addEventListener('click', function() {
+                    dropdown.classList.remove('show');
+                    trigger.classList.remove('active');
+                });
             }
 
-            // Real-time IQR validation
-            document.addEventListener('DOMContentLoaded', () => {
-                const nameInput = document.getElementById('project-name');
-                if (nameInput) {
-                    nameInput.addEventListener('input', (e) => {
-                        const errorDiv = document.getElementById('iqr-error');
-                        const value = e.target.value;
-                        
-                        if (value.length >= 3) {
-                            const validation = validateIQR(value, currentEditingProject?.id);
-                            if (!validation.valid) {
-                                errorDiv.textContent = validation.message;
-                                errorDiv.style.display = 'block';
-                            } else {
-                                errorDiv.style.display = 'none';
+            function renderMembersDropdown() {
+                const dropdown = document.getElementById('members-dropdown');
+                dropdown.innerHTML = teamMembers.map(member => `
+                    <div class="multi-select-option" onclick="toggleMember('${member.id}', event)">
+                        <input type="checkbox" ${selectedMembers.includes(member.id) ? 'checked' : ''}>
+                        <span>${member.name}</span>
+                    </div>
+                `).join('');
+            }
+
+            window.toggleMember = function(memberId, event) {
+                event.stopPropagation();
+                const index = selectedMembers.indexOf(memberId);
+                if (index > -1) {
+                    selectedMembers.splice(index, 1);
+                } else {
+                    selectedMembers.push(memberId);
+                }
+                renderMembersDropdown();
+                updateSelectedMembersDisplay();
+            };
+
+            function updateSelectedMembersDisplay() {
+                const container = document.getElementById('selected-members');
+                const triggerText = document.getElementById('members-trigger-text');
+                
+                if (selectedMembers.length === 0) {
+                    container.innerHTML = '';
+                    triggerText.textContent = 'Chọn members...';
+                } else {
+                    triggerText.textContent = `Đã chọn ${selectedMembers.length} người`;
+                    container.innerHTML = selectedMembers.map(id => {
+                        const member = teamMembers.find(m => m.id === id);
+                        return `
+                            <div class="selected-item-badge">
+                                <span>${member.name}</span>
+                                <span class="remove" onclick="toggleMember('${id}', event)">×</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // ============= SURVEY TABS ============= //
+            window.switchSurveyTab = function(tabNumber) {
+                document.querySelectorAll('.survey-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.survey-round-content').forEach(content => content.classList.remove('active'));
+                
+                event.target.classList.add('active');
+                document.getElementById(`survey-${tabNumber}`).classList.add('active');
+            };
+
+            // ============= STORAGE ============= //
+            async function loadFromBlob() {
+                if (!AZURE_CONFIG.enabled) return null;
+                
+                try {
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const response = await fetch(blobUrl, {
+                        method: 'GET',
+                        headers: { 'x-ms-blob-type': 'BlockBlob' }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        return data;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error loading from blob:', error);
+                    return null;
+                }
+            }
+
+            async function saveToBlob(data) {
+                if (!AZURE_CONFIG.enabled) return false;
+                
+                try {
+                    isSyncing = true;
+                    updateSyncStatus();
+                    
+                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    const response = await fetch(blobUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'x-ms-blob-type': 'BlockBlob',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data, null, 2)
+                    });
+                    
+                    if (response.ok) {
+                        lastBlobSync = new Date();
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return true;
+                    }
+                    isSyncing = false;
+                    return false;
+                } catch (error) {
+                    isSyncing = false;
+                    updateSyncStatus();
+                    return false;
+                }
+            }
+
+            function debouncedSaveToBlob() {
+                if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+                syncDebounceTimer = setTimeout(() => {
+                    const data = {
+                        projects: projects,
+                        teamMembers: teamMembers,
+                        lastSave: new Date().toISOString(),
+                        version: DATA_VERSION
+                    };
+                    saveToBlob(data);
+                }, 2000);
+            }
+
+            function saveToStorage() {
+                const data = {
+                    projects: projects,
+                    teamMembers: teamMembers,
+                    lastSave: new Date().toISOString(),
+                    version: DATA_VERSION
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                debouncedSaveToBlob();
+                updateSyncStatus();
+            }
+
+            async function loadFromStorage() {
+                const blobData = await loadFromBlob();
+                
+                if (blobData) {
+                    projects = blobData.projects || [];
+                    teamMembers = blobData.teamMembers || [];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                    showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    return;
+                }
+                
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        projects = data.projects || [];
+                        teamMembers = data.teamMembers || [];
+                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
+                            saveToBlob(data);
+                        }
+                    } catch (e) {
+                        console.error('Error loading data:', e);
+                    }
+                }
+            }
+
+            function updateSyncStatus() {
+                const statusEl = document.getElementById('sync-status');
+                const textEl = document.getElementById('sync-text');
+                
+                if (isSyncing) {
+                    textEl.textContent = '🔄 Đang đồng bộ...';
+                    statusEl.className = 'sync-status syncing';
+                    return;
+                }
+                
+                if (lastBlobSync) {
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - lastBlobSync) / 60000);
+                    
+                    if (diffMinutes < 1) {
+                        textEl.textContent = '✅ Đã đồng bộ';
+                        statusEl.className = 'sync-status connected';
+                    } else {
+                        textEl.textContent = `✅ Đồng bộ ${diffMinutes}p trước`;
+                        statusEl.className = 'sync-status connected';
+                    }
+                } else {
+                    textEl.textContent = '⚠️ Chỉ lưu local';
+                    statusEl.className = 'sync-status warning';
+                }
+            }
+
+            // ============= DELAYED PROJECTS HELPERS ============= //
+            function getCurrentMilestone(project) {
+                // Survey rounds first
+                if (project.surveyRounds) {
+                    for (let key in project.surveyRounds) {
+                        const round = project.surveyRounds[key];
+                        if (round.person && (!round.completeDate || !round.startDate)) {
+                            return {
+                                ...round,
+                                name: `Survey ${key.replace('survey', '')}`,
+                                icon: '📋',
+                                type: 'survey',
+                                completeDate: round.completeDate
+                            };
+                        }
+                    }
+                }
+                
+                // Regular milestones - find first not completed
+                for (let milestone of project.milestones) {
+                    if (milestone.person && milestone.actualStartDate && !milestone.actualCompleteDate) {
+                        const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
+                        return {
+                            ...milestone,
+                            name: msInfo?.name || milestone.id,
+                            icon: msInfo?.icon || '📌',
+                            type: 'milestone'
+                        };
+                    }
+                }
+                
+                // All completed or no assignments - return last milestone with data
+                for (let i = project.milestones.length - 1; i >= 0; i--) {
+                    const m = project.milestones[i];
+                    if (m.person || m.planStartDate || m.planCompleteDate || m.actualStartDate || m.actualCompleteDate) {
+                        const msInfo = STANDARD_MILESTONES.find(sm => sm.id === m.id);
+                        return {
+                            ...m,
+                            name: msInfo?.name || m.id,
+                            icon: msInfo?.icon || '📌',
+                            type: 'milestone'
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            function isDelayed(milestone) {
+                if (!milestone || !milestone.planCompleteDate) return false;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const planComplete = new Date(milestone.planCompleteDate);
+                planComplete.setHours(0, 0, 0, 0);
+                
+                // Case 1: Has actual complete date - compare with plan
+                if (milestone.actualCompleteDate) {
+                    const actualComplete = new Date(milestone.actualCompleteDate);
+                    actualComplete.setHours(0, 0, 0, 0);
+                    return actualComplete > planComplete; // Delayed if actual > plan
+                }
+                
+                // Case 2: Not completed yet - compare today with plan
+                // Only count as delayed if there's a person assigned (started)
+                if (milestone.person && today > planComplete) {
+                    return true; // Delayed if today > plan complete date
+                }
+                
+                return false;
+            }
+
+            // ============= WORKLOAD TRACKING ============= //
+            function calculateWorkload(personId) {
+                let workloadCount = 0;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                projects.forEach(project => {
+                    const status = project.status || 'planning';
+                    // Skip completed and cancelled projects
+                    if (status === 'completed' || status === 'cancelled') return;
+                    
+                    // Count as leader
+                    if (project.leader === personId) {
+                        workloadCount += 2; // Leader counts more
+                    }
+                    
+                    // Count as member
+                    if ((project.members || []).includes(personId)) {
+                        workloadCount += 1;
+                    }
+                    
+                    // Count active milestones
+                    project.milestones?.forEach(milestone => {
+                        if (milestone.person === personId && !milestone.actualCompleteDate) {
+                            // Check if it's in a reasonable timeframe (not too far in future)
+                            if (milestone.planStartDate) {
+                                const planStart = new Date(milestone.planStartDate);
+                                const daysUntilStart = Math.ceil((planStart - today) / (1000 * 60 * 60 * 24));
+                                // Only count if starting within 30 days or already started
+                                if (daysUntilStart <= 30) {
+                                    workloadCount += 1;
+                                }
                             }
-                        } else {
-                            errorDiv.style.display = 'none';
                         }
                     });
-                }
-            });
+                    
+                    // Count active surveys
+                    Object.values(project.surveyRounds || {}).forEach(survey => {
+                        if (survey.person === personId && !survey.completeDate) {
+                            workloadCount += 1;
+                        }
+                    });
+                });
+                
+                // Determine workload level
+                if (workloadCount === 0) return { level: 'none', label: '⚪ Free', count: 0, color: '#9e9e9e', bg: '#f5f5f5' };
+                if (workloadCount <= 3) return { level: 'low', label: '🟢 Low', count: workloadCount, color: '#2e7d32', bg: '#e8f5e9' };
+                if (workloadCount <= 6) return { level: 'medium', label: '🟡 Medium', count: workloadCount, color: '#f57c00', bg: '#fff3e0' };
+                return { level: 'high', label: '🔴 High', count: workloadCount, color: '#c62828', bg: '#ffebee' };
+            }
 
-            // Render Functions
+            // ============= CONFLICT DETECTION ============= //
+            function detectConflicts() {
+                const conflicts = [];
+                const assignments = {}; // personId -> { date -> [assignments] }
+                
+                projects.forEach(project => {
+                    const status = project.status || 'planning';
+                    // Skip completed and cancelled projects
+                    if (status === 'completed' || status === 'cancelled') return;
+                    
+                    // Check milestones
+                    project.milestones?.forEach(milestone => {
+                        if (!milestone.person || !milestone.planStartDate) return;
+                        
+                        const startDate = milestone.planStartDate;
+                        const endDate = milestone.planCompleteDate || startDate;
+                        
+                        // For each day in the range
+                        const start = new Date(startDate);
+                        const end = new Date(endDate);
+                        
+                        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                            const dateKey = d.toISOString().split('T')[0];
+                            
+                            if (!assignments[milestone.person]) assignments[milestone.person] = {};
+                            if (!assignments[milestone.person][dateKey]) assignments[milestone.person][dateKey] = [];
+                            
+                            const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
+                            assignments[milestone.person][dateKey].push({
+                                type: 'milestone',
+                                project: project.name,
+                                task: msInfo?.name || milestone.id,
+                                date: dateKey
+                            });
+                        }
+                    });
+                    
+                    // Check surveys
+                    Object.entries(project.surveyRounds || {}).forEach(([surveyKey, survey]) => {
+                        if (!survey.person || !survey.startDate) return;
+                        
+                        const dateKey = survey.startDate;
+                        
+                        if (!assignments[survey.person]) assignments[survey.person] = {};
+                        if (!assignments[survey.person][dateKey]) assignments[survey.person][dateKey] = [];
+                        
+                        assignments[survey.person][dateKey].push({
+                            type: 'survey',
+                            project: project.name,
+                            task: surveyKey.replace('survey', 'Survey '),
+                            date: dateKey
+                        });
+                    });
+                });
+                
+                // Find conflicts (same person, same day, multiple assignments)
+                Object.entries(assignments).forEach(([personId, dates]) => {
+                    Object.entries(dates).forEach(([date, tasks]) => {
+                        if (tasks.length > 1) {
+                            const person = teamMembers.find(m => m.id === personId);
+                            conflicts.push({
+                                personId,
+                                personName: person?.name || 'Unknown',
+                                date,
+                                tasks,
+                                count: tasks.length
+                            });
+                        }
+                    });
+                });
+                
+                return conflicts;
+            }
+
+            function calculateDelayedProjects() {
+                return projects.filter(project => {
+                    const current = getCurrentMilestone(project);
+                    return current && isDelayed(current);
+                });
+            }
+
+            // ============= RENDER ============= //
             function renderAll() {
                 renderOverview();
                 renderProjectsList();
                 renderCalendar();
                 renderTeamGrid();
-                updateCalendarFilter();
+                updateFilterOptions();
             }
 
             function renderOverview() {
-                // Stats
+                const delayed = calculateDelayedProjects();
+                
                 const statsHtml = `
                     <div class="stat-card">
                         <h3>📁 Tổng Số Dự Án</h3>
                         <div class="value">${projects.length}</div>
                     </div>
                     <div class="stat-card green">
-                        <h3>✅ Đang Thực Hiện</h3>
-                        <div class="value">${projects.filter(p => p.milestones.some(m => m.status === 'in-progress')).length}</div>
+                        <h3>▶️ Đang Thực Hiện</h3>
+                        <div class="value">${projects.length}</div>
+                    </div>
+                    <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>⚠️ Trễ Tiến Độ</h3>
+                        <div class="value">${delayed.length}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card orange" style="cursor: pointer;" onclick="showConflicts()"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>⚡ Xung Đột Lịch</h3>
+                        <div class="value">${detectConflicts().length}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card orange">
-                        <h3>👥 Nhân Sự</h3>
+                        <h3>👥 Tổng Nhân Sự</h3>
                         <div class="value">${teamMembers.length}</div>
-                    </div>
-                    <div class="stat-card red">
-                        <h3>⏰ Milestones</h3>
-                        <div class="value">${projects.reduce((sum, p) => sum + p.milestones.filter(m => m.planDate).length, 0)}</div>
                     </div>
                 `;
                 document.getElementById('stats-grid').innerHTML = statsHtml;
-
-                // Recent projects (max 5)
-                const recentProjects = projects.slice(0, 5);
-                const projectsHtml = recentProjects.map(p => createProjectCard(p)).join('');
+                
+                const projectsHtml = projects.slice(0, 5).map(p => createProjectCard(p)).join('');
                 document.getElementById('overview-projects').innerHTML = projectsHtml || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p>';
-
-                // Show "View All" button if more than 5 projects
-                const showAllContainer = document.getElementById('show-all-container');
-                if (projects.length > 5) {
-                    showAllContainer.style.display = 'block';
-                    document.getElementById('total-project-count').textContent = projects.length;
-                } else {
-                    showAllContainer.style.display = 'none';
-                }
             }
-
-            window.showAllProjects = function() {
-                switchTab('projects');
-            };
 
             function renderProjectsList() {
                 const html = projects.map(p => createProjectCard(p, true)).join('');
-                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào. Hãy tạo dự án mới!</p>';
+                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p>';
+                document.getElementById('project-count').textContent = projects.length;
             }
 
-            window.filterProjects = function() {
-                const query = document.getElementById('project-search').value.toLowerCase();
-                const filtered = projects.filter(p => 
-                    p.name.toLowerCase().includes(query) || 
-                    (p.description && p.description.toLowerCase().includes(query))
-                );
-                const html = filtered.map(p => createProjectCard(p, true)).join('');
-                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #718096; padding: 40px;">Không tìm thấy dự án nào</p>';
-            };
-
             function createProjectCard(project, showActions = false) {
-                const manager = teamMembers.find(m => m.id === project.manager);
-                const managerName = manager ? manager.name : 'Chưa phân công';
-
-                const milestonesHtml = project.milestones
-                    .filter(m => m.planDate)
-                    .map(m => {
-                        const milestone = STANDARD_MILESTONES.find(sm => sm.id === m.id);
-                        const person = teamMembers.find(p => p.id === m.person);
-                        const personName = person ? person.name : 'Chưa phân công';
-
-                        return `
-                            <div class="milestone-row">
-                                <div class="milestone-name">
-                                    <div class="milestone-icon">${milestone?.icon || '📌'}</div>
-                                    ${milestone?.name || m.id}
-                                </div>
-                                <div>
-                                    <strong>Plan:</strong> ${m.planDate ? new Date(m.planDate).toLocaleDateString('vi-VN') : 'N/A'}
-                                </div>
-                                <div>
-                                    <strong>Actual:</strong> ${m.actualDate ? new Date(m.actualDate).toLocaleDateString('vi-VN') : 'Chưa hoàn thành'}
-                                </div>
-                                <div>
-                                    <strong>👤</strong> ${personName}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-
+                const leader = teamMembers.find(m => m.id === project.leader);
+                const members = (project.members || []).map(id => teamMembers.find(m => m.id === id)).filter(Boolean);
+                
                 return `
-                    <div class="project-card" onclick="viewProject('${project.id}')">
+                    <div class="project-card">
                         <div class="project-header">
                             <div class="project-title">
                                 <h3>${project.name}</h3>
                                 <p>${project.description || 'Không có mô tả'}</p>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.9em; color: #718096;">
-                                    <strong>👤 Quản lý:</strong> ${managerName}<br>
-                                    <strong>📅 Tạo:</strong> ${new Date(project.createdDate).toLocaleDateString('vi-VN')}
-                                </div>
+                                ${project.customer ? `<p style="color: #667eea; margin-top: 5px;">🏢 ${project.customer}</p>` : ''}
+                                ${project.sale ? `<p style="color: #764ba2; margin-top: 5px;">💼 Sale: ${teamMembers.find(m => m.id === project.sale)?.name || 'N/A'}</p>` : ''}
+                                ${(() => {
+                                    const statusConfig = {
+                                        'planning': { label: '📝 Planning', bg: '#e3f2fd', color: '#1565c0' },
+                                        'in-progress': { label: '🔄 In Progress', bg: '#e8f5e9', color: '#2e7d32' },
+                                        'on-hold': { label: '⏸️ On Hold', bg: '#fff3e0', color: '#e65100' },
+                                        'delayed': { label: '⚠️ Delayed', bg: '#ffebee', color: '#c62828' },
+                                        'completed': { label: '✅ Completed', bg: '#e0f2f1', color: '#00695c' },
+                                        'cancelled': { label: '❌ Cancelled', bg: '#f3e5f5', color: '#6a1b9a' }
+                                    };
+                                    const status = project.status || 'planning';
+                                    const config = statusConfig[status];
+                                    return `<span style="display: inline-block; background: ${config.bg}; color: ${config.color}; 
+                                                   padding: 4px 12px; border-radius: 12px; font-size: 0.85em; 
+                                                   font-weight: 600; margin-top: 8px;">${config.label}</span>`;
+                                })()}
                             </div>
                         </div>
-                        ${milestonesHtml ? `
-                            <div style="margin-top: 20px;">
-                                <h4 style="margin-bottom: 15px; color: #2d3748;">📍 Milestones</h4>
-                                ${milestonesHtml}
-                            </div>
-                        ` : ''}
+                        
+                        <div class="project-team-section">
+                            <div><strong>🎯 Leader:</strong> ${leader ? leader.name : 'Chưa phân công'}</div>
+                            ${members.length > 0 ? `
+                                <div style="margin-top: 10px;">
+                                    <strong>👥 Members:</strong>
+                                    <div class="team-members-list">
+                                        ${members.map(m => `<span class="member-badge">${m.name}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${(() => {
+                            const current = getCurrentMilestone(project);
+                            if (!current) return '';
+                            
+                            const delayed = isDelayed(current);
+                            return `
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-size: 0.85em; color: #718096; margin-bottom: 5px;">
+                                                Milestone Hiện Hành
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <span style="font-size: 1.5em;">${current.icon}</span>
+                                                <div>
+                                                    <div style="font-weight: 600; color: #2d3748;">${current.name}</div>
+                                                    <div style="font-size: 0.85em; color: #718096;">
+                                                        ${(() => {
+                                                            const planStart = current.planStartDate;
+                                                            const planComplete = current.planCompleteDate;
+                                                            const actualStart = current.actualStartDate;
+                                                            const actualComplete = current.actualCompleteDate;
+                                                            
+                                                            let display = '';
+                                                            
+                                                            // Show actual or plan start
+                                                            if (actualStart) {
+                                                                display += `📅 ${new Date(actualStart).toLocaleDateString('vi-VN')}`;
+                                                            } else if (planStart) {
+                                                                display += `📅 ${new Date(planStart).toLocaleDateString('vi-VN')} (Plan)`;
+                                                            } else {
+                                                                display += 'Chưa có ngày';
+                                                            }
+                                                            
+                                                            // Show completion status
+                                                            if (actualComplete) {
+                                                                display += ` → ✅ ${new Date(actualComplete).toLocaleDateString('vi-VN')}`;
+                                                            } else if (planComplete) {
+                                                                display += ` → 🎯 ${new Date(planComplete).toLocaleDateString('vi-VN')} (Deadline)`;
+                                                            } else {
+                                                                display += ' → 🔄 Đang thực hiện';
+                                                            }
+                                                            
+                                                            return display;
+                                                        })()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ${delayed ? `
+                                            <div style="background: #ffebee; color: #c62828; padding: 6px 12px; 
+                                                        border-radius: 15px; font-size: 0.85em; font-weight: 600;">
+                                                ⚠️ Trễ
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        })()}
+                        
                         ${showActions ? `
-                            <div style="display: flex; gap: 10px; margin-top: 20px;" onclick="event.stopPropagation()">
+                            <div style="display: flex; gap: 10px; margin-top: 20px;">
                                 <button class="btn btn-primary" onclick="editProject('${project.id}')" style="flex: 1;">✏️ Sửa</button>
                                 <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;">🗑️ Xóa</button>
                             </div>
@@ -1390,159 +1726,150 @@
                 `;
             }
 
-            // Project Detail Modal
-            window.viewProject = function(projectId) {
-                currentViewingProject = projects.find(p => p.id === projectId);
-                if (!currentViewingProject) return;
-
-                const manager = teamMembers.find(m => m.id === currentViewingProject.manager);
-                const managerName = manager ? manager.name : 'Chưa phân công';
-
-                const milestonesHtml = STANDARD_MILESTONES.map(ms => {
-                    const m = currentViewingProject.milestones.find(mil => mil.id === ms.id) || {};
-                    const person = teamMembers.find(p => p.id === m.person);
-                    const personName = person ? person.name : 'Chưa phân công';
-                    const statusBadge = m.status === 'completed' ? '✅ Hoàn thành' : m.status === 'in-progress' ? '🔄 Đang làm' : '⏳ Chờ';
-
-                    return `
-                        <div class="milestone-row">
-                            <div class="milestone-name">
-                                <div class="milestone-icon">${ms.icon}</div>
-                                ${ms.name}
-                            </div>
-                            <div>
-                                <strong>Plan:</strong> ${m.planDate ? new Date(m.planDate).toLocaleDateString('vi-VN') : 'N/A'}
-                            </div>
-                            <div>
-                                <strong>Actual:</strong> ${m.actualDate ? new Date(m.actualDate).toLocaleDateString('vi-VN') : 'N/A'}
-                            </div>
-                            <div>
-                                <strong>👤</strong> ${personName}<br>
-                                <span style="font-size: 0.9em;">${statusBadge}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                document.getElementById('detail-project-title').textContent = currentViewingProject.name;
-                document.getElementById('project-detail-content').innerHTML = `
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Thông Tin Dự Án</h3>
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
-                            <p><strong>Mô tả:</strong> ${currentViewingProject.description || 'Không có mô tả'}</p>
-                            <p style="margin-top: 10px;"><strong>Quản lý:</strong> ${managerName}</p>
-                            <p style="margin-top: 10px;"><strong>Ngày tạo:</strong> ${new Date(currentViewingProject.createdDate).toLocaleDateString('vi-VN')}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 style="color: #2d3748; margin-bottom: 15px;">📍 Milestones Chi Tiết</h3>
-                        ${milestonesHtml}
-                    </div>
-                `;
-
-                document.getElementById('edit-detail-project-btn').onclick = () => {
-                    closeProjectDetail();
-                    editProject(projectId);
-                };
-
-                document.getElementById('project-detail-modal').classList.add('active');
-            };
-
-            window.closeProjectDetail = function() {
-                document.getElementById('project-detail-modal').classList.remove('active');
-                currentViewingProject = null;
-            };
-
-            window.deleteCurrentProject = function() {
-                if (currentViewingProject && confirm('Bạn có chắc muốn xóa dự án này?')) {
-                    projects = projects.filter(p => p.id !== currentViewingProject.id);
-                    saveToStorage();
-                    closeProjectDetail();
-                    renderAll();
-                    showToast('✅ Đã xóa dự án!', 'success');
-                }
-            };
-
-            // Calendar Functions - WITH SMART DISPLAY
             function renderCalendar() {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
+                const filterPersonId = document.getElementById('calendar-filter-person')?.value || '';
                 
                 document.getElementById('calendar-month').textContent = `Tháng ${month + 1}/${year}`;
-
+                
+                // Build events map
+                const eventsMap = {}; // date -> [events]
+                
+                projects.forEach(project => {
+                    const status = project.status || 'planning';
+                    if (status === 'completed' || status === 'cancelled') return;
+                    
+                    // Milestones
+                    project.milestones?.forEach(milestone => {
+                        if (filterPersonId && milestone.person !== filterPersonId) return;
+                        if (!milestone.person) return;
+                        
+                        const person = teamMembers.find(m => m.id === milestone.person);
+                        const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
+                        
+                        if (milestone.planStartDate) {
+                            const dateKey = milestone.planStartDate;
+                            if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                            
+                            // Extract IQR code from project name
+                            const projectCode = project.name.split('-')[0].trim();
+                            
+                            eventsMap[dateKey].push({
+                                type: 'milestone-start',
+                                project: project.name,
+                                projectCode: projectCode,
+                                task: msInfo?.name || milestone.id,
+                                person: person?.name || 'N/A',
+                                icon: msInfo?.icon || '📌'
+                            });
+                        }
+                        
+                        if (milestone.planCompleteDate) {
+                            const dateKey = milestone.planCompleteDate;
+                            if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                            
+                            // Extract IQR code from project name
+                            const projectCode = project.name.split('-')[0].trim();
+                            
+                            eventsMap[dateKey].push({
+                                type: 'milestone-end',
+                                project: project.name,
+                                projectCode: projectCode,
+                                task: msInfo?.name || milestone.id,
+                                person: person?.name || 'N/A',
+                                icon: msInfo?.icon || '📌'
+                            });
+                        }
+                    });
+                    
+                    // Surveys
+                    Object.entries(project.surveyRounds || {}).forEach(([key, survey]) => {
+                        if (filterPersonId && survey.person !== filterPersonId) return;
+                        if (!survey.person) return;
+                        
+                        const person = teamMembers.find(m => m.id === survey.person);
+                        
+                        if (survey.startDate) {
+                            const dateKey = survey.startDate;
+                            if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                            
+                            // Extract IQR code from project name
+                            const projectCode = project.name.split('-')[0].trim();
+                            
+                            eventsMap[dateKey].push({
+                                type: 'survey',
+                                project: project.name,
+                                projectCode: projectCode,
+                                task: key.replace('survey', 'Survey '),
+                                person: person?.name || 'N/A',
+                                icon: '📋'
+                            });
+                        }
+                    });
+                });
+                
+                // Calendar header
+                let html = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                    .map(day => `<div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">${day}</div>`)
+                    .join('');
+                
                 const firstDay = new Date(year, month, 1);
                 const startDate = new Date(firstDay);
                 startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-                const filterPerson = document.getElementById('calendar-filter')?.value;
-
-                let html = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
-                    .map(day => `<div class="calendar-day-header">${day}</div>`)
-                    .join('');
-
+                
                 let currentDateIter = new Date(startDate);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-
+                
                 for (let i = 0; i < 42; i++) {
                     const isCurrentMonth = currentDateIter.getMonth() === month;
                     const isToday = currentDateIter.getTime() === today.getTime();
-                    const dateStr = currentDateIter.toISOString().split('T')[0];
-                    
-                    // SMART CALENDAR: Get LAST assignment for this date
-                    const assignment = getLastAssignmentForDate(dateStr, filterPerson);
+                    const dateKey = currentDateIter.toISOString().split('T')[0];
+                    const dayEvents = eventsMap[dateKey] || [];
+                    const hasConflict = dayEvents.length > 1;
                     
                     html += `
-                        <div class="calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}">
-                            <div class="day-number">${currentDateIter.getDate()}</div>
-                            ${assignment ? `
-                                <div class="day-assignment">
-                                    <strong>${assignment.projectCode}</strong>
-                                    <span>${assignment.personName}</span>
-                                    <span>${assignment.milestoneIcon} ${assignment.milestoneName}</span>
-                                </div>
-                            ` : ''}
+                        <div style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            ${!isCurrentMonth ? 'background: #f8f9fa; opacity: 0.5;' : 'background: white;'}
+                            ${isToday ? 'border-color: #667eea; border-width: 3px; background: rgba(102, 126, 234, 0.05);' : ''}
+                            ${hasConflict ? 'border-color: #f57c00; border-width: 2px;' : ''}">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ${isToday ? 'color: #667eea;' : ''}">${currentDateIter.getDate()}</div>
+                                ${hasConflict ? '<span style="color: #f57c00; font-size: 0.85em;">⚡</span>' : ''}
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto;">
+                                ${dayEvents.slice(0, 3).map(event => `
+                                    <div style="background: ${event.type.includes('end') ? '#e8f5e9' : '#e3f2fd'}; 
+                                                padding: 4px 6px; border-radius: 4px; font-size: 0.75em;
+                                                border-left: 3px solid ${event.type.includes('end') ? '#4caf50' : '#2196f3'};"
+                                         title="${event.project} - ${event.task}\n${event.person}">
+                                        <div style="font-weight: 600; color: #2d3748; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            ${event.icon} ${event.task}
+                                        </div>
+                                        <div style="color: #667eea; font-size: 0.85em; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            📁 ${event.projectCode || event.project}
+                                        </div>
+                                        ${!filterPersonId ? `<div style="color: #718096; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            👤 ${event.person}
+                                        </div>` : ''}
+                                    </div>
+                                `).join('')}
+                                ${dayEvents.length > 3 ? `
+                                    <div style="text-align: center; font-size: 0.7em; color: #718096; padding: 2px;">
+                                        +${dayEvents.length - 3} more
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                     `;
                     
                     currentDateIter.setDate(currentDateIter.getDate() + 1);
                 }
-
+                
                 document.getElementById('calendar-grid').innerHTML = html;
-            }
-
-            // SMART CALENDAR LOGIC: Get last assignment for specific date
-            function getLastAssignmentForDate(dateStr, filterPerson) {
-                const assignments = [];
-                
-                projects.forEach(project => {
-                    const iqrCode = extractIQRCode(project.name);
-                    project.milestones.forEach(m => {
-                        if (m.planDate === dateStr && m.person) {
-                            if (filterPerson === 'all' || filterPerson === m.person) {
-                                const milestone = STANDARD_MILESTONES.find(sm => sm.id === m.id);
-                                const person = teamMembers.find(p => p.id === m.person);
-                                const milestoneIndex = STANDARD_MILESTONES.findIndex(sm => sm.id === m.id);
-                                
-                                assignments.push({
-                                    projectCode: iqrCode || project.name.substring(0, 20),
-                                    personName: person ? person.name : 'Unknown',
-                                    milestoneName: milestone?.name || m.id,
-                                    milestoneIcon: milestone?.icon || '📌',
-                                    milestoneIndex: milestoneIndex
-                                });
-                            }
-                        }
-                    });
-                });
-
-                // Sort by milestone index (descending) and return first (last milestone)
-                if (assignments.length > 0) {
-                    assignments.sort((a, b) => b.milestoneIndex - a.milestoneIndex);
-                    return assignments[0];
-                }
-                
-                return null;
             }
 
             window.previousMonth = function() {
@@ -1560,36 +1887,31 @@
                 renderCalendar();
             };
 
-            function updateCalendarFilter() {
-                const select = document.getElementById('calendar-filter');
-                if (select) {
-                    const currentValue = select.value;
-                    select.innerHTML = '<option value="all">Tất cả nhân sự</option>' +
-                        teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
-                    select.value = currentValue;
-                }
-            }
-
-            // Team Functions
             function renderTeamGrid() {
                 const html = teamMembers.map(member => {
                     const initial = member.name.charAt(0).toUpperCase();
                     const projectCount = projects.filter(p => 
-                        p.manager === member.id || 
-                        p.milestones.some(m => m.person === member.id)
+                        p.leader === member.id || (p.members || []).includes(member.id)
                     ).length;
+                    
+                    const workload = calculateWorkload(member.id);
 
                     return `
-                        <div class="team-member-card">
-                            <div class="member-avatar-large">${initial}</div>
-                            <div class="member-name">${member.name}</div>
-                            <div class="member-role">${member.role || 'Nhân viên'}</div>
-                            <div style="font-size: 0.9em; color: #718096;">
-                                📧 ${member.email || 'Chưa có email'}
+                        <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; text-align: center; transition: all 0.3s ease;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; font-weight: 600; margin: 0 auto 15px;">${initial}</div>
+                            <div style="font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 5px;">${member.name}</div>
+                            <div style="color: #718096; font-size: 0.9em; margin-bottom: 15px;">${member.role || 'Nhân viên'}</div>
+                            <div style="font-size: 0.9em; color: #718096;">📧 ${member.email || 'Chưa có email'}</div>
+                            <div style="margin-top: 15px; font-weight: 600; color: #667eea;">${projectCount} dự án</div>
+                            
+                            <!-- Workload Badge -->
+                            <div style="margin-top: 10px; display: inline-block; background: ${workload.bg}; color: ${workload.color}; 
+                                        padding: 6px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;"
+                                 title="${workload.count} active assignments">
+                                ${workload.label} (${workload.count})
                             </div>
-                            <div style="margin-top: 15px; font-weight: 600; color: #667eea;">
-                                ${projectCount} dự án
-                            </div>
+                            
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <button class="btn btn-primary" onclick="editTeamMember('${member.id}')" style="flex: 1;">✏️ Sửa</button>
                                 <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;">🗑️ Xóa</button>
@@ -1601,57 +1923,156 @@
                 document.getElementById('team-grid').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có nhân sự nào</p>';
             }
 
-            // Project Modal Functions
+            // ============= FILTERS ============= //
+            function updateFilterOptions() {
+                const leaderFilter = document.getElementById('filter-leader');
+                const memberFilter = document.getElementById('filter-member');
+                const saleFilter = document.getElementById('filter-sale');
+                const calendarFilter = document.getElementById('calendar-filter-person');
+                
+                const options = teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+                
+                if (leaderFilter) {
+                    leaderFilter.innerHTML = '<option value="">Tất cả</option>' + options;
+                }
+                if (memberFilter) {
+                    memberFilter.innerHTML = '<option value="">Tất cả</option>' + options;
+                }
+                if (saleFilter) {
+                    saleFilter.innerHTML = '<option value="">Tất cả</option>' + options;
+                }
+                if (calendarFilter) {
+                    calendarFilter.innerHTML = '<option value="">Tất cả nhân sự</option>' + options;
+                }
+            }
+
+            window.applyFilters = function() {
+                const search = document.getElementById('filter-search').value.toLowerCase();
+                const leaderId = document.getElementById('filter-leader').value;
+                const memberId = document.getElementById('filter-member').value;
+                const customer = document.getElementById('filter-customer').value.toLowerCase();
+                const saleId = document.getElementById('filter-sale').value;
+                const status = document.getElementById('filter-status').value;
+                
+                const filtered = projects.filter(p => {
+                    if (search && !p.name.toLowerCase().includes(search) && !(p.description || '').toLowerCase().includes(search)) return false;
+                    if (leaderId && p.leader !== leaderId) return false;
+                    if (memberId && !(p.members || []).includes(memberId)) return false;
+                    if (customer && !(p.customer || '').toLowerCase().includes(customer)) return false;
+                    if (saleId && p.sale !== saleId) return false;
+                    if (status && (p.status || 'planning') !== status) return false;
+                    return true;
+                });
+                
+                const html = filtered.map(p => createProjectCard(p, true)).join('');
+                document.getElementById('projects-list').innerHTML = html || '<p style="text-align: center; color: #718096; padding: 40px;">Không tìm thấy dự án nào</p>';
+                document.getElementById('project-count').textContent = filtered.length;
+            };
+
+            window.clearFilters = function() {
+                document.getElementById('filter-search').value = '';
+                document.getElementById('filter-leader').value = '';
+                document.getElementById('filter-member').value = '';
+                document.getElementById('filter-customer').value = '';
+                document.getElementById('filter-sale').value = '';
+                document.getElementById('filter-status').value = '';
+                renderProjectsList();
+            };
+
+            // ============= PROJECT MODAL ============= //
             window.openProjectModal = function(projectId = null) {
                 currentEditingProject = projectId ? projects.find(p => p.id === projectId) : null;
+                selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
                 document.getElementById('modal-title').textContent = currentEditingProject ? 'Sửa Dự Án' : 'Thêm Dự Án Mới';
                 document.getElementById('project-name').value = currentEditingProject?.name || '';
+                document.getElementById('project-customer').value = currentEditingProject?.customer || '';
                 document.getElementById('project-description').value = currentEditingProject?.description || '';
                 
-                const managerSelect = document.getElementById('project-manager');
-                managerSelect.innerHTML = '<option value="">Chọn người phụ trách</option>' +
-                    teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
-                managerSelect.value = currentEditingProject?.manager || '';
-
+                // Populate leader and members
+                const leaderSelect = document.getElementById('project-leader');
+                leaderSelect.innerHTML = '<option value="">Chọn Leader...</option>' +
+                    teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.leader === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
+                
+                // Populate sale dropdown
+                const saleSelect = document.getElementById('project-sale');
+                saleSelect.innerHTML = '<option value="">Chọn Sale...</option>' +
+                    teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.sale === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
+                
+                // Populate status
+                document.getElementById('project-status').value = currentEditingProject?.status || 'planning';
+                
+                // Populate survey person selects
+                ['survey1', 'survey2', 'survey3'].forEach(survey => {
+                    const select = document.getElementById(`${survey}-person`);
+                    select.innerHTML = '<option value="">Chọn người...</option>' +
+                        teamMembers.map(m => {
+                            const selected = currentEditingProject?.surveyRounds?.[survey]?.person === m.id;
+                            return `<option value="${m.id}" ${selected ? 'selected' : ''}>${m.name}</option>`;
+                        }).join('');
+                    
+                    // Set dates
+                    document.getElementById(`${survey}-start`).value = currentEditingProject?.surveyRounds?.[survey]?.startDate || '';
+                    document.getElementById(`${survey}-complete`).value = currentEditingProject?.surveyRounds?.[survey]?.completeDate || '';
+                    document.getElementById(`${survey}-notes`).value = currentEditingProject?.surveyRounds?.[survey]?.notes || '';
+                });
+                
+                renderMembersDropdown();
+                updateSelectedMembersDisplay();
                 renderMilestoneForm();
-
+                
                 document.getElementById('project-modal').classList.add('active');
             };
 
             function renderMilestoneForm() {
                 const html = STANDARD_MILESTONES.map(milestone => {
-                    const existing = currentEditingProject?.milestones.find(m => m.id === milestone.id) || {};
+                    const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                     
                     return `
-                        <div class="milestone-form-row">
+                        <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
                             <div>
-                                <label style="font-size: 0.9em; font-weight: 600; color: #2d3748;">
-                                    ${milestone.icon} ${milestone.name}
-                                </label>
+                                <strong>${milestone.icon} ${milestone.name}</strong>
                             </div>
                             <div>
-                                <label style="font-size: 0.8em; color: #718096;">Người thực hiện</label>
-                                <select class="milestone-person" data-milestone="${milestone.id}">
-                                    <option value="">Chọn người...</option>
-                                    ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 0.8em; color: #718096;">Ngày dự kiến</label>
-                                <input type="date" class="milestone-plan" data-milestone="${milestone.id}" value="${existing.planDate || ''}">
-                            </div>
-                            <div>
-                                <label style="font-size: 0.8em; color: #718096;">Ngày hoàn thành</label>
-                                <input type="date" class="milestone-actual" data-milestone="${milestone.id}" value="${existing.actualDate || ''}">
-                            </div>
-                            <div>
-                                <label style="font-size: 0.8em; color: #718096;">Trạng thái</label>
-                                <select class="milestone-status" data-milestone="${milestone.id}">
-                                    <option value="pending" ${existing.status === 'pending' ? 'selected' : ''}>⏳ Chờ</option>
-                                    <option value="in-progress" ${existing.status === 'in-progress' ? 'selected' : ''}>🔄 Đang làm</option>
-                                    <option value="completed" ${existing.status === 'completed' ? 'selected' : ''}>✅ Xong</option>
-                                </select>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👤 Người thực hiện</label>
+                                    <select class="milestone-person" data-milestone="${milestone.id}">
+                                        <option value="">Chọn người...</option>
+                                        ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <!-- PLAN Column -->
+                                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.planStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.planCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- ACTUAL Column -->
+                                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1663,56 +2084,77 @@
             window.closeModal = function() {
                 document.getElementById('project-modal').classList.remove('active');
                 currentEditingProject = null;
+                selectedMembers = [];
             };
 
             window.saveProject = function(event) {
                 event.preventDefault();
 
                 const name = document.getElementById('project-name').value.trim();
+                const customer = document.getElementById('project-customer').value.trim();
+                const sale = document.getElementById('project-sale').value;
                 const description = document.getElementById('project-description').value.trim();
-                const manager = document.getElementById('project-manager').value;
+                const leader = document.getElementById('project-leader').value;
+                const status = document.getElementById('project-status').value || 'planning';
 
-                if (!name || !manager) {
+                if (!name || !leader) {
                     showToast('❌ Vui lòng điền đầy đủ thông tin!', 'error');
                     return;
                 }
 
-                const validation = validateIQR(name, currentEditingProject?.id);
-                if (!validation.valid) {
-                    document.getElementById('iqr-error').textContent = validation.message;
-                    document.getElementById('iqr-error').style.display = 'block';
-                    return;
-                }
+                // Collect survey rounds
+                const surveyRounds = {};
+                ['survey1', 'survey2', 'survey3'].forEach(survey => {
+                    const person = document.getElementById(`${survey}-person`).value;
+                    const startDate = document.getElementById(`${survey}-start`).value;
+                    const completeDate = document.getElementById(`${survey}-complete`).value;
+                    const notes = document.getElementById(`${survey}-notes`).value;
+                    if (person || startDate || completeDate || notes) {
+                        surveyRounds[survey] = { person, startDate, completeDate, notes };
+                    }
+                });
 
-                const milestones = [];
-                STANDARD_MILESTONES.forEach(milestone => {
-                    const person = document.querySelector(`.milestone-person[data-milestone="${milestone.id}"]`)?.value;
-                    const planDate = document.querySelector(`.milestone-plan[data-milestone="${milestone.id}"]`)?.value;
-                    const actualDate = document.querySelector(`.milestone-actual[data-milestone="${milestone.id}"]`)?.value;
-                    const status = document.querySelector(`.milestone-status[data-milestone="${milestone.id}"]`)?.value || 'pending';
-
-                    milestones.push({
-                        id: milestone.id,
-                        person: person || '',
-                        planDate: planDate || '',
-                        actualDate: actualDate || '',
-                        status: status
-                    });
+                // Collect milestones with 4 dates
+                const milestones = STANDARD_MILESTONES.map(milestone => {
+                    const person = document.querySelector(`.milestone-person[data-milestone="${milestone.id}"]`)?.value || '';
+                    const planStartDate = document.querySelector(`.milestone-plan-start[data-milestone="${milestone.id}"]`)?.value || '';
+                    const planCompleteDate = document.querySelector(`.milestone-plan-complete[data-milestone="${milestone.id}"]`)?.value || '';
+                    const actualStartDate = document.querySelector(`.milestone-actual-start[data-milestone="${milestone.id}"]`)?.value || '';
+                    const actualCompleteDate = document.querySelector(`.milestone-actual-complete[data-milestone="${milestone.id}"]`)?.value || '';
+                    
+                    return { 
+                        id: milestone.id, 
+                        person,
+                        planStartDate,
+                        planCompleteDate,
+                        actualStartDate,
+                        actualCompleteDate
+                    };
                 });
 
                 if (currentEditingProject) {
                     currentEditingProject.name = name;
+                    currentEditingProject.customer = customer;
+                    currentEditingProject.sale = sale;
                     currentEditingProject.description = description;
-                    currentEditingProject.manager = manager;
+                    currentEditingProject.leader = leader;
+                    currentEditingProject.status = status;
+                    currentEditingProject.members = selectedMembers;
+                    currentEditingProject.surveyRounds = surveyRounds;
                     currentEditingProject.milestones = milestones;
                 } else {
                     projects.push({
                         id: 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                         name: name,
+                        customer: customer,
+                        sale: sale,
                         description: description,
-                        manager: manager,
-                        createdDate: new Date().toISOString().split('T')[0],
-                        milestones: milestones
+                        leader: leader,
+                        status: status,
+                        members: selectedMembers,
+                        surveyRounds: surveyRounds,
+                        milestones: milestones,
+                        createdDate: new Date().toISOString().split('T')[0]
                     });
                 }
 
@@ -1735,7 +2177,171 @@
                 }
             };
 
-            // Team Modal Functions
+            // ============= DELAYED PROJECTS MODAL ============= //
+            window.showDelayedProjects = function() {
+                const delayed = calculateDelayedProjects();
+                
+                if (delayed.length === 0) {
+                    showToast('🎉 Tuyệt vời! Không có dự án nào trễ tiến độ.', 'success');
+                    return;
+                }
+                
+                let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+                
+                delayed.forEach(project => {
+                    const current = getCurrentMilestone(project);
+                    const leader = teamMembers.find(m => m.id === project.leader);
+                    const customer = project.customer || 'N/A';
+                    const sale = project.sale ? teamMembers.find(m => m.id === project.sale) : null;
+                    
+                    const planCompleteDate = current.planCompleteDate;
+                    const actualCompleteDate = current.actualCompleteDate;
+                    
+                    let delayInfo = '';
+                    if (actualCompleteDate && planCompleteDate) {
+                        // Completed but late
+                        const days = Math.ceil((new Date(actualCompleteDate) - new Date(planCompleteDate)) / (1000 * 60 * 60 * 24));
+                        delayInfo = `Trễ ${days} ngày (Đã hoàn thành)`;
+                    } else if (planCompleteDate) {
+                        // Not completed and past deadline
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const planDate = new Date(planCompleteDate);
+                        planDate.setHours(0, 0, 0, 0);
+                        const days = Math.ceil((today - planDate) / (1000 * 60 * 60 * 24));
+                        delayInfo = `Đang trễ ${days} ngày`;
+                    }
+                    
+                    html += `
+                        <div style="border: 2px solid #ffebee; border-radius: 12px; padding: 20px; background: white; 
+                                    cursor: pointer; transition: all 0.3s ease;"
+                             onclick="viewProjectFromDelayed('${project.id}')"
+                             onmouseover="this.style.borderColor='#ef5350'; this.style.boxShadow='0 5px 15px rgba(239,83,80,0.3)'"
+                             onmouseout="this.style.borderColor='#ffebee'; this.style.boxShadow='none'">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h3 style="color: #2d3748; margin-bottom: 5px;">${project.name}</h3>
+                                    <div style="color: #718096; font-size: 0.9em;">
+                                        🏢 ${customer} | 👤 ${leader ? leader.name : 'N/A'}${sale ? ` | 💼 ${sale.name}` : ''}
+                                    </div>
+                                </div>
+                                <div style="background: #ffebee; color: #c62828; padding: 8px 15px; border-radius: 20px; 
+                                            font-weight: 600; font-size: 0.9em;">
+                                    ⚠️ ${delayInfo}
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px; background: #f8f9fa; 
+                                        padding: 10px; border-radius: 8px;">
+                                <span style="font-size: 1.5em;">${current.icon}</span>
+                                <div>
+                                    <div style="font-weight: 600; color: #2d3748;">${current.name}</div>
+                                    <div style="font-size: 0.85em; color: #718096;">
+                                        ${(() => {
+                                            const pStart = current.planStartDate;
+                                            const pComplete = current.planCompleteDate;
+                                            const aStart = current.actualStartDate;
+                                            const aComplete = current.actualCompleteDate;
+                                            
+                                            let display = '';
+                                            if (aStart) {
+                                                display += `📅 Start: ${new Date(aStart).toLocaleDateString('vi-VN')}`;
+                                            } else if (pStart) {
+                                                display += `📅 Plan Start: ${new Date(pStart).toLocaleDateString('vi-VN')}`;
+                                            }
+                                            
+                                            if (aComplete) {
+                                                display += ` | ✅ Complete: ${new Date(aComplete).toLocaleDateString('vi-VN')}`;
+                                            } else if (pComplete) {
+                                                display += ` | 🎯 Deadline: ${new Date(pComplete).toLocaleDateString('vi-VN')}`;
+                                            } else {
+                                                display += ' | 🔄 Đang thực hiện';
+                                            }
+                                            
+                                            return display;
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                document.getElementById('delayed-projects-list').innerHTML = html;
+                document.getElementById('delayed-modal').classList.add('active');
+            };
+
+            window.closeDelayedModal = function() {
+                document.getElementById('delayed-modal').classList.remove('active');
+            };
+
+            window.viewProjectFromDelayed = function(projectId) {
+                closeDelayedModal();
+                editProject(projectId);
+            };
+
+            // ============= CONFLICTS MODAL ============= //
+            window.showConflicts = function() {
+                const conflicts = detectConflicts();
+                
+                if (conflicts.length === 0) {
+                    showToast('🎉 Tuyệt vời! Không có xung đột lịch trình nào.', 'success');
+                    return;
+                }
+                
+                let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+                
+                conflicts.forEach(conflict => {
+                    html += `
+                        <div style="border: 2px solid #fff3e0; border-radius: 12px; padding: 20px; background: white;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                <div>
+                                    <h3 style="color: #2d3748; margin-bottom: 5px;">
+                                        👤 ${conflict.personName}
+                                    </h3>
+                                    <div style="color: #718096; font-size: 0.9em;">
+                                        📅 ${new Date(conflict.date).toLocaleDateString('vi-VN')}
+                                    </div>
+                                </div>
+                                <div style="background: #fff3e0; color: #e65100; padding: 8px 15px; border-radius: 20px; 
+                                            font-weight: 600; font-size: 0.9em;">
+                                    ⚡ ${conflict.count} nhiệm vụ
+                                </div>
+                            </div>
+                            
+                            <div style="background: #fafafa; padding: 15px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; color: #2d3748;">Nhiệm vụ trùng lặp:</div>
+                                ${conflict.tasks.map((task, idx) => `
+                                    <div style="display: flex; align-items: start; gap: 10px; margin-bottom: 8px; 
+                                                padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #e65100;">
+                                        <span style="font-weight: 600; color: #e65100;">${idx + 1}.</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; color: #2d3748;">${task.project}</div>
+                                            <div style="font-size: 0.9em; color: #718096; margin-top: 3px;">
+                                                ${task.type === 'milestone' ? '📌' : '📋'} ${task.task}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                document.getElementById('conflicts-list').innerHTML = html;
+                document.getElementById('conflicts-modal').classList.add('active');
+            };
+
+            window.closeConflictsModal = function() {
+                document.getElementById('conflicts-modal').classList.remove('active');
+            };
+
+            // ============= TEAM MODAL ============= //
             window.openTeamModal = function(memberId = null) {
                 const member = memberId ? teamMembers.find(m => m.id === memberId) : null;
                 
@@ -1799,90 +2405,57 @@
                 }
             };
 
-            // Import/Export Functions
-            window.exportData = function() {
-                exportToJSON();
-            };
-
-            window.exportToJSON = function() {
+            // ============= IMPORT/EXPORT ============= //
+            window.exportData = window.exportToJSON = function() {
                 const data = {
                     projects: projects,
                     teamMembers: teamMembers,
-                    exportDate: new Date().toISOString()
+                    exportDate: new Date().toISOString(),
+                    version: DATA_VERSION
                 };
                 const dataStr = JSON.stringify(data, null, 2);
                 const dataBlob = new Blob([dataStr], { type: 'application/json' });
                 const url = URL.createObjectURL(dataBlob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `BOD-Dashboard-Export-${new Date().toISOString().split('T')[0]}.json`;
+                link.download = `BOD-Dashboard-Export-v5.1-${new Date().toISOString().split('T')[0]}.json`;
                 link.click();
                 URL.revokeObjectURL(url);
                 showToast('✅ Đã xuất file JSON thành công!', 'success');
             };
 
-            window.exportToCSV = function() {
-                let csv = 'Project Name,Manager,Created Date,Milestone,Plan Date,Actual Date,Person,Status\n';
-                
-                projects.forEach(project => {
-                    const manager = teamMembers.find(m => m.id === project.manager);
-                    const managerName = manager ? manager.name : 'N/A';
-                    
-                    project.milestones.forEach(milestone => {
-                        const ms = STANDARD_MILESTONES.find(m => m.id === milestone.id);
-                        const milestoneName = ms ? ms.name : milestone.id;
-                        const person = teamMembers.find(p => p.id === milestone.person);
-                        const personName = person ? person.name : 'N/A';
-                        
-                        csv += `"${project.name}","${managerName}","${project.createdDate}","${milestoneName}","${milestone.planDate}","${milestone.actualDate}","${personName}","${milestone.status}"\n`;
-                    });
-                });
-                
-                const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `BOD-Dashboard-Export-${new Date().toISOString().split('T')[0]}.csv`;
-                link.click();
-                URL.revokeObjectURL(url);
-                showToast('✅ Đã xuất file CSV thành công!', 'success');
-            };
-
-            window.importData = function(event) {
+            window.importData = window.importBackupData = function(event) {
                 const file = event.target.files[0];
                 if (!file) return;
 
-                handleFileImport(file);
-                event.target.value = '';
-            };
-
-            window.importBackupData = function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                handleFileImport(file);
-                event.target.value = '';
-            };
-
-            // Update Stats
-            function updateStats() {
-                document.getElementById('stat-projects').textContent = projects.length;
-                document.getElementById('stat-team').textContent = teamMembers.length;
-                document.getElementById('stat-milestones').textContent = 
-                    projects.reduce((sum, p) => sum + p.milestones.filter(m => m.planDate).length, 0);
-                
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
                     try {
-                        const data = JSON.parse(stored);
-                        if (data.lastSave) {
-                            const date = new Date(data.lastSave);
-                            document.getElementById('stat-last-save').textContent = 
-                                date.toLocaleString('vi-VN');
-                        }
-                    } catch(e) {}
+                        const imported = JSON.parse(e.target.result);
+                        projects = imported.projects || [];
+                        teamMembers = imported.teamMembers || [];
+                        saveToStorage();
+                        renderAll();
+                        showToast('✅ Đã nhập dữ liệu thành công!', 'success');
+                    } catch (error) {
+                        showToast('❌ Lỗi: File không đúng định dạng!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            };
+
+            window.clearAllData = function() {
+                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA TẤT CẢ DỮ LIỆU?\n\nHành động này không thể hoàn tác!')) {
+                    projects = [];
+                    teamMembers = [];
+                    localStorage.removeItem(STORAGE_KEY);
+                    const data = { projects: [], teamMembers: [], lastSave: new Date().toISOString(), version: DATA_VERSION };
+                    saveToBlob(data);
+                    renderAll();
+                    showToast('✅ Đã xóa tất cả dữ liệu!', 'success');
                 }
-            }
+            };
 
             // Toast Function
             function showToast(message, type = 'success') {
