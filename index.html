@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1882,6 +1883,21 @@
                     <label>Email</label>
                     <input type="email" id="member-email">
                 </div>
+                <!-- v5.4 Admin Checkbox -->
+                <div class="form-group">
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 2px solid #ffc107;">
+                        <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                            <input type="checkbox" id="member-is-admin" style="width: 20px; height: 20px; margin-right: 10px;">
+                            <div>
+                                <strong>🔑 Admin Member (Administrator)</strong>
+                                <div style="font-size: 0.85em; color: #856404; margin-top: 5px;">
+                                    Toàn quyền: Xem tất cả, sửa tất cả, quản lý nhân sự, reset passwords
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <!-- v5.4 BOD Checkbox -->
                 <div class="form-group">
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 2px solid #e9ecef;">
                         <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
@@ -2249,17 +2265,21 @@
 
             // Check if first time setup is needed
             function needsSetup() {
-                // Primary check: Does admin password exist?
-                const adminPassword = getAdminPassword();
-                if (!adminPassword) {
-                    // No admin password = need setup (clear flag if exists)
-                    localStorage.removeItem(SETUP_COMPLETE_KEY);
+                // v5.4 FIXED: Check admin in teamMembers (loaded from Azure Blob)
+                // This ensures setup wizard only appears ONCE globally, not per-user
+                
+                // Primary check: Does admin exist in teamMembers?
+                const adminInTeam = teamMembers.find(m => m.id === 'admin' && m.password);
+                
+                if (!adminInTeam) {
+                    // No admin in system → Need setup
+                    // This happens only on FIRST use or if admin was deleted
                     return true;
                 }
                 
-                // Secondary check: Setup complete flag
-                const setupComplete = localStorage.getItem(SETUP_COMPLETE_KEY);
-                return setupComplete !== 'true';
+                // Admin exists → Skip setup wizard
+                // All users will go straight to login screen
+                return false;
             }
 
             // Check if account is locked
@@ -2808,8 +2828,9 @@
             };
 
             window.completeSetup = function() {
-                // Mark setup as complete
-                localStorage.setItem(SETUP_COMPLETE_KEY, 'true');
+                // v5.4 FIXED: No need for localStorage flag
+                // needsSetup() now checks admin in teamMembers (Azure Blob)
+                // Admin already saved to storage in setupStep1Next
                 
                 // Hide wizard, show login
                 hideSetupWizard();
@@ -3984,6 +4005,7 @@
                                 display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; font-weight: 600; margin: 0 auto 15px;">${initial}</div>
                             <div style="font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 5px;">
                                 ${member.name}
+                                ${member.isAdmin ? '<span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #ffc107;">🔑 Admin</span>' : ''}
                                 ${member.isBOD ? '<span style="background: #e8eaf6; color: #5e35b1; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #9575cd;">👁️ BOD</span>' : ''}
                             </div>
                             <div style="color: #718096; font-size: 0.9em; margin-bottom: 15px;">${member.role || 'Nhân viên'}</div>
@@ -4830,6 +4852,7 @@
                 document.getElementById('member-name').value = member?.name || '';
                 document.getElementById('member-role').value = member?.role || '';
                 document.getElementById('member-email').value = member?.email || '';
+                document.getElementById('member-is-admin').checked = member?.isAdmin || false;
                 document.getElementById('member-is-bod').checked = member?.isBOD || false;
 
                 document.getElementById('team-modal').classList.add('active');
@@ -4846,6 +4869,7 @@
                 const name = document.getElementById('member-name').value.trim();
                 const role = document.getElementById('member-role').value.trim();
                 const email = document.getElementById('member-email').value.trim();
+                const isAdmin = document.getElementById('member-is-admin').checked;
                 const isBOD = document.getElementById('member-is-bod').checked;
                 const editId = document.getElementById('team-modal').dataset.editId;
 
@@ -4860,6 +4884,7 @@
                         member.name = name;
                         member.role = role;
                         member.email = email;
+                        member.isAdmin = isAdmin;
                         member.isBOD = isBOD;
                     }
                 } else {
@@ -4868,15 +4893,19 @@
                         name: name,
                         role: role,
                         email: email,
-                        isBOD: isBOD,
-                        isAdmin: false
+                        isAdmin: isAdmin,
+                        isBOD: isBOD
                     });
                 }
 
                 saveToStorage();
                 closeTeamModal();
                 renderAll();
-                const roleMsg = isBOD ? ' (BOD - Xem tất cả)' : '';
+                
+                let roleMsg = '';
+                if (isAdmin) roleMsg = ' (Admin - Toàn quyền)';
+                else if (isBOD) roleMsg = ' (BOD - Xem tất cả)';
+                
                 showToast(`✅ Đã lưu nhân sự${roleMsg}!`, 'success');
             };
 
