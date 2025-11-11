@@ -21,8 +21,11 @@ jobs:
           lfs: false
       
       - name: Inject Azure SAS Token
+        env:
+          AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_URL }}
         run: |
-          sed -i "s|YOUR_AZURE_SAS_URL_HERE|${{ secrets.AZURE_SAS_URL }}|g" index.html
+          # Use perl instead of sed to avoid special character issues
+          perl -pi -e 's|YOUR_AZURE_SAS_URL_HERE|$ENV{AZURE_SAS_TOKEN}|g' index.html
       
       - name: Build And Deploy
         id: builddeploy
@@ -49,3 +52,15 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ZEALOUS_COAST_06177E010 }}
           action: "close"
+```
+```
+4. Paste (Ctrl+V) vào editor
+
+5. Verify line 22-26 có:
+   
+   - name: Inject Azure SAS Token
+     env:
+       AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_URL }}
+     run: |
+       perl -pi -e 's|YOUR_AZURE_SAS_URL_HERE|$ENV{AZURE_SAS_TOKEN}|g' index.html
+```
