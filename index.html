@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1883,21 +1882,6 @@
                     <label>Email</label>
                     <input type="email" id="member-email">
                 </div>
-                <!-- v5.4 Admin Checkbox -->
-                <div class="form-group">
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 2px solid #ffc107;">
-                        <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
-                            <input type="checkbox" id="member-is-admin" style="width: 20px; height: 20px; margin-right: 10px;">
-                            <div>
-                                <strong>🔑 Admin Member (Administrator)</strong>
-                                <div style="font-size: 0.85em; color: #856404; margin-top: 5px;">
-                                    Toàn quyền: Xem tất cả, sửa tất cả, quản lý nhân sự, reset passwords
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                <!-- v5.4 BOD Checkbox -->
                 <div class="form-group">
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 2px solid #e9ecef;">
                         <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
@@ -2036,7 +2020,7 @@
                 <div class="setup-field">
                     <label class="login-label">🔑 Mật khẩu Admin</label>
                     <input type="password" id="setup-admin-password" class="login-input" 
-                           placeholder="Tối thiểu 8 ký tự..." oninput="checkPasswordStrength(this.value)">
+                           placeholder="Tối thiểu 8 ký tự..." >
                     <div class="password-strength">
                         <div id="password-strength-bar" class="password-strength-bar"></div>
                     </div>
@@ -2208,7 +2192,7 @@
 
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
-                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/bod-dashboard-data?sp=rwl&st=2025-10-29T02:26:05Z&se=2026-10-29T10:41:05Z&spr=https&sv=2024-11-04&sr=c&sig=FKsg1X0mCKKsWQQ0%2Fq8zvqeIKSLklsIr%2BJlYkWVoNxI%3D',
+                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/dashboarddatav5/dashboard-data-v5.3.json?sp=racwdt&st=2025-11-10T10:01:56Z&se=2026-12-31T16:59:59Z&spr=https&sv=2024-11-04&sr=b&sig=KuSN2I%2B82gJul1bjgYEiGZNCc91S%2F1dXSfDWvJPE%2FIM%3D',
                 blobName: 'dashboard-data-v5.3.json',
                 enabled: true
             };
@@ -2265,21 +2249,17 @@
 
             // Check if first time setup is needed
             function needsSetup() {
-                // v5.4 FIXED: Check admin in teamMembers (loaded from Azure Blob)
-                // This ensures setup wizard only appears ONCE globally, not per-user
-                
-                // Primary check: Does admin exist in teamMembers?
-                const adminInTeam = teamMembers.find(m => m.id === 'admin' && m.password);
-                
-                if (!adminInTeam) {
-                    // No admin in system → Need setup
-                    // This happens only on FIRST use or if admin was deleted
+                // Primary check: Does admin password exist?
+                const adminPassword = getAdminPassword();
+                if (!adminPassword) {
+                    // No admin password = need setup (clear flag if exists)
+                    localStorage.removeItem(SETUP_COMPLETE_KEY);
                     return true;
                 }
                 
-                // Admin exists → Skip setup wizard
-                // All users will go straight to login screen
-                return false;
+                // Secondary check: Setup complete flag
+                const setupComplete = localStorage.getItem(SETUP_COMPLETE_KEY);
+                return setupComplete !== 'true';
             }
 
             // Check if account is locked
@@ -2828,9 +2808,8 @@
             };
 
             window.completeSetup = function() {
-                // v5.4 FIXED: No need for localStorage flag
-                // needsSetup() now checks admin in teamMembers (Azure Blob)
-                // Admin already saved to storage in setupStep1Next
+                // Mark setup as complete
+                localStorage.setItem(SETUP_COMPLETE_KEY, 'true');
                 
                 // Hide wizard, show login
                 hideSetupWizard();
@@ -3237,7 +3216,12 @@
                 if (!AZURE_CONFIG.enabled) return null;
                 
                 try {
-                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    // Handle both container-level and blob-level SAS URLs
+                    const baseUrl = AZURE_CONFIG.sasUrl.split('?')[0];
+                    const params = AZURE_CONFIG.sasUrl.split('?')[1];
+                    const blobUrl = baseUrl.includes(AZURE_CONFIG.blobName) 
+                        ? AZURE_CONFIG.sasUrl  // Already has blob name - use as-is
+                        : `${baseUrl}/${AZURE_CONFIG.blobName}?${params}`;  // Container level - append blob name
                     const response = await fetch(blobUrl, {
                         method: 'GET',
                         headers: { 'x-ms-blob-type': 'BlockBlob' }
@@ -3262,7 +3246,12 @@
                     isSyncing = true;
                     updateSyncStatus();
                     
-                    const blobUrl = `${AZURE_CONFIG.sasUrl.split('?')[0]}/${AZURE_CONFIG.blobName}?${AZURE_CONFIG.sasUrl.split('?')[1]}`;
+                    // Handle both container-level and blob-level SAS URLs
+                    const baseUrl = AZURE_CONFIG.sasUrl.split('?')[0];
+                    const params = AZURE_CONFIG.sasUrl.split('?')[1];
+                    const blobUrl = baseUrl.includes(AZURE_CONFIG.blobName) 
+                        ? AZURE_CONFIG.sasUrl  // Already has blob name - use as-is
+                        : `${baseUrl}/${AZURE_CONFIG.blobName}?${params}`;  // Container level - append blob name
                     const response = await fetch(blobUrl, {
                         method: 'PUT',
                         headers: {
@@ -4005,7 +3994,6 @@
                                 display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; font-weight: 600; margin: 0 auto 15px;">${initial}</div>
                             <div style="font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 5px;">
                                 ${member.name}
-                                ${member.isAdmin ? '<span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #ffc107;">🔑 Admin</span>' : ''}
                                 ${member.isBOD ? '<span style="background: #e8eaf6; color: #5e35b1; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #9575cd;">👁️ BOD</span>' : ''}
                             </div>
                             <div style="color: #718096; font-size: 0.9em; margin-bottom: 15px;">${member.role || 'Nhân viên'}</div>
@@ -4852,7 +4840,6 @@
                 document.getElementById('member-name').value = member?.name || '';
                 document.getElementById('member-role').value = member?.role || '';
                 document.getElementById('member-email').value = member?.email || '';
-                document.getElementById('member-is-admin').checked = member?.isAdmin || false;
                 document.getElementById('member-is-bod').checked = member?.isBOD || false;
 
                 document.getElementById('team-modal').classList.add('active');
@@ -4869,7 +4856,6 @@
                 const name = document.getElementById('member-name').value.trim();
                 const role = document.getElementById('member-role').value.trim();
                 const email = document.getElementById('member-email').value.trim();
-                const isAdmin = document.getElementById('member-is-admin').checked;
                 const isBOD = document.getElementById('member-is-bod').checked;
                 const editId = document.getElementById('team-modal').dataset.editId;
 
@@ -4884,7 +4870,6 @@
                         member.name = name;
                         member.role = role;
                         member.email = email;
-                        member.isAdmin = isAdmin;
                         member.isBOD = isBOD;
                     }
                 } else {
@@ -4893,19 +4878,15 @@
                         name: name,
                         role: role,
                         email: email,
-                        isAdmin: isAdmin,
-                        isBOD: isBOD
+                        isBOD: isBOD,
+                        isAdmin: false
                     });
                 }
 
                 saveToStorage();
                 closeTeamModal();
                 renderAll();
-                
-                let roleMsg = '';
-                if (isAdmin) roleMsg = ' (Admin - Toàn quyền)';
-                else if (isBOD) roleMsg = ' (BOD - Xem tất cả)';
-                
+                const roleMsg = isBOD ? ' (BOD - Xem tất cả)' : '';
                 showToast(`✅ Đã lưu nhân sự${roleMsg}!`, 'success');
             };
 
