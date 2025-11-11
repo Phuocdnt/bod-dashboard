@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOD Dashboard v5.4 - SECURITY & AUTHENTICATION - Enterprise Edition</title>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1480,6 +1482,29 @@
                 align-items: stretch;
             }
         }
+
+        /* Notification animations for Excel export */
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1597,10 +1622,16 @@
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <h3 style="color: #2d3748;">Danh Sách Dự Án (<span id="project-count">0</span>)</h3>
-                <button class="btn btn-primary" onclick="openProjectModal()">
-                    <span>➕</span>
-                    Thêm Dự Án Mới
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" onclick="exportProjectsToExcel()" style="background: #059669; color: white;" title="Xuất danh sách dự án ra file Excel">
+                        <span>📊</span>
+                        Xuất Excel
+                    </button>
+                    <button class="btn btn-primary" onclick="openProjectModal()">
+                        <span>➕</span>
+                        Thêm Dự Án Mới
+                    </button>
+                </div>
             </div>
             <div id="projects-list"></div>
         </div>
@@ -2193,6 +2224,7 @@
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
                 sasUrl: 'YOUR_AZURE_SAS_URL_HERE',
+                blobName: 'dashboard-data-v5.3.json',
                 enabled: true
             };
 
@@ -3619,6 +3651,183 @@
                 document.getElementById('project-count').textContent = visibleProjects.length;
             }
 
+            // Export Projects to Excel
+            function exportProjectsToExcel() {
+                try {
+                    const visibleProjects = getVisibleProjects();
+                    
+                    if (visibleProjects.length === 0) {
+                        alert('⚠️ Không có dự án nào để xuất!');
+                        return;
+                    }
+
+                    // Prepare data for Excel
+                    const excelData = visibleProjects.map(project => {
+                        const leader = teamMembers.find(m => m.id === project.leader);
+                        const sale = teamMembers.find(m => m.id === project.sale);
+                        const members = (project.members || []).map(id => {
+                            const member = teamMembers.find(m => m.id === id);
+                            return member ? member.name : '';
+                        }).filter(Boolean).join(', ');
+
+                        // Get status label
+                        const statusLabels = {
+                            'planning': 'Planning',
+                            'in-progress': 'In Progress',
+                            'on-hold': 'On Hold',
+                            'delayed': 'Delayed',
+                            'completed': 'Completed',
+                            'cancelled': 'Cancelled'
+                        };
+
+                        // Format milestone dates
+                        const getMilestoneDate = (milestoneId) => {
+                            const milestone = (project.milestones || []).find(m => m.id === milestoneId);
+                            if (!milestone || !milestone.date) return '';
+                            return new Date(milestone.date).toLocaleDateString('vi-VN');
+                        };
+
+                        const getMilestoneLeader = (milestoneId) => {
+                            const milestone = (project.milestones || []).find(m => m.id === milestoneId);
+                            if (!milestone || !milestone.leader) return '';
+                            const milestoneLeader = teamMembers.find(m => m.id === milestone.leader);
+                            return milestoneLeader ? milestoneLeader.name : '';
+                        };
+
+                        return {
+                            'STT': visibleProjects.indexOf(project) + 1,
+                            'Tên Dự Án': project.name || '',
+                            'Mô Tả': project.description || '',
+                            'Khách Hàng': project.customer || '',
+                            'Trạng Thái': statusLabels[project.status] || project.status,
+                            'Leader': leader ? leader.name : '',
+                            'Sale': sale ? sale.name : '',
+                            'Thành Viên': members,
+                            'Ngày Bắt Đầu': project.startDate ? new Date(project.startDate).toLocaleDateString('vi-VN') : '',
+                            'Deadline': project.deadline ? new Date(project.deadline).toLocaleDateString('vi-VN') : '',
+                            
+                            // Survey milestones
+                            'Survey R1 - Ngày': project.survey?.round1?.date ? new Date(project.survey.round1.date).toLocaleDateString('vi-VN') : '',
+                            'Survey R1 - Leader': project.survey?.round1?.leader ? (teamMembers.find(m => m.id === project.survey.round1.leader)?.name || '') : '',
+                            'Survey R2 - Ngày': project.survey?.round2?.date ? new Date(project.survey.round2.date).toLocaleDateString('vi-VN') : '',
+                            'Survey R2 - Leader': project.survey?.round2?.leader ? (teamMembers.find(m => m.id === project.survey.round2.leader)?.name || '') : '',
+                            'Survey R3 - Ngày': project.survey?.round3?.date ? new Date(project.survey.round3.date).toLocaleDateString('vi-VN') : '',
+                            'Survey R3 - Leader': project.survey?.round3?.leader ? (teamMembers.find(m => m.id === project.survey.round3.leader)?.name || '') : '',
+                            
+                            // Standard milestones
+                            'Design - Ngày': getMilestoneDate('design'),
+                            'Design - Leader': getMilestoneLeader('design'),
+                            'BOM Drawing - Ngày': getMilestoneDate('bom'),
+                            'BOM Drawing - Leader': getMilestoneLeader('bom'),
+                            'Price Calculation - Ngày': getMilestoneDate('price_calc'),
+                            'Price Calculation - Leader': getMilestoneLeader('price_calc'),
+                            'Bidding - Ngày': getMilestoneDate('bidding'),
+                            'Bidding - Leader': getMilestoneLeader('bidding'),
+                            'Order - Ngày': getMilestoneDate('order'),
+                            'Order - Leader': getMilestoneLeader('order'),
+                            'Assembly - Ngày': getMilestoneDate('assembly'),
+                            'Assembly - Leader': getMilestoneLeader('assembly'),
+                            'Installation - Ngày': getMilestoneDate('installation'),
+                            'Installation - Leader': getMilestoneLeader('installation'),
+                            'Commissioning - Ngày': getMilestoneDate('commissioning'),
+                            'Commissioning - Leader': getMilestoneLeader('commissioning'),
+                            'Handover - Ngày': getMilestoneDate('handover'),
+                            'Handover - Leader': getMilestoneLeader('handover'),
+                            
+                            'Ghi Chú': project.notes || ''
+                        };
+                    });
+
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.json_to_sheet(excelData);
+
+                    // Set column widths
+                    const colWidths = [
+                        { wch: 5 },   // STT
+                        { wch: 25 },  // Tên Dự Án
+                        { wch: 30 },  // Mô Tả
+                        { wch: 20 },  // Khách Hàng
+                        { wch: 12 },  // Trạng Thái
+                        { wch: 15 },  // Leader
+                        { wch: 15 },  // Sale
+                        { wch: 30 },  // Thành Viên
+                        { wch: 12 },  // Ngày Bắt Đầu
+                        { wch: 12 },  // Deadline
+                        { wch: 12 },  // Survey dates/leaders
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },  // Milestone dates/leaders
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 12 },
+                        { wch: 15 },
+                        { wch: 30 }   // Ghi Chú
+                    ];
+                    ws['!cols'] = colWidths;
+
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, 'Danh Sách Dự Án');
+
+                    // Generate filename with current date
+                    const today = new Date();
+                    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const filename = `BOD-Dashboard-Projects-${dateStr}.xlsx`;
+
+                    // Save file
+                    XLSX.writeFile(wb, filename);
+
+                    // Show success message
+                    console.log(`✅ Exported ${visibleProjects.length} projects to ${filename}`);
+                    
+                    // Optional: Show notification
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #059669;
+                        color: white;
+                        padding: 15px 25px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease-out;
+                    `;
+                    notification.innerHTML = `✅ Đã xuất ${visibleProjects.length} dự án ra file Excel!`;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.style.animation = 'slideOut 0.3s ease-out';
+                        setTimeout(() => notification.remove(), 300);
+                    }, 3000);
+
+                } catch (error) {
+                    console.error('Error exporting to Excel:', error);
+                    alert('❌ Lỗi khi xuất file Excel: ' + error.message);
+                }
+            }
+
+            // Make exportProjectsToExcel available globally
+            window.exportProjectsToExcel = exportProjectsToExcel;
+
+
             function createProjectCard(project, showActions = false) {
                 const leader = teamMembers.find(m => m.id === project.leader);
                 const members = (project.members || []).map(id => teamMembers.find(m => m.id === id)).filter(Boolean);
@@ -4982,4 +5191,3 @@
     </script>
 </body>
 </html>
-<!-- Updated with secure token injection -->
