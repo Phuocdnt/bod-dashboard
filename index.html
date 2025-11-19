@@ -1,9 +1,12 @@
+
+﻿
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.4 - SECURITY & AUTHENTICATION - Enterprise Edition</title>
+    <title>BOD Dashboard v5.6 - COMPLETE - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1505,6 +1508,31 @@
                 opacity: 0;
             }
         }
+    
+        /* Emoji support for consistent rendering */
+        .emoji, 
+        h3:has(emoji), 
+        button:has(emoji),
+        .stat-card h3 {
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+        }
+        
+        /* Fix emoji in buttons */
+        button .emoji,
+        button span:has(emoji) {
+            display: inline-block;
+            margin: 0 4px;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        
+        /* Ensure emoji don't break layout */
+        .stat-card h3,
+        .modal h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1513,7 +1541,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.3 - PERMISSION & HISTORY</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.6 - TEAMS & INSIGHTS</span>
             </h1>
             <div class="header-actions">
                 <div class="sync-status" id="sync-status">
@@ -1526,7 +1554,7 @@
                     <div class="user-dropdown-trigger" id="user-trigger" onclick="toggleUserMenu()">
                         <span>👤</span>
                         <span id="current-user-display">User</span>
-                        <span>▼</span>
+                        <span>â–¼</span>
                     </div>
                     <div class="user-dropdown-menu" id="user-menu">
                         <div class="user-info-display" id="user-info-display">
@@ -1558,11 +1586,13 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="overview">📊 Tổng Quan</button>
+            <button class="nav-tab active" data-tab="overview"><span class="emoji">📊</span> Tổng Quan</button>
             <button class="nav-tab" data-tab="projects">📁 Dự Án</button>
-            <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
-            <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
-            <button class="nav-tab" data-tab="settings">⚙️ Cài Đặt</button>
+            <button class="nav-tab" data-tab="calendar"><span class="emoji">📅</span> Lịch Làm Việc</button>
+            <button class="nav-tab" data-tab="team"><span class="emoji">👥</span> Nhân Sự</button>
+            <button class="nav-tab" data-tab="teams-management"><span class="emoji">🏢</span> Teams</button>
+            <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;"><span class="emoji">📊</span> BOD Summary</button>
+            <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
         </div>
 
         <!-- Tổng Quan Tab -->
@@ -1628,7 +1658,7 @@
                         Xuất Excel
                     </button>
                     <button class="btn btn-primary" onclick="openProjectModal()">
-                        <span>➕</span>
+                        <span>âž•</span>
                         Thêm Dự Án Mới
                     </button>
                 </div>
@@ -1640,9 +1670,9 @@
         <div id="calendar" class="tab-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button class="btn" onclick="previousMonth()">◀</button>
+                    <button class="btn" onclick="previousMonth()">â—€</button>
                     <div style="font-size: 1.5em; font-weight: 600; color: #2d3748; min-width: 200px; text-align: center;" id="calendar-month"></div>
-                    <button class="btn" onclick="nextMonth()">▶</button>
+                    <button class="btn" onclick="nextMonth()">â–¶</button>
                     <button class="btn" onclick="todayMonth()">Hôm Nay</button>
                 </div>
                 <select id="calendar-filter-person" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;">
@@ -1657,12 +1687,91 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #2d3748;">Quản Lý Nhân Sự</h2>
                 <button class="btn btn-primary" onclick="openTeamModal()">
-                    <span>➕</span>
+                    <span>âž•</span>
                     Thêm Nhân Sự
                 </button>
             </div>
             <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
         </div>
+
+        <!-- v5.6 Teams Management Tab -->
+        <div id="teams-management" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2d3748;">🏢 Quản Lý Teams</h2>
+                <button class="btn btn-primary" onclick="openTeamManagementModal()">
+                    <span>âž•</span>
+                    Tạo Team Mới
+                </button>
+            </div>
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #fbbf24;">
+                <strong>💡 Teams là gì?</strong>
+                <p style="margin-top: 5px; color: #718096;">
+                    Teams là nhóm nhân sự được gán vào các milestone như Installation, Assembly, Commissioning. 
+                    Tạo teams để dễ dàng phân công và theo dõi workload.
+                </p>
+            </div>
+            <div id="teams-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
+        </div>
+
+        <!-- v5.6 BOD Summary Tab -->
+        <div id="bod-summary" class="tab-content">
+            <div style="margin-bottom: 30px;">
+                <h2 style="color: #2d3748; margin-bottom: 10px;">📊 BOD Summary Dashboard</h2>
+                <p style="color: #718096;">Tổng quan dự án, KPI, rủi ro và tài chính - Dành cho BOD & Admin</p>
+            </div>
+
+            <!-- KPI Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;" id="bod-kpi-grid"></div>
+
+            <!-- Main Dashboard Sections -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px;">
+                
+                <!-- Risk Indicators -->
+                <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <span>⚠️</span>
+                        Risk Indicators
+                    </h3>
+                    <div id="bod-risk-indicators"></div>
+                </div>
+
+                <!-- Financial Summary -->
+                <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <span>💰</span>
+                        Financial Summary
+                    </h3>
+                    <div id="bod-financial-summary"></div>
+                </div>
+
+                <!-- Resource Utilization -->
+                <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <span>💼</span>
+                        Resource Utilization
+                    </h3>
+                    <div id="bod-resource-utilization"></div>
+                </div>
+
+                <!-- Milestone Progress -->
+                <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <span>🎯</span>
+                        Milestone Progress
+                    </h3>
+                    <div id="bod-milestone-progress"></div>
+                </div>
+            </div>
+
+            <!-- Project Details Table -->
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h3 style="color: #2d3748; margin-bottom: 20px;"><span class="emoji">📋</span> Project Details</h3>
+                <div style="overflow-x: auto;">
+                    <table id="bod-projects-table" style="width: 100%; border-collapse: collapse; font-size: 0.9em;"></table>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Cài Đặt Tab -->
         <div id="settings" class="tab-content">
@@ -1682,7 +1791,7 @@
             </div>
 
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px;">💾 Quản Lý Dữ Liệu</h3>
+                <h3 style="margin-bottom: 15px;"><span class="emoji">💾</span> Quản Lý Dữ Liệu</h3>
                 <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <strong>⚠️ Lưu ý:</strong> Dashboard này đồng bộ dữ liệu qua Azure Blob Storage.
                 </div>
@@ -1699,7 +1808,7 @@
             </div>
 
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px;">🗑️ Xóa Dữ Liệu</h3>
+                <h3 style="margin-bottom: 15px;"><span class="emoji">🗑️</span> Xóa Dữ Liệu</h3>
                 <button class="btn btn-danger" onclick="clearAllData()">
                     <span>⚠️</span>
                     Xóa Tất Cả Dữ Liệu
@@ -1727,10 +1836,27 @@
                     <input type="text" id="project-customer" placeholder="Tên khách hàng...">
                 </div>
                 <div class="form-group">
+                    <label>💰 Budget (VNĐ)</label>
+                    <input type="number" id="project-budget" placeholder="Nhập ngân sách dự án..." step="1000000" min="0">
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+                        VD: 500000000 (500 triệu VNĐ)
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>💼 Sale</label>
                     <select id="project-sale">
                         <option value="">Chọn Sale...</option>
                     </select>
+                </div>
+                <div class="form-group" id="actual-value-field" style="display: none;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        💵 Actual Value Contact (VNĐ)
+                        <span style="background: #fbbf24; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">Admin/BOD Only</span>
+                    </label>
+                    <input type="number" id="project-actual-value" placeholder="Giá trị hợp đồng thực tế..." step="1000000" min="0">
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+                        Trường này chỉ Admin và BOD mới có thể nhập/xem
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Mô Tả</label>
@@ -1739,7 +1865,7 @@
                 
                 <!-- TEAM SECTION -->
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;">👥 Phân Công Nhân Sự</h3>
+                    <h3 style="color: #2d3748; margin-bottom: 15px;"><span class="emoji">👥</span> Phân Công Nhân Sự</h3>
                     
                     <div class="form-group">
                         <label>🎯 Leader (Người Phụ Trách Chính) *</label>
@@ -1753,7 +1879,7 @@
                         <div class="multi-select-container">
                             <div class="multi-select-trigger" id="members-trigger">
                                 <span id="members-trigger-text">Chọn members...</span>
-                                <span>▼</span>
+                                <span>â–¼</span>
                             </div>
                             <div class="multi-select-dropdown" id="members-dropdown"></div>
                         </div>
@@ -1775,7 +1901,7 @@
                 
                 <!-- SURVEY SECTION -->
                 <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Survey (3 Vòng Khảo Sát)</h3>
+                    <h3 style="color: #2d3748; margin-bottom: 15px;"><span class="emoji">📋</span> Survey (3 Vòng Khảo Sát)</h3>
                     
                     <div class="survey-tabs">
                         <button type="button" class="survey-tab active" onclick="switchSurveyTab(1)">Survey 1</button>
@@ -2010,7 +2136,7 @@
             </form>
 
             <div class="login-footer">
-                v5.4 - Security & Authentication<br>
+                v5.6 - Complete Edition<br>
                 Aplus Engineering & Service Ltd
             </div>
         </div>
@@ -2147,8 +2273,7 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closePasswordResetModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">
-                        💾 Reset Password
+                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Reset Password
                     </button>
                 </div>
             </form>
@@ -2184,8 +2309,7 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closeChangePasswordModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">
-                        💾 Đổi Mật Khẩu
+                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Đổi Mật Khẩu
                     </button>
                 </div>
             </form>
@@ -2223,7 +2347,7 @@
 
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
-                sasUrl: 'YOUR_AZURE_SAS_URL_HERE',
+                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/dashboarddatav5?sp=racwdli&st=2025-11-11T03:15:38Z&se=2026-12-31T16:59:59Z&spr=https&sv=2024-11-04&sr=c&sig=nS4hTMAasYnPi3fUHoEz0GC3EEd3lFELDb6SLWJ66Es%3D',
                 blobName: 'dashboard-data-v5.3.json',
                 enabled: true
             };
@@ -2231,18 +2355,20 @@
             // Data Storage
             let projects = [];
             let teamMembers = [];
+            let teams = []; // v5.6 Teams Management
             let currentEditingProject = null;
+            let currentEditingTeam = null; // v5.6
             let currentDate = new Date();
             let isSyncing = false;
             let lastBlobSync = null;
             let syncDebounceTimer = null;
-            const STORAGE_KEY = 'bod_dashboard_data_v5_4';
+            const STORAGE_KEY = 'bod_dashboard_data_v5_6';
             const USER_STORAGE_KEY = 'bod_current_user_v5_4';
             const SESSION_KEY = 'bod_session_v5_4';
             const SETUP_COMPLETE_KEY = 'bod_setup_complete_v5_4';
             const FAILED_ATTEMPTS_KEY = 'bod_failed_attempts_v5_4';
             const LOCK_UNTIL_KEY = 'bod_lock_until_v5_4';
-            const DATA_VERSION = 5.4;
+            const DATA_VERSION = 5.6;
             
             // Selected members for multi-select
             let selectedMembers = [];
@@ -3170,6 +3296,8 @@
                 if (tabName === 'projects') renderProjectsList();
                 if (tabName === 'calendar') renderCalendar();
                 if (tabName === 'team') renderTeamGrid();
+                if (tabName === 'teams-management') renderTeamsGrid(); // v5.6
+                if (tabName === 'bod-summary') renderBODSummary(); // v5.6
             }
 
             // ============= MULTI-SELECT ============= //
@@ -3601,11 +3729,22 @@
                 renderTeamGrid();
                 updateFilterOptions();
                 renderUserDropdown(); // v5.3 - Update user dropdown when team changes
+                
+                // v5.6: Show/hide BOD Summary tab based on user role
+                const bodSummaryTab = document.getElementById('bod-summary-tab');
+                if (bodSummaryTab) {
+                    if (currentUser && (currentUser.isAdmin || currentUser.isBOD)) {
+                        bodSummaryTab.style.display = 'block';
+                    } else {
+                        bodSummaryTab.style.display = 'none';
+                    }
+                }
             }
 
             function renderOverview() {
                 const visibleProjects = getVisibleProjects();
                 const delayed = calculateDelayedProjects();
+                const conflicts = detectConflicts().length;
                 
                 const statsHtml = `
                     <div class="stat-card">
@@ -3616,13 +3755,13 @@
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
                     <div class="stat-card green">
-                        <h3>▶️ Đang Thực Hiện</h3>
+                        <h3><span class="emoji">▶️</span> Đang Thực Hiện</h3>
                         <div class="value">${visibleProjects.length}</div>
                     </div>
                     <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
-                        <h3>⚠️ Trễ Tiến Độ</h3>
+                        <h3><span class="emoji">⚠️</span> Trễ Tiến Độ</h3>
                         <div class="value">${delayed.filter(p => canViewProject(p)).length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
@@ -3630,11 +3769,11 @@
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>⚡ Xung Đột Lịch</h3>
-                        <div class="value">${detectConflicts().filter(c => canViewProject(projects.find(p => p.id === c.projectId))).length}</div>
+                        <div class="value">${conflicts}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card orange">
-                        <h3>👥 Tổng Nhân Sự</h3>
+                        <h3><span class="emoji">👥</span> Tổng Nhân Sự</h3>
                         <div class="value">${teamMembers.length}</div>
                     </div>
                 `;
@@ -3702,6 +3841,8 @@
                             'Trạng Thái': statusLabels[project.status] || project.status,
                             'Leader': leader ? leader.name : '',
                             'Sale': sale ? sale.name : '',
+                            'Budget (VNĐ)': project.budget ? project.budget : '',
+                            'Actual Value (VNĐ)': project.actualValue ? project.actualValue : '',
                             'Thành Viên': members,
                             'Ngày Bắt Đầu': project.startDate ? new Date(project.startDate).toLocaleDateString('vi-VN') : '',
                             'Deadline': project.deadline ? new Date(project.deadline).toLocaleDateString('vi-VN') : '',
@@ -3751,6 +3892,8 @@
                         { wch: 12 },  // Trạng Thái
                         { wch: 15 },  // Leader
                         { wch: 15 },  // Sale
+                        { wch: 15 },  // Budget
+                        { wch: 15 },  // Actual Value
                         { wch: 30 },  // Thành Viên
                         { wch: 12 },  // Ngày Bắt Đầu
                         { wch: 12 },  // Deadline
@@ -3839,7 +3982,10 @@
                                 <h3>${project.name}</h3>
                                 <p>${project.description || 'Không có mô tả'}</p>
                                 ${project.customer ? `<p style="color: #667eea; margin-top: 5px;">🏢 ${project.customer}</p>` : ''}
+                                ${project.budget ? `<p style="color: #059669; margin-top: 5px;">💰 Budget: ${new Intl.NumberFormat('vi-VN').format(project.budget)} VNĐ</p>` : ''}
                                 ${project.sale ? `<p style="color: #764ba2; margin-top: 5px;">💼 Sale: ${teamMembers.find(m => m.id === project.sale)?.name || 'N/A'}</p>` : ''}
+                                ${(currentUser && (currentUser.isAdmin || currentUser.isBOD) && project.actualValue) ? 
+                                    `<p style="color: #ea580c; margin-top: 5px;">💵 Actual Value: ${new Intl.NumberFormat('vi-VN').format(project.actualValue)} VNĐ</p>` : ''}
                                 ${(() => {
                                     const statusConfig = {
                                         'planning': { label: '📝 Planning', bg: '#e3f2fd', color: '#1565c0' },
@@ -3916,6 +4062,23 @@
                                                             return display;
                                                         })()}
                                                     </div>
+                                                    ${(() => {
+                                                        // v5.6: Show teams for installation, assembly, commissioning
+                                                        if (['installation', 'assembly', 'commissioning'].includes(current.id) && current.teams && current.teams.length > 0) {
+                                                            const teamsList = current.teams.map(teamId => {
+                                                                const team = teams.find(t => t.id === teamId);
+                                                                if (!team) return null;
+                                                                const memberNames = team.members.map(mid => {
+                                                                    const member = teamMembers.find(m => m.id === mid);
+                                                                    return member ? member.name : 'N/A';
+                                                                });
+                                                                return `<span style="background: #e0f2f1; color: #00695c; padding: 3px 8px; border-radius: 8px; font-size: 0.85em; margin: 2px; display: inline-block;">${team.name} (${memberNames.join(', ')})</span>`;
+                                                            }).filter(Boolean).join('');
+                                                            
+                                                            return `<div style="margin-top: 8px;"><strong>👥 Teams:</strong> ${teamsList}</div>`;
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </div>
                                             </div>
                                         </div>
@@ -3951,8 +4114,7 @@
                         ${showActions && project.history && project.history.length > 0 ? `
                             <!-- v5.3 Project Tabs -->
                             <div class="project-tabs" style="margin-top: 20px;">
-                                <button class="project-tab active" onclick="switchProjectTab('${project.id}', 'overview')">
-                                    📊 Tổng Quan
+                                <button class="project-tab active" onclick="switchProjectTab('${project.id}', 'overview')"><span class="emoji">📊</span> Tổng Quan
                                 </button>
                                 <button class="project-tab" onclick="switchProjectTab('${project.id}', 'history')">
                                     📜 Lịch Sử (${project.history.length})
@@ -4017,12 +4179,690 @@
                         ${showActions ? `
                             <div style="display: flex; gap: 10px; margin-top: 20px;">
                                 <button class="btn btn-primary" onclick="editProject('${project.id}')" style="flex: 1;">✏️ Sửa</button>
-                                <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;">🗑️ Xóa</button>
+                                <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa</button>
                             </div>
                         ` : ''}
                     </div>
                 `;
             }
+
+
+            // ==================== V5.6 CALENDAR TOOLTIP ====================
+            
+            
+            // ============= v5.6 CONFLICT DETECTION SYSTEM ============= //
+            
+            function detectResourceConflicts() {
+                const conflicts = [];
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Get all active milestones (ongoing work)
+                const visibleProjects = getVisibleProjects();
+                const activeMilestones = [];
+                
+                visibleProjects.forEach(project => {
+                    (project.milestones || []).forEach(milestone => {
+                        const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
+                        if (!msInfo) return;
+                        
+                        // Check if milestone is currently active
+                        const planStart = milestone.planStartDate;
+                        const planComplete = milestone.planCompleteDate;
+                        const actualStart = milestone.actualStartDate;
+                        const actualComplete = milestone.actualCompleteDate;
+                        
+                        // Skip if completed
+                        if (actualComplete) return;
+                        
+                        // Check if currently in progress
+                        const startDate = actualStart || planStart;
+                        const endDate = actualComplete || planComplete;
+                        
+                        if (startDate && startDate <= today && (!endDate || endDate >= today)) {
+                            activeMilestones.push({
+                                project: project,
+                                milestone: milestone,
+                                msInfo: msInfo
+                            });
+                        }
+                    });
+                });
+                
+                // Build workload map for each member
+                const memberWorkload = {};
+                
+                activeMilestones.forEach(({ project, milestone, msInfo }) => {
+                    // Add person
+                    if (milestone.person) {
+                        if (!memberWorkload[milestone.person]) {
+                            memberWorkload[milestone.person] = [];
+                        }
+                        memberWorkload[milestone.person].push({
+                            project: project,
+                            milestone: msInfo,
+                            type: 'person'
+                        });
+                    }
+                    
+                    // Add team members (v5.6)
+                    if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                        milestone.assignedMembers.forEach(memberId => {
+                            if (!memberWorkload[memberId]) {
+                                memberWorkload[memberId] = [];
+                            }
+                            memberWorkload[memberId].push({
+                                project: project,
+                                milestone: msInfo,
+                                type: 'team_member'
+                            });
+                        });
+                    }
+                });
+                
+                // Detect conflicts (members with >1 active task)
+                Object.keys(memberWorkload).forEach(memberId => {
+                    const workload = memberWorkload[memberId];
+                    if (workload.length > 1) {
+                        const member = teamMembers.find(m => m.id === memberId);
+                        conflicts.push({
+                            member: member,
+                            workload: workload,
+                            count: workload.length
+                        });
+                    }
+                });
+                
+                return conflicts;
+            }
+            
+            function showConflicts() {
+                const conflicts = detectResourceConflicts();
+                
+                if (conflicts.length === 0) {
+                    showToast('✅ Không có xung đột lịch trình!', 'success');
+                    return;
+                }
+                
+                let html = `
+                    <div style="padding: 20px;">
+                        <div style="background: #ffebee; padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #c62828;">
+                            <h3 style="color: #c62828; margin-bottom: 10px;"><span class="emoji">⚠️</span> Phát hiện ${conflicts.length} xung đột</h3>
+                            <p style="color: #718096;">Các thành viên sau đang làm việc trên nhiều milestone cùng lúc:</p>
+                        </div>
+                `;
+                
+                conflicts.forEach((conflict, index) => {
+                    html += `
+                        <div style="background: white; border: 2px solid #ffebee; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                <div>
+                                    <h4 style="color: #2d3748; margin-bottom: 5px;">
+                                        👤 ${conflict.member.name}
+                                    </h4>
+                                    <div style="font-size: 0.9em; color: #718096;">
+                                        ${conflict.member.role || 'Team Member'}
+                                    </div>
+                                </div>
+                                <div style="background: #c62828; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 600;">
+                                    ${conflict.count} công việc
+                                </div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <strong style="color: #2d3748;">Đang làm việc trên:</strong>
+                                ${conflict.workload.map(w => `
+                                    <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #667eea;">
+                                        <div style="font-weight: 600; color: #2d3748;">
+                                            ${w.milestone.icon} ${w.milestone.name}
+                                        </div>
+                                        <div style="font-size: 0.85em; color: #718096; margin-top: 4px;">
+                                            🏢 ${w.project.name}
+                                        </div>
+                                        <div style="font-size: 0.85em; color: #718096;">
+                                            ${w.type === 'team_member' ? '👥 Team member assignment' : '👤 Người thực hiện'}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                document.getElementById('conflicts-list').innerHTML = html;
+                document.getElementById('conflicts-modal').classList.add('active');
+            }
+            
+            // ============= v5.6 BOD SUMMARY DASHBOARD ============= //
+            
+            function renderBODSummary() {
+                const allProjects = projects; // BOD/Admin see all
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                
+                // Calculate KPIs
+                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
+                const budgetVariance = totalActualValue - totalBudget;
+                const variancePercent = totalBudget > 0 ? ((budgetVariance / totalBudget) * 100).toFixed(1) : 0;
+                
+                const delayed = calculateDelayedProjects().length;
+                const onTime = activeProjects.length - delayed;
+                const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
+                
+                const conflicts = detectConflicts().length;
+                
+                // Render KPI Cards
+                const kpiHtml = `
+                    <div class="stat-card">
+                        <h3>📁 Total Projects</h3>
+                        <div class="value">${allProjects.length}</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${activeProjects.length} active
+                        </p>
+                    </div>
+                    <div class="stat-card ${onTimePercent >= 70 ? 'green' : 'orange'}">
+                        <h3><span class="emoji">✅</span> On-Time Rate</h3>
+                        <div class="value">${onTimePercent}%</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${onTime} on-time, ${delayed} delayed
+                        </p>
+                    </div>
+                    <div class="stat-card ${budgetVariance >= 0 ? 'green' : 'red'}">
+                        <h3><span class="emoji">💰</span> Budget vs Actual</h3>
+                        <div class="value" style="font-size: 1.5em;">${variancePercent}%</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${budgetVariance >= 0 ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(budgetVariance)} VNĐ
+                        </p>
+                    </div>
+                    <div class="stat-card ${conflicts === 0 ? 'green' : 'red'}">
+                        <h3>âš¡ Conflicts</h3>
+                        <div class="value">${conflicts}</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            Resource conflicts
+                        </p>
+                    </div>
+                `;
+                const elem_bod_kpi_grid = document.getElementById('bod-kpi-grid');
+                if (elem_bod_kpi_grid) elem_bod_kpi_grid.innerHTML = kpiHtml;
+                
+                // Render Risk Indicators
+                renderBODRiskIndicators(allProjects);
+                
+                // Render Financial Summary
+                renderBODFinancialSummary(allProjects);
+                
+                // Render Resource Utilization
+                renderBODResourceUtilization(allProjects);
+                
+                // Render Milestone Progress
+                renderBODMilestoneProgress(allProjects);
+                
+                // Render Project Details Table
+                renderBODProjectsTable(allProjects);
+            }
+            
+            function renderBODRiskIndicators(allProjects) {
+                const risks = [];
+                const today = new Date().toISOString().split('T')[0];
+                
+                // High-risk projects (>7 days late)
+                allProjects.forEach(project => {
+                    const current = getCurrentMilestone(project);
+                    if (current && isDelayed(current)) {
+                        const deadline = current.actualCompleteDate || current.planCompleteDate;
+                        if (deadline) {
+                            const daysLate = Math.floor((new Date(today) - new Date(deadline)) / (1000 * 60 * 60 * 24));
+                            if (daysLate > 7) {
+                                risks.push({
+                                    type: 'high-delay',
+                                    project: project,
+                                    detail: `${daysLate} ngày trễ`,
+                                    severity: 'high'
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Budget variance risks
+                allProjects.forEach(project => {
+                    if (project.budget && project.actualValue) {
+                        const variance = ((project.actualValue - project.budget) / project.budget) * 100;
+                        if (Math.abs(variance) > 20) {
+                            risks.push({
+                                type: 'budget-variance',
+                                project: project,
+                                detail: `${variance > 0 ? '+' : ''}${variance.toFixed(1)}% variance`,
+                                severity: Math.abs(variance) > 50 ? 'high' : 'medium'
+                            });
+                        }
+                    }
+                });
+                
+                // Resource conflicts
+                const conflicts = detectResourceConflicts();
+                if (conflicts.length > 0) {
+                    risks.push({
+                        type: 'resource-conflict',
+                        detail: `${conflicts.length} members with conflicts`,
+                        severity: 'medium'
+                    });
+                }
+                
+                let html = '';
+                if (risks.length === 0) {
+                    html = '<div style="text-align: center; padding: 30px; color: #059669;">✅ No high-priority risks detected</div>';
+                } else {
+                    html = risks.map(risk => {
+                        const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
+                        const iconColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
+                        return `
+                            <div style="background: ${bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${iconColor};">
+                                <div style="display: flex; justify-content: between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        ${risk.project ? `<div style="font-weight: 600; color: #2d3748; margin-bottom: 4px;">${risk.project.name}</div>` : ''}
+                                        <div style="font-size: 0.85em; color: #718096;">${risk.detail}</div>
+                                    </div>
+                                    <span style="font-size: 1.2em;">${risk.severity === 'high' ? '🔴' : '🟠'}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                const elem_bod_risk_indicators = document.getElementById('bod-risk-indicators');
+                if (elem_bod_risk_indicators) elem_bod_risk_indicators.innerHTML = html;
+            }
+            
+            function renderBODFinancialSummary(allProjects) {
+                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
+                
+                // Revenue by customer
+                const customerRevenue = {};
+                allProjects.forEach(p => {
+                    if (p.customer && p.actualValue) {
+                        if (!customerRevenue[p.customer]) {
+                            customerRevenue[p.customer] = 0;
+                        }
+                        customerRevenue[p.customer] += p.actualValue;
+                    }
+                });
+                
+                const topCustomers = Object.entries(customerRevenue)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                // Performance by Sale
+                const salePerformance = {};
+                allProjects.forEach(p => {
+                    if (p.sale) {
+                        const sale = teamMembers.find(m => m.id === p.sale);
+                        if (sale) {
+                            if (!salePerformance[sale.name]) {
+                                salePerformance[sale.name] = { count: 0, value: 0 };
+                            }
+                            salePerformance[sale.name].count++;
+                            salePerformance[sale.name].value += (p.actualValue || 0);
+                        }
+                    }
+                });
+                
+                const html = `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: 600;">Total Budget:</span>
+                            <span style="color: #667eea;">${new Intl.NumberFormat('vi-VN').format(totalBudget)} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: 600;">Total Actual Value:</span>
+                            <span style="color: #059669;">${new Intl.NumberFormat('vi-VN').format(totalActualValue)} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px solid #e9ecef;">
+                            <span style="font-weight: 600;">Variance:</span>
+                            <span style="color: ${totalActualValue >= totalBudget ? '#059669' : '#c62828'}; font-weight: 600;">
+                                ${totalActualValue >= totalBudget ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(totalActualValue - totalBudget)} VNĐ
+                            </span>
+                        </div>
+                    </div>
+                    
+                    ${topCustomers.length > 0 ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                            <div style="font-weight: 600; margin-bottom: 10px;">Top Customers:</div>
+                            ${topCustomers.map(([customer, revenue]) => `
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em;">
+                                    <span style="color: #718096;">${customer}</span>
+                                    <span style="font-weight: 600;">${new Intl.NumberFormat('vi-VN').format(revenue)} VNĐ</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${Object.keys(salePerformance).length > 0 ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                            <div style="font-weight: 600; margin-bottom: 10px;">Performance by Sale:</div>
+                            ${Object.entries(salePerformance).map(([name, data]) => `
+                                <div style="margin-bottom: 12px; font-size: 0.9em;">
+                                    <div style="color: #2d3748; font-weight: 600;">${name}</div>
+                                    <div style="color: #718096;">${data.count} projects · ${new Intl.NumberFormat('vi-VN').format(data.value)} VNĐ</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                const elem_bod_financial_summary = document.getElementById('bod-financial-summary');
+                if (elem_bod_financial_summary) elem_bod_financial_summary.innerHTML = html;
+            }
+            
+            function renderBODResourceUtilization(allProjects) {
+                const memberWorkload = {};
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                
+                // Count active tasks per member
+                activeProjects.forEach(project => {
+                    // Leader
+                    if (project.leader) {
+                        if (!memberWorkload[project.leader]) {
+                            memberWorkload[project.leader] = { leader: 0, member: 0, team: 0 };
+                        }
+                        memberWorkload[project.leader].leader++;
+                    }
+                    
+                    // Members
+                    (project.members || []).forEach(memberId => {
+                        if (!memberWorkload[memberId]) {
+                            memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
+                        }
+                        memberWorkload[memberId].member++;
+                    });
+                    
+                    // Team assignments
+                    (project.milestones || []).forEach(milestone => {
+                        if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                            milestone.assignedMembers.forEach(memberId => {
+                                if (!memberWorkload[memberId]) {
+                                    memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
+                                }
+                                memberWorkload[memberId].team++;
+                            });
+                        }
+                    });
+                });
+                
+                const sortedWorkload = Object.entries(memberWorkload)
+                    .map(([id, workload]) => ({
+                        member: teamMembers.find(m => m.id === id),
+                        total: workload.leader + workload.member + workload.team,
+                        breakdown: workload
+                    }))
+                    .filter(w => w.member)
+                    .sort((a, b) => b.total - a.total);
+                
+                let html = '';
+                if (sortedWorkload.length === 0) {
+                    html = '<div style="text-align: center; padding: 30px; color: #718096;">No active resource assignments</div>';
+                } else {
+                    html = sortedWorkload.map(w => {
+                        const utilization = Math.min((w.total / 3) * 100, 100);
+                        const color = utilization > 80 ? '#c62828' : utilization > 50 ? '#f57c00' : '#059669';
+                        
+                        return `
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-weight: 600;">${w.member.name}</span>
+                                    <span style="color: ${color}; font-weight: 600;">${w.total} tasks</span>
+                                </div>
+                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: ${color}; width: ${utilization}%; height: 100%;"></div>
+                                </div>
+                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
+                                    ${w.breakdown.leader > 0 ? `👑 ${w.breakdown.leader} leader` : ''}
+                                    ${w.breakdown.member > 0 ? ` | 👥 ${w.breakdown.member} member` : ''}
+                                    ${w.breakdown.team > 0 ? ` | 🏢 ${w.breakdown.team} team` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                const elem_bod_resource_utilization = document.getElementById('bod-resource-utilization');
+                if (elem_bod_resource_utilization) elem_bod_resource_utilization.innerHTML = html;
+            }
+            
+            function renderBODMilestoneProgress(allProjects) {
+                const milestoneStats = {};
+                
+                STANDARD_MILESTONES.forEach(ms => {
+                    milestoneStats[ms.id] = {
+                        name: ms.name,
+                        icon: ms.icon,
+                        total: 0,
+                        completed: 0,
+                        inProgress: 0,
+                        notStarted: 0
+                    };
+                });
+                
+                allProjects.forEach(project => {
+                    (project.milestones || []).forEach(milestone => {
+                        const stat = milestoneStats[milestone.id];
+                        if (!stat) return;
+                        
+                        stat.total++;
+                        if (milestone.actualCompleteDate) {
+                            stat.completed++;
+                        } else if (milestone.actualStartDate || milestone.planStartDate) {
+                            stat.inProgress++;
+                        } else {
+                            stat.notStarted++;
+                        }
+                    });
+                });
+                
+                const html = Object.values(milestoneStats)
+                    .filter(s => s.total > 0)
+                    .map(stat => {
+                        const completePercent = stat.total > 0 ? ((stat.completed / stat.total) * 100).toFixed(0) : 0;
+                        
+                        return `
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>${stat.icon} ${stat.name}</span>
+                                    <span style="font-weight: 600;">${stat.completed}/${stat.total}</span>
+                                </div>
+                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: #059669; width: ${completePercent}%; height: 100%;"></div>
+                                </div>
+                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
+                                    ✅ ${stat.completed} complete | 🔄 ${stat.inProgress} in progress | ⏸️ ${stat.notStarted} not started
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                
+                const elem_bod_milestone_progress = document.getElementById('bod-milestone-progress');
+                if (elem_bod_milestone_progress) elem_bod_milestone_progress.innerHTML = html || '<div style="text-align: center; padding: 30px; color: #718096;">No milestone data</div>';
+            }
+            
+            function renderBODProjectsTable(allProjects) {
+                const html = `
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Project</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Customer</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Leader</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Sale</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Budget</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Actual Value</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allProjects.map(project => {
+                            const leader = teamMembers.find(m => m.id === project.leader);
+                            const sale = teamMembers.find(m => m.id === project.sale);
+                            const current = getCurrentMilestone(project);
+                            const delayed = current && isDelayed(current);
+                            
+                            const statusConfig = {
+                                'planning': { label: 'Planning', color: '#1565c0' },
+                                'in-progress': { label: 'In Progress', color: '#2e7d32' },
+                                'on-hold': { label: 'On Hold', color: '#e65100' },
+                                'delayed': { label: 'Delayed', color: '#c62828' },
+                                'completed': { label: 'Completed', color: '#00695c' },
+                                'cancelled': { label: 'Cancelled', color: '#6a1b9a' }
+                            };
+                            
+                            const status = project.status || 'planning';
+                            const statusInfo = statusConfig[status];
+                            
+                            return `
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 12px;">
+                                        <div style="font-weight: 600; color: #2d3748;">${project.name}</div>
+                                        ${delayed ? '<span style="color: #c62828; font-size: 0.8em;">⚠️ Delayed</span>' : ''}
+                                    </td>
+                                    <td style="padding: 12px; color: #718096;">${project.customer || '-'}</td>
+                                    <td style="padding: 12px;">${leader ? leader.name : '-'}</td>
+                                    <td style="padding: 12px;">${sale ? sale.name : '-'}</td>
+                                    <td style="padding: 12px; text-align: right;">${project.budget ? new Intl.NumberFormat('vi-VN').format(project.budget) : '-'}</td>
+                                    <td style="padding: 12px; text-align: right; font-weight: 600;">${project.actualValue ? new Intl.NumberFormat('vi-VN').format(project.actualValue) : '-'}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <span style="background: ${statusInfo.color}15; color: ${statusInfo.color}; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">
+                                            ${statusInfo.label}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        ${current ? current.icon + ' ' + current.name : '-'}
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                `;
+                
+                const elem_bod_projects_table = document.getElementById('bod-projects-table');
+                if (elem_bod_projects_table) elem_bod_projects_table.innerHTML = html;
+            }
+
+                        window.closeConflictsModal = function() {
+                document.getElementById('conflicts-modal').classList.remove('active');
+            };
+            
+            window.showCalendarTooltip = function(element, date, events) {
+                if (!events || events.length === 0) return;
+                
+                const tooltip = document.getElementById('calendar-tooltip');
+                if (!tooltip) return;
+                
+                // Generate tooltip content
+                let html = `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                padding: 15px; border-radius: 12px 12px 0 0; color: white;">
+                        <div style="font-weight: 600; font-size: 1.1em;">
+                            📅 ${new Date(date).toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' })}
+                        </div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">
+                            ${events.length} công việc
+                        </div>
+                    </div>
+                    <div style="padding: 15px;">
+                `;
+                
+                // v5.6: Build workload summary with assignedMembers
+                const memberWorkload = {};
+                events.forEach(event => {
+                    // Add person (leader)
+                    if (event.personId) {
+                        if (!memberWorkload[event.personId]) {
+                            memberWorkload[event.personId] = { name: event.person, tasks: [] };
+                        }
+                        memberWorkload[event.personId].tasks.push(event);
+                    }
+                    
+                    // Add assigned members
+                    if (event.assignedMembers && event.assignedMembers.length > 0) {
+                        event.assignedMembers.forEach(assignedMember => {
+                            if (!memberWorkload[assignedMember.id]) {
+                                memberWorkload[assignedMember.id] = { name: assignedMember.name, tasks: [] };
+                            }
+                            memberWorkload[assignedMember.id].tasks.push(event);
+                        });
+                    }
+                });
+                
+                // Render events
+                events.forEach(event => {
+                    const bgColor = event.type.includes('end') ? '#e8f5e9' : '#e3f2fd';
+                    const borderColor = event.type.includes('end') ? '#4caf50' : '#2196f3';
+                    
+                    html += `
+                        <div style="background: ${bgColor}; padding: 10px; border-radius: 8px; 
+                                    margin-bottom: 10px; border-left: 3px solid ${borderColor};">
+                            <div style="font-weight: 600; color: #2d3748;">
+                                ${event.icon} ${event.task}
+                            </div>
+                            <div style="font-size: 0.85em; color: #718096; margin-top: 4px;">
+                                🏢 ${event.projectCode || event.project}
+                            </div>
+                            <div style="font-size: 0.85em; color: #718096;">
+                                👤 Leader: ${event.person}
+                            </div>
+                            ${event.assignedMembers && event.assignedMembers.length > 0 ? `
+                                <div style="font-size: 0.85em; color: #00695c; margin-top: 5px;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">👥 Team Members:</div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: 10px;">
+                                        ${event.assignedMembers.map(member => 
+                                            `<span style="background: #e0f2f1; padding: 2px 6px; border-radius: 4px;">${member.name}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // v5.6: Show workload summary
+                const conflicts = Object.values(memberWorkload).filter(w => w.tasks.length > 1);
+                if (conflicts.length > 0) {
+                    html += `
+                        <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #fbbf24;">
+                            <div style="font-weight: 600; color: #ea580c; margin-bottom: 8px;">
+                                ⚠️ Xung đột: ${conflicts.length} người làm nhiều việc
+                            </div>
+                            ${conflicts.map(c => `
+                                <div style="font-size: 0.85em; color: #718096; margin-top: 4px;">
+                                    • ${c.name}: ${c.tasks.length} công việc
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                
+                tooltip.innerHTML = html;
+                tooltip.style.display = 'block';
+                
+                // Position tooltip
+                const rect = element.getBoundingClientRect();
+                let left = rect.right + 10;
+                let top = rect.top;
+                
+                // Adjust if off-screen
+                if (left + 400 > window.innerWidth) {
+                    left = rect.left - 410;
+                }
+                
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+            };
+            
+            window.hideCalendarTooltip = function() {
+                const tooltip = document.getElementById('calendar-tooltip');
+                if (tooltip) tooltip.style.display = 'none';
+            };
 
             function renderCalendar() {
                 const visibleProjects = getVisibleProjects();
@@ -4047,6 +4887,21 @@
                         const person = teamMembers.find(m => m.id === milestone.person);
                         const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
                         
+                        // v5.6: Get teams info
+                        const milestoneTeams = [];
+                        if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                            milestone.assignedMembers.forEach(memberId => {
+                                const team = teams.find(t => t.id === teamId);
+                                if (team) {
+                                    milestoneTeams.push({
+                                        id: team.id,
+                                        name: team.name,
+                                        members: team.members
+                                    });
+                                }
+                            });
+                        }
+                        
                         if (milestone.planStartDate) {
                             const dateKey = milestone.planStartDate;
                             if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
@@ -4060,7 +4915,9 @@
                                 projectCode: projectCode,
                                 task: msInfo?.name || milestone.id,
                                 person: person?.name || 'N/A',
-                                icon: msInfo?.icon || '📌'
+                                personId: milestone.person,
+                                icon: msInfo?.icon || '📌',
+                                teams: milestoneTeams
                             });
                         }
                         
@@ -4077,7 +4934,9 @@
                                 projectCode: projectCode,
                                 task: msInfo?.name || milestone.id,
                                 person: person?.name || 'N/A',
-                                icon: msInfo?.icon || '📌'
+                                personId: milestone.person,
+                                icon: msInfo?.icon || '📌',
+                                teams: milestoneTeams
                             });
                         }
                     });
@@ -4136,7 +4995,7 @@
                             
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <div style="font-weight: 600; ${isToday ? 'color: #667eea;' : ''}">${currentDateIter.getDate()}</div>
-                                ${hasConflict ? '<span style="color: #f57c00; font-size: 0.85em;">⚡</span>' : ''}
+                                ${hasConflict ? '<span style="color: #f57c00; font-size: 0.85em;">âš¡</span>' : ''}
                             </div>
                             
                             <div style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto;">
@@ -4217,7 +5076,7 @@
                             
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <button class="btn btn-primary" onclick="editTeamMember('${member.id}')" style="flex: 1;">✏️ Sửa</button>
-                                <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;">🗑️ Xóa</button>
+                                <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa</button>
                             </div>
                         </div>
                     `;
@@ -4311,39 +5170,22 @@
                     changeNoteTextarea.required = false;
                 }
                 
-                // Disable form if no permission
-                const form = document.getElementById('project-form');
-                const saveBtn = document.getElementById('save-project-btn');
-                if (!hasPermission && isEditing) {
-                    form.classList.add('readonly-overlay');
-                    saveBtn.disabled = true;
-                    saveBtn.textContent = '🔒 Không có quyền sửa';
-                    saveBtn.style.opacity = '0.5';
-                    saveBtn.style.cursor = 'not-allowed';
-                    
-                    // Disable all inputs
-                    form.querySelectorAll('input, textarea, select, button[type="button"]').forEach(el => {
-                        if (el.id !== 'save-project-btn' && !el.closest('.modal-header')) {
-                            el.disabled = true;
-                        }
-                    });
-                } else {
-                    form.classList.remove('readonly-overlay');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<span>💾</span> Lưu Dự Án';
-                    saveBtn.style.opacity = '1';
-                    saveBtn.style.cursor = 'pointer';
-                    
-                    // Enable all inputs
-                    form.querySelectorAll('input, textarea, select').forEach(el => {
-                        el.disabled = false;
-                    });
-                }
-                
-                // Populate form fields
+                // Populate form fields (v5.6: added budget, actualValue)
                 document.getElementById('project-name').value = currentEditingProject?.name || '';
                 document.getElementById('project-customer').value = currentEditingProject?.customer || '';
+                document.getElementById('project-budget').value = currentEditingProject?.budget || '';
                 document.getElementById('project-description').value = currentEditingProject?.description || '';
+                
+                // v5.6: Show/hide Actual Value field based on user role (Admin/BOD only)
+                const actualValueField = document.getElementById('actual-value-field');
+                const actualValueInput = document.getElementById('project-actual-value');
+                if (currentUser && (currentUser.isAdmin || currentUser.isBOD)) {
+                    actualValueField.style.display = 'block';
+                    actualValueInput.value = currentEditingProject?.actualValue || '';
+                } else {
+                    actualValueField.style.display = 'none';
+                    actualValueInput.value = '';
+                }
                 
                 // Populate leader and members
                 const leaderSelect = document.getElementById('project-leader');
@@ -4376,6 +5218,40 @@
                 renderMembersDropdown();
                 updateSelectedMembersDisplay();
                 renderMilestoneForm();
+                
+                // ============= v5.6 PERMISSION CONTROL (MOVED AFTER MILESTONE RENDERING) ============= //
+                // CRITICAL: This section must run AFTER renderMilestoneForm() 
+                // to ensure milestone select dropdowns are properly enabled/disabled
+                
+                // Disable form if no permission
+                const form = document.getElementById('project-form');
+                const saveBtn = document.getElementById('save-project-btn');
+                if (!hasPermission && isEditing) {
+                    form.classList.add('readonly-overlay');
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = '🔒 Không có quyền sửa';
+                    saveBtn.style.opacity = '0.5';
+                    saveBtn.style.cursor = 'not-allowed';
+                    
+                    // Disable all inputs
+                    form.querySelectorAll('input, textarea, select, button[type="button"]').forEach(el => {
+                        if (el.id !== 'save-project-btn' && !el.closest('.modal-header')) {
+                            el.disabled = true;
+                        }
+                    });
+                } else {
+                    form.classList.remove('readonly-overlay');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<span>💾</span> Lưu Dự Án';
+                    saveBtn.style.opacity = '1';
+                    saveBtn.style.cursor = 'pointer';
+                    
+                    // Enable all inputs
+                    form.querySelectorAll('input, textarea, select').forEach(el => {
+                        el.disabled = false;
+                    });
+                }
+                
                 
                 // ✅ SETUP REAL-TIME IQR VALIDATION
                 if (hasPermission || !isEditing) {
@@ -4416,6 +5292,9 @@
                 const html = STANDARD_MILESTONES.map(milestone => {
                     const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                     
+                    // v5.6: Check if milestone needs team assignment
+                    const needsTeam = ['installation', 'assembly', 'commissioning'].includes(milestone.id);
+                    
                     return `
                         <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
                             <div>
@@ -4429,6 +5308,54 @@
                                         ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
                                     </select>
                                 </div>
+                                
+                                ${needsTeam ? `
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👥 Team Members (Thành viên thực hiện)</label>
+                                    
+                                    <!-- Select + Add Button -->
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <select id="member-select-${milestone.id}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                            <option value="">Chọn member...</option>
+                                            ${teamMembers.map(member => 
+                                                `<option value="${member.id}">${member.name}</option>`
+                                            ).join('')}
+                                        </select>
+                                        <button type="button" 
+                                                onclick="addTeamMember('${milestone.id}')"
+                                                style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            ➕ Add
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Members List -->
+                                    <div id="selected-members-${milestone.id}" 
+                                         class="selected-members-list"
+                                         style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                        ${(existing.assignedMembers || []).map(memberId => {
+                                            const member = teamMembers.find(m => m.id === memberId);
+                                            if (!member) return '';
+                                            return `
+                                                <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                                    <span>👤 ${member.name}</span>
+                                                    <button type="button" 
+                                                            onclick="removeTeamMember('${milestone.id}', '${memberId}')"
+                                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                                            title="Xóa">
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                        <div class="empty-message" style="display: ${(existing.assignedMembers || []).length === 0 ? 'block' : 'none'}; text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                            Chưa có member nào. Click "Add" để thêm.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden input to store selected member IDs -->
+                                    <input type="hidden" class="milestone-members" data-milestone="${milestone.id}" value="${(existing.assignedMembers || []).join(',')}">
+                                </div>
+                                ` : ''}
                                 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                     <!-- PLAN Column -->
@@ -4468,6 +5395,7 @@
 
                 document.getElementById('milestone-form-grid').innerHTML = html;
             }
+
 
             window.closeModal = function() {
                 document.getElementById('project-modal').classList.remove('active');
@@ -4526,6 +5454,28 @@
                         fieldLabel: 'Sale',
                         oldValue: oldSale?.name || '(Trống)',
                         newValue: newSale?.name || '(Trống)'
+                    });
+                }
+                
+                // v5.6: Budget comparison
+                if ((oldProject.budget || null) !== (newProject.budget || null)) {
+                    const formatMoney = (val) => val ? new Intl.NumberFormat('vi-VN').format(val) + ' VNĐ' : '(Trống)';
+                    changes.push({
+                        field: 'budget',
+                        fieldLabel: 'Budget',
+                        oldValue: formatMoney(oldProject.budget),
+                        newValue: formatMoney(newProject.budget)
+                    });
+                }
+                
+                // v5.6: Actual Value comparison
+                if ((oldProject.actualValue || null) !== (newProject.actualValue || null)) {
+                    const formatMoney = (val) => val ? new Intl.NumberFormat('vi-VN').format(val) + ' VNĐ' : '(Trống)';
+                    changes.push({
+                        field: 'actualValue',
+                        fieldLabel: 'Actual Value Contact',
+                        oldValue: formatMoney(oldProject.actualValue),
+                        newValue: formatMoney(newProject.actualValue)
                     });
                 }
                 
@@ -4627,6 +5577,26 @@
                             });
                         }
                     });
+                    
+                    // v5.6: Track assignedMembers changes for installation, assembly, commissioning
+                    if (['installation', 'assembly', 'commissioning'].includes(milestone.id)) {
+                        const oldMembers = (oldMs.assignedMembers || []).sort().join(',');
+                        const newMembers = (newMs.assignedMembers || []).sort().join(',');
+                        if (oldMembers !== newMembers) {
+                            const oldMemberNames = (oldMs.assignedMembers || []).map(mid => 
+                                teamMembers.find(m => m.id === mid)?.name || 'N/A'
+                            ).join(', ') || '(Trống)';
+                            const newMemberNames = (newMs.assignedMembers || []).map(mid => 
+                                teamMembers.find(m => m.id === mid)?.name || 'N/A'
+                            ).join(', ') || '(Trống)';
+                            changes.push({
+                                field: `milestone.${milestone.id}.assignedMembers`,
+                                fieldLabel: `${milestone.name} - Team Members`,
+                                oldValue: oldMemberNames,
+                                newValue: newMemberNames
+                            });
+                        }
+                    }
                 });
                 
                 return changes;
@@ -4714,6 +5684,45 @@
             }
 
             // ============= PROJECT SAVE FUNCTION ============= //
+
+            // v5.6: Auto-create or update team for project
+            function autoCreateProjectTeam(project) {
+                if (!project.members || project.members.length === 0) {
+                    return; // No members, no team to create
+                }
+                
+                // Extract IQR code from project name (e.g., "IQR-2411001 - Project Name" → "IQR-2411001")
+                const iqrCode = project.name.split('-').slice(0, 2).join('-').trim();
+                const teamName = iqrCode || project.name;
+                
+                // Check if team already exists for this project
+                let existingTeam = teams.find(t => t.projectId === project.id);
+                
+                if (existingTeam) {
+                    // Update existing team
+                    existingTeam.name = teamName;
+                    existingTeam.members = [...project.members]; // Copy members array
+                    existingTeam.leader = project.leader;
+                    console.log(`✅ Updated team: ${teamName}`);
+                } else {
+                    // Create new team
+                    const newTeam = {
+                        id: 'team-' + Date.now(),
+                        name: teamName,
+                        projectId: project.id, // Link team to project
+                        leader: project.leader,
+                        members: [...project.members],
+                        specialty: 'Project Team',
+                        createdAt: new Date().toISOString()
+                    };
+                    teams.push(newTeam);
+                    console.log(`✅ Created team: ${teamName}`);
+                }
+                
+                // Save teams to storage
+                saveToAzure();
+            }
+
             window.saveProject = function(event) {
                 event.preventDefault();
 
@@ -4730,7 +5739,9 @@
 
                 const name = document.getElementById('project-name').value.trim();
                 const customer = document.getElementById('project-customer').value.trim();
+                const budget = document.getElementById('project-budget').value || null;
                 const sale = document.getElementById('project-sale').value;
+                const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
                 const leader = document.getElementById('project-leader').value;
                 const status = document.getElementById('project-status').value || 'planning';
@@ -4775,7 +5786,7 @@
                     }
                 });
 
-                // Collect milestones with 4 dates
+                // Collect milestones with 4 dates + teams (v5.6)
                 const milestones = STANDARD_MILESTONES.map(milestone => {
                     const person = document.querySelector(`.milestone-person[data-milestone="${milestone.id}"]`)?.value || '';
                     const planStartDate = document.querySelector(`.milestone-plan-start[data-milestone="${milestone.id}"]`)?.value || '';
@@ -4783,13 +5794,19 @@
                     const actualStartDate = document.querySelector(`.milestone-actual-start[data-milestone="${milestone.id}"]`)?.value || '';
                     const actualCompleteDate = document.querySelector(`.milestone-actual-complete[data-milestone="${milestone.id}"]`)?.value || '';
                     
+                    // v5.6: Collect assignedMembers from hidden input (comma-separated)
+                    const membersInput = document.querySelector(`.milestone-members[data-milestone="${milestone.id}"]`);
+                    const assignedMembers = membersInput && membersInput.value ? 
+                        membersInput.value.split(',').filter(id => id.trim() !== '') : [];
+                    
                     return { 
                         id: milestone.id, 
                         person,
                         planStartDate,
                         planCompleteDate,
                         actualStartDate,
-                        actualCompleteDate
+                        actualCompleteDate,
+                        assignedMembers: assignedMembers.length > 0 ? assignedMembers : undefined
                     };
                 });
 
@@ -4798,10 +5815,12 @@
                     // Create a copy of old project for comparison
                     const oldProject = JSON.parse(JSON.stringify(currentEditingProject));
                     
-                    // Update project
+                    // Update project (v5.6: added budget, actualValue)
                     currentEditingProject.name = name;
                     currentEditingProject.customer = customer;
+                    currentEditingProject.budget = budget ? parseFloat(budget) : null;
                     currentEditingProject.sale = sale;
+                    currentEditingProject.actualValue = actualValue ? parseFloat(actualValue) : null;
                     currentEditingProject.description = description;
                     currentEditingProject.leader = leader;
                     currentEditingProject.status = status;
@@ -4818,13 +5837,18 @@
                     } else {
                         showToast('ℹ️ Không có thay đổi nào được phát hiện', 'success');
                     }
+                    
+                    // v5.6: Auto-create/update team for this project
+                    autoCreateProjectTeam(currentEditingProject);
                 } else {
                     // ============= v5.3 CREATE NEW PROJECT ============= //
                     const newProject = {
                         id: 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                         name: name,
                         customer: customer,
+                        budget: budget ? parseFloat(budget) : null,
                         sale: sale,
+                        actualValue: actualValue ? parseFloat(actualValue) : null,
                         description: description,
                         leader: leader,
                         status: status,
@@ -4839,6 +5863,9 @@
                     
                     projects.push(newProject);
                     showToast('✅ Đã tạo dự án mới thành công!', 'success');
+                    
+                    // v5.6: Auto-create team for new project
+                    autoCreateProjectTeam(newProject);
                 }
 
                 saveToStorage();
@@ -5037,7 +6064,420 @@
                 document.getElementById('conflicts-modal').classList.add('active');
             };
 
-            window.closeConflictsModal = function() {
+            // ============= v5.6 BOD SUMMARY DASHBOARD ============= //
+            
+            function renderBODSummary() {
+                const allProjects = projects; // BOD/Admin see all
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                
+                // Calculate KPIs
+                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
+                const budgetVariance = totalActualValue - totalBudget;
+                const variancePercent = totalBudget > 0 ? ((budgetVariance / totalBudget) * 100).toFixed(1) : 0;
+                
+                const delayed = calculateDelayedProjects().length;
+                const onTime = activeProjects.length - delayed;
+                const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
+                
+                const conflicts = detectConflicts().length;
+                
+                // Render KPI Cards
+                const kpiHtml = `
+                    <div class="stat-card">
+                        <h3>📁 Total Projects</h3>
+                        <div class="value">${allProjects.length}</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${activeProjects.length} active
+                        </p>
+                    </div>
+                    <div class="stat-card ${onTimePercent >= 70 ? 'green' : 'orange'}">
+                        <h3><span class="emoji">✅</span> On-Time Rate</h3>
+                        <div class="value">${onTimePercent}%</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${onTime} on-time, ${delayed} delayed
+                        </p>
+                    </div>
+                    <div class="stat-card ${budgetVariance >= 0 ? 'green' : 'red'}">
+                        <h3><span class="emoji">💰</span> Budget vs Actual</h3>
+                        <div class="value" style="font-size: 1.5em;">${variancePercent}%</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            ${budgetVariance >= 0 ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(budgetVariance)} VNĐ
+                        </p>
+                    </div>
+                    <div class="stat-card ${conflicts === 0 ? 'green' : 'red'}">
+                        <h3>âš¡ Conflicts</h3>
+                        <div class="value">${conflicts}</div>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+                            Resource conflicts
+                        </p>
+                    </div>
+                `;
+                const elem_bod_kpi_grid = document.getElementById('bod-kpi-grid');
+                if (elem_bod_kpi_grid) elem_bod_kpi_grid.innerHTML = kpiHtml;
+                
+                // Render Risk Indicators
+                renderBODRiskIndicators(allProjects);
+                
+                // Render Financial Summary
+                renderBODFinancialSummary(allProjects);
+                
+                // Render Resource Utilization
+                renderBODResourceUtilization(allProjects);
+                
+                // Render Milestone Progress
+                renderBODMilestoneProgress(allProjects);
+                
+                // Render Project Details Table
+                renderBODProjectsTable(allProjects);
+            }
+            
+            function renderBODRiskIndicators(allProjects) {
+                const risks = [];
+                const today = new Date().toISOString().split('T')[0];
+                
+                // High-risk projects (>7 days late)
+                allProjects.forEach(project => {
+                    const current = getCurrentMilestone(project);
+                    if (current && isDelayed(current)) {
+                        const deadline = current.actualCompleteDate || current.planCompleteDate;
+                        if (deadline) {
+                            const daysLate = Math.floor((new Date(today) - new Date(deadline)) / (1000 * 60 * 60 * 24));
+                            if (daysLate > 7) {
+                                risks.push({
+                                    type: 'high-delay',
+                                    project: project,
+                                    detail: `${daysLate} ngày trễ`,
+                                    severity: 'high'
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Budget variance risks
+                allProjects.forEach(project => {
+                    if (project.budget && project.actualValue) {
+                        const variance = ((project.actualValue - project.budget) / project.budget) * 100;
+                        if (Math.abs(variance) > 20) {
+                            risks.push({
+                                type: 'budget-variance',
+                                project: project,
+                                detail: `${variance > 0 ? '+' : ''}${variance.toFixed(1)}% variance`,
+                                severity: Math.abs(variance) > 50 ? 'high' : 'medium'
+                            });
+                        }
+                    }
+                });
+                
+                // Resource conflicts
+                const conflicts = detectResourceConflicts();
+                if (conflicts.length > 0) {
+                    risks.push({
+                        type: 'resource-conflict',
+                        detail: `${conflicts.length} members with conflicts`,
+                        severity: 'medium'
+                    });
+                }
+                
+                let html = '';
+                if (risks.length === 0) {
+                    html = '<div style="text-align: center; padding: 30px; color: #059669;">✅ No high-priority risks detected</div>';
+                } else {
+                    html = risks.map(risk => {
+                        const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
+                        const iconColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
+                        return `
+                            <div style="background: ${bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${iconColor};">
+                                <div style="display: flex; justify-content: between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        ${risk.project ? `<div style="font-weight: 600; color: #2d3748; margin-bottom: 4px;">${risk.project.name}</div>` : ''}
+                                        <div style="font-size: 0.85em; color: #718096;">${risk.detail}</div>
+                                    </div>
+                                    <span style="font-size: 1.2em;">${risk.severity === 'high' ? '🔴' : '🟠'}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                const elem_bod_risk_indicators = document.getElementById('bod-risk-indicators');
+                if (elem_bod_risk_indicators) elem_bod_risk_indicators.innerHTML = html;
+            }
+            
+            function renderBODFinancialSummary(allProjects) {
+                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
+                
+                // Revenue by customer
+                const customerRevenue = {};
+                allProjects.forEach(p => {
+                    if (p.customer && p.actualValue) {
+                        if (!customerRevenue[p.customer]) {
+                            customerRevenue[p.customer] = 0;
+                        }
+                        customerRevenue[p.customer] += p.actualValue;
+                    }
+                });
+                
+                const topCustomers = Object.entries(customerRevenue)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                // Performance by Sale
+                const salePerformance = {};
+                allProjects.forEach(p => {
+                    if (p.sale) {
+                        const sale = teamMembers.find(m => m.id === p.sale);
+                        if (sale) {
+                            if (!salePerformance[sale.name]) {
+                                salePerformance[sale.name] = { count: 0, value: 0 };
+                            }
+                            salePerformance[sale.name].count++;
+                            salePerformance[sale.name].value += (p.actualValue || 0);
+                        }
+                    }
+                });
+                
+                const html = `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: 600;">Total Budget:</span>
+                            <span style="color: #667eea;">${new Intl.NumberFormat('vi-VN').format(totalBudget)} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: 600;">Total Actual Value:</span>
+                            <span style="color: #059669;">${new Intl.NumberFormat('vi-VN').format(totalActualValue)} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px solid #e9ecef;">
+                            <span style="font-weight: 600;">Variance:</span>
+                            <span style="color: ${totalActualValue >= totalBudget ? '#059669' : '#c62828'}; font-weight: 600;">
+                                ${totalActualValue >= totalBudget ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(totalActualValue - totalBudget)} VNĐ
+                            </span>
+                        </div>
+                    </div>
+                    
+                    ${topCustomers.length > 0 ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                            <div style="font-weight: 600; margin-bottom: 10px;">Top Customers:</div>
+                            ${topCustomers.map(([customer, revenue]) => `
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em;">
+                                    <span style="color: #718096;">${customer}</span>
+                                    <span style="font-weight: 600;">${new Intl.NumberFormat('vi-VN').format(revenue)} VNĐ</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${Object.keys(salePerformance).length > 0 ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                            <div style="font-weight: 600; margin-bottom: 10px;">Performance by Sale:</div>
+                            ${Object.entries(salePerformance).map(([name, data]) => `
+                                <div style="margin-bottom: 12px; font-size: 0.9em;">
+                                    <div style="color: #2d3748; font-weight: 600;">${name}</div>
+                                    <div style="color: #718096;">${data.count} projects · ${new Intl.NumberFormat('vi-VN').format(data.value)} VNĐ</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                const elem_bod_financial_summary = document.getElementById('bod-financial-summary');
+                if (elem_bod_financial_summary) elem_bod_financial_summary.innerHTML = html;
+            }
+            
+            function renderBODResourceUtilization(allProjects) {
+                const memberWorkload = {};
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                
+                // Count active tasks per member
+                activeProjects.forEach(project => {
+                    // Leader
+                    if (project.leader) {
+                        if (!memberWorkload[project.leader]) {
+                            memberWorkload[project.leader] = { leader: 0, member: 0, team: 0 };
+                        }
+                        memberWorkload[project.leader].leader++;
+                    }
+                    
+                    // Members
+                    (project.members || []).forEach(memberId => {
+                        if (!memberWorkload[memberId]) {
+                            memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
+                        }
+                        memberWorkload[memberId].member++;
+                    });
+                    
+                    // Team assignments
+                    (project.milestones || []).forEach(milestone => {
+                        if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                            milestone.assignedMembers.forEach(memberId => {
+                                if (!memberWorkload[memberId]) {
+                                    memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
+                                }
+                                memberWorkload[memberId].team++;
+                            });
+                        }
+                    });
+                });
+                
+                const sortedWorkload = Object.entries(memberWorkload)
+                    .map(([id, workload]) => ({
+                        member: teamMembers.find(m => m.id === id),
+                        total: workload.leader + workload.member + workload.team,
+                        breakdown: workload
+                    }))
+                    .filter(w => w.member)
+                    .sort((a, b) => b.total - a.total);
+                
+                let html = '';
+                if (sortedWorkload.length === 0) {
+                    html = '<div style="text-align: center; padding: 30px; color: #718096;">No active resource assignments</div>';
+                } else {
+                    html = sortedWorkload.map(w => {
+                        const utilization = Math.min((w.total / 3) * 100, 100);
+                        const color = utilization > 80 ? '#c62828' : utilization > 50 ? '#f57c00' : '#059669';
+                        
+                        return `
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-weight: 600;">${w.member.name}</span>
+                                    <span style="color: ${color}; font-weight: 600;">${w.total} tasks</span>
+                                </div>
+                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: ${color}; width: ${utilization}%; height: 100%;"></div>
+                                </div>
+                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
+                                    ${w.breakdown.leader > 0 ? `👑 ${w.breakdown.leader} leader` : ''}
+                                    ${w.breakdown.member > 0 ? ` | 👥 ${w.breakdown.member} member` : ''}
+                                    ${w.breakdown.team > 0 ? ` | 🏢 ${w.breakdown.team} team` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                const elem_bod_resource_utilization = document.getElementById('bod-resource-utilization');
+                if (elem_bod_resource_utilization) elem_bod_resource_utilization.innerHTML = html;
+            }
+            
+            function renderBODMilestoneProgress(allProjects) {
+                const milestoneStats = {};
+                
+                STANDARD_MILESTONES.forEach(ms => {
+                    milestoneStats[ms.id] = {
+                        name: ms.name,
+                        icon: ms.icon,
+                        total: 0,
+                        completed: 0,
+                        inProgress: 0,
+                        notStarted: 0
+                    };
+                });
+                
+                allProjects.forEach(project => {
+                    (project.milestones || []).forEach(milestone => {
+                        const stat = milestoneStats[milestone.id];
+                        if (!stat) return;
+                        
+                        stat.total++;
+                        if (milestone.actualCompleteDate) {
+                            stat.completed++;
+                        } else if (milestone.actualStartDate || milestone.planStartDate) {
+                            stat.inProgress++;
+                        } else {
+                            stat.notStarted++;
+                        }
+                    });
+                });
+                
+                const html = Object.values(milestoneStats)
+                    .filter(s => s.total > 0)
+                    .map(stat => {
+                        const completePercent = stat.total > 0 ? ((stat.completed / stat.total) * 100).toFixed(0) : 0;
+                        
+                        return `
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>${stat.icon} ${stat.name}</span>
+                                    <span style="font-weight: 600;">${stat.completed}/${stat.total}</span>
+                                </div>
+                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: #059669; width: ${completePercent}%; height: 100%;"></div>
+                                </div>
+                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
+                                    ✅ ${stat.completed} complete | 🔄 ${stat.inProgress} in progress | ⏸️ ${stat.notStarted} not started
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                
+                const elem_bod_milestone_progress = document.getElementById('bod-milestone-progress');
+                if (elem_bod_milestone_progress) elem_bod_milestone_progress.innerHTML = html || '<div style="text-align: center; padding: 30px; color: #718096;">No milestone data</div>';
+            }
+            
+            function renderBODProjectsTable(allProjects) {
+                const html = `
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Project</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Customer</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Leader</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Sale</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Budget</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Actual Value</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allProjects.map(project => {
+                            const leader = teamMembers.find(m => m.id === project.leader);
+                            const sale = teamMembers.find(m => m.id === project.sale);
+                            const current = getCurrentMilestone(project);
+                            const delayed = current && isDelayed(current);
+                            
+                            const statusConfig = {
+                                'planning': { label: 'Planning', color: '#1565c0' },
+                                'in-progress': { label: 'In Progress', color: '#2e7d32' },
+                                'on-hold': { label: 'On Hold', color: '#e65100' },
+                                'delayed': { label: 'Delayed', color: '#c62828' },
+                                'completed': { label: 'Completed', color: '#00695c' },
+                                'cancelled': { label: 'Cancelled', color: '#6a1b9a' }
+                            };
+                            
+                            const status = project.status || 'planning';
+                            const statusInfo = statusConfig[status];
+                            
+                            return `
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 12px;">
+                                        <div style="font-weight: 600; color: #2d3748;">${project.name}</div>
+                                        ${delayed ? '<span style="color: #c62828; font-size: 0.8em;">⚠️ Delayed</span>' : ''}
+                                    </td>
+                                    <td style="padding: 12px; color: #718096;">${project.customer || '-'}</td>
+                                    <td style="padding: 12px;">${leader ? leader.name : '-'}</td>
+                                    <td style="padding: 12px;">${sale ? sale.name : '-'}</td>
+                                    <td style="padding: 12px; text-align: right;">${project.budget ? new Intl.NumberFormat('vi-VN').format(project.budget) : '-'}</td>
+                                    <td style="padding: 12px; text-align: right; font-weight: 600;">${project.actualValue ? new Intl.NumberFormat('vi-VN').format(project.actualValue) : '-'}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <span style="background: ${statusInfo.color}15; color: ${statusInfo.color}; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">
+                                            ${statusInfo.label}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        ${current ? current.icon + ' ' + current.name : '-'}
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                `;
+                
+                const elem_bod_projects_table = document.getElementById('bod-projects-table');
+                if (elem_bod_projects_table) elem_bod_projects_table.innerHTML = html;
+            }
+
+                        window.closeConflictsModal = function() {
                 document.getElementById('conflicts-modal').classList.remove('active');
             };
 
@@ -5110,6 +6550,140 @@
                     showToast('✅ Đã xóa nhân sự!', 'success');
                 }
             };
+
+
+            // ==================== V5.6 TEAMS MANAGEMENT ====================
+            
+            function renderTeamsGrid() {
+                const element = document.getElementById('teams-grid');
+                if (!element) return; // Element not in DOM yet
+                
+                const html = teams.map(team => `
+                    <div class="project-card" style="cursor: pointer;" onclick="editTeam('${team.id}')">
+                        <div style="padding: 20px;">
+                            <h3 style="color: #667eea; margin-bottom: 10px;">
+                                👥 ${team.name}
+                            </h3>
+                            <div style="font-size: 0.9em; color: #718096;">
+                                <strong>${team.members.length}</strong> thành viên
+                            </div>
+                            ${team.members.length > 0 ? `
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                                    ${team.members.slice(0, 3).map(memberId => {
+                                        const member = teamMembers.find(m => m.id === memberId);
+                                        return member ? `
+                                            <span class="member-badge" style="margin: 3px;">${member.name}</span>
+                                        ` : '';
+                                    }).join('')}
+                                    ${team.members.length > 3 ? `
+                                        <span style="color: #718096; font-size: 0.85em;">+${team.members.length - 3} more</span>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <button class="btn btn-sm" onclick="event.stopPropagation(); editTeam('${team.id}')" style="flex: 1;">
+                                    ✏️ Sửa
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTeam('${team.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('teams-grid').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có team nào</p>';
+            }
+            
+            window.openTeamManagementModal = function() {
+                currentEditingTeam = null;
+                document.getElementById('team-modal-title').textContent = 'Tạo Team Mới';
+                document.getElementById('team-name').value = '';
+                
+                // Populate members selection
+                const membersHtml = teamMembers.map(member => `
+                    <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 6px; transition: background 0.2s;"
+                           onmouseover="this.style.background='#f8f9fa'" 
+                           onmouseout="this.style.background='white'">
+                        <input type="checkbox" value="${member.id}" style="margin-right: 10px;">
+                        <span>${member.name}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('team-members-selection').innerHTML = membersHtml;
+                document.getElementById('team-management-modal').classList.add('active');
+            };
+            
+            window.editTeam = function(teamId) {
+                const team = teams.find(t => t.id === teamId);
+                if (!team) return;
+                
+                currentEditingTeam = team;
+                document.getElementById('team-modal-title').textContent = 'Sửa Team';
+                document.getElementById('team-name').value = team.name;
+                
+                // Populate and check members
+                const membersHtml = teamMembers.map(member => `
+                    <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 6px; transition: background 0.2s;"
+                           onmouseover="this.style.background='#f8f9fa'" 
+                           onmouseout="this.style.background='white'">
+                        <input type="checkbox" value="${member.id}" 
+                               ${team.members.includes(member.id) ? 'checked' : ''} 
+                               style="margin-right: 10px;">
+                        <span>${member.name}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('team-members-selection').innerHTML = membersHtml;
+                document.getElementById('team-management-modal').classList.add('active');
+            };
+            
+            window.saveTeam = function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('team-name').value.trim();
+                const checkedBoxes = document.querySelectorAll('#team-members-selection input[type="checkbox"]:checked');
+                const members = Array.from(checkedBoxes).map(cb => cb.value);
+                
+                if (!name) {
+                    alert('Vui lòng nhập tên team!');
+                    return;
+                }
+                
+                if (currentEditingTeam) {
+                    // Update existing
+                    currentEditingTeam.name = name;
+                    currentEditingTeam.members = members;
+                    showToast('✅ Đã cập nhật team!', 'success');
+                } else {
+                    // Create new
+                    const newTeam = {
+                        id: 'team_' + Date.now(),
+                        name: name,
+                        members: members
+                    };
+                    teams.push(newTeam);
+                    showToast('✅ Đã tạo team mới!', 'success');
+                }
+                
+                saveToStorage();
+                closeTeamManagementModal();
+                renderTeamsGrid();
+            };
+            
+            window.deleteTeam = function(teamId) {
+                if (!confirm('Bạn có chắc muốn xóa team này?')) return;
+                
+                teams = teams.filter(t => t.id !== teamId);
+                saveToStorage();
+                renderTeamsGrid();
+                showToast('✅ Đã xóa team!', 'success');
+            };
+            
+            window.closeTeamManagementModal = function() {
+                document.getElementById('team-management-modal').classList.remove('active');
+                currentEditingTeam = null;
+            };
+
 
             // ============= IMPORT/EXPORT ============= //
             window.exportData = window.exportToJSON = function() {
@@ -5189,5 +6763,119 @@
             }
         })();
     </script>
+
+    <!-- Teams Management Modal -->
+    <div id="team-management-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="team-modal-title">Tạo Team Mới</h2>
+                <button class="close-modal" onclick="closeTeamManagementModal()">&times;</button>
+            </div>
+            <form id="team-form" onsubmit="saveTeam(event)">
+                <div class="form-group">
+                    <label>🏷️ Tên Team *</label>
+                    <input type="text" id="team-name" required placeholder="VD: Installation Team A">
+                </div>
+                
+                <div class="form-group">
+                    <label>👥 Thành Viên</label>
+                    <div id="team-members-selection" style="max-height: 300px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px;">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Lưu Team</button>
+                    <button type="button" class="btn" onclick="closeTeamManagementModal()">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- v5.6 Calendar Tooltip -->
+    <div id="calendar-tooltip" style="display: none; position: fixed; z-index: 10000; background: white; 
+         border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 400px; 
+         max-height: 500px; overflow-y: auto;"></div>
+
+
+    <script>
+        // Add team member to milestone
+        window.addTeamMember = function(milestoneId) {
+            const select = document.getElementById(`member-select-${milestoneId}`);
+            const memberId = select.value;
+            const memberName = select.options[select.selectedIndex].text;
+            
+            if (!memberId) {
+                alert('Vui lòng chọn member!');
+                return;
+            }
+            
+            // Get current selected members
+            const hiddenInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
+            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
+            
+            // Check if already added
+            if (currentMembers.includes(memberId)) {
+                alert('Member này đã được thêm rồi!');
+                return;
+            }
+            
+            // Add to list
+            currentMembers.push(memberId);
+            hiddenInput.value = currentMembers.join(',');
+            
+            // Add visual tag
+            const container = document.getElementById(`selected-members-${milestoneId}`);
+            const emptyMsg = container.querySelector('.empty-message');
+            if (emptyMsg) emptyMsg.style.display = 'none';
+            
+            const tag = document.createElement('div');
+            tag.className = 'member-tag';
+            tag.setAttribute('data-member-id', memberId);
+            tag.style.cssText = 'display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;';
+            tag.innerHTML = `
+                <span>👤 ${memberName}</span>
+                <button type="button" 
+                        onclick="removeTeamMember('${milestoneId}', '${memberId}')"
+                        style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                        title="Xóa">
+                    ×
+                </button>
+            `;
+            container.insertBefore(tag, emptyMsg);
+            
+            // Reset select
+            select.value = '';
+            
+            // Show success
+            showToast('✅ Đã thêm ' + memberName, 'success');
+        };
+        
+        // Remove team member from milestone
+        window.removeTeamMember = function(milestoneId, memberId) {
+            // Get current selected members
+            const hiddenInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
+            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
+            
+            // Remove from array
+            const newMembers = currentMembers.filter(id => id !== memberId);
+            hiddenInput.value = newMembers.join(',');
+            
+            // Remove visual tag
+            const container = document.getElementById(`selected-members-${milestoneId}`);
+            const tag = container.querySelector(`[data-member-id="${memberId}"]`);
+            if (tag) tag.remove();
+            
+            // Show empty message if no members
+            const emptyMsg = container.querySelector('.empty-message');
+            if (newMembers.length === 0 && emptyMsg) {
+                emptyMsg.style.display = 'block';
+            }
+            
+            showToast('✅ Đã xóa member', 'success');
+        };
+    </script>
+
 </body>
 </html>
