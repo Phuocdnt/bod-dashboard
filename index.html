@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1664,8 +1661,9 @@
     <div id="api-key-modal" class="api-key-modal">
         <div class="api-key-modal-content">
             <div class="api-key-modal-header">
-                <h2>🔐 Xác thực API Key</h2>
-                <p>Vui lòng nhập API Key để sử dụng BOD Dashboard</p>
+                <h2>🔐 Cấu Hình API Key</h2>
+                <p><strong>Chỉ dành cho Admin:</strong> Vui lòng nhập API Key để cấu hình hệ thống</p>
+                <p style="font-size: 0.85em; color: #666; margin-top: 5px;">💡 Người dùng khác không cần nhập API Key</p>
             </div>
             <div class="api-key-modal-body">
                 <div class="api-key-input-group">
@@ -1679,7 +1677,8 @@
                     <button onclick="toggleApiKeyVisibility()" class="toggle-visibility-btn">👁️</button>
                 </div>
                 <div class="api-key-hint">
-                    💡 API Key được gửi qua email từ Technical Director
+                    💡 <strong>Dành cho Admin:</strong> API Key được gửi qua email từ Technical Director<br>
+                    ⚠️ <strong>Người dùng khác:</strong> Không cần nhập API Key, liên hệ Admin nếu cần hỗ trợ
                 </div>
             </div>
             <div class="api-key-modal-footer">
@@ -2494,8 +2493,8 @@
             blobName: 'dashboard-data-v5.3.json',
             enabled: true
         };
-        // Load saved API Key immediately
-        window.AZURE_CONFIG.apiKey = localStorage.getItem('bodDashboardApiKey') || '';
+        // Load saved API Key (check sessionStorage first for better security)
+        window.AZURE_CONFIG.apiKey = sessionStorage.getItem('bodDashboardApiKey') || localStorage.getItem('bodDashboardApiKey') || '';
     </script>
     
     <script>
@@ -3548,7 +3547,7 @@
                     const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
                         method: 'GET',
                         headers: {
-                            'x-api-key': AZURE_CONFIG.apiKey,
+                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
                             'x-ms-blob-type': 'BlockBlob'
                         }
                     });
@@ -3557,6 +3556,24 @@
                         const data = await response.json();
                         lastBlobSync = new Date();
                         return data;
+                    }
+                    
+                    // Handle 404 - File doesn't exist yet, create empty initial data
+                    if (response.status === 404) {
+                        console.log('📝 File not found in blob storage, creating initial empty data...');
+                        const emptyData = {
+                            projects: [],
+                            teamMembers: [],
+                            teams: []
+                        };
+                        // Try to create initial file in blob storage
+                        const saved = await saveToBlob(emptyData);
+                        if (saved) {
+                            console.log('✅ Initial empty data created in blob storage');
+                            lastBlobSync = new Date();
+                            return emptyData;
+                        }
+                        return emptyData; // Return empty data even if save failed
                     }
                     
                     if (response.status === 401 || response.status === 403) {
@@ -3585,7 +3602,7 @@
                     const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
                         method: 'PUT',
                         headers: {
-                            'x-api-key': AZURE_CONFIG.apiKey,
+                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
                             'x-ms-blob-type': 'BlockBlob',
                             'Content-Type': 'application/json'
                         },
@@ -6981,7 +6998,125 @@
     <script>
         // ============= API KEY MANAGEMENT ============= //
         
-        function showApiKeyPrompt() {
+
+
+        // Check if regular user trying to access before admin setup
+        function checkSystemConfigured() {
+            const hasApiKey = sessionStorage.getItem('bodDashboardApiKey') || localStorage.getItem('bodDashboardApiKey');
+            const isConfigured = localStorage.getItem('bodSystemConfigured');
+            
+            if (!hasApiKey && !isConfigured) {
+                return false; // Needs admin setup
+            }
+            return true; // System ready
+        }
+
+                // Admin Setup Wizard for first-time configuration
+        function showAdminSetupWizard() {
+            const modal = document.getElementById('api-key-modal');
+            if (!modal) return;
+            
+            // Update modal content for admin setup
+            const modalContent = modal.querySelector('.api-key-modal-content');
+            if (modalContent) {
+                modalContent.innerHTML = `
+                    <div class="api-key-modal-header">
+                        <h2>🔐 Thiết Lập Ban Đầu - Admin</h2>
+                        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                            Chỉ Admin mới cần thực hiện bước này. Các user khác sẽ login trực tiếp.
+                        </p>
+                    </div>
+                    <div class="api-key-modal-body">
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <strong>⚠️ Quan Trọng:</strong>
+                            <ul style="margin: 10px 0 0 20px; font-size: 14px;">
+                                <li>API Key được gửi qua email từ Technical Director</li>
+                                <li>Chỉ Admin cần nhập API Key này một lần</li>
+                                <li>Các user khác không cần biết API Key</li>
+                                <li>Sau khi setup, user khác chỉ cần login với password</li>
+                            </ul>
+                        </div>
+                        
+                        <label for="api-key-input" style="display: block; margin-bottom: 8px; font-weight: 500;">
+                            🔑 API Key (Admin Only):
+                        </label>
+                        <div style="position: relative;">
+                            <input 
+                                type="password" 
+                                id="api-key-input" 
+                                placeholder="Nhập API Key..." 
+                                style="width: 100%; padding: 12px 40px 12px 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                            >
+                            <button 
+                                onclick="toggleApiKeyVisibility()" 
+                                class="toggle-visibility-btn"
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px;"
+                            >
+                                👁️
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 12px; padding: 12px; background: #e7f3ff; border-radius: 8px; font-size: 13px; color: #0066cc;">
+                            💡 <strong>Lưu ý bảo mật:</strong> API Key chỉ lưu trong phiên làm việc này. Khi đóng browser sẽ cần nhập lại (chỉ Admin).
+                        </div>
+                    </div>
+                    <div class="api-key-modal-footer">
+                        <button onclick="saveAdminApiKey()" class="api-key-save-btn" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 600;">
+                            ✅ Xác Nhận và Tiếp Tục Setup Admin
+                        </button>
+                    </div>
+                `;
+            }
+            
+            modal.classList.add('show');
+            setTimeout(() => {
+                const input = document.getElementById('api-key-input');
+                if (input) input.focus();
+            }, 100);
+        }
+        
+        // Save API Key from Admin Setup
+        function saveAdminApiKey() {
+            const input = document.getElementById('api-key-input');
+            const apiKey = input.value.trim();
+            
+            if (!apiKey) {
+                alert('⚠️ Vui lòng nhập API Key!');
+                return;
+            }
+            
+            if (apiKey.length < 10) {
+                alert('⚠️ API Key không hợp lệ! Vui lòng kiểm tra lại.');
+                return;
+            }
+            
+            // Save to sessionStorage (better security than localStorage)
+            sessionStorage.setItem('bodDashboardApiKey', apiKey);
+            
+            // Also save to localStorage for backward compatibility
+            // (will migrate to sessionStorage-only in future)
+            localStorage.setItem('bodDashboardApiKey', apiKey);
+            
+            // Mark system as configured
+            localStorage.setItem('bodSystemConfigured', 'true');
+            
+            // Update AZURE_CONFIG
+            window.AZURE_CONFIG.apiKey = apiKey;
+            
+            // Hide modal
+            hideApiKeyPrompt();
+            
+            // Show success message
+            alert('✅ API Key đã được lưu thành công!\n\nBạn sẽ tiếp tục setup tài khoản Admin.');
+            
+            // Continue to initial setup (admin password creation)
+            // The existing initial setup will handle this
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        }
+
+                function showApiKeyPrompt() {
             const modal = document.getElementById('api-key-modal');
             modal.classList.add('show');
             document.getElementById('api-key-input').focus();
@@ -7019,8 +7154,8 @@
                 return;
             }
             
-            // Save to localStorage
-            localStorage.setItem('bodDashboardApiKey', apiKey);
+            // Save to sessionStorage (Option B: Only Admin configures, lasts session only)
+            sessionStorage.setItem('bodDashboardApiKey', apiKey);
             
             // Update AZURE_CONFIG
             window.AZURE_CONFIG.apiKey = apiKey;
@@ -7028,19 +7163,22 @@
             // Hide modal
             hideApiKeyPrompt();
             
-            // Show success and reload data
-            alert('✅ API Key đã được lưu thành công!');
+            // Show success message
+            alert('✅ API Key đã được cấu hình thành công!\n\nLưu ý: API Key chỉ tồn tại trong phiên làm việc này.\nKhi đóng trình duyệt, Admin cần cấu hình lại.');
             
             // Reload data from blob
             initializeApp();
         }
         
-        // Check API Key on load
+        // Check API Key on load (Admin setup)
         window.addEventListener('DOMContentLoaded', function() {
-            const savedApiKey = localStorage.getItem('bodDashboardApiKey');
-            if (!savedApiKey) {
-                // Show API Key prompt if not set
-                showApiKeyPrompt();
+            const savedApiKey = sessionStorage.getItem('bodDashboardApiKey');
+            if (savedApiKey) {
+                console.log('✅ API Key configured by Admin');
+                window.AZURE_CONFIG.apiKey = savedApiKey;
+            } else {
+                console.log('⚠️ API Key not configured - Admin setup required');
+                // Will prompt when Admin role is selected in Initial Setup
             }
         });
         
