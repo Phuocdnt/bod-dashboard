@@ -2487,14 +2487,14 @@
     </div>
 
     <script>
-        // Global AZURE_CONFIG - Must be defined early
+        // Global AZURE_CONFIG - Must be defined early for API Key modal
         window.AZURE_CONFIG = {
             functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
             apiKey: '',
             blobName: 'dashboard-data-v5.3.json',
             enabled: true
         };
-        // Load API Key from localStorage immediately
+        // Load saved API Key immediately
         window.AZURE_CONFIG.apiKey = localStorage.getItem('bodDashboardApiKey') || '';
     </script>
     
