@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -3542,7 +3545,7 @@
                 }
                 
                 try {
-                    const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
+                    const response = await fetch(`${AZURE_CONFIG.functionUrl}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
@@ -3597,7 +3600,7 @@
                     isSyncing = true;
                     updateSyncStatus();
                     
-                    const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
+                    const response = await fetch(`${AZURE_CONFIG.functionUrl}`, {
                         method: 'PUT',
                         headers: {
                             'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
