@@ -2487,6 +2487,18 @@
     </div>
 
     <script>
+        // Global AZURE_CONFIG - Must be defined early
+        window.AZURE_CONFIG = {
+            functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
+            apiKey: '',
+            blobName: 'dashboard-data-v5.3.json',
+            enabled: true
+        };
+        // Load API Key from localStorage immediately
+        window.AZURE_CONFIG.apiKey = localStorage.getItem('bodDashboardApiKey') || '';
+    </script>
+    
+    <script>
         (function() {
             'use strict';
             
@@ -2503,13 +2515,8 @@
                 { id: 'handover', name: 'Handover', icon: '✅' }
             ];
 
-            // Azure Blob Storage Configuration
-            const AZURE_CONFIG = {
-                functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
-                apiKey: localStorage.getItem('bodDashboardApiKey') || '',
-                blobName: 'dashboard-data-v5.3.json',
-                enabled: true
-            };
+            // Azure Blob Storage Configuration (use global)
+            const AZURE_CONFIG = window.AZURE_CONFIG;
 
             // Data Storage
             let projects = [];
@@ -7016,7 +7023,7 @@
             localStorage.setItem('bodDashboardApiKey', apiKey);
             
             // Update AZURE_CONFIG
-            AZURE_CONFIG.apiKey = apiKey;
+            window.AZURE_CONFIG.apiKey = apiKey;
             
             // Hide modal
             hideApiKeyPrompt();
