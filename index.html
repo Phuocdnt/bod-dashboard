@@ -1,5 +1,4 @@
 
-﻿
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -1508,34 +1507,186 @@
                 opacity: 0;
             }
         }
-    
-        /* Emoji support for consistent rendering */
-        .emoji, 
-        h3:has(emoji), 
-        button:has(emoji),
-        .stat-card h3 {
-            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+
+        /* API Key Modal Styles */
+        .api-key-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
         }
-        
-        /* Fix emoji in buttons */
-        button .emoji,
-        button span:has(emoji) {
-            display: inline-block;
-            margin: 0 4px;
-            vertical-align: middle;
-            line-height: 1;
-        }
-        
-        /* Ensure emoji don't break layout */
-        .stat-card h3,
-        .modal h3 {
+
+        .api-key-modal.show {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+        }
+
+        .api-key-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .api-key-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .api-key-modal-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+        }
+
+        .api-key-modal-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .api-key-modal-body {
+            padding: 30px;
+        }
+
+        .api-key-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .api-key-input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 15px;
+            padding-right: 50px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .api-key-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .toggle-visibility-btn {
+            position: absolute;
+            right: 10px;
+            top: 42px;
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: transform 0.2s;
+        }
+
+        .toggle-visibility-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .api-key-hint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #666;
+            border-left: 4px solid #667eea;
+        }
+
+        .api-key-modal-footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .api-key-save-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .api-key-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .api-key-save-btn:active {
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
+    <!-- API Key Authentication Modal -->
+    <div id="api-key-modal" class="api-key-modal">
+        <div class="api-key-modal-content">
+            <div class="api-key-modal-header">
+                <h2>🔐 Xác thực API Key</h2>
+                <p>Vui lòng nhập API Key để sử dụng BOD Dashboard</p>
+            </div>
+            <div class="api-key-modal-body">
+                <div class="api-key-input-group">
+                    <label for="api-key-input">API Key:</label>
+                    <input 
+                        type="password" 
+                        id="api-key-input" 
+                        placeholder="Nhập API Key từ email..."
+                        class="api-key-input"
+                    />
+                    <button onclick="toggleApiKeyVisibility()" class="toggle-visibility-btn">👁️</button>
+                </div>
+                <div class="api-key-hint">
+                    💡 API Key được gửi qua email từ Technical Director
+                </div>
+            </div>
+            <div class="api-key-modal-footer">
+                <button onclick="saveApiKey()" class="api-key-save-btn">✅ Xác nhận</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
         <div class="header">
             <h1>
@@ -1565,6 +1716,10 @@
                             <span>🔑</span>
                             <span>Đổi Mật Khẩu</span>
                         </div>
+                        <div class="user-menu-action" onclick="showApiKeyPrompt(); toggleUserMenu();">
+                            <span>🔐</span>
+                            <span>Cập nhật API Key</span>
+                        </div>
                         <div class="user-menu-divider"></div>
                         <div class="user-menu-action logout" onclick="logout()">
                             <span>🚪</span>
@@ -1586,12 +1741,12 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="overview"><span class="emoji">📊</span> Tổng Quan</button>
+            <button class="nav-tab active" data-tab="overview">📊 Tổng Quan</button>
             <button class="nav-tab" data-tab="projects">📁 Dự Án</button>
-            <button class="nav-tab" data-tab="calendar"><span class="emoji">📅</span> Lịch Làm Việc</button>
-            <button class="nav-tab" data-tab="team"><span class="emoji">👥</span> Nhân Sự</button>
-            <button class="nav-tab" data-tab="teams-management"><span class="emoji">🏢</span> Teams</button>
-            <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;"><span class="emoji">📊</span> BOD Summary</button>
+            <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
+            <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
+            <button class="nav-tab" data-tab="teams-management">🏢 Teams</button>
+            <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;">📊 BOD Summary</button>
             <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
         </div>
 
@@ -1765,7 +1920,7 @@
 
             <!-- Project Details Table -->
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
-                <h3 style="color: #2d3748; margin-bottom: 20px;"><span class="emoji">📋</span> Project Details</h3>
+                <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Project Details</h3>
                 <div style="overflow-x: auto;">
                     <table id="bod-projects-table" style="width: 100%; border-collapse: collapse; font-size: 0.9em;"></table>
                 </div>
@@ -1791,7 +1946,7 @@
             </div>
 
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px;"><span class="emoji">💾</span> Quản Lý Dữ Liệu</h3>
+                <h3 style="margin-bottom: 15px;">💾 Quản Lý Dữ Liệu</h3>
                 <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <strong>⚠️ Lưu ý:</strong> Dashboard này đồng bộ dữ liệu qua Azure Blob Storage.
                 </div>
@@ -1808,7 +1963,7 @@
             </div>
 
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px;"><span class="emoji">🗑️</span> Xóa Dữ Liệu</h3>
+                <h3 style="margin-bottom: 15px;">🗑️ Xóa Dữ Liệu</h3>
                 <button class="btn btn-danger" onclick="clearAllData()">
                     <span>⚠️</span>
                     Xóa Tất Cả Dữ Liệu
@@ -1865,7 +2020,7 @@
                 
                 <!-- TEAM SECTION -->
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;"><span class="emoji">👥</span> Phân Công Nhân Sự</h3>
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">👥 Phân Công Nhân Sự</h3>
                     
                     <div class="form-group">
                         <label>🎯 Leader (Người Phụ Trách Chính) *</label>
@@ -1901,7 +2056,7 @@
                 
                 <!-- SURVEY SECTION -->
                 <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;"><span class="emoji">📋</span> Survey (3 Vòng Khảo Sát)</h3>
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Survey (3 Vòng Khảo Sát)</h3>
                     
                     <div class="survey-tabs">
                         <button type="button" class="survey-tab active" onclick="switchSurveyTab(1)">Survey 1</button>
@@ -2273,7 +2428,8 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closePasswordResetModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Reset Password
+                    <button type="submit" class="btn btn-primary">
+                        💾 Reset Password
                     </button>
                 </div>
             </form>
@@ -2309,7 +2465,8 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closeChangePasswordModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Đổi Mật Khẩu
+                    <button type="submit" class="btn btn-primary">
+                        💾 Đổi Mật Khẩu
                     </button>
                 </div>
             </form>
@@ -2347,7 +2504,8 @@
 
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
-                sasUrl: 'https://boddashboardstorage.blob.core.windows.net/dashboarddatav5?sp=racwdli&st=2025-11-11T03:15:38Z&se=2026-12-31T16:59:59Z&spr=https&sv=2024-11-04&sr=c&sig=nS4hTMAasYnPi3fUHoEz0GC3EEd3lFELDb6SLWJ66Es%3D',
+                functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
+                apiKey: localStorage.getItem('bodDashboardApiKey') || '',
                 blobName: 'dashboard-data-v5.3.json',
                 enabled: true
             };
@@ -3373,17 +3531,18 @@
             // ============= STORAGE ============= //
             async function loadFromBlob() {
                 if (!AZURE_CONFIG.enabled) return null;
+                if (!AZURE_CONFIG.apiKey) {
+                    console.warn('API Key not set');
+                    return null;
+                }
                 
                 try {
-                    // Handle both container-level and blob-level SAS URLs
-                    const baseUrl = AZURE_CONFIG.sasUrl.split('?')[0];
-                    const params = AZURE_CONFIG.sasUrl.split('?')[1];
-                    const blobUrl = baseUrl.includes(AZURE_CONFIG.blobName) 
-                        ? AZURE_CONFIG.sasUrl  // Already has blob name - use as-is
-                        : `${baseUrl}/${AZURE_CONFIG.blobName}?${params}`;  // Container level - append blob name
-                    const response = await fetch(blobUrl, {
+                    const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
                         method: 'GET',
-                        headers: { 'x-ms-blob-type': 'BlockBlob' }
+                        headers: {
+                            'x-api-key': AZURE_CONFIG.apiKey,
+                            'x-ms-blob-type': 'BlockBlob'
+                        }
                     });
                     
                     if (response.ok) {
@@ -3391,6 +3550,12 @@
                         lastBlobSync = new Date();
                         return data;
                     }
+                    
+                    if (response.status === 401 || response.status === 403) {
+                        alert('❌ API Key không hợp lệ! Vui lòng kiểm tra lại.');
+                        showApiKeyPrompt();
+                    }
+                    
                     return null;
                 } catch (error) {
                     console.error('Error loading from blob:', error);
@@ -3400,20 +3565,19 @@
 
             async function saveToBlob(data) {
                 if (!AZURE_CONFIG.enabled) return false;
+                if (!AZURE_CONFIG.apiKey) {
+                    console.warn('API Key not set');
+                    return false;
+                }
                 
                 try {
                     isSyncing = true;
                     updateSyncStatus();
                     
-                    // Handle both container-level and blob-level SAS URLs
-                    const baseUrl = AZURE_CONFIG.sasUrl.split('?')[0];
-                    const params = AZURE_CONFIG.sasUrl.split('?')[1];
-                    const blobUrl = baseUrl.includes(AZURE_CONFIG.blobName) 
-                        ? AZURE_CONFIG.sasUrl  // Already has blob name - use as-is
-                        : `${baseUrl}/${AZURE_CONFIG.blobName}?${params}`;  // Container level - append blob name
-                    const response = await fetch(blobUrl, {
+                    const response = await fetch(`${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`, {
                         method: 'PUT',
                         headers: {
+                            'x-api-key': AZURE_CONFIG.apiKey,
                             'x-ms-blob-type': 'BlockBlob',
                             'Content-Type': 'application/json'
                         },
@@ -3426,6 +3590,12 @@
                         updateSyncStatus();
                         return true;
                     }
+                    
+                    if (response.status === 401 || response.status === 403) {
+                        alert('❌ API Key không hợp lệ! Vui lòng kiểm tra lại.');
+                        showApiKeyPrompt();
+                    }
+                    
                     isSyncing = false;
                     return false;
                 } catch (error) {
@@ -3744,7 +3914,6 @@
             function renderOverview() {
                 const visibleProjects = getVisibleProjects();
                 const delayed = calculateDelayedProjects();
-                const conflicts = detectConflicts().length;
                 
                 const statsHtml = `
                     <div class="stat-card">
@@ -3755,13 +3924,13 @@
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
                     <div class="stat-card green">
-                        <h3><span class="emoji">▶️</span> Đang Thực Hiện</h3>
+                        <h3>▶️ Đang Thực Hiện</h3>
                         <div class="value">${visibleProjects.length}</div>
                     </div>
                     <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
-                        <h3><span class="emoji">⚠️</span> Trễ Tiến Độ</h3>
+                        <h3>⚠️ Trễ Tiến Độ</h3>
                         <div class="value">${delayed.filter(p => canViewProject(p)).length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
@@ -3769,11 +3938,11 @@
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>⚡ Xung Đột Lịch</h3>
-                        <div class="value">${conflicts}</div>
+                        <div class="value">${detectResourceConflicts().length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card orange">
-                        <h3><span class="emoji">👥</span> Tổng Nhân Sự</h3>
+                        <h3>👥 Tổng Nhân Sự</h3>
                         <div class="value">${teamMembers.length}</div>
                     </div>
                 `;
@@ -4114,7 +4283,8 @@
                         ${showActions && project.history && project.history.length > 0 ? `
                             <!-- v5.3 Project Tabs -->
                             <div class="project-tabs" style="margin-top: 20px;">
-                                <button class="project-tab active" onclick="switchProjectTab('${project.id}', 'overview')"><span class="emoji">📊</span> Tổng Quan
+                                <button class="project-tab active" onclick="switchProjectTab('${project.id}', 'overview')">
+                                    📊 Tổng Quan
                                 </button>
                                 <button class="project-tab" onclick="switchProjectTab('${project.id}', 'history')">
                                     📜 Lịch Sử (${project.history.length})
@@ -4179,7 +4349,7 @@
                         ${showActions ? `
                             <div style="display: flex; gap: 10px; margin-top: 20px;">
                                 <button class="btn btn-primary" onclick="editProject('${project.id}')" style="flex: 1;">✏️ Sửa</button>
-                                <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa</button>
+                                <button class="btn btn-danger" onclick="deleteProject('${project.id}')" style="flex: 1;">🗑️ Xóa</button>
                             </div>
                         ` : ''}
                     </div>
@@ -4286,7 +4456,7 @@
                 let html = `
                     <div style="padding: 20px;">
                         <div style="background: #ffebee; padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #c62828;">
-                            <h3 style="color: #c62828; margin-bottom: 10px;"><span class="emoji">⚠️</span> Phát hiện ${conflicts.length} xung đột</h3>
+                            <h3 style="color: #c62828; margin-bottom: 10px;">⚠️ Phát hiện ${conflicts.length} xung đột</h3>
                             <p style="color: #718096;">Các thành viên sau đang làm việc trên nhiều milestone cùng lúc:</p>
                         </div>
                 `;
@@ -4349,7 +4519,7 @@
                 const onTime = activeProjects.length - delayed;
                 const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
                 
-                const conflicts = detectConflicts().length;
+                const conflicts = detectResourceConflicts().length;
                 
                 // Render KPI Cards
                 const kpiHtml = `
@@ -4361,14 +4531,14 @@
                         </p>
                     </div>
                     <div class="stat-card ${onTimePercent >= 70 ? 'green' : 'orange'}">
-                        <h3><span class="emoji">✅</span> On-Time Rate</h3>
+                        <h3>✅ On-Time Rate</h3>
                         <div class="value">${onTimePercent}%</div>
                         <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
                             ${onTime} on-time, ${delayed} delayed
                         </p>
                     </div>
                     <div class="stat-card ${budgetVariance >= 0 ? 'green' : 'red'}">
-                        <h3><span class="emoji">💰</span> Budget vs Actual</h3>
+                        <h3>💰 Budget vs Actual</h3>
                         <div class="value" style="font-size: 1.5em;">${variancePercent}%</div>
                         <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
                             ${budgetVariance >= 0 ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(budgetVariance)} VNĐ
@@ -5076,7 +5246,7 @@
                             
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <button class="btn btn-primary" onclick="editTeamMember('${member.id}')" style="flex: 1;">✏️ Sửa</button>
-                                <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa</button>
+                                <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')" style="flex: 1;">🗑️ Xóa</button>
                             </div>
                         </div>
                     `;
@@ -5324,7 +5494,7 @@
                                         <button type="button" 
                                                 onclick="addTeamMember('${milestone.id}')"
                                                 style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
-                                            ➕ Add
+                                            âž• Add
                                         </button>
                                     </div>
                                     
@@ -6080,7 +6250,7 @@
                 const onTime = activeProjects.length - delayed;
                 const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
                 
-                const conflicts = detectConflicts().length;
+                const conflicts = detectResourceConflicts().length;
                 
                 // Render KPI Cards
                 const kpiHtml = `
@@ -6092,14 +6262,14 @@
                         </p>
                     </div>
                     <div class="stat-card ${onTimePercent >= 70 ? 'green' : 'orange'}">
-                        <h3><span class="emoji">✅</span> On-Time Rate</h3>
+                        <h3>✅ On-Time Rate</h3>
                         <div class="value">${onTimePercent}%</div>
                         <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
                             ${onTime} on-time, ${delayed} delayed
                         </p>
                     </div>
                     <div class="stat-card ${budgetVariance >= 0 ? 'green' : 'red'}">
-                        <h3><span class="emoji">💰</span> Budget vs Actual</h3>
+                        <h3>💰 Budget vs Actual</h3>
                         <div class="value" style="font-size: 1.5em;">${variancePercent}%</div>
                         <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
                             ${budgetVariance >= 0 ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(budgetVariance)} VNĐ
@@ -6584,7 +6754,8 @@
                                 <button class="btn btn-sm" onclick="event.stopPropagation(); editTeam('${team.id}')" style="flex: 1;">
                                     ✏️ Sửa
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTeam('${team.id}')" style="flex: 1;"><span class="emoji">🗑️</span> Xóa
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTeam('${team.id}')" style="flex: 1;">
+                                    🗑️ Xóa
                                 </button>
                             </div>
                         </div>
@@ -6785,7 +6956,7 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><span class="emoji">💾</span> Lưu Team</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Team</button>
                     <button type="button" class="btn" onclick="closeTeamManagementModal()">Hủy</button>
                 </div>
             </form>
@@ -6800,6 +6971,81 @@
 
 
     <script>
+        // ============= API KEY MANAGEMENT ============= //
+        
+        function showApiKeyPrompt() {
+            const modal = document.getElementById('api-key-modal');
+            modal.classList.add('show');
+            document.getElementById('api-key-input').focus();
+        }
+        
+        function hideApiKeyPrompt() {
+            const modal = document.getElementById('api-key-modal');
+            modal.classList.remove('show');
+        }
+        
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('api-key-input');
+            const btn = document.querySelector('.toggle-visibility-btn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+        
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            const apiKey = input.value.trim();
+            
+            if (!apiKey) {
+                alert('⚠️ Vui lòng nhập API Key!');
+                return;
+            }
+            
+            // Validate API key format (basic check)
+            if (apiKey.length < 10) {
+                alert('⚠️ API Key không hợp lệ! Vui lòng kiểm tra lại.');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('bodDashboardApiKey', apiKey);
+            
+            // Update AZURE_CONFIG
+            AZURE_CONFIG.apiKey = apiKey;
+            
+            // Hide modal
+            hideApiKeyPrompt();
+            
+            // Show success and reload data
+            alert('✅ API Key đã được lưu thành công!');
+            
+            // Reload data from blob
+            initializeApp();
+        }
+        
+        // Check API Key on load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedApiKey = localStorage.getItem('bodDashboardApiKey');
+            if (!savedApiKey) {
+                // Show API Key prompt if not set
+                showApiKeyPrompt();
+            }
+        });
+        
+        // Add keyboard shortcut for API Key prompt (Enter key)
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('api-key-modal');
+            if (modal.classList.contains('show') && e.key === 'Enter') {
+                saveApiKey();
+            }
+        });
+        
+        // ============= EXISTING CODE ============= //
+        
         // Add team member to milestone
         window.addTeamMember = function(milestoneId) {
             const select = document.getElementById(`member-select-${milestoneId}`);
