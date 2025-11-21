@@ -1878,7 +1878,7 @@
                         Xuất Excel
                     </button>
                     <button class="btn btn-primary" onclick="openProjectModal()">
-                        <span>âž•</span>
+                        <span>➕</span>
                         Thêm Dự Án Mới
                     </button>
                 </div>
@@ -1907,7 +1907,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #2d3748;">Quản Lý Nhân Sự</h2>
                 <button class="btn btn-primary" onclick="openTeamModal()">
-                    <span>âž•</span>
+                    <span>➕</span>
                     Thêm Nhân Sự
                 </button>
             </div>
@@ -1919,7 +1919,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color: #2d3748;">🏢 Quản Lý Teams</h2>
                 <button class="btn btn-primary" onclick="openTeamManagementModal()">
-                    <span>âž•</span>
+                    <span>➕</span>
                     Tạo Team Mới
                 </button>
             </div>
@@ -5769,7 +5769,7 @@
                                         <button type="button" 
                                                 onclick="addTeamMember('${milestone.id}')"
                                                 style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
-                                            âž• Add
+                                            ➕ Add
                                         </button>
                                     </div>
                                     
@@ -7317,9 +7317,19 @@
     <script>
         // Add team member to milestone
         window.addTeamMember = function(milestoneId) {
+            console.log('[addTeamMember] Called with milestoneId:', milestoneId);
+            
             const select = document.getElementById(`member-select-${milestoneId}`);
+            if (!select) {
+                console.error('[addTeamMember] Select element not found for milestone:', milestoneId);
+                alert('Lỗi: Không tìm thấy dropdown member! Vui lòng thử lại.');
+                return;
+            }
+            
             const memberId = select.value;
             const memberName = select.options[select.selectedIndex].text;
+            
+            console.log('[addTeamMember] Selected member:', { memberId, memberName });
             
             if (!memberId) {
                 alert('Vui lòng chọn member!');
@@ -7328,7 +7338,14 @@
             
             // Get current selected members
             const hiddenInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
-            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
+            if (!hiddenInput) {
+                console.error('[addTeamMember] Hidden input not found for milestone:', milestoneId);
+                alert('Lỗi: Không tìm thấy hidden input! Vui lòng refresh và thử lại.');
+                return;
+            }
+            
+            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',').filter(id => id) : [];
+            console.log('[addTeamMember] Current members:', currentMembers);
             
             // Check if already added
             if (currentMembers.includes(memberId)) {
@@ -7339,9 +7356,16 @@
             // Add to list
             currentMembers.push(memberId);
             hiddenInput.value = currentMembers.join(',');
+            console.log('[addTeamMember] Updated hidden input value:', hiddenInput.value);
             
             // Add visual tag
             const container = document.getElementById(`selected-members-${milestoneId}`);
+            if (!container) {
+                console.error('[addTeamMember] Container not found for milestone:', milestoneId);
+                alert('Lỗi: Không tìm thấy container! Vui lòng refresh và thử lại.');
+                return;
+            }
+            
             const emptyMsg = container.querySelector('.empty-message');
             if (emptyMsg) emptyMsg.style.display = 'none';
             
@@ -7359,12 +7383,14 @@
                 </button>
             `;
             container.insertBefore(tag, emptyMsg);
+            console.log('[addTeamMember] Visual tag added successfully');
             
             // Reset select
             select.value = '';
             
             // Show success
             showToast('✅ Đã thêm ' + memberName, 'success');
+            console.log('[addTeamMember] Success!');
         };
         
         // Remove team member from milestone
@@ -7374,4 +7400,23 @@
             const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
             
             // Remove from array
-            const newMembers = currentMembers.
+            const newMembers = currentMembers.filter(id => id !== memberId);
+            hiddenInput.value = newMembers.join(',');
+            
+            // Remove visual tag
+            const container = document.getElementById(`selected-members-${milestoneId}`);
+            const tag = container.querySelector(`[data-member-id="${memberId}"]`);
+            if (tag) tag.remove();
+            
+            // Show empty message if no members
+            const emptyMsg = container.querySelector('.empty-message');
+            if (newMembers.length === 0 && emptyMsg) {
+                emptyMsg.style.display = 'block';
+            }
+            
+            showToast('✅ Đã xóa member', 'success');
+        };
+    </script>
+
+</body>
+</html>
