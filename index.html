@@ -1508,186 +1508,257 @@
                 opacity: 0;
             }
         }
-
-        /* API Key Modal Styles */
-        .api-key-modal {
-            display: none;
+    
+        /* API Key Setup Screen */
+        .api-key-setup-overlay {
             position: fixed;
-            z-index: 10000;
-            left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .api-key-modal.show {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10001;
         }
-
-        .api-key-modal-content {
+        
+        .api-key-setup-overlay.hidden {
+            display: none;
+        }
+        
+        .api-key-setup-card {
             background: white;
-            border-radius: 20px;
-            padding: 0;
+            border-radius: 16px;
+            padding: 40px;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: slideIn 0.3s ease;
-            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .api-key-modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .api-key-modal-header h2 {
+        
+        .api-key-setup-card h2 {
             margin: 0 0 10px 0;
-            font-size: 1.8em;
+            color: #1f2937;
+            font-size: 28px;
         }
-
-        .api-key-modal-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.95em;
+        
+        .api-key-setup-card .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
-
-        .api-key-modal-body {
-            padding: 30px;
+        
+        .setup-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 0 10px;
         }
-
+        
+        .setup-step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #9ca3af;
+            background: #f3f4f6;
+            margin: 0 5px;
+        }
+        
+        .setup-step.active {
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .setup-step.completed {
+            background: #10b981;
+            color: white;
+        }
+        
         .api-key-input-group {
-            position: relative;
             margin-bottom: 20px;
         }
-
+        
         .api-key-input-group label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #333;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
         }
-
-        .api-key-input {
+        
+        .api-key-input-group input {
             width: 100%;
-            padding: 15px;
-            padding-right: 50px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: all 0.3s;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
         }
-
-        .api-key-input:focus {
+        
+        .api-key-input-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #3b82f6;
         }
-
-        .toggle-visibility-btn {
-            position: absolute;
-            right: 10px;
-            top: 42px;
-            background: none;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            padding: 5px 10px;
-            transition: transform 0.2s;
+        
+        .api-key-help-text {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1e40af;
         }
-
-        .toggle-visibility-btn:hover {
-            transform: scale(1.1);
+        
+        .api-key-help-text strong {
+            display: block;
+            margin-bottom: 5px;
         }
-
-        .api-key-hint {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9em;
-            color: #666;
-            border-left: 4px solid #667eea;
-        }
-
-        .api-key-modal-footer {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            text-align: center;
-        }
-
-        .api-key-save-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        
+        .btn-api-key-save {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
-            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s;
+        }
+        
+        .btn-api-key-save:hover {
+            background: #2563eb;
+        }
+        
+        .btn-api-key-save:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
         }
 
-        .api-key-save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    
+        /* Forgot Password Modal */
+        .forgot-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .forgot-password-modal.active {
+            display: flex;
+        }
+        
+        .forgot-password-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .forgot-password-content h3 {
+            margin: 0 0 20px 0;
+            color: #1f2937;
+        }
+        
+        .contact-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            gap: 15px;
+        }
+        
+        .contact-option .icon {
+            font-size: 24px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .contact-option strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #374151;
+        }
+        
+        .contact-option p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .forgot-password-note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        
+        .forgot-password-note strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #92400e;
         }
 
-        .api-key-save-btn:active {
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body>
-    <!-- API Key Authentication Modal -->
-    <div id="api-key-modal" class="api-key-modal">
-        <div class="api-key-modal-content">
-            <div class="api-key-modal-header">
-                <h2>🔐 Xác thực API Key</h2>
-                <p>Vui lòng nhập API Key để sử dụng BOD Dashboard</p>
+
+    <!-- API Key Setup Screen -->
+    <div id="api-key-setup-overlay" class="api-key-setup-overlay hidden">
+        <div class="api-key-setup-card">
+            <h2>🔐 Cấu Hình Dashboard</h2>
+            <p class="subtitle">Chào mừng bạn đến với BOD Dashboard!</p>
+            
+            <!-- Step indicators -->
+            <div class="setup-steps">
+                <div class="setup-step active">1. API Key</div>
+                <div class="setup-step">2. Đăng nhập</div>
+                <div class="setup-step">3. Làm việc</div>
             </div>
-            <div class="api-key-modal-body">
-                <div class="api-key-input-group">
-                    <label for="api-key-input">API Key:</label>
-                    <input 
-                        type="password" 
-                        id="api-key-input" 
-                        placeholder="Nhập API Key từ email..."
-                        class="api-key-input"
-                    />
-                    <button onclick="toggleApiKeyVisibility()" class="toggle-visibility-btn">👁️</button>
-                </div>
-                <div class="api-key-hint">
-                    💡 API Key được gửi qua email từ Technical Director
-                </div>
+            
+            <!-- API Key input -->
+            <div class="api-key-input-group">
+                <label>🔑 Nhập API Key</label>
+                <input type="password" id="api-key-setup-input" 
+                       placeholder="Nhập API Key từ Admin...">
             </div>
-            <div class="api-key-modal-footer">
-                <button onclick="saveApiKey()" class="api-key-save-btn">✅ Xác nhận</button>
+            
+            <!-- Help text -->
+            <div class="api-key-help-text">
+                <strong>💡 Lần đầu sử dụng?</strong>
+                API Key được Admin cung cấp khi setup lần đầu.<br>
+                Liên hệ <strong>Technical Director</strong> (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdbda5b8a2aee3a9a3b98da9a5a4e3aea2a0e3bba3">[email&#160;protected]</a>) để nhận API Key.
             </div>
+            
+            <button onclick="saveApiKeyAndContinue()" class="btn-api-key-save">
+                ✅ Lưu & Tiếp tục
+            </button>
         </div>
     </div>
-    
+
     <div class="container">
         <div class="header">
             <h1>
@@ -1717,10 +1788,6 @@
                             <span>🔑</span>
                             <span>Đổi Mật Khẩu</span>
                         </div>
-                        <div class="user-menu-action" onclick="showApiKeyPrompt(); toggleUserMenu();">
-                            <span>🔐</span>
-                            <span>Cập nhật API Key</span>
-                        </div>
                         <div class="user-menu-divider"></div>
                         <div class="user-menu-action logout" onclick="logout()">
                             <span>🚪</span>
@@ -1748,7 +1815,7 @@
             <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
             <button class="nav-tab" data-tab="teams-management">🏢 Teams</button>
             <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;">📊 BOD Summary</button>
-            <button class="nav-tab" data-tab="settings">⚙️ Cài Đặt</button>
+            <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
         </div>
 
         <!-- Tổng Quan Tab -->
@@ -1931,6 +1998,47 @@
 
         <!-- Cài Đặt Tab -->
         <div id="settings" class="tab-content">
+            <!-- API Key Configuration -->
+            <div style="background: white; border: 2px solid #3b82f6; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #3b82f6;">🔐 Cấu Hình API Key</h3>
+                <div style="background: #dbeafe; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <strong>ℹ️ Thông tin:</strong> API Key được sử dụng để xác thực với Azure Function khi đồng bộ dữ liệu.
+                    <br><small>API Key được lưu an toàn trong trình duyệt của bạn và không bao giờ được gửi đến server.</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">API Key Status:</label>
+                    <div id="api-key-status" style="padding: 10px; border-radius: 8px; background: #fee2e2; color: #dc2626;">
+                        ❌ Chưa cấu hình API Key
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Nhập API Key:</label>
+                    <input type="password" id="api-key-input" placeholder="Nhập API Key của bạn..." 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace;">
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+                        Liên hệ Admin để lấy API Key nếu bạn chưa có.
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="saveApiKey()">
+                        <span>💾</span>
+                        Lưu API Key
+                    </button>
+                    <button class="btn btn-secondary" onclick="testApiConnection()">
+                        <span>🔍</span>
+                        Test Kết Nối
+                    </button>
+                    <button class="btn btn-danger" onclick="clearApiKey()">
+                        <span>🗑️</span>
+                        Xóa API Key
+                    </button>
+                </div>
+            </div>
+
+            
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
                 <h3 style="margin-bottom: 15px;">📥 Import / Export Dữ Liệu</h3>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -2165,7 +2273,7 @@
                 </div>
                 
                 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary" id="save-project-btn">
                         <span>💾</span>
                         Lưu Dự Án
@@ -2209,7 +2317,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeTeamModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeTeamModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         <span>💾</span>
                         Lưu
@@ -2290,6 +2398,15 @@
                     <span>Đăng Nhập</span>
                 </button>
             </form>
+
+            <!-- v5.8: Forgot Password Link -->
+            <div style="text-align: center; margin: 15px 0;">
+                <a href="#" onclick="showForgotPasswordModal(); return false;" 
+                   style="color: #3b82f6; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.3s;">
+                    <span>❓</span>
+                    <span>Quên mật khẩu?</span>
+                </a>
+            </div>
 
             <div class="login-footer">
                 v5.6 - Complete Edition<br>
@@ -2428,12 +2545,62 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closePasswordResetModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closePasswordResetModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         💾 Reset Password
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal" class="forgot-password-modal">
+        <div class="forgot-password-content">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="margin: 0;">🔐 Quên Mật Khẩu?</h3>
+            </div>
+            
+            <p style="color: #6b7280; margin-bottom: 20px;">
+                Để reset mật khẩu của bạn, vui lòng liên hệ Admin qua một trong các kênh sau:
+            </p>
+            
+            <div class="contact-options">
+                <div class="contact-option">
+                    <span class="icon">📧</span>
+                    <div>
+                        <strong>Email</strong>
+                        <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e999819c868ac78d879da98d8180c78a8684c79f87">[email&#160;protected]</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-option">
+                    <span class="icon">💬</span>
+                    <div>
+                        <strong>Slack</strong>
+                        <p>@phuoc.dnt hoặc #it-support</p>
+                    </div>
+                </div>
+                
+                <div class="contact-option">
+                    <span class="icon">📞</span>
+                    <div>
+                        <strong>Điện thoại</strong>
+                        <p>Nội bộ: 1234 | Mobile: 0xxx-xxx-xxx</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="forgot-password-note">
+                <strong>Lưu ý:</strong>
+                Technical Director sẽ reset password cho bạn trong vòng <strong>2 giờ làm việc</strong>.
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+                <button onclick="closeForgotPasswordModal()" class="btn" style="padding: 10px 20px;">
+                    Đóng
+                </button>
+            </div>
         </div>
     </div>
 
@@ -2465,7 +2632,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeChangePasswordModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeChangePasswordModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         💾 Đổi Mật Khẩu
                     </button>
@@ -2486,19 +2653,7 @@
         </div>
     </div>
 
-    <script>
-        // Global AZURE_CONFIG - Must be defined early for API Key modal
-        window.AZURE_CONFIG = {
-            functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
-            apiKey: '',
-            blobName: 'dashboard-data-v5.3.json',
-            enabled: true
-        };
-        // Load saved API Key immediately
-        window.AZURE_CONFIG.apiKey = localStorage.getItem('bodDashboardApiKey') || '';
-    </script>
-    
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         (function() {
             'use strict';
             
@@ -2515,8 +2670,13 @@
                 { id: 'handover', name: 'Handover', icon: '✅' }
             ];
 
-            // Azure Blob Storage Configuration (use global)
-            const AZURE_CONFIG = window.AZURE_CONFIG;
+            // Azure Blob Storage Configuration
+            const AZURE_CONFIG = {
+                functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy',
+                apiKey: localStorage.getItem('bodDashboardApiKey') || '',
+                blobName: 'dashboard-data-v5.3.json',
+                enabled: true
+            };
 
             // Data Storage
             let projects = [];
@@ -2773,7 +2933,23 @@
 
             // Initialize
             document.addEventListener('DOMContentLoaded', async function() {
-                // Load data first
+                // v5.8: Load API Key from localStorage first
+                const savedApiKey = localStorage.getItem('bodDashboardApiKey');
+                if (savedApiKey) {
+                    AZURE_CONFIG.apiKey = savedApiKey;
+                }
+                
+                // v5.8: CHECK API KEY FIRST!
+                const hasApiKey = AZURE_CONFIG.apiKey && AZURE_CONFIG.apiKey.length > 0;
+                
+                if (!hasApiKey) {
+                    // No API Key → Show API Key setup screen FIRST
+                    showApiKeySetupScreen();
+                    return;  // Stop here, wait for user to enter API Key
+                }
+                
+                // Has API Key → Continue with normal flow
+                // Load data (now we have API Key, so this will work)
                 await loadFromStorage();
                 
                 // v5.4 Authentication Flow
@@ -2789,7 +2965,7 @@
                     hideLoginScreen();
                     initializeDashboard();
                 } else {
-                    // Show login screen
+                    // Show login screen (now teamMembers is populated!)
                     showLoginScreen();
                 }
             });
@@ -2846,6 +3022,94 @@
             function hideSetupWizard() {
                 document.getElementById('setup-wizard').classList.add('hidden');
             }
+
+            // ============= v5.8 API KEY SETUP FUNCTIONS ============= //
+            
+            function showApiKeySetupScreen() {
+                // Show API Key setup screen
+                document.getElementById('api-key-setup-overlay').classList.remove('hidden');
+                // Hide login overlay
+                document.getElementById('login-overlay').classList.add('hidden');
+                // Hide setup wizard if visible
+                const setupWizard = document.getElementById('setup-wizard');
+                if (setupWizard) {
+                    setupWizard.classList.add('hidden');
+                }
+            }
+            
+            function hideApiKeySetupScreen() {
+                document.getElementById('api-key-setup-overlay').classList.add('hidden');
+            }
+            
+            window.saveApiKeyAndContinue = async function() {
+                const apiKeyInput = document.getElementById('api-key-setup-input');
+                const apiKey = apiKeyInput.value.trim();
+                
+                if (!apiKey) {
+                    showToast('Vui lòng nhập API Key', 'error');
+                    return;
+                }
+                
+                // Disable button during processing
+                const button = event.target;
+                button.disabled = true;
+                button.textContent = '⏳ Đang xử lý...';
+                
+                try {
+                    // Save API Key
+                    localStorage.setItem('bodDashboardApiKey', apiKey);
+                    AZURE_CONFIG.apiKey = apiKey;
+                    
+                    // Show loading message
+                    showToast('Đang tải dữ liệu từ Azure...', 'info');
+                    
+                    // Load data from Azure with new API Key
+                    await loadFromStorage();
+                    
+                    // Hide API Key setup screen
+                    hideApiKeySetupScreen();
+                    
+                    // Continue to appropriate screen
+                    if (needsSetup()) {
+                        showSetupWizard();
+                    } else if (hasValidSession()) {
+                        loadSession();
+                        hideLoginScreen();
+                        initializeDashboard();
+                    } else {
+                        showLoginScreen();
+                    }
+                    
+                    showToast('✅ API Key đã được lưu thành công!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error during API Key setup:', error);
+                    showToast('Lỗi khi tải dữ liệu. Vui lòng kiểm tra API Key.', 'error');
+                    
+                    // Re-enable button
+                    button.disabled = false;
+                    button.textContent = '✅ Lưu & Tiếp tục';
+                }
+            }
+            
+            // ============= v5.8 FORGOT PASSWORD FUNCTIONS ============= //
+            
+            window.showForgotPasswordModal = function() {
+                document.getElementById('forgot-password-modal').classList.add('active');
+            }
+            
+            window.closeForgotPasswordModal = function() {
+                document.getElementById('forgot-password-modal').classList.remove('active');
+            }
+            
+            // Close forgot password modal when clicking outside
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('forgot-password-modal');
+                if (modal && event.target === modal) {
+                    closeForgotPasswordModal();
+                }
+            });
+
 
             function showLockedScreen() {
                 const lockedScreen = document.getElementById('locked-screen');
@@ -3539,17 +3803,15 @@
             // ============= STORAGE ============= //
             async function loadFromBlob() {
                 if (!AZURE_CONFIG.enabled) return null;
-                if (!AZURE_CONFIG.apiKey) {
-                    console.warn('API Key not set');
-                    return null;
-                }
                 
                 try {
-                    const response = await fetch(`${AZURE_CONFIG.functionUrl}`, {
+                    // Handle both container-level and blob-level SAS URLs
+                    const functionUrl = `${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`;
+                    const response = await fetch(functionUrl, {
                         method: 'GET',
-                        headers: {
+                        headers: { 
                             'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
-                            'x-ms-blob-type': 'BlockBlob'
+                            'Content-Type': 'application/json'
                         }
                     });
                     
@@ -3557,31 +3819,17 @@
                         const data = await response.json();
                         lastBlobSync = new Date();
                         return data;
+                    } else if (response.status === 401) {
+                        console.error('Authentication failed - Invalid API Key');
+                        showNotification('Xác thực thất bại - API Key không hợp lệ', 'error');
                     }
+                    return null;
                     
-                    // Handle 404 - File doesn't exist yet, create empty initial data
-                    if (response.status === 404) {
-                        console.log('📝 File not found in blob storage, creating initial empty data...');
-                        const emptyData = {
-                            projects: [],
-                            teamMembers: [],
-                            teams: []
-                        };
-                        // Try to create initial file in blob storage
-                        const saved = await saveToBlob(emptyData);
-                        if (saved) {
-                            console.log('✅ Initial empty data created in blob storage');
-                            lastBlobSync = new Date();
-                            return emptyData;
-                        }
-                        return emptyData; // Return empty data even if save failed
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        return data;
                     }
-                    
-                    if (response.status === 401 || response.status === 403) {
-                        alert('❌ API Key không hợp lệ! Vui lòng kiểm tra lại.');
-                        showApiKeyPrompt();
-                    }
-                    
                     return null;
                 } catch (error) {
                     console.error('Error loading from blob:', error);
@@ -3591,16 +3839,14 @@
 
             async function saveToBlob(data) {
                 if (!AZURE_CONFIG.enabled) return false;
-                if (!AZURE_CONFIG.apiKey) {
-                    console.warn('API Key not set');
-                    return false;
-                }
                 
                 try {
                     isSyncing = true;
                     updateSyncStatus();
                     
-                    const response = await fetch(`${AZURE_CONFIG.functionUrl}`, {
+                    // Handle both container-level and blob-level SAS URLs
+                    const functionUrl = `${AZURE_CONFIG.functionUrl}/${AZURE_CONFIG.blobName}`;
+                    const response = await fetch(functionUrl, {
                         method: 'PUT',
                         headers: {
                             'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
@@ -3615,13 +3861,19 @@
                         isSyncing = false;
                         updateSyncStatus();
                         return true;
+                    } else if (response.status === 401) {
+                        console.error('Authentication failed - Invalid API Key');
+                        showNotification('Xác thực thất bại - API Key không hợp lệ', 'error');
                     }
+                    isSyncing = false;
+                    return false;
                     
-                    if (response.status === 401 || response.status === 403) {
-                        alert('❌ API Key không hợp lệ! Vui lòng kiểm tra lại.');
-                        showApiKeyPrompt();
+                    if (response.ok) {
+                        lastBlobSync = new Date();
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return true;
                     }
-                    
                     isSyncing = false;
                     return false;
                 } catch (error) {
@@ -6815,7 +7067,7 @@
                 if (!team) return;
                 
                 currentEditingTeam = team;
-                document.getElementById('team-modal-title').textContent = 'Sửa Team';
+                document.getElementById('team-modal-title').textContent = 'Sá»­a Team';
                 document.getElementById('team-name').value = team.name;
                 
                 // Populate and check members
@@ -6944,6 +7196,75 @@
                 }
             };
 
+            
+            // ============= API KEY MANAGEMENT ============= //
+            window.saveApiKey = function() {
+                const apiKeyInput = document.getElementById('api-key-input');
+                const apiKey = apiKeyInput.value.trim();
+                
+                if (!apiKey) {
+                    showToast('❌ Vui lòng nhập API Key!', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('bodDashboardApiKey', apiKey);
+                AZURE_CONFIG.apiKey = apiKey;
+                apiKeyInput.value = '';
+                updateApiKeyStatus();
+                showToast('✅ Đã lưu API Key thành công!', 'success');
+            };
+            
+            window.testApiConnection = async function() {
+                if (!AZURE_CONFIG.apiKey) {
+                    showToast('❌ Chưa có API Key! Vui lòng lưu API Key trước.', 'error');
+                    return;
+                }
+                
+                showToast('🔍 Đang kiểm tra kết nối...', 'info');
+                
+                try {
+                    const result = await loadFromBlob();
+                    
+                    if (result !== null) {
+                        showToast('✅ Kết nối thành công! API Key hợp lệ.', 'success');
+                        updateApiKeyStatus();
+                    } else {
+                        showToast('❌ Kết nối thất bại! API Key có thể không hợp lệ.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Connection test error:', error);
+                    showToast('❌ Lỗi kết nối: ' + error.message, 'error');
+                }
+            };
+            
+            window.clearApiKey = function() {
+                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA API KEY?\n\nBạn sẽ cần nhập lại API Key để đồng bộ dữ liệu.')) {
+                    localStorage.removeItem('bodDashboardApiKey');
+                    AZURE_CONFIG.apiKey = '';
+                    document.getElementById('api-key-input').value = '';
+                    updateApiKeyStatus();
+                    showToast('✅ Đã xóa API Key!', 'success');
+                }
+            };
+            
+            function updateApiKeyStatus() {
+                const statusDiv = document.getElementById('api-key-status');
+                const hasApiKey = AZURE_CONFIG.apiKey && AZURE_CONFIG.apiKey.length > 0;
+                
+                if (hasApiKey) {
+                    statusDiv.style.background = '#dcfce7';
+                    statusDiv.style.color = '#16a34a';
+                    statusDiv.innerHTML = '✅ API Key đã được cấu hình (***' + AZURE_CONFIG.apiKey.slice(-4) + ')';
+                } else {
+                    statusDiv.style.background = '#fee2e2';
+                    statusDiv.style.color = '#dc2626';
+                    statusDiv.innerHTML = '❌ Chưa cấu hình API Key';
+                }
+            }
+            
+
+
+
             // Toast Function
             function showToast(message, type = 'success') {
                 const toast = document.getElementById('toast');
@@ -6983,7 +7304,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">💾 Lưu Team</button>
-                    <button type="button" class="btn" onclick="closeTeamManagementModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeTeamManagementModal()">Há»§y</button>
                 </div>
             </form>
         </div>
@@ -6997,81 +7318,6 @@
 
 
     <script>
-        // ============= API KEY MANAGEMENT ============= //
-        
-        function showApiKeyPrompt() {
-            const modal = document.getElementById('api-key-modal');
-            modal.classList.add('show');
-            document.getElementById('api-key-input').focus();
-        }
-        
-        function hideApiKeyPrompt() {
-            const modal = document.getElementById('api-key-modal');
-            modal.classList.remove('show');
-        }
-        
-        function toggleApiKeyVisibility() {
-            const input = document.getElementById('api-key-input');
-            const btn = document.querySelector('.toggle-visibility-btn');
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁️';
-            }
-        }
-        
-        function saveApiKey() {
-            const input = document.getElementById('api-key-input');
-            const apiKey = input.value.trim();
-            
-            if (!apiKey) {
-                alert('⚠️ Vui lòng nhập API Key!');
-                return;
-            }
-            
-            // Validate API key format (basic check)
-            if (apiKey.length < 10) {
-                alert('⚠️ API Key không hợp lệ! Vui lòng kiểm tra lại.');
-                return;
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('bodDashboardApiKey', apiKey);
-            
-            // Update AZURE_CONFIG
-            window.AZURE_CONFIG.apiKey = apiKey;
-            
-            // Hide modal
-            hideApiKeyPrompt();
-            
-            // Show success and reload data
-            alert('✅ API Key đã được lưu thành công!');
-            
-            // Reload data from blob
-            initializeApp();
-        }
-        
-        // Check API Key on load
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedApiKey = localStorage.getItem('bodDashboardApiKey');
-            if (!savedApiKey) {
-                // Show API Key prompt if not set
-                showApiKeyPrompt();
-            }
-        });
-        
-        // Add keyboard shortcut for API Key prompt (Enter key)
-        document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('api-key-modal');
-            if (modal.classList.contains('show') && e.key === 'Enter') {
-                saveApiKey();
-            }
-        });
-        
-        // ============= EXISTING CODE ============= //
-        
         // Add team member to milestone
         window.addTeamMember = function(milestoneId) {
             const select = document.getElementById(`member-select-${milestoneId}`);
@@ -7131,23 +7377,4 @@
             const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
             
             // Remove from array
-            const newMembers = currentMembers.filter(id => id !== memberId);
-            hiddenInput.value = newMembers.join(',');
-            
-            // Remove visual tag
-            const container = document.getElementById(`selected-members-${milestoneId}`);
-            const tag = container.querySelector(`[data-member-id="${memberId}"]`);
-            if (tag) tag.remove();
-            
-            // Show empty message if no members
-            const emptyMsg = container.querySelector('.empty-message');
-            if (newMembers.length === 0 && emptyMsg) {
-                emptyMsg.style.display = 'block';
-            }
-            
-            showToast('✅ Đã xóa member', 'success');
-        };
-    </script>
-
-</body>
-</html>
+            const newMembers = currentMembers.
