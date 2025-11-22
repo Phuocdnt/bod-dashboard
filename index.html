@@ -1,9 +1,12 @@
+
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.6 - COMPLETE - Enterprise Edition</title>
+    <title>BOD Dashboard v5.10 - COMPLETE - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -85,6 +88,7 @@
 
         .sync-status.warning {
             background: rgba(255, 193, 7, 0.3);
+            color: #92400e; /* Dark brown text for contrast on yellow */
         }
 
         @keyframes pulse {
@@ -1719,6 +1723,164 @@
             color: #92400e;
         }
 
+    
+
+        /* ========================================== */
+        /* Feature #2: Issues Management System - CSS */
+        /* ========================================== */
+
+        .issue-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        
+        .issue-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .issue-priority {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .issue-priority.critical {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .issue-priority.high {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .issue-priority.medium {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+        
+        .issue-priority.low {
+            background: #f5f5f5;
+            color: #757575;
+        }
+        
+        .issue-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .issue-status:hover {
+            transform: scale(1.05);
+        }
+        
+        .issue-status.open {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .issue-status.in-progress {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+        
+        .issue-status.resolved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .issue-status.closed {
+            background: #f5f5f5;
+            color: #757575;
+        }
+        
+        .issue-description {
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .issue-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #757575;
+            flex-wrap: wrap;
+        }
+        
+        .issue-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .issue-action-btn {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        
+        .issue-action-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .issue-edit-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .issue-delete-btn {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .issues-empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .issue-badge {
+            background: #ff5252;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .issues-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .issues-filter select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -1761,7 +1923,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.6 - TEAMS & INSIGHTS</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.10 - COMPLETE</span>
             </h1>
             <div class="header-actions">
                 <div class="sync-status" id="sync-status">
@@ -1811,6 +1973,7 @@
             <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
             <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
             <button class="nav-tab" data-tab="teams-management">🏢 Teams</button>
+            <button class="nav-tab" data-tab="issues-summary">🚨 Issues</button>
             <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;">📊 BOD Summary</button>
             <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
         </div>
@@ -1899,7 +2062,9 @@
                     <option value="">Tất cả nhân sự</option>
                 </select>
             </div>
-            <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;"></div>
+            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, minmax(200px, 1fr)); gap: 10px; min-width: 1400px;"></div>
+            </div>
         </div>
 
         <!-- Nhân Sự Tab -->
@@ -1932,6 +2097,47 @@
             </div>
             <div id="teams-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
         </div>
+
+        <!-- Feature #2: Issues Summary Tab -->
+ <div id="issues-summary" class="tab-content">
+ <div style="margin-bottom: 30px;">
+ <h2 style="color: #2d3748; margin-bottom: 10px;">🚨 Issues Management</h2>
+ <p style="color: #718096;">Cross-project issues tracking and resolution</p>
+ </div>
+
+ <!-- Filters -->
+ <div class="issues-filter">
+ <select id="issues-filter-status" onchange="renderIssuesSummary()">
+ <option value="">All Statuses</option>
+ <option value="open">🔴 Open</option>
+ <option value="in-progress">🟡 In Progress</option>
+ <option value="resolved">🟢 Resolved</option>
+ <option value="closed">⚫ Closed</option>
+ </select>
+ 
+ <select id="issues-filter-priority" onchange="renderIssuesSummary()">
+ <option value="">All Priorities</option>
+ <option value="4">🔴 Critical</option>
+ <option value="3">🟠 High</option>
+ <option value="2">🟡 Medium</option>
+ <option value="1">⚪ Low</option>
+ </select>
+ 
+ <select id="issues-filter-project" onchange="renderIssuesSummary()">
+ <option value="">All Projects</option>
+ </select>
+ 
+ <button class="btn" onclick="exportIssuesToExcel()" style="background: #059669; color: white;">
+ 📊 Export Excel
+ </button>
+ </div>
+
+ <!-- Issues Summary Stats -->
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;" id="issues-stats-grid"></div>
+
+ <!-- Issues List -->
+ <div id="issues-summary-list"></div>
+ </div>
 
         <!-- v5.6 BOD Summary Tab -->
         <div id="bod-summary" class="tab-content">
@@ -2109,6 +2315,14 @@
                         <option value="">Chọn Sale...</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>👤 Project Manager (PM)</label>
+                    <input type="text" id="project-pm" placeholder="Nhập tên PM...">
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+                        VD: Nguyễn Văn A
+                    </div>
+                </div>
+
                 <div class="form-group" id="actual-value-field" style="display: none;">
                     <label style="display: flex; align-items: center; gap: 8px;">
                         💵 Actual Value Contact (VNĐ)
@@ -2269,7 +2483,31 @@
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
+                
+                
+                <!-- ISSUES SECTION (Feature #2) -->
+                <div id="issues-section" style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e9ecef;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0; font-size: 1.2em; color: #2d3748;">
+                            🚨 Issues & Problems
+                            <span id="issues-count-badge" style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 8px;">0</span>
+                        </h3>
+                        <button type="button" class="btn btn-primary" onclick="window.showAddIssueModal()" style="padding: 8px 16px;">
+                            ➕ Add Issue
+                        </button>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="color: #64748b; font-size: 0.9em; margin: 0;">
+                            📝 Track problems, blockers, and issues for this project. All issues will appear in the Issues Summary tab.
+                        </p>
+                    </div>
+                    
+                    <div id="issues-list" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Issues will be rendered here by renderIssuesList() -->
+                    </div>
+                </div>
+<div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closeModal()">Hủy</button>
                     <button type="submit" class="btn btn-primary" id="save-project-btn">
                         <span>💾</span>
@@ -2675,12 +2913,12 @@
                 enabled: true
             };
 
-            // Data Storage
-            let projects = [];
-            let teamMembers = [];
-            let teams = []; // v5.6 Teams Management
-            let currentEditingProject = null;
-            let currentEditingTeam = null; // v5.6
+            // Data Storage - MAKE GLOBAL for cross-script access!
+            var projects = [];
+            var teamMembers = [];
+            var teams = []; // v5.6 Teams Management
+            var currentEditingProject = null;
+            var currentEditingTeam = null; // v5.6
             let currentDate = new Date();
             let isSyncing = false;
             let lastBlobSync = null;
@@ -2697,7 +2935,14 @@
             let selectedMembers = [];
             
             // ============= v5.3 USER & PERMISSION SYSTEM ============= //
-            let currentUser = null; // { id, name, role: 'admin' | 'member' | 'bod', isAdmin, isBOD }
+            var currentUser = null; // { id, name, role: 'admin' | 'member' | 'bod', isAdmin, isBOD } - GLOBAL SCOPE
+            
+            // Helper to sync currentUser to global scope
+            function setCurrentUser(user) {
+                currentUser = user;
+                window.currentUser = user;
+                console.log('[setCurrentUser] Synced to global:', user);
+            }
             
             // Admin user for full permissions
             const ADMIN_USER = {
@@ -2834,13 +3079,14 @@
                     }
                     
                     if (user) {
-                        currentUser = {
+                        const userObj = {
                             id: user.id,
                             name: user.name,
                             role: user.role || 'member',
                             isAdmin: user.isAdmin || false,
                             isBOD: user.isBOD || false
                         };
+                        setCurrentUser(userObj); // Sync with window
                         return currentUser;
                     }
                 } catch (e) {
@@ -2930,6 +3176,12 @@
 
             // Initialize
             document.addEventListener('DOMContentLoaded', async function() {
+                // CRITICAL: Clear all modal contents on page load to prevent stale data
+                console.log('🧹 [PAGE LOAD] Clearing all modal contents...');
+                document.getElementById('conflicts-list').innerHTML = '';
+                document.getElementById('conflicts-modal').classList.remove('active');
+                console.log('✅ [PAGE LOAD] Modal contents cleared');
+                
                 // v5.8: Load API Key from localStorage first
                 const savedApiKey = localStorage.getItem('bodDashboardApiKey');
                 if (savedApiKey) {
@@ -3208,13 +3460,14 @@
                     clearFailedAttempts();
                     createSession(user.id, user.name, user.isAdmin || false);
                     
-                    currentUser = {
+                    const userObj = {
                         id: user.id,
                         name: user.name,
                         role: user.role || 'member',
                         isAdmin: user.isAdmin || false,
                         isBOD: user.isBOD || false
                     };
+                    setCurrentUser(userObj); // Sync with window
                     
                     hideLoginScreen();
                     initializeDashboard();
@@ -3569,12 +3822,13 @@
             }
 
             window.selectUser = function(id, name, role, isAdmin) {
-                currentUser = {
+                const user = {
                     id: id,
                     name: name,
                     role: role,
                     isAdmin: isAdmin || false
                 };
+                setCurrentUser(user); // Use helper to sync with window
                 saveCurrentUser();
                 updateUserDisplay();
                 renderUserDropdown();
@@ -3725,6 +3979,7 @@
                 if (tabName === 'team') renderTeamGrid();
                 if (tabName === 'teams-management') renderTeamsGrid(); // v5.6
                 if (tabName === 'bod-summary') renderBODSummary(); // v5.6
+                if (tabName === 'issues-summary') window.renderIssuesSummary(); // v5.10 - Feature #2
             }
 
             // ============= MULTI-SELECT ============= //
@@ -3893,7 +4148,7 @@
                 }, 2000);
             }
 
-            function saveToStorage() {
+            window.saveToStorage = function() {
                 const data = {
                     projects: projects,
                     teamMembers: teamMembers,
@@ -3911,6 +4166,8 @@
                 if (blobData) {
                     projects = blobData.projects || [];
                     teamMembers = blobData.teamMembers || [];
+                    window.projects = projects; // Sync to global
+                    window.teamMembers = teamMembers; // Sync to global
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
                     showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
                     return;
@@ -3922,6 +4179,8 @@
                         const data = JSON.parse(stored);
                         projects = data.projects || [];
                         teamMembers = data.teamMembers || [];
+                        window.projects = projects; // Sync to global
+                        window.teamMembers = teamMembers; // Sync to global
                         if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
                             saveToBlob(data);
                         }
@@ -4084,6 +4343,8 @@
             }
 
             // ============= CONFLICT DETECTION ============= //
+            // OLD VERSION - COMMENTED OUT - Replaced by window.detectResourceConflicts()
+            /*
             function detectConflicts() {
                 const visibleProjects = getVisibleProjects();
                 const conflicts = [];
@@ -4157,6 +4418,8 @@
                 
                 return conflicts;
             }
+            */
+            // END OF OLD detectConflicts() - Use window.detectResourceConflicts() instead
 
             function calculateDelayedProjects() {
                 const visibleProjects = getVisibleProjects();
@@ -4209,11 +4472,11 @@
                         <div class="value">${delayed.filter(p => canViewProject(p)).length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
-                    <div class="stat-card orange" style="cursor: pointer;" onclick="showConflicts()"
+                    <div class="stat-card orange" style="cursor: pointer;" onclick="console.log('👆 [USER CLICK] Conflict badge clicked'); window.showConflicts()"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>⚡ Xung Đột Lịch</h3>
-                        <div class="value">${detectResourceConflicts().length}</div>
+                        <div class="value">${window.detectResourceConflicts().length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card orange">
@@ -4637,9 +4900,10 @@
             
             // ============= v5.6 CONFLICT DETECTION SYSTEM ============= //
             
-            function detectResourceConflicts() {
+            window.detectResourceConflicts = function() {
                 const conflicts = [];
                 const today = new Date().toISOString().split('T')[0];
+                console.log('🔍 [CONFLICT DETECTION] Starting...', { today });
                 
                 // Get all active milestones (ongoing work)
                 const visibleProjects = getVisibleProjects();
@@ -4704,29 +4968,97 @@
                     }
                 });
                 
-                // Detect conflicts (members with >1 active task)
+                // Detect conflicts (members with overlapping date ranges in DIFFERENT projects)
                 Object.keys(memberWorkload).forEach(memberId => {
                     const workload = memberWorkload[memberId];
                     if (workload.length > 1) {
-                        const member = teamMembers.find(m => m.id === memberId);
-                        conflicts.push({
-                            member: member,
-                            workload: workload,
-                            count: workload.length
-                        });
+                        // Check for actual date overlaps between DIFFERENT projects
+                        const overlappingTasks = [];
+                        
+                        for (let i = 0; i < workload.length; i++) {
+                            for (let j = i + 1; j < workload.length; j++) {
+                                const task1 = workload[i];
+                                const task2 = workload[j];
+                                
+                                // Skip if same project (multiple milestones in same project = OK)
+                                if (task1.project.id === task2.project.id) {
+                                    console.log('✅ SKIP same project:', {
+                                        member: memberId,
+                                        project: task1.project.name,
+                                        milestone1: task1.milestone.name,
+                                        milestone2: task2.milestone.name
+                                    });
+                                    continue;
+                                }
+                                
+                                // Get date ranges for both tasks
+                                const milestone1 = task1.project.milestones.find(m => m.id === task1.milestone.id);
+                                const milestone2 = task2.project.milestones.find(m => m.id === task2.milestone.id);
+                                
+                                if (!milestone1 || !milestone2) continue;
+                                
+                                const start1 = milestone1.actualStartDate || milestone1.planStartDate;
+                                const end1 = milestone1.actualCompleteDate || milestone1.planCompleteDate;
+                                const start2 = milestone2.actualStartDate || milestone2.planStartDate;
+                                const end2 = milestone2.actualCompleteDate || milestone2.planCompleteDate;
+                                
+                                // Check if dates overlap
+                                if (start1 && start2 && end1 && end2) {
+                                    const overlap = (start1 <= end2 && end1 >= start2);
+                                    console.log('📅 Date check:', {
+                                        member: memberId,
+                                        project1: task1.project.name,
+                                        project2: task2.project.name,
+                                        dates1: `${start1} - ${end1}`,
+                                        dates2: `${start2} - ${end2}`,
+                                        overlap: overlap
+                                    });
+                                    if (overlap) {
+                                        // Found real conflict!
+                                        console.log('❌ CONFLICT FOUND!');
+                                        if (!overlappingTasks.includes(task1)) overlappingTasks.push(task1);
+                                        if (!overlappingTasks.includes(task2)) overlappingTasks.push(task2);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Only add to conflicts if there are actual overlaps
+                        if (overlappingTasks.length > 0) {
+                            const member = teamMembers.find(m => m.id === memberId);
+                            conflicts.push({
+                                member: member,
+                                workload: overlappingTasks,
+                                count: overlappingTasks.length
+                            });
+                        }
                     }
                 });
                 
+                console.log('🎯 [CONFLICT DETECTION] Complete:', {
+                    totalConflicts: conflicts.length,
+                    conflicts: conflicts
+                });
                 return conflicts;
             }
             
-            function showConflicts() {
-                const conflicts = detectResourceConflicts();
+            window.showConflicts = function() {
+                console.log('🚀 [SHOW CONFLICTS] Called');
+                const conflicts = window.detectResourceConflicts();
+                console.log('📊 [SHOW CONFLICTS] Conflicts detected:', conflicts.length);
+                
+                // IMPORTANT: Clear modal content first to prevent showing stale data
+                document.getElementById('conflicts-list').innerHTML = '';
                 
                 if (conflicts.length === 0) {
+                    console.log('✅ [SHOW CONFLICTS] No conflicts - showing toast');
                     showToast('✅ Không có xung đột lịch trình!', 'success');
+                    // Make sure modal is closed
+                    document.getElementById('conflicts-modal').classList.remove('active');
                     return;
                 }
+                
+                console.log('⚠️ [SHOW CONFLICTS] Displaying modal with conflicts:', conflicts);
                 
                 let html = `
                     <div style="padding: 20px;">
@@ -4794,7 +5126,7 @@
                 const onTime = activeProjects.length - delayed;
                 const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
                 
-                const conflicts = detectResourceConflicts().length;
+                const conflicts = window.detectResourceConflicts().length;
                 
                 // Render KPI Cards
                 const kpiHtml = `
@@ -4885,7 +5217,7 @@
                 });
                 
                 // Resource conflicts
-                const conflicts = detectResourceConflicts();
+                const conflicts = window.detectResourceConflicts();
                 if (conflicts.length > 0) {
                     risks.push({
                         type: 'resource-conflict',
@@ -5589,8 +5921,26 @@
 
             // ============= PROJECT MODAL ============= //
             window.openProjectModal = function(projectId = null) {
+                console.log('[openProjectModal] 🔵 Called with projectId:', projectId);
                 currentEditingProject = projectId ? projects.find(p => p.id === projectId) : null;
+                window.currentEditingProject = currentEditingProject; // Sync to global
+                console.log('[openProjectModal] currentEditingProject set to:', currentEditingProject ? currentEditingProject.name : 'null');
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
+                
+                // Feature #2: Handle Issues section visibility
+                const issuesSection = document.getElementById('issues-section');
+                if (issuesSection) {
+                    if (currentEditingProject) {
+                        console.log('[openProjectModal] ✅ Issues section will be shown');
+                        issuesSection.style.display = 'block';
+                        if (!currentEditingProject.issues) currentEditingProject.issues = [];
+                        // Will render issues list after modal is fully loaded
+                        setTimeout(() => renderIssuesList(currentEditingProject.id), 100);
+                    } else {
+                        console.log('[openProjectModal] ❌ Issues section hidden (new project)');
+                        issuesSection.style.display = 'none';
+                    }
+                }
                 
                 // ============= v5.3 PERMISSION CHECK ============= //
                 const isEditing = !!currentEditingProject;
@@ -5841,10 +6191,142 @@
                 document.getElementById('milestone-form-grid').innerHTML = html;
             }
 
+            // ============= MILESTONE TEAM MEMBER MANAGEMENT ============= //
+            window.addTeamMember = function(milestoneId) {
+                console.log('[addTeamMember] 🔵 Called with milestoneId:', milestoneId);
+                
+                const selectId = `member-select-${milestoneId}`;
+                console.log('[addTeamMember] Looking for select:', selectId);
+                const selectElement = document.getElementById(selectId);
+                
+                if (!selectElement) {
+                    console.error('[addTeamMember] ❌ Select element not found:', selectId);
+                    showToast('❌ Lỗi: Không tìm thấy dropdown! Vui lòng refresh trang.', 'error');
+                    return;
+                }
+                
+                const selectedMemberId = selectElement.value;
+                console.log('[addTeamMember] Selected member ID:', selectedMemberId);
+                
+                if (!selectedMemberId) {
+                    console.log('[addTeamMember] ⚠️ No member selected');
+                    showToast('⚠️ Vui lòng chọn member từ dropdown', 'warning');
+                    return;
+                }
+                
+                // Get current members from hidden input
+                const hiddenInputSelector = `.milestone-members[data-milestone="${milestoneId}"]`;
+                console.log('[addTeamMember] Looking for hidden input:', hiddenInputSelector);
+                const membersInput = document.querySelector(hiddenInputSelector);
+                
+                if (!membersInput) {
+                    console.error('[addTeamMember] ❌ Hidden input not found:', hiddenInputSelector);
+                    showToast('❌ Lỗi: Không tìm thấy hidden input! Vui lòng refresh trang.', 'error');
+                    return;
+                }
+                
+                const currentMembers = membersInput.value ? membersInput.value.split(',').filter(id => id.trim() !== '') : [];
+                console.log('[addTeamMember] Current members:', currentMembers);
+                
+                // Check if already added
+                if (currentMembers.includes(selectedMemberId)) {
+                    console.log('[addTeamMember] ⚠️ Member already added');
+                    showToast('⚠️ Member này đã được thêm rồi', 'warning');
+                    return;
+                }
+                
+                // Add new member
+                currentMembers.push(selectedMemberId);
+                membersInput.value = currentMembers.join(',');
+                console.log('[addTeamMember] ✅ Updated hidden input value:', membersInput.value);
+                
+                // Update display
+                console.log('[addTeamMember] Calling updateMilestoneTeamDisplay...');
+                updateMilestoneTeamDisplay(milestoneId, currentMembers);
+                
+                // Clear selection
+                selectElement.value = '';
+                
+                showToast('✅ Đã thêm member', 'success');
+                console.log('[addTeamMember] ✅ Complete!');
+            };
+
+            window.removeTeamMember = function(milestoneId, memberId) {
+                // Get current members from hidden input
+                const membersInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
+                const currentMembers = membersInput.value ? membersInput.value.split(',').filter(id => id.trim() !== '') : [];
+                
+                // Remove member
+                const updatedMembers = currentMembers.filter(id => id !== memberId);
+                membersInput.value = updatedMembers.join(',');
+                
+                // Update display
+                updateMilestoneTeamDisplay(milestoneId, updatedMembers);
+                
+                showToast('✅ Đã xóa member', 'success');
+            };
+
+            function updateMilestoneTeamDisplay(milestoneId, memberIds) {
+                console.log('[updateMilestoneTeamDisplay] 🔵 Called:', {milestoneId, memberIds});
+                
+                const containerId = `selected-members-${milestoneId}`;
+                console.log('[updateMilestoneTeamDisplay] Looking for container:', containerId);
+                const displayContainer = document.getElementById(containerId);
+                
+                if (!displayContainer) {
+                    console.error('[updateMilestoneTeamDisplay] ❌ Container not found:', containerId);
+                    showToast('❌ Lỗi: Không tìm thấy display container!', 'error');
+                    return;
+                }
+                
+                const emptyMessage = displayContainer.querySelector('.empty-message');
+                console.log('[updateMilestoneTeamDisplay] Empty message element:', emptyMessage);
+                
+                if (memberIds.length === 0) {
+                    // Show empty message, hide member tags
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'block';
+                    }
+                    // Remove all member tags
+                    displayContainer.querySelectorAll('.member-tag').forEach(tag => tag.remove());
+                } else {
+                    // Hide empty message
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'none';
+                    }
+                    
+                    // Rebuild member tags
+                    const memberTagsHtml = memberIds.map(memberId => {
+                        const member = teamMembers.find(m => m.id === memberId);
+                        if (!member) return '';
+                        return `
+                            <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                <span>👤 ${member.name}</span>
+                                <button type="button" 
+                                        onclick="removeTeamMember('${milestoneId}', '${memberId}')"
+                                        style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                        title="Xóa">
+                                    ×
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // Remove old tags and add new ones
+                    displayContainer.querySelectorAll('.member-tag').forEach(tag => tag.remove());
+                    if (emptyMessage) {
+                        emptyMessage.insertAdjacentHTML('beforebegin', memberTagsHtml);
+                    } else {
+                        displayContainer.innerHTML = memberTagsHtml;
+                    }
+                }
+            }
+
 
             window.closeModal = function() {
                 document.getElementById('project-modal').classList.remove('active');
                 currentEditingProject = null;
+                window.currentEditingProject = null; // Sync to global
                 selectedMembers = [];
             };
 
@@ -6186,6 +6668,8 @@
                 const customer = document.getElementById('project-customer').value.trim();
                 const budget = document.getElementById('project-budget').value || null;
                 const sale = document.getElementById('project-sale').value;
+                const pm = document.getElementById('project-pm')?.value.trim() || '';
+                
                 const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
                 const leader = document.getElementById('project-leader').value;
@@ -6265,6 +6749,7 @@
                     currentEditingProject.customer = customer;
                     currentEditingProject.budget = budget ? parseFloat(budget) : null;
                     currentEditingProject.sale = sale;
+                    currentEditingProject.pm = pm;
                     currentEditingProject.actualValue = actualValue ? parseFloat(actualValue) : null;
                     currentEditingProject.description = description;
                     currentEditingProject.leader = leader;
@@ -6293,6 +6778,7 @@
                         customer: customer,
                         budget: budget ? parseFloat(budget) : null,
                         sale: sale,
+                        pm: pm,
                         actualValue: actualValue ? parseFloat(actualValue) : null,
                         description: description,
                         leader: leader,
@@ -6302,6 +6788,7 @@
                         milestones: milestones,
                         createdDate: new Date().toISOString().split('T')[0],
                         createdBy: currentUser ? currentUser.id : null,
+                        issues: [], // Feature #2: Issues array
                         createdAt: new Date().toISOString(),
                         history: []
                     };
@@ -6456,6 +6943,8 @@
             };
 
             // ============= CONFLICTS MODAL ============= //
+            // OLD VERSION - COMMENTED OUT - Replaced by NEW window.showConflicts() at line ~5040
+            /*
             window.showConflicts = function() {
                 const conflicts = detectConflicts();
                 
@@ -6508,6 +6997,8 @@
                 document.getElementById('conflicts-list').innerHTML = html;
                 document.getElementById('conflicts-modal').classList.add('active');
             };
+            */
+            // END OF OLD showConflicts() - Use NEW version at line ~5040 instead
 
             // ============= v5.6 BOD SUMMARY DASHBOARD ============= //
             
@@ -6525,7 +7016,7 @@
                 const onTime = activeProjects.length - delayed;
                 const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
                 
-                const conflicts = detectResourceConflicts().length;
+                const conflicts = window.detectResourceConflicts().length;
                 
                 // Render KPI Cards
                 const kpiHtml = `
@@ -6616,7 +7107,7 @@
                 });
                 
                 // Resource conflicts
-                const conflicts = detectResourceConflicts();
+                const conflicts = window.detectResourceConflicts();
                 if (conflicts.length > 0) {
                     risks.push({
                         type: 'resource-conflict',
@@ -7263,7 +7754,7 @@
 
 
             // Toast Function
-            function showToast(message, type = 'success') {
+            window.showToast = function(message, type = 'success') {
                 const toast = document.getElementById('toast');
                 const icon = document.getElementById('toast-icon');
                 const msg = document.getElementById('toast-message');
@@ -7316,107 +7807,646 @@
 
     <script>
         // Add team member to milestone
-        window.addTeamMember = function(milestoneId) {
-            console.log('[addTeamMember] Called with milestoneId:', milestoneId);
-            
-            const select = document.getElementById(`member-select-${milestoneId}`);
-            if (!select) {
-                console.error('[addTeamMember] Select element not found for milestone:', milestoneId);
-                alert('Lỗi: Không tìm thấy dropdown member! Vui lòng thử lại.');
-                return;
+    
+
+            // ==========================================
+            // Feature #2: Issues Management - JavaScript
+            // ==========================================
+
+            window.showAddIssueModal = function(issueId = null) {
+                console.log('[showAddIssueModal] 🔵 START - issueId:', issueId);
+                
+                // Access global currentEditingProject variable
+                const currentProj = window.currentEditingProject || currentEditingProject;
+                console.log('[showAddIssueModal] typeof currentEditingProject:', typeof currentProj);
+                console.log('[showAddIssueModal] currentEditingProject:', currentProj);
+                
+                // Check if variable exists in scope
+                if (!currentProj) {
+                    console.error('[showAddIssueModal] ❌ currentEditingProject is null or undefined!');
+                    alert('❌ LỖI: Không tìm thấy project!\n\nVui lòng đóng modal và mở lại project.');
+                    return;
+                }
+                
+                // CRITICAL FIX: Get project from currentEditingProject
+                // If Issues section is visible, currentEditingProject MUST exist
+                const project = currentProj;
+                
+                if (!project) {
+                    console.error('[showAddIssueModal] ❌ CRITICAL: No project found!');
+                    console.error('   currentEditingProject:', currentEditingProject);
+                    alert('❌ LỖI: Không tìm thấy project!\n\nVui lòng đóng modal và mở lại project.');
+                    return;
+                }
+                
+                console.log('[showAddIssueModal] ✅ Project found:', project.name);
+                currentProjectForIssue = project.id;
+                
+                // Populate assigned dropdown with ALL team members (not just project members)
+                const assignedSelect = document.getElementById('issue-assigned');
+                assignedSelect.innerHTML = '<option value="">Not assigned</option>';
+                
+                // Access global teamMembers
+                const membersArray = window.teamMembers || teamMembers;
+                
+                // Show ALL team members in dropdown for flexibility
+                if (membersArray && membersArray.length > 0) {
+                    membersArray.forEach(member => {
+                        // Highlight project members with (✓) prefix
+                        const isProjectMember = project.members && project.members.includes(member.id);
+                        const prefix = isProjectMember ? '✓ ' : '';
+                        assignedSelect.innerHTML += `<option value="${member.id}">${prefix}${member.name}</option>`;
+                    });
+                } else {
+                    console.warn('[showAddIssueModal] ⚠️ No team members found in teamMembers array');
+                    assignedSelect.innerHTML += '<option value="" disabled>No team members available</option>';
+                }
+                
+                if (issueId) {
+                    // Edit mode
+                    const issue = project.issues.find(i => i.id === issueId);
+                    if (!issue) return;
+                    
+                    document.getElementById('issue-modal-title').textContent = '✏️ Edit Issue';
+                    document.getElementById('issue-id').value = issue.id;
+                    document.getElementById('issue-description').value = issue.description;
+                    document.getElementById('issue-priority').value = issue.priority;
+                    document.getElementById('issue-status').value = issue.status;
+                    document.getElementById('issue-assigned').value = issue.assignedTo || '';
+                    document.getElementById('issue-notes').value = issue.notes || '';
+                } else {
+                    // Add mode
+                    document.getElementById('issue-modal-title').textContent = '➕ Add Issue';
+                    document.getElementById('issue-form').reset();
+                    document.getElementById('issue-id').value = '';
+                    document.getElementById('issue-status').value = 'open';
+                }
+                
+                document.getElementById('issue-project-id').value = currentProjectForIssue;
+                document.getElementById('issue-modal').classList.add('active');
             }
-            
-            const memberId = select.value;
-            const memberName = select.options[select.selectedIndex].text;
-            
-            console.log('[addTeamMember] Selected member:', { memberId, memberName });
-            
-            if (!memberId) {
-                alert('Vui lòng chọn member!');
-                return;
+
+            window.saveIssue = function(event) {
+                event.preventDefault();
+                
+                const projectId = currentProjectForIssue || currentEditingProject?.id;
+                const issueId = document.getElementById('issue-id').value;
+                const description = document.getElementById('issue-description').value.trim();
+                const priority = parseInt(document.getElementById('issue-priority').value);
+                const status = document.getElementById('issue-status').value;
+                const assignedTo = document.getElementById('issue-assigned').value || null;
+                const notes = document.getElementById('issue-notes').value.trim();
+                
+                if (!description) {
+                    window.showToast('⚠️ Please enter issue description', 'error');
+                    return;
+                }
+                
+                const projectsArray = window.projects || projects;
+                const project = projectsArray.find(p => p.id === projectId);
+                if (!project) return;
+                
+                if (!project.issues) {
+                    project.issues = [];
+                }
+                
+                if (issueId) {
+                    // Edit existing issue
+                    const issue = project.issues.find(i => i.id === issueId);
+                    if (issue) {
+                        issue.description = description;
+                        issue.priority = priority;
+                        issue.status = status;
+                        issue.assignedTo = assignedTo;
+                        issue.notes = notes;
+                        issue.updatedAt = new Date().toISOString();
+                        const updatingUser = window.currentUser || currentUser;
+                        issue.updatedBy = updatingUser ? updatingUser.id : null;
+                        
+                        if (status === 'resolved' || status === 'closed') {
+                            issue.resolvedAt = new Date().toISOString();
+                        }
+                        
+                        window.showToast('✅ Issue updated', 'success');
+                    }
+                } else {
+                    // Create new issue
+                    const user = window.currentUser || currentUser;
+                    const newIssue = {
+                        id: 'issue_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        description: description,
+                        priority: priority,
+                        status: status,
+                        assignedTo: assignedTo,
+                        notes: notes,
+                        createdBy: user ? user.id : null,
+                        createdByName: user ? user.name : 'Unknown',
+                        createdAt: new Date().toISOString(),
+                        resolvedAt: null
+                    };
+                    
+                    project.issues.push(newIssue);
+                    window.showToast('✅ Issue created', 'success');
+                }
+                
+                window.saveToStorage();
+                window.closeIssueModal();
+                window.renderIssuesList(projectId);
+                return false; // Prevent form submission
             }
-            
-            // Get current selected members
-            const hiddenInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
-            if (!hiddenInput) {
-                console.error('[addTeamMember] Hidden input not found for milestone:', milestoneId);
-                alert('Lỗi: Không tìm thấy hidden input! Vui lòng refresh và thử lại.');
-                return;
+
+            window.closeIssueModal = function() {
+                console.log('[closeIssueModal] Closing issue modal');
+                document.getElementById('issue-modal').classList.remove('active');
+                document.getElementById('issue-form').reset();
+                currentProjectForIssue = null;
+            };
+
+            window.deleteIssue = function(projectId, issueId) {
+                if (!confirm('🗑️ Delete this issue?\n\nThis action cannot be undone.')) {
+                    return;
+                }
+                
+                const projectsArray = window.projects || projects;
+                const project = projectsArray.find(p => p.id === projectId);
+                if (!project || !project.issues) return;
+                
+                project.issues = project.issues.filter(i => i.id !== issueId);
+                window.saveToStorage();
+                window.renderIssuesList(projectId);
+                window.showToast('✅ Issue deleted', 'success');
             }
-            
-            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',').filter(id => id) : [];
-            console.log('[addTeamMember] Current members:', currentMembers);
-            
-            // Check if already added
-            if (currentMembers.includes(memberId)) {
-                alert('Member này đã được thêm rồi!');
-                return;
+
+            window.toggleIssueStatus = function(projectId, issueId) {
+                const projectsArray = window.projects || projects;
+                const project = projectsArray.find(p => p.id === projectId);
+                if (!project || !project.issues) return;
+                
+                const issue = project.issues.find(i => i.id === issueId);
+                if (!issue) return;
+                
+                // Cycle through statuses
+                const statusOrder = ['open', 'in-progress', 'resolved', 'closed'];
+                const currentIndex = statusOrder.indexOf(issue.status);
+                const nextIndex = (currentIndex + 1) % statusOrder.length;
+                issue.status = statusOrder[nextIndex];
+                
+                if (issue.status === 'resolved' || issue.status === 'closed') {
+                    issue.resolvedAt = new Date().toISOString();
+                }
+                
+                window.saveToStorage();
+                window.renderIssuesList(projectId);
+                window.showToast('✅ Status updated', 'success');
             }
-            
-            // Add to list
-            currentMembers.push(memberId);
-            hiddenInput.value = currentMembers.join(',');
-            console.log('[addTeamMember] Updated hidden input value:', hiddenInput.value);
-            
-            // Add visual tag
-            const container = document.getElementById(`selected-members-${milestoneId}`);
-            if (!container) {
-                console.error('[addTeamMember] Container not found for milestone:', milestoneId);
-                alert('Lỗi: Không tìm thấy container! Vui lòng refresh và thử lại.');
-                return;
+
+            window.renderIssuesList = function(projectId) {
+                console.log('[renderIssuesList] 🔵 Called with projectId:', projectId);
+                
+                // Access global projects variable
+                const projectsArray = window.projects || projects;
+                console.log('[renderIssuesList] projects type:', typeof projectsArray);
+                console.log('[renderIssuesList] projects is Array:', Array.isArray(projectsArray));
+                console.log('[renderIssuesList] projects length:', projectsArray?.length);
+                
+                // Check if projects is valid array
+                if (!projectsArray || !Array.isArray(projectsArray)) {
+                    console.error('[renderIssuesList] ❌ projects is not an array!', projectsArray);
+                    return;
+                }
+                
+                // Find project
+                const project = projectsArray.find(p => p.id === projectId);
+                
+                if (!project) {
+                    console.error('[renderIssuesList] ❌ Project not found:', projectId);
+                    console.error('[renderIssuesList] Available projects:', projectsArray.map(p => p.id));
+                    return;
+                }
+                
+                console.log('[renderIssuesList] ✅ Project found:', project.name, 'Issues:', project.issues?.length || 0);
+                
+                // Update issues count badge
+                const issuesCount = project.issues?.length || 0;
+                const badge = document.getElementById('issues-count-badge');
+                if (badge) {
+                    badge.textContent = issuesCount;
+                    badge.style.display = issuesCount > 0 ? 'inline-block' : 'none';
+                }
+                const container = document.getElementById('issues-list');
+                
+                if (!container) {
+                    console.warn('Issues list container not found');
+                    return;
+                }
+                
+                if (!project || !project.issues || project.issues.length === 0) {
+                    container.innerHTML = `
+                        <div class="issues-empty">
+                            <div style="font-size: 3em; margin-bottom: 10px;">📋</div>
+                            <div>No issues reported yet</div>
+                            <div style="font-size: 0.9em; color: #bbb; margin-top: 5px;">
+                                Click "Add Issue" to report a problem
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort by priority (high to low) then by created date (new to old)
+                const sortedIssues = [...project.issues].sort((a, b) => {
+                    if (b.priority !== a.priority) {
+                        return b.priority - a.priority;
+                    }
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                
+                container.innerHTML = sortedIssues.map(issue => {
+                    const priorityLabels = {
+                        4: { text: '🔴 Critical', class: 'critical' },
+                        3: { text: '🟠 High', class: 'high' },
+                        2: { text: '🟡 Medium', class: 'medium' },
+                        1: { text: '⚪ Low', class: 'low' }
+                    };
+                    
+                    const statusLabels = {
+                        'open': '🔴 Open',
+                        'in-progress': '🟡 In Progress',
+                        'resolved': '🟢 Resolved',
+                        'closed': '⚫ Closed'
+                    };
+                    
+                    const priority = priorityLabels[issue.priority] || priorityLabels[2];
+                    const statusText = statusLabels[issue.status] || '🔴 Open';
+                    
+                    let assignedName = 'Unassigned';
+                    if (issue.assignedTo) {
+                        const member = teamMembers.find(m => m.id === issue.assignedTo);
+                        if (member) assignedName = member.name;
+                    }
+                    
+                    const createdDate = new Date(issue.createdAt).toLocaleDateString('vi-VN');
+                    
+                    return `
+                        <div class="issue-card">
+                            <div class="issue-header">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                                        <span class="issue-priority ${priority.class}">${priority.text}</span>
+                                        <span class="issue-status ${issue.status}" 
+                                              onclick="window.toggleIssueStatus('${projectId}', '${issue.id}')"
+                                              title="Click to change status">
+                                            ${statusText}
+                                        </span>
+                                    </div>
+                                    <div class="issue-description">${issue.description}</div>
+                                    ${issue.notes ? `<div style="font-size: 0.9em; color: #666; font-style: italic;">💬 ${issue.notes}</div>` : ''}
+                                    <div class="issue-meta">
+                                        <span>👤 ${assignedName}</span>
+                                        <span>📅 ${createdDate}</span>
+                                        <span>✏️ ${issue.createdByName || 'Unknown'}</span>
+                                    </div>
+                                </div>
+                                <div class="issue-actions">
+                                    <button class="issue-action-btn issue-edit-btn" 
+                                            onclick="window.showAddIssueModal('${issue.id}')">
+                                        ✏️ Edit
+                                    </button>
+                                    <button class="issue-action-btn issue-delete-btn" 
+                                            onclick="window.deleteIssue('${projectId}', '${issue.id}')">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
-            
-            const emptyMsg = container.querySelector('.empty-message');
-            if (emptyMsg) emptyMsg.style.display = 'none';
-            
-            const tag = document.createElement('div');
-            tag.className = 'member-tag';
-            tag.setAttribute('data-member-id', memberId);
-            tag.style.cssText = 'display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;';
-            tag.innerHTML = `
-                <span>👤 ${memberName}</span>
-                <button type="button" 
-                        onclick="removeTeamMember('${milestoneId}', '${memberId}')"
-                        style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
-                        title="Xóa">
-                    ×
-                </button>
-            `;
-            container.insertBefore(tag, emptyMsg);
-            console.log('[addTeamMember] Visual tag added successfully');
-            
-            // Reset select
-            select.value = '';
-            
-            // Show success
-            showToast('✅ Đã thêm ' + memberName, 'success');
-            console.log('[addTeamMember] Success!');
-        };
-        
-        // Remove team member from milestone
-        window.removeTeamMember = function(milestoneId, memberId) {
-            // Get current selected members
-            const hiddenInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
-            const currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
-            
-            // Remove from array
-            const newMembers = currentMembers.filter(id => id !== memberId);
-            hiddenInput.value = newMembers.join(',');
-            
-            // Remove visual tag
-            const container = document.getElementById(`selected-members-${milestoneId}`);
-            const tag = container.querySelector(`[data-member-id="${memberId}"]`);
-            if (tag) tag.remove();
-            
-            // Show empty message if no members
-            const emptyMsg = container.querySelector('.empty-message');
-            if (newMembers.length === 0 && emptyMsg) {
-                emptyMsg.style.display = 'block';
+
+            window.renderIssuesSummary = function() {
+                console.log('[renderIssuesSummary] 🔵 Rendering issues summary');
+                const statusFilter = document.getElementById('issues-filter-status').value;
+                const priorityFilter = document.getElementById('issues-filter-priority').value;
+                const projectFilter = document.getElementById('issues-filter-project').value;
+                
+                // Collect all issues from all projects
+                let allIssues = [];
+                const projectsArray = window.projects || projects;
+                projectsArray.forEach(project => {
+                    if (project.issues && project.issues.length > 0) {
+                        project.issues.forEach(issue => {
+                            allIssues.push({
+                                ...issue,
+                                projectId: project.id,
+                                projectName: project.name
+                            });
+                        });
+                    }
+                });
+                
+                // Apply filters
+                let filteredIssues = allIssues;
+                if (statusFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.status === statusFilter);
+                }
+                if (priorityFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.priority === parseInt(priorityFilter));
+                }
+                if (projectFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.projectId === projectFilter);
+                }
+                
+                // Calculate stats
+                const stats = {
+                    total: allIssues.length,
+                    open: allIssues.filter(i => i.status === 'open').length,
+                    inProgress: allIssues.filter(i => i.status === 'in-progress').length,
+                    resolved: allIssues.filter(i => i.status === 'resolved').length,
+                    critical: allIssues.filter(i => i.priority === 4).length
+                };
+                
+                // Render stats
+                const statsGrid = document.getElementById('issues-stats-grid');
+                statsGrid.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white;">
+                        <div style="font-size: 2em; font-weight: bold;">${stats.total}</div>
+                        <div>Total Issues</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 10px; color: white;">
+                        <div style="font-size: 2em; font-weight: bold;">${stats.open}</div>
+                        <div>🔴 Open</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); padding: 20px; border-radius: 10px; color: white;">
+                        <div style="font-size: 2em; font-weight: bold;">${stats.inProgress}</div>
+                        <div>🟡 In Progress</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 10px; color: white;">
+                        <div style="font-size: 2em; font-weight: bold;">${stats.resolved}</div>
+                        <div>🟢 Resolved</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 20px; border-radius: 10px; color: white;">
+                        <div style="font-size: 2em; font-weight: bold;">${stats.critical}</div>
+                        <div>🔴 Critical</div>
+                    </div>
+                `;
+                
+                // Populate project filter
+                const projectFilterSelect = document.getElementById('issues-filter-project');
+                if (!projectFilterSelect.dataset.populated) {
+                    projectFilterSelect.innerHTML = '<option value="">All Projects</option>' +
+                        projectsArray.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                    projectFilterSelect.dataset.populated = 'true';
+                }
+                
+                // Render issues list
+                const container = document.getElementById('issues-summary-list');
+                
+                if (filteredIssues.length === 0) {
+                    container.innerHTML = `
+                        <div class="issues-empty">
+                            <div style="font-size: 3em; margin-bottom: 10px;">✅</div>
+                            <div>No issues found</div>
+                            <div style="font-size: 0.9em; color: #bbb; margin-top: 5px;">
+                                ${allIssues.length > 0 ? 'Try adjusting filters' : 'All projects are running smoothly!'}
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort by priority (high to low), then by created date (new to old)
+                const sortedIssues = [...filteredIssues].sort((a, b) => {
+                    if (b.priority !== a.priority) {
+                        return b.priority - a.priority;
+                    }
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                
+                container.innerHTML = sortedIssues.map(issue => {
+                    const priorityLabels = {
+                        4: { text: '🔴 Critical', class: 'critical' },
+                        3: { text: '🟠 High', class: 'high' },
+                        2: { text: '🟡 Medium', class: 'medium' },
+                        1: { text: '⚪ Low', class: 'low' }
+                    };
+                    
+                    const statusLabels = {
+                        'open': '🔴 Open',
+                        'in-progress': '🟡 In Progress',
+                        'resolved': '🟢 Resolved',
+                        'closed': '⚫ Closed'
+                    };
+                    
+                    const priority = priorityLabels[issue.priority] || priorityLabels[2];
+                    const statusText = statusLabels[issue.status] || '🔴 Open';
+                    
+                    let assignedName = 'Unassigned';
+                    if (issue.assignedTo) {
+                        const member = teamMembers.find(m => m.id === issue.assignedTo);
+                        if (member) assignedName = member.name;
+                    }
+                    
+                    const createdDate = new Date(issue.createdAt).toLocaleDateString('vi-VN');
+                    
+                    return `
+                        <div class="issue-card">
+                            <div class="issue-header">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+                                        <span class="issue-priority ${priority.class}">${priority.text}</span>
+                                        <span class="issue-status ${issue.status}" 
+                                              onclick="window.toggleIssueStatus('${issue.projectId}', '${issue.id}')"
+                                              title="Click to change status">
+                                            ${statusText}
+                                        </span>
+                                        <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
+                                            📁 ${issue.projectName}
+                                        </span>
+                                    </div>
+                                    <div class="issue-description">${issue.description}</div>
+                                    ${issue.notes ? `<div style="font-size: 0.9em; color: #666; font-style: italic;">💬 ${issue.notes}</div>` : ''}
+                                    <div class="issue-meta">
+                                        <span>👤 ${assignedName}</span>
+                                        <span>📅 ${createdDate}</span>
+                                        <span>✏️ ${issue.createdByName || 'Unknown'}</span>
+                                    </div>
+                                </div>
+                                <div class="issue-actions">
+                                    <button class="issue-action-btn issue-edit-btn" 
+                                            onclick="window.editIssueFromSummary('${issue.projectId}', '${issue.id}')">
+                                        ✏️ Edit
+                                    </button>
+                                    <button class="issue-action-btn issue-delete-btn" 
+                                            onclick="window.deleteIssue('${issue.projectId}', '${issue.id}'); window.renderIssuesSummary();">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
-            
-            showToast('✅ Đã xóa member', 'success');
-        };
-    </script>
+
+            window.exportIssuesToExcel = function() {
+                const statusFilter = document.getElementById('issues-filter-status').value;
+                const priorityFilter = document.getElementById('issues-filter-priority').value;
+                const projectFilter = document.getElementById('issues-filter-project').value;
+                
+                // Collect all issues
+                let allIssues = [];
+                const projectsArray = window.projects || projects;
+                projectsArray.forEach(project => {
+                    if (project.issues && project.issues.length > 0) {
+                        project.issues.forEach(issue => {
+                            allIssues.push({
+                                ...issue,
+                                projectId: project.id,
+                                projectName: project.name
+                            });
+                        });
+                    }
+                });
+                
+                // Apply filters
+                let filteredIssues = allIssues;
+                if (statusFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.status === statusFilter);
+                }
+                if (priorityFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.priority === parseInt(priorityFilter));
+                }
+                if (projectFilter) {
+                    filteredIssues = filteredIssues.filter(i => i.projectId === projectFilter);
+                }
+                
+                if (filteredIssues.length === 0) {
+                    window.showToast('⚠️ No issues to export', 'error');
+                    return;
+                }
+                
+                const priorityLabels = {4: 'Critical', 3: 'High', 2: 'Medium', 1: 'Low'};
+                const statusLabels = {'open': 'Open', 'in-progress': 'In Progress', 'resolved': 'Resolved', 'closed': 'Closed'};
+                
+                const data = filteredIssues.map(issue => {
+                    let assignedName = 'Unassigned';
+                    if (issue.assignedTo) {
+                        const member = teamMembers.find(m => m.id === issue.assignedTo);
+                        if (member) assignedName = member.name;
+                    }
+                    
+                    return {
+                        'Project': issue.projectName,
+                        'Description': issue.description,
+                        'Priority': priorityLabels[issue.priority] || 'Medium',
+                        'Status': statusLabels[issue.status] || 'Open',
+                        'Assigned To': assignedName,
+                        'Created By': issue.createdByName || 'Unknown',
+                        'Created Date': new Date(issue.createdAt).toLocaleDateString('vi-VN'),
+                        'Notes': issue.notes || ''
+                    };
+                });
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(data);
+                
+                // Auto-size columns
+                const maxWidth = data.reduce((w, r) => Math.max(w, r.Description.length), 10);
+                ws['!cols'] = [
+                    {wch: 30}, // Project
+                    {wch: Math.min(maxWidth, 50)}, // Description
+                    {wch: 10}, // Priority
+                    {wch: 12}, // Status
+                    {wch: 20}, // Assigned To
+                    {wch: 20}, // Created By
+                    {wch: 12}, // Created Date
+                    {wch: 30}  // Notes
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'Issues');
+                const filename = `Issues_Summary_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, filename);
+                
+                window.showToast(`✅ Exported ${filteredIssues.length} issues to ${filename}`, 'success');
+            }
+
+            window.editIssueFromSummary = function(projectId, issueId) {
+                // Switch to project modal and open issue for editing
+                const projectsArray = window.projects || projects;
+                const project = projectsArray.find(p => p.id === projectId);
+                if (!project) return;
+                
+                openProjectModal(projectId);
+                setTimeout(() => {
+                    window.showAddIssueModal(issueId);
+                }, 300);
+            }
+
+        </script>
+
+
+    <!-- Feature #2: Issues Modal -->
+    <div id="issue-modal" class="modal">
+ <div class="modal-content" style="max-width: 600px;">
+ <div class="modal-header">
+ <h2 id="issue-modal-title">➕ Add Issue</h2>
+ <button class="close-modal" onclick="window.closeIssueModal()">&times;</button>
+ </div>
+ <form id="issue-form" onsubmit="return window.saveIssue(event)">
+ <input type="hidden" id="issue-id">
+ <input type="hidden" id="issue-project-id">
+ 
+ <div class="form-group">
+ <label>📝 Issue Description *</label>
+ <textarea id="issue-description" 
+ rows="3" 
+ placeholder="Describe the issue/problem..."
+ required></textarea>
+ </div>
+ 
+ <div class="form-group">
+ <label>⚠️ Priority *</label>
+ <select id="issue-priority" required>
+ <option value="">Select priority...</option>
+ <option value="4">🔴 Critical (P0)</option>
+ <option value="3">🟠 High (P1)</option>
+ <option value="2">🟡 Medium (P2)</option>
+ <option value="1">⚪ Low (P3)</option>
+ </select>
+ </div>
+ 
+ <div class="form-group">
+ <label>📊 Status</label>
+ <select id="issue-status">
+ <option value="open">🔴 Open</option>
+ <option value="in-progress">🟡 In Progress</option>
+ <option value="resolved">🟢 Resolved</option>
+ <option value="closed">⚫ Closed</option>
+ </select>
+ </div>
+ 
+ <div class="form-group">
+ <label>👤 Assigned To</label>
+ <select id="issue-assigned">
+ <option value="">Not assigned</option>
+ </select>
+ </div>
+ 
+ <div class="form-group">
+ <label>💬 Notes</label>
+ <textarea id="issue-notes" 
+ rows="2" 
+ placeholder="Additional notes or comments..."></textarea>
+ </div>
+ 
+ <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
+ <button type="button" class="btn" onclick="window.closeIssueModal()">Cancel</button>
+ <button type="submit" class="btn btn-primary">
+ 💾 Save Issue
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
 
 </body>
 </html>
