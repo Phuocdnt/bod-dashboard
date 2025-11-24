@@ -3990,7 +3990,7 @@
                 });
             }
 
-            function switchTab(tabName) {
+            window.switchTab = function(tabName) {
                 document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 
@@ -7086,7 +7086,7 @@
                 modals.forEach(m => m.remove());
                 
                 // Switch to Projects tab and open edit
-                showTab('projects');
+                switchTab('projects');
                 setTimeout(() => {
                     const project = projects.find(p => p.id === projectId);
                     if (project) {
@@ -7098,7 +7098,7 @@
             // Navigate to Team tab
             window.navigateToTeamTab = function() {
                 console.log('🧑‍🤝‍🧑 [NAVIGATE] Switching to Team tab');
-                showTab('team');
+                switchTab('team');
                 showToast('📋 Đã chuyển đến tab Nhân Sự', 'info');
             };
                 const delayed = calculateDelayedProjects();
