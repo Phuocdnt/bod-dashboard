@@ -2640,7 +2640,7 @@
 
                 <div class="login-field">
                     <label class="login-label">
-                        🔑 Mật khẩu
+                        <span id="password-label-text">🔑 Mật khẩu</span>
                     </label>
                     <input type="password" id="login-password" class="login-input" 
                            placeholder="Nhập mật khẩu của bạn..." required>
@@ -3423,7 +3423,7 @@
             window.handleUserSelect = function(selectElement) {
                 const userId = selectElement.value;
                 const hintDiv = document.getElementById('login-hint');
-                const passwordLabel = document.querySelector('label.login-label[for="login-password"], .login-field label.login-label');
+                const passwordLabel = document.getElementById('password-label-text');
                 const passwordInput = document.getElementById('login-password');
                 
                 if (!userId) {
