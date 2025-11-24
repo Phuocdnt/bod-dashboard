@@ -4118,9 +4118,8 @@
                     const response = await fetch(functionUrl, {
                         method: 'PUT',
                         headers: {
-                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
-                            'x-ms-blob-type': 'BlockBlob',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey
                         },
                         body: JSON.stringify(data, null, 2)
                     });
