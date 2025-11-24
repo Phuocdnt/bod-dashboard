@@ -1926,6 +1926,12 @@
                 <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.10 - COMPLETE</span>
             </h1>
             <div class="header-actions">
+                <button onclick="window.forceSyncNow()" 
+                        style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;"
+                        onmouseover="this.style.background='#f44336'"
+                        onmouseout="this.style.background='#ff5722'">
+                    🚨 FORCE SYNC
+                </button>
                 <div class="sync-status" id="sync-status">
                     <span>🔄</span>
                     <span id="sync-text">Đang tải...</span>
@@ -4178,8 +4184,8 @@
                 }, 2000);
             }
 
-            window.saveToStorage = function() {
-                console.log('💾 [SAVE] saveToStorage() called');
+            window.saveToStorage = function(immediate = true) {
+                console.log('💾 [SAVE] saveToStorage() called, immediate:', immediate);
                 const data = {
                     projects: projects,
                     teamMembers: teamMembers,
@@ -4193,8 +4199,35 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                 console.log('✅ [SAVE] localStorage saved successfully');
                 
-                debouncedSaveToBlob();
+                if (immediate) {
+                    console.log('⚡ [SAVE] IMMEDIATE sync mode - syncing NOW!');
+                    saveToBlob(data);
+                } else {
+                    console.log('⏱️ [SAVE] Debounced sync mode - syncing in 2s');
+                    debouncedSaveToBlob();
+                }
                 updateSyncStatus();
+            }
+            
+            // Force immediate sync - Emergency button
+            window.forceSyncNow = function() {
+                console.log('🚨 [FORCE SYNC] Manual sync triggered by user!');
+                window.showToast('🚨 Đang đồng bộ ngay lập tức...', 'info');
+                
+                const data = {
+                    projects: projects,
+                    teamMembers: teamMembers,
+                    lastSave: new Date().toISOString(),
+                    version: DATA_VERSION
+                };
+                
+                saveToBlob(data).then(success => {
+                    if (success) {
+                        console.log('✅ [FORCE SYNC] Manual sync completed successfully!');
+                    } else {
+                        console.error('❌ [FORCE SYNC] Manual sync failed!');
+                    }
+                });
             }
 
             async function loadFromStorage() {
