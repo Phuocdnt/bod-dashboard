@@ -211,6 +211,22 @@
             background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
         }
 
+        .stat-card.blue {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        }
+
+        .stat-card.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.gray {
+            background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
+        }
+
+        .stat-card.dark-gray {
+            background: linear-gradient(135deg, #7f8c8d 0%, #636e72 100%);
+        }
+
         .stat-card.orange {
             background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
         }
@@ -218,6 +234,7 @@
         .stat-card.red {
             background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
         }
+
 
         .project-card {
             border: 2px solid #e9ecef;
@@ -2905,6 +2922,7 @@
                 { id: 'price_calc', name: 'Price Calculation', icon: '💰' },
                 { id: 'bidding', name: 'Bidding', icon: '💼' },
                 { id: 'order', name: 'Order', icon: '📦' },
+                { id: 'drawing-release', name: 'Phát hành bản vẽ gia công chi tiết', icon: '📐' },
                 { id: 'assembly', name: 'Assembly', icon: '🔧' },
                 { id: 'installation', name: 'Installation', icon: '⚙️' },
                 { id: 'commissioning', name: 'Commissioning', icon: '🔌' },
@@ -4538,6 +4556,13 @@
                 const visibleProjects = getVisibleProjects();
                 const delayed = calculateDelayedProjects();
                 
+                // Calculate counts by status
+                const inProgressCount = visibleProjects.filter(p => p.status === 'in-progress').length;
+                const planningCount = visibleProjects.filter(p => p.status === 'planning').length;
+                const completedCount = visibleProjects.filter(p => p.status === 'completed').length;
+                const cancelledCount = visibleProjects.filter(p => p.status === 'cancelled').length;
+                const onHoldCount = visibleProjects.filter(p => p.status === 'on-hold').length;
+                
                 const statsHtml = `
                     <div class="stat-card">
                         <h3>📁 Tổng Số Dự Án</h3>
@@ -4546,9 +4571,52 @@
                           currentUser?.isBOD ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả (BOD View)</p>' : 
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
-                    <div class="stat-card green">
-                        <h3>▶️ Đang Thực Hiện</h3>
+                    <div class="stat-card" style="cursor: default;">
+                        <h3>📁 Tổng Số Dự Án</h3>
                         <div class="value">${visibleProjects.length}</div>
+                        ${currentUser?.isAdmin ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>' : 
+                          currentUser?.isBOD ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả (BOD View)</p>' : 
+                          '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
+                    </div>
+                    <div class="stat-card green" style="cursor: pointer;" 
+                         onclick="showProjectsByStatus('in-progress', 'Đang Thực Hiện', '#56ab2f')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>▶️ Đang Thực Hiện</h3>
+                        <div class="value">${inProgressCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card blue" style="cursor: pointer;" 
+                         onclick="showProjectsByStatus('planning', 'Planning', '#2193b0')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>📋 Planning</h3>
+                        <div class="value">${planningCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card purple" style="cursor: pointer;" 
+                         onclick="showProjectsByStatus('completed', 'Hoàn Thành', '#667eea')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>✅ Hoàn Thành</h3>
+                        <div class="value">${completedCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card gray" style="cursor: pointer;" 
+                         onclick="showProjectsByStatus('on-hold', 'On Hold', '#95a5a6')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>⏸️ On Hold</h3>
+                        <div class="value">${onHoldCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card dark-gray" style="cursor: pointer;" 
+                         onclick="showProjectsByStatus('cancelled', 'Cancelled', '#636e72')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>🚫 Cancelled</h3>
+                        <div class="value">${cancelledCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -4564,16 +4632,22 @@
                         <div class="value">${window.detectResourceConflicts().length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
-                    <div class="stat-card orange">
+                    <div class="stat-card orange" style="cursor: pointer;" onclick="navigateToTeamTab()"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
                         <h3>👥 Tổng Nhân Sự</h3>
                         <div class="value">${teamMembers.length}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
+
+
                 `;
                 document.getElementById('stats-grid').innerHTML = statsHtml;
                 
                 const projectsHtml = visibleProjects.slice(0, 5).map(p => createProjectCard(p)).join('');
                 document.getElementById('overview-projects').innerHTML = projectsHtml || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p>';
             }
+
 
             function renderProjectsList() {
                 const visibleProjects = getVisibleProjects();
@@ -4658,6 +4732,8 @@
                             'Bidding - Leader': getMilestoneLeader('bidding'),
                             'Order - Ngày': getMilestoneDate('order'),
                             'Order - Leader': getMilestoneLeader('order'),
+                            'Phát hành bản vẽ gia công chi tiết - Ngày': getMilestoneDate('drawing-release'),
+                            'Phát hành bản vẽ gia công chi tiết - Leader': getMilestoneLeader('drawing-release'),
                             'Assembly - Ngày': getMilestoneDate('assembly'),
                             'Assembly - Leader': getMilestoneLeader('assembly'),
                             'Installation - Ngày': getMilestoneDate('installation'),
@@ -6923,6 +6999,108 @@
 
             // ============= DELAYED PROJECTS MODAL ============= //
             window.showDelayedProjects = function() {
+            // Show projects filtered by status
+            window.showProjectsByStatus = function(status, title, color) {
+                console.log('🔍 [FILTER] Showing projects with status:', status);
+                const visibleProjects = getVisibleProjects();
+                const filtered = visibleProjects.filter(p => p.status === status);
+                
+                if (filtered.length === 0) {
+                    showToast(`📭 Không có dự án nào ở trạng thái "${title}".`, 'info');
+                    return;
+                }
+                
+                let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+                
+                filtered.forEach(project => {
+                    const leader = teamMembers.find(m => m.id === project.leader);
+                    const customer = project.customer || 'N/A';
+                    const sale = project.sale ? teamMembers.find(m => m.id === project.sale) : null;
+                    
+                    const startDate = project.startDate ? new Date(project.startDate).toLocaleDateString('vi-VN') : 'N/A';
+                    const deadline = project.deadline ? new Date(project.deadline).toLocaleDateString('vi-VN') : 'N/A';
+                    
+                    html += `
+                        <div style="border: 2px solid ${color}33; border-radius: 12px; padding: 20px; background: white; 
+                                    cursor: pointer; transition: all 0.3s ease;"
+                             onclick="viewProjectFromFiltered('${project.id}')"
+                             onmouseover="this.style.borderColor='${color}'; this.style.boxShadow='0 5px 15px ${color}33'"
+                             onmouseout="this.style.borderColor='${color}33'; this.style.boxShadow='none'">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h3 style="color: #2d3748; margin-bottom: 5px;">${project.name}</h3>
+                                    <div style="color: #718096; font-size: 0.9em;">
+                                        🏢 ${customer} | 👤 ${leader ? leader.name : 'N/A'}${sale ? ` | 💼 ${sale.name}` : ''}
+                                    </div>
+                                </div>
+                                <div style="background: ${color}22; color: ${color}; padding: 8px 15px; border-radius: 20px; 
+                                            font-weight: 600; font-size: 0.9em;">
+                                    ${title}
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; 
+                                        padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                                <div>
+                                    <div style="color: #718096; font-size: 0.85em; margin-bottom: 3px;">📅 Bắt đầu</div>
+                                    <div style="color: #2d3748; font-weight: 500;">${startDate}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #718096; font-size: 0.85em; margin-bottom: 3px;">🎯 Deadline</div>
+                                    <div style="color: #2d3748; font-weight: 500;">${deadline}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 10px; padding: 10px; background: #f7fafc; border-radius: 8px; 
+                                        font-size: 0.9em; color: #4a5568;">
+                                📝 ${project.description || 'Chưa có mô tả'}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                // Show modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
+                        <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                        <h2 style="color: #2d3748; margin-bottom: 20px;">
+                            ${title} (${filtered.length} dự án)
+                        </h2>
+                        ${html}
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            };
+
+            // Helper function to view project from filtered list
+            window.viewProjectFromFiltered = function(projectId) {
+                console.log('👁️ [VIEW] Opening project:', projectId);
+                // Close modal
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(m => m.remove());
+                
+                // Switch to Projects tab and open edit
+                showTab('projects');
+                setTimeout(() => {
+                    const project = projects.find(p => p.id === projectId);
+                    if (project) {
+                        editProject(projectId);
+                    }
+                }, 100);
+            };
+
+            // Navigate to Team tab
+            window.navigateToTeamTab = function() {
+                console.log('🧑‍🤝‍🧑 [NAVIGATE] Switching to Team tab');
+                showTab('team');
+                showToast('📋 Đã chuyển đến tab Nhân Sự', 'info');
+            };
                 const delayed = calculateDelayedProjects();
                 
                 if (delayed.length === 0) {
