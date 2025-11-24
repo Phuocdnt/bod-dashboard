@@ -4090,14 +4090,25 @@
             }
 
             async function saveToBlob(data) {
-                if (!AZURE_CONFIG.enabled) return false;
+                if (!AZURE_CONFIG.enabled) {
+                    console.warn('⚠️ [AZURE SYNC] Azure sync disabled');
+                    return false;
+                }
                 
                 try {
+                    console.log('🔄 [AZURE SYNC] Starting sync to Azure Blob...');
+                    console.log('📊 [AZURE SYNC] Data to sync:', {
+                        projects: data.projects?.length || 0,
+                        teamMembers: data.teamMembers?.length || 0,
+                        lastSave: data.lastSave
+                    });
+                    
                     isSyncing = true;
                     updateSyncStatus();
                     
-                    // Handle both container-level and blob-level SAS URLs
                     const functionUrl = AZURE_CONFIG.functionUrl;
+                    console.log('🌐 [AZURE SYNC] URL:', functionUrl);
+                    
                     const response = await fetch(functionUrl, {
                         method: 'PUT',
                         headers: {
@@ -4108,27 +4119,41 @@
                         body: JSON.stringify(data, null, 2)
                     });
                     
-                    if (response.ok) {
-                        lastBlobSync = new Date();
-                        isSyncing = false;
-                        updateSyncStatus();
-                        return true;
-                    } else if (response.status === 401) {
-                        console.error('Authentication failed - Invalid API Key');
-                        showNotification('Xác thực thất bại - API Key không hợp lệ', 'error');
-                    }
-                    isSyncing = false;
-                    return false;
+                    console.log('📡 [AZURE SYNC] Response status:', response.status, response.statusText);
                     
                     if (response.ok) {
+                        console.log('✅ [AZURE SYNC] Success! Data synced to Azure');
                         lastBlobSync = new Date();
                         isSyncing = false;
                         updateSyncStatus();
+                        window.showToast('✅ Đã đồng bộ lên Azure Cloud', 'success');
                         return true;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ [AZURE SYNC] Failed:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            error: errorText
+                        });
+                        
+                        if (response.status === 401) {
+                            console.error('🔐 [AZURE SYNC] Authentication failed - Invalid API Key');
+                            window.showToast('❌ Xác thực Azure thất bại - Kiểm tra API Key', 'error');
+                        } else if (response.status === 404) {
+                            console.error('🔍 [AZURE SYNC] Blob not found - Check URL');
+                            window.showToast('❌ Không tìm thấy Azure Blob - Kiểm tra URL', 'error');
+                        } else {
+                            window.showToast(`❌ Lỗi đồng bộ Azure: ${response.status}`, 'error');
+                        }
+                        
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return false;
                     }
-                    isSyncing = false;
-                    return false;
                 } catch (error) {
+                    console.error('💥 [AZURE SYNC] Exception:', error);
+                    console.error('📍 [AZURE SYNC] Error stack:', error.stack);
+                    window.showToast('❌ Lỗi kết nối Azure: ' + error.message, 'error');
                     isSyncing = false;
                     updateSyncStatus();
                     return false;
@@ -4136,8 +4161,13 @@
             }
 
             function debouncedSaveToBlob() {
-                if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+                console.log('⏱️ [DEBOUNCED SYNC] Scheduling Azure sync in 2 seconds...');
+                if (syncDebounceTimer) {
+                    console.log('🔁 [DEBOUNCED SYNC] Canceling previous timer');
+                    clearTimeout(syncDebounceTimer);
+                }
                 syncDebounceTimer = setTimeout(() => {
+                    console.log('🚀 [DEBOUNCED SYNC] Timer fired! Syncing now...');
                     const data = {
                         projects: projects,
                         teamMembers: teamMembers,
@@ -4149,27 +4179,40 @@
             }
 
             window.saveToStorage = function() {
+                console.log('💾 [SAVE] saveToStorage() called');
                 const data = {
                     projects: projects,
                     teamMembers: teamMembers,
                     lastSave: new Date().toISOString(),
                     version: DATA_VERSION
                 };
+                console.log('💾 [SAVE] Saving to localStorage:', {
+                    projects: data.projects?.length || 0,
+                    teamMembers: data.teamMembers?.length || 0
+                });
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                console.log('✅ [SAVE] localStorage saved successfully');
+                
                 debouncedSaveToBlob();
                 updateSyncStatus();
             }
 
             async function loadFromStorage() {
+                console.log('📂 [LOAD] Loading data from storage...');
                 const blobData = await loadFromBlob();
                 
                 if (blobData) {
+                    console.log('☁️ [LOAD] Loaded from Azure Blob:', {
+                        projects: blobData.projects?.length || 0,
+                        teamMembers: blobData.teamMembers?.length || 0,
+                        lastSave: blobData.lastSave
+                    });
                     projects = blobData.projects || [];
                     teamMembers = blobData.teamMembers || [];
                     window.projects = projects; // Sync to global
                     window.teamMembers = teamMembers; // Sync to global
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                    showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
                     return;
                 }
                 
