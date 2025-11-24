@@ -1973,7 +1973,7 @@
             <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
             <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
             <button class="nav-tab" data-tab="teams-management">🏢 Teams</button>
-            <button class="nav-tab" data-tab="issues-summary">🚨 Issues</button>
+            <button class="nav-tab" data-tab="issues-summary" id="issues-tab" style="display: none;">🚨 Issues</button>
             <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;">📊 BOD Summary</button>
             <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
         </div>
@@ -4445,6 +4445,16 @@
                         bodSummaryTab.style.display = 'block';
                     } else {
                         bodSummaryTab.style.display = 'none';
+                    }
+                }
+                
+                // v5.10: Show/hide Issues tab based on user role (Admin/BOD only)
+                const issuesTab = document.getElementById('issues-tab');
+                if (issuesTab) {
+                    if (currentUser && (currentUser.isAdmin || currentUser.isBOD)) {
+                        issuesTab.style.display = 'block';
+                    } else {
+                        issuesTab.style.display = 'none';
                     }
                 }
             }
