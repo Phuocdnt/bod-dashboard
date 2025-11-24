@@ -6997,8 +6997,6 @@
                 }
             };
 
-            // ============= DELAYED PROJECTS MODAL ============= //
-            window.showDelayedProjects = function() {
             // Show projects filtered by status
             window.showProjectsByStatus = function(status, title, color) {
                 console.log('🔍 [FILTER] Showing projects with status:', status);
@@ -7101,6 +7099,8 @@
                 switchTab('team');
                 showToast('📋 Đã chuyển đến tab Nhân Sự', 'info');
             };
+            // ============= DELAYED PROJECTS MODAL ============= //
+            window.showDelayedProjects = function() {
                 const delayed = calculateDelayedProjects();
                 
                 if (delayed.length === 0) {
