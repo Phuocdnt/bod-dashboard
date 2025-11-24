@@ -3423,9 +3423,14 @@
             window.handleUserSelect = function(selectElement) {
                 const userId = selectElement.value;
                 const hintDiv = document.getElementById('login-hint');
+                const passwordLabel = document.querySelector('label.login-label[for="login-password"], .login-field label.login-label');
+                const passwordInput = document.getElementById('login-password');
                 
                 if (!userId) {
                     hintDiv.style.display = 'none';
+                    // Reset to default
+                    if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu';
+                    if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu của bạn...';
                     return;
                 }
                 
@@ -3438,11 +3443,25 @@
                     hasPassword = !!(member && member.password);
                 }
                 
-                // Show hint if no password
-                if (!hasPassword) {
-                    hintDiv.style.display = 'block';
-                } else {
+                // Update UI based on user type and password status
+                if (userId === 'admin') {
+                    // Admin login
+                    if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu Admin';
+                    if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu Admin...';
                     hintDiv.style.display = 'none';
+                } else {
+                    // Member login
+                    if (hasPassword) {
+                        // Member with existing password
+                        if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu';
+                        if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu của bạn...';
+                        hintDiv.style.display = 'none';
+                    } else {
+                        // Member first-time login (no password yet)
+                        if (passwordLabel) passwordLabel.innerHTML = '🆕 Tạo mật khẩu mới';
+                        if (passwordInput) passwordInput.placeholder = 'Tạo password (ít nhất 8 ký tự)...';
+                        hintDiv.style.display = 'block';
+                    }
                 }
             };
 
