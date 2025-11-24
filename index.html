@@ -5247,8 +5247,12 @@
                             </div>
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
                                 <strong style="color: #2d3748;">Đang làm việc trên:</strong>
-                                ${conflict.workload.map(w => `
-                                    <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #667eea;">
+${conflict.workload.map(w => `
+                                    <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #667eea;
+                                                cursor: pointer; transition: all 0.3s ease;"
+                                         onclick="viewProjectFromConflict('${w.project.id}')"
+                                         onmouseover="this.style.background='#f8f9fa'; this.style.borderLeftColor='#56ab2f'; this.style.transform='translateX(5px)'"
+                                         onmouseout="this.style.background='white'; this.style.borderLeftColor='#667eea'; this.style.transform='translateX(0)'">
                                         <div style="font-weight: 600; color: #2d3748;">
                                             ${w.milestone.icon} ${w.milestone.name}
                                         </div>
@@ -7078,19 +7082,26 @@
 
             // Helper function to view project from filtered list
             window.viewProjectFromFiltered = function(projectId) {
-                console.log('👁️ [VIEW] Opening project:', projectId);
+                console.log('👁️ [VIEW] Opening project from filtered stat:', projectId);
+                
                 // Close modal
                 const modals = document.querySelectorAll('.modal');
                 modals.forEach(m => m.remove());
                 
-                // Switch to Projects tab and open edit
-                switchTab('projects');
+                // Switch to Projects tab
+                window.switchTab('projects');
+                
+                // Open edit form with proper delay and error handling
                 setTimeout(() => {
                     const project = projects.find(p => p.id === projectId);
                     if (project) {
-                        editProject(projectId);
+                        console.log('✅ [VIEW] Project found, opening edit form');
+                        window.editProject(projectId);
+                    } else {
+                        console.error('❌ [VIEW] Project not found:', projectId);
+                        showToast('❌ Không tìm thấy dự án', 'error');
                     }
-                }, 100);
+                }, 300);
             };
 
             // Navigate to Team tab
@@ -7201,8 +7212,55 @@
             };
 
             window.viewProjectFromDelayed = function(projectId) {
+                console.log('👁️ [VIEW DELAYED] Opening delayed project:', projectId);
+                
+                // Close delayed modal
                 closeDelayedModal();
-                editProject(projectId);
+                
+                // Switch to Projects tab
+                window.switchTab('projects');
+                
+                // Open edit form with proper delay and error handling
+                setTimeout(() => {
+                    const project = projects.find(p => p.id === projectId);
+                    if (project) {
+                        console.log('✅ [VIEW DELAYED] Project found, opening edit form');
+                        window.editProject(projectId);
+                    } else {
+                        console.error('❌ [VIEW DELAYED] Project not found:', projectId);
+                        showToast('❌ Không tìm thấy dự án', 'error');
+                    }
+                }, 300);
+            };
+
+            // Helper function to view project from conflicts modal
+            window.viewProjectFromConflict = function(projectId) {
+                console.log('👁️ [VIEW CONFLICT] Opening project from conflicts:', projectId);
+                
+                // Close conflicts modal
+                const conflictsModal = document.getElementById('conflicts-modal');
+                if (conflictsModal) {
+                    conflictsModal.classList.remove('active');
+                }
+                
+                // Also remove any other modals
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(m => m.remove());
+                
+                // Switch to Projects tab
+                window.switchTab('projects');
+                
+                // Open edit form with proper delay and error handling
+                setTimeout(() => {
+                    const project = projects.find(p => p.id === projectId);
+                    if (project) {
+                        console.log('✅ [VIEW CONFLICT] Project found, opening edit form');
+                        window.editProject(projectId);
+                    } else {
+                        console.error('❌ [VIEW CONFLICT] Project not found:', projectId);
+                        showToast('❌ Không tìm thấy dự án', 'error');
+                    }
+                }, 300);
             };
 
             // ============= CONFLICTS MODAL ============= //
