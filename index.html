@@ -3257,6 +3257,7 @@
             // ============= v5.4 AUTHENTICATION HANDLERS ============= //
             
             function showLoginScreen() {
+                console.log('📋 [DEBUG] showLoginScreen called');
                 document.getElementById('login-overlay').classList.remove('hidden');
                 
                 // Populate user dropdown
@@ -3421,6 +3422,7 @@
             // Login Handler
             // Handle user selection in login dropdown
             window.handleUserSelect = function(selectElement) {
+                console.log('🔍 [DEBUG] handleUserSelect called, userId:', selectElement.value);
                 const userId = selectElement.value;
                 const hintDiv = document.getElementById('login-hint');
                 const passwordLabel = document.getElementById('password-label-text');
@@ -3446,6 +3448,7 @@
                 // Update UI based on user type and password status
                 if (userId === 'admin') {
                     // Admin login
+                    console.log('🏷️ [DEBUG] Setting label to: Mật khẩu Admin');
                     if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu Admin';
                     if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu Admin...';
                     hintDiv.style.display = 'none';
@@ -3453,11 +3456,13 @@
                     // Member login
                     if (hasPassword) {
                         // Member with existing password
+                        console.log('🏷️ [DEBUG] Setting label to: Mật khẩu');
                         if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu';
                         if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu của bạn...';
                         hintDiv.style.display = 'none';
                     } else {
                         // Member first-time login (no password yet)
+                        console.log('🏷️ [DEBUG] Setting label to: Tạo mật khẩu mới');
                         if (passwordLabel) passwordLabel.innerHTML = '🆕 Tạo mật khẩu mới';
                         if (passwordInput) passwordInput.placeholder = 'Tạo password (ít nhất 8 ký tự)...';
                         hintDiv.style.display = 'block';
