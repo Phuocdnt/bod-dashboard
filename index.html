@@ -3256,9 +3256,7 @@
 
             // ============= v5.4 AUTHENTICATION HANDLERS ============= //
             
-            function showLoginScreen() {
-                console.log('📋 [DEBUG] showLoginScreen called');
-                document.getElementById('login-overlay').classList.remove('hidden');
+            function showLoginScreen() {                document.getElementById('login-overlay').classList.remove('hidden');
                 
                 // Populate user dropdown
                 const loginUserSelect = document.getElementById('login-user');
@@ -3447,23 +3445,17 @@
                 
                 // Update UI based on user type and password status
                 if (userId === 'admin') {
-                    // Admin login
-                    console.log('🏷️ [DEBUG] Setting label to: Mật khẩu Admin');
-                    if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu Admin';
+                    // Admin login                    if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu Admin';
                     if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu Admin...';
                     hintDiv.style.display = 'none';
                 } else {
                     // Member login
                     if (hasPassword) {
-                        // Member with existing password
-                        console.log('🏷️ [DEBUG] Setting label to: Mật khẩu');
-                        if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu';
+                        // Member with existing password                        if (passwordLabel) passwordLabel.innerHTML = '🔑 Mật khẩu';
                         if (passwordInput) passwordInput.placeholder = 'Nhập mật khẩu của bạn...';
                         hintDiv.style.display = 'none';
                     } else {
-                        // Member first-time login (no password yet)
-                        console.log('🏷️ [DEBUG] Setting label to: Tạo mật khẩu mới');
-                        if (passwordLabel) passwordLabel.innerHTML = '🆕 Tạo mật khẩu mới';
+                        // Member first-time login (no password yet)                        if (passwordLabel) passwordLabel.innerHTML = '🆕 Tạo mật khẩu mới';
                         if (passwordInput) passwordInput.placeholder = 'Tạo password (ít nhất 8 ký tự)...';
                         hintDiv.style.display = 'block';
                     }
