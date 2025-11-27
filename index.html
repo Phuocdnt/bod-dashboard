@@ -6003,7 +6003,9 @@ ${conflict.workload.map(w => `
                             const isTeamMember = milestone.assignedMembers && milestone.assignedMembers.includes(filterPersonId);
                             if (!isLeader && !isTeamMember) return; // Skip if not leader or team member
                         }
-                        if (!milestone.person) return;
+                        // Only require person (leader) when NOT filtering
+                        // When filtering, we already validated above that user is involved
+                        if (!filterPersonId && !milestone.person) return;
                         
                         const person = teamMembers.find(m => m.id === milestone.person);
                         const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
