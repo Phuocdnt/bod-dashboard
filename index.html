@@ -5980,7 +5980,7 @@ ${conflict.workload.map(w => `
                 if (tooltip) tooltip.style.display = 'none';
             };
 
-            function renderCalendar() {
+            window.renderCalendar = function() {
                 const visibleProjects = getVisibleProjects();
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
