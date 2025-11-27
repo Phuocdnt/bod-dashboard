@@ -5839,7 +5839,12 @@ ${conflict.workload.map(w => `
                     
                     // Milestones
                     project.milestones?.forEach(milestone => {
-                        if (filterPersonId && milestone.person !== filterPersonId) return;
+                        // Check if this milestone is relevant to the filtered person
+                        if (filterPersonId) {
+                            const isLeader = milestone.person === filterPersonId;
+                            const isTeamMember = milestone.assignedMembers && milestone.assignedMembers.includes(filterPersonId);
+                            if (!isLeader && !isTeamMember) return; // Skip if not leader or team member
+                        }
                         if (!milestone.person) return;
                         
                         const person = teamMembers.find(m => m.id === milestone.person);
@@ -5867,6 +5872,15 @@ ${conflict.workload.map(w => `
                             // Extract IQR code from project name
                             const projectCode = project.name.split('-')[0].trim();
                             
+                            // Get team members names
+                            const teamMemberNames = [];
+                            if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                                milestone.assignedMembers.forEach(memberId => {
+                                    const member = teamMembers.find(m => m.id === memberId);
+                                    if (member) teamMemberNames.push(member.name);
+                                });
+                            }
+                            
                             eventsMap[dateKey].push({
                                 type: 'milestone-start',
                                 project: project.name,
@@ -5875,7 +5889,8 @@ ${conflict.workload.map(w => `
                                 person: person?.name || 'N/A',
                                 personId: milestone.person,
                                 icon: msInfo?.icon || '📌',
-                                teams: milestoneTeams
+                                teams: milestoneTeams,
+                                teamMembers: teamMemberNames
                             });
                         }
                         
@@ -5886,6 +5901,15 @@ ${conflict.workload.map(w => `
                             // Extract IQR code from project name
                             const projectCode = project.name.split('-')[0].trim();
                             
+                            // Get team members names
+                            const teamMemberNamesEnd = [];
+                            if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                                milestone.assignedMembers.forEach(memberId => {
+                                    const member = teamMembers.find(m => m.id === memberId);
+                                    if (member) teamMemberNamesEnd.push(member.name);
+                                });
+                            }
+                            
                             eventsMap[dateKey].push({
                                 type: 'milestone-end',
                                 project: project.name,
@@ -5894,7 +5918,8 @@ ${conflict.workload.map(w => `
                                 person: person?.name || 'N/A',
                                 personId: milestone.person,
                                 icon: msInfo?.icon || '📌',
-                                teams: milestoneTeams
+                                teams: milestoneTeams,
+                                teamMembers: teamMemberNamesEnd
                             });
                         }
                     });
@@ -5969,7 +5994,7 @@ ${conflict.workload.map(w => `
                                             📁 ${event.projectCode || event.project}
                                         </div>
                                         ${!filterPersonId ? `<div style="color: #718096; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            👤 ${event.person}
+                                            👤 ${event.person}${event.teamMembers && event.teamMembers.length > 0 ? ` (+${event.teamMembers.length} 👥)` : ''}
                                         </div>` : ''}
                                     </div>
                                 `).join('')}
