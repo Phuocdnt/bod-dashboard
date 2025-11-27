@@ -6025,8 +6025,10 @@ ${conflict.workload.map(w => `
                             });
                         }
                         
-                        if (milestone.planStartDate) {
-                            const dateKey = milestone.planStartDate;
+                        // Use actual date if available, fallback to plan date
+                        const startDate = milestone.actualStartDate || milestone.planStartDate;
+                        if (startDate) {
+                            const dateKey = startDate;
                             if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
                             
                             // Extract IQR code from project name
@@ -6068,8 +6070,10 @@ ${conflict.workload.map(w => `
                             });
                         }
                         
-                        if (milestone.planCompleteDate) {
-                            const dateKey = milestone.planCompleteDate;
+                        // Use actual date if available, fallback to plan date
+                        const completeDate = milestone.actualCompleteDate || milestone.planCompleteDate;
+                        if (completeDate) {
+                            const dateKey = completeDate;
                             if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
                             
                             // Extract IQR code from project name
@@ -6112,9 +6116,12 @@ ${conflict.workload.map(w => `
                         }
                         
                         // Fill in all days between start and end (milestone duration)
-                        if (milestone.planStartDate && milestone.planCompleteDate) {
-                            const startDate = new Date(milestone.planStartDate);
-                            const endDate = new Date(milestone.planCompleteDate);
+                        // Use actual dates if available, fallback to plan dates
+                        const durationStartDate = milestone.actualStartDate || milestone.planStartDate;
+                        const durationEndDate = milestone.actualCompleteDate || milestone.planCompleteDate;
+                        if (durationStartDate && durationEndDate) {
+                            const startDate = new Date(durationStartDate);
+                            const endDate = new Date(durationEndDate);
                             
                             // Move to next day after start
                             const currentDate = new Date(startDate);
