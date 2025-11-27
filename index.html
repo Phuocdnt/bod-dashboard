@@ -6110,6 +6110,60 @@ ${conflict.workload.map(w => `
                                 isFiltered: !!filterPersonId
                             });
                         }
+                        
+                        // Fill in all days between start and end (milestone duration)
+                        if (milestone.planStartDate && milestone.planCompleteDate) {
+                            const startDate = new Date(milestone.planStartDate);
+                            const endDate = new Date(milestone.planCompleteDate);
+                            
+                            // Move to next day after start
+                            const currentDate = new Date(startDate);
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            
+                            // Fill all days between start and end (exclusive)
+                            while (currentDate < endDate) {
+                                const dateKey = currentDate.toISOString().split('T')[0];
+                                if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                                
+                                // Get team members names (reuse same logic)
+                                const teamMemberNamesDuration = [];
+                                if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
+                                    milestone.assignedMembers.forEach(memberId => {
+                                        const member = teamMembers.find(m => m.id === memberId);
+                                        if (member) teamMemberNamesDuration.push(member.name);
+                                    });
+                                }
+                                
+                                // Determine who to display based on filter (reuse same logic)
+                                let displayPersonDuration = person?.name || 'N/A';
+                                let displayPersonIdDuration = milestone.person;
+                                
+                                if (filterPersonId) {
+                                    const filteredPersonDuration = teamMembers.find(m => m.id === filterPersonId);
+                                    if (filteredPersonDuration) {
+                                        displayPersonDuration = filteredPersonDuration.name;
+                                        displayPersonIdDuration = filterPersonId;
+                                    }
+                                }
+                                
+                                const projectCode = project.name.split('-')[0].trim();
+                                
+                                eventsMap[dateKey].push({
+                                    type: 'milestone-ongoing',
+                                    project: project.name,
+                                    projectCode: projectCode,
+                                    task: msInfo?.name || milestone.id,
+                                    person: displayPersonDuration,
+                                    personId: displayPersonIdDuration,
+                                    icon: msInfo?.icon || '📌',
+                                    teams: milestoneTeams,
+                                    teamMembers: teamMemberNamesDuration,
+                                    isFiltered: !!filterPersonId
+                                });
+                                
+                                currentDate.setDate(currentDate.getDate() + 1);
+                            }
+                        }
                     });
                     
                     // Surveys
@@ -6171,9 +6225,9 @@ ${conflict.workload.map(w => `
                             
                             <div style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto;">
                                 ${dayEvents.slice(0, 3).map(event => `
-                                    <div style="background: ${event.type.includes('end') ? '#e8f5e9' : '#e3f2fd'}; 
+                                    <div style="background: ${event.type.includes('end') ? '#e8f5e9' : event.type.includes('ongoing') ? '#fff3e0' : '#e3f2fd'}; 
                                                 padding: 4px 6px; border-radius: 4px; font-size: 0.75em;
-                                                border-left: 3px solid ${event.type.includes('end') ? '#4caf50' : '#2196f3'};"
+                                                border-left: 3px solid ${event.type.includes('end') ? '#4caf50' : event.type.includes('ongoing') ? '#ff9800' : '#2196f3'};"
                                          data-project="${event.project}"
                                          data-task="${event.task}" 
                                          data-leader="${event.person}"
