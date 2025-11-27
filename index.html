@@ -3249,6 +3249,29 @@
         // TEAM DETAILS MODAL (v5.10 - Calendar Enhancement)
         // ========================================
         
+        window.showTeamDetailsFromEvent = function(element) {
+            // Read data from element attributes
+            const projectName = element.getAttribute('data-project');
+            const taskName = element.getAttribute('data-task');
+            const leaderName = element.getAttribute('data-leader');
+            const teamMembersStr = element.getAttribute('data-team-members');
+            const projectCode = element.getAttribute('data-project-code');
+            
+            // Parse team members
+            const teamMembers = teamMembersStr ? teamMembersStr.split('|||').filter(m => m.trim()) : [];
+            
+            console.log('👥 [TEAM DETAILS] Reading from data attributes:', {
+                project: projectName,
+                task: taskName,
+                leader: leaderName,
+                teamMembers: teamMembers,
+                projectCode: projectCode
+            });
+            
+            // Call the original function
+            window.showTeamDetails(projectName, taskName, leaderName, teamMembers, projectCode);
+        };
+        
         window.showTeamDetails = function(projectName, taskName, leaderName, teamMembers, projectCode) {
             console.log('👥 [TEAM DETAILS] Showing team for:', projectName, taskName, leaderName, teamMembers);
             
@@ -6149,7 +6172,12 @@ ${conflict.workload.map(w => `
                                     <div style="background: ${event.type.includes('end') ? '#e8f5e9' : '#e3f2fd'}; 
                                                 padding: 4px 6px; border-radius: 4px; font-size: 0.75em;
                                                 border-left: 3px solid ${event.type.includes('end') ? '#4caf50' : '#2196f3'};"
-                                         onclick="window.showTeamDetails('${event.project}', '${event.task}', '${event.person}', ${JSON.stringify(event.teamMembers || [])}, '${event.projectCode || ''}')"
+                                         data-project="${event.project}"
+                                         data-task="${event.task}" 
+                                         data-leader="${event.person}"
+                                         data-team-members="${event.teamMembers ? event.teamMembers.join('|||') : ''}"
+                                         data-project-code="${event.projectCode || ''}"
+                                         onclick="window.showTeamDetailsFromEvent(this)"
                                          style="cursor: pointer;"
                                          title="${event.project} - ${event.task}\n👤 ${event.person}${event.teamMembers && event.teamMembers.length > 0 ? '\n👥 Team: ' + event.teamMembers.join(', ') : ''}">
                                         <div style="font-weight: 600; color: #2d3748; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
