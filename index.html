@@ -6259,9 +6259,9 @@ ${conflict.workload.map(w => `
                     const isToday = currentDateIter.getTime() === today.getTime();
                     // FIX: Use local date instead of UTC to avoid timezone offset issues
                     const year = currentDateIter.getFullYear();
-                    const month = String(currentDateIter.getMonth() + 1).padStart(2, '0');
+                    const monthStr = String(currentDateIter.getMonth() + 1).padStart(2, '0');
                     const day = String(currentDateIter.getDate()).padStart(2, '0');
-                    const dateKey = `${year}-${month}-${day}`;
+                    const dateKey = `${year}-${monthStr}-${day}`;
                     const dayEvents = eventsMap[dateKey] || [];
                     const hasConflict = dayEvents.length > 1;
                     
