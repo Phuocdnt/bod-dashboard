@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -6055,7 +6056,7 @@ ${conflict.workload.map(w => `
                         const milestoneTeams = [];
                         if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
                             milestone.assignedMembers.forEach(memberId => {
-                                const team = teams.find(t => t.id === teamId);
+                                const team = teams.find(t => t.members && t.members.includes(memberId));
                                 if (team) {
                                     milestoneTeams.push({
                                         id: team.id,
