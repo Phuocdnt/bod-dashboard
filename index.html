@@ -4456,6 +4456,46 @@ function initializeDashboard() {
                         console.error('Error loading data:', e);
                     }
                 }
+
+// ============================================
+// FIX: Auto-sync changeHistory references after loading data
+// INSERT THIS CODE AFTER LINE 4457 (inside loadFromStorage function)
+// ============================================
+
+// 🔧 AUTO-FIX: Sync changeHistory and updatedAt references
+// This ensures backward compatibility with both field naming conventions
+console.log('🔧 [FIX] Auto-syncing changeHistory references...');
+
+let fixedProjectsCount = 0;
+
+projects.forEach(project => {
+    let fixed = false;
+    
+    // Fix 1: Make changeHistory POINT TO history (same reference)
+    if (project.history) {
+        project.changeHistory = project.history;
+        fixed = true;
+    }
+    
+    // Fix 2: Make updatedAt POINT TO lastModifiedAt (same reference)
+    if (project.lastModifiedAt) {
+        // Create getter/setter for updatedAt that always returns/sets lastModifiedAt
+        Object.defineProperty(project, 'updatedAt', {
+            get: function() { return this.lastModifiedAt; },
+            set: function(value) { this.lastModifiedAt = value; },
+            enumerable: true,
+            configurable: true
+        });
+        fixed = true;
+    }
+    
+    if (fixed) fixedProjectsCount++;
+});
+
+console.log(`✅ [FIX] Auto-fixed ${fixedProjectsCount} projects (changeHistory & updatedAt aliases)`);
+
+// Sync to global
+window.projects = projects;
             }
 
             function updateSyncStatus() {
@@ -6992,90 +7032,6 @@ ${conflict.workload.map(w => `
                 return changes;
             }
 
-
-// ============================================================================
-// BOD DASHBOARD v5.10 - HISTORY TRACKING ENHANCEMENT
-// ============================================================================
-// 
-// PURPOSE: Add compatibility aliases and enhanced logging for history tracking
-// 
-// CHANGES:
-// 1. Add updatedAt alias for lastModifiedAt
-// 2. Add changeHistory alias for history
-// 3. Add detailed console logging for debugging
-// 
-// INSERT THIS CODE RIGHT BEFORE "function addHistoryEntry" (around line 6994)
-// ============================================================================
-
-/**
- * Enhanced addHistoryEntry with compatibility aliases and logging
- * Original function at line 6994
- */
-function addHistoryEntryEnhanced(project, changeNote, changes) {
-    console.log('📝 [HISTORY] Adding history entry for project:', project.name);
-    console.log('📝 [HISTORY] User:', currentUser ? currentUser.name : 'N/A');
-    console.log('📝 [HISTORY] Changes count:', changes.length);
-    
-    if (!currentUser) {
-        console.warn('⚠️ [HISTORY] No current user - cannot add history');
-        return;
-    }
-    
-    // Initialize history array if not exists
-    if (!project.history) {
-        project.history = [];
-        console.log('✨ [HISTORY] Created new history array');
-    }
-    
-    // Create history entry
-    const entry = {
-        id: 'hist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        timestamp: new Date().toISOString(),
-        userId: currentUser.id,
-        userName: currentUser.name,
-        isAdmin: currentUser.isAdmin || false,
-        changeNote: changeNote,
-        changes: changes
-    };
-    
-    project.history.unshift(entry); // Add to beginning
-    console.log('✅ [HISTORY] Added entry:', entry.id);
-    
-    // Update lastModified info
-    const now = new Date().toISOString();
-    project.lastModifiedBy = currentUser.id;
-    project.lastModifiedAt = now;
-    
-    // ✨ NEW: Add compatibility aliases
-    project.updatedAt = now;  // Alias for lastModifiedAt
-    console.log('✅ [HISTORY] Set updatedAt:', now);
-    
-    // Set created info if not exists
-    if (!project.createdBy) {
-        project.createdBy = currentUser.id;
-        project.createdAt = new Date().toISOString();
-        console.log('✨ [HISTORY] Set createdBy and createdAt');
-    }
-    
-    // ✨ NEW: Sync changeHistory with history (compatibility)
-    project.changeHistory = project.history;
-    console.log('✅ [HISTORY] Synced changeHistory array (', project.changeHistory.length, 'entries)');
-    
-    console.log('📊 [HISTORY] Total history entries:', project.history.length);
-}
-
-// ============================================================================
-// USAGE: Replace the original addHistoryEntry call in saveProject function
-// 
-// FROM (line 7227):
-//     addHistoryEntryEnhanced(currentEditingProject, changeNote, changes);
-// 
-// TO:
-//     addHistoryEntryEnhanced(currentEditingProject, changeNote, changes);
-// ============================================================================
-
-
-            // ============= ORIGINAL addHistoryEntry (KEPT FOR BACKWARD COMPATIBILITY) ============= //
             function addHistoryEntry(project, changeNote, changes) {
                 if (!currentUser) return;
                 
@@ -7309,7 +7265,7 @@ function addHistoryEntryEnhanced(project, changeNote, changes) {
                     const changes = compareProjects(oldProject, currentEditingProject);
                     
                     if (changes.length > 0) {
-                        addHistoryEntryEnhanced(currentEditingProject, changeNote, changes);
+                        addHistoryEntry(currentEditingProject, changeNote, changes);
                         showToast(`✅ Đã lưu ${changes.length} thay đổi!`, 'success');
                     } else {
                         showToast('ℹ️ Không có thay đổi nào được phát hiện', 'success');
