@@ -3,12 +3,13 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.10 - COMPLETE - Enterprise Edition</title>
+    <title>BOD Dashboard v5.11 - COMPLETE - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2347,6 +2348,18 @@
                         VD: Nguyễn Văn A
                     </div>
                 </div>
+                
+                <div class="form-group">
+                    <label>📊 Trạng Thái Dự Án</label>
+                    <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
+                        <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
+                        <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
+                        <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
+                        <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
+                        <option value="completed">✅ Completed (Hoàn thành)</option>
+                        <option value="cancelled">❌ Cancelled (Đã hủy)</option>
+                    </select>
+                </div>
 
                 <div class="form-group" id="actual-value-field" style="display: none;">
                     <label style="display: flex; align-items: center; gap: 8px;">
@@ -2361,42 +2374,6 @@
                 <div class="form-group">
                     <label>Mô Tả</label>
                     <textarea id="project-description" placeholder="Mô tả chi tiết dự án..."></textarea>
-                </div>
-                
-                <!-- TEAM SECTION -->
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;">👥 Phân Công Nhân Sự</h3>
-                    
-                    <div class="form-group">
-                        <label>🎯 Leader (Người Phụ Trách Chính) *</label>
-                        <select id="project-leader" required>
-                            <option value="">Chọn Leader...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>👥 Members (Thành Viên Tham Gia)</label>
-                        <div class="multi-select-container">
-                            <div class="multi-select-trigger" id="members-trigger">
-                                <span id="members-trigger-text">Chọn members...</span>
-                                <span>â–¼</span>
-                            </div>
-                            <div class="multi-select-dropdown" id="members-dropdown"></div>
-                        </div>
-                        <div class="selected-items" id="selected-members"></div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>📊 Trạng Thái Dự Án</label>
-                        <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
-                            <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
-                            <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
-                            <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
-                            <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
-                            <option value="completed">✅ Completed (Hoàn thành)</option>
-                            <option value="cancelled">❌ Cancelled (Đã hủy)</option>
-                        </select>
-                    </div>
                 </div>
                 
                 <!-- SURVEY SECTION -->
@@ -2415,6 +2392,37 @@
                             <select id="survey1-person">
                                 <option value="">Chọn người...</option>
                             </select>
+                        </div>
+                        
+                        <!-- Leader Section -->
+                        <div class="form-group">
+                            <label>🎯 Leader (Người Chịu Trách Nhiệm)</label>
+                            <select id="survey1-leader">
+                                <option value="">Chọn Leader...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Team Members Section -->
+                        <div class="form-group">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="member-select-survey1" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addTeamMemberToSurvey('survey1')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="selected-members-survey1" 
+                                 class="selected-members-list"
+                                 style="min-height: 60px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
+                            </div>
+                            <input type="hidden" id="survey1-members" value="">
                         </div>
                         <div class="milestone-dates">
                             <div class="date-field">
@@ -2442,6 +2450,37 @@
                                 <option value="">Chọn người...</option>
                             </select>
                         </div>
+                        
+                        <!-- Leader Section -->
+                        <div class="form-group">
+                            <label>🎯 Leader (Người Chịu Trách Nhiệm)</label>
+                            <select id="survey2-leader">
+                                <option value="">Chọn Leader...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Team Members Section -->
+                        <div class="form-group">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="member-select-survey2" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addTeamMemberToSurvey('survey2')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="selected-members-survey2" 
+                                 class="selected-members-list"
+                                 style="min-height: 60px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
+                            </div>
+                            <input type="hidden" id="survey2-members" value="">
+                        </div>
                         <div class="milestone-dates">
                             <div class="date-field">
                                 <label>Ngày Bắt Đầu</label>
@@ -2467,6 +2506,37 @@
                             <select id="survey3-person">
                                 <option value="">Chọn người...</option>
                             </select>
+                        </div>
+                        
+                        <!-- Leader Section -->
+                        <div class="form-group">
+                            <label>🎯 Leader (Người Chịu Trách Nhiệm)</label>
+                            <select id="survey3-leader">
+                                <option value="">Chọn Leader...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Team Members Section -->
+                        <div class="form-group">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="member-select-survey3" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addTeamMemberToSurvey('survey3')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="selected-members-survey3" 
+                                 class="selected-members-list"
+                                 style="min-height: 60px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
+                            </div>
+                            <input type="hidden" id="survey3-members" value="">
                         </div>
                         <div class="milestone-dates">
                             <div class="date-field">
@@ -2669,7 +2739,7 @@
             </div>
 
             <div class="login-footer">
-                v5.6 - Complete Edition<br>
+                v5.11 - Upgraded Edition<br>
                 Aplus Engineering & Service Ltd
             </div>
         </div>
@@ -3407,7 +3477,7 @@ function initializeDashboard() {
                 initializeTabs();
                 renderAll();
                 updateSyncStatus();
-                setupMultiSelect();
+                // setupMultiSelect(); // v5.11: Removed - project members section deleted
                 updateUserDisplay(); // v5.4: Update user menu display
                 
                 // Periodic sync
@@ -4039,6 +4109,7 @@ function initializeDashboard() {
 
             window.toggleUserDropdown = function() {
                 const dropdown = document.getElementById('user-dropdown');
+                if (!dropdown) return; // v5.11: Element may not exist
                 dropdown.classList.toggle('show');
             };
 
@@ -4046,6 +4117,7 @@ function initializeDashboard() {
             document.addEventListener('click', function(e) {
                 const selector = document.querySelector('.user-selector');
                 const dropdown = document.getElementById('user-dropdown');
+                if (!dropdown || !selector) return; // v5.11: Check elements exist
                 if (selector && dropdown && !selector.contains(e.target)) {
                     dropdown.classList.remove('show');
                 }
@@ -4183,6 +4255,10 @@ function initializeDashboard() {
             }
 
             // ============= MULTI-SELECT ============= //
+            // v5.11: REMOVED - No longer needed after removing "Phân Công Nhân Sự" section
+            /*
+            // v5.11: REMOVED - elements no longer exist
+            /*
             function setupMultiSelect() {
                 const trigger = document.getElementById('members-trigger');
                 const dropdown = document.getElementById('members-dropdown');
@@ -4221,7 +4297,10 @@ function initializeDashboard() {
                 renderMembersDropdown();
                 updateSelectedMembersDisplay();
             };
+            */
 
+            // v5.11: REMOVED - elements no longer exist
+            /*
             function updateSelectedMembersDisplay() {
                 const container = document.getElementById('selected-members');
                 const triggerText = document.getElementById('members-trigger-text');
@@ -6490,12 +6569,15 @@ ${conflict.workload.map(w => `
                     actualValueInput.value = '';
                 }
                 
-                // Populate leader and members
+                // v5.11: project-leader dropdown removed, but project-sale still exists
+                /*
+                // Populate leader dropdown - REMOVED
                 const leaderSelect = document.getElementById('project-leader');
                 leaderSelect.innerHTML = '<option value="">Chọn Leader...</option>' +
                     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.leader === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
+                */
                 
-                // Populate sale dropdown
+                // Populate sale dropdown - STILL EXISTS
                 const saleSelect = document.getElementById('project-sale');
                 saleSelect.innerHTML = '<option value="">Chọn Sale...</option>' +
                     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.sale === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
@@ -6596,7 +6678,7 @@ ${conflict.workload.map(w => `
                     const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                     
                     // v5.6: Check if milestone needs team assignment
-                    const needsTeam = ['installation', 'assembly', 'commissioning'].includes(milestone.id);
+                    const needsTeam = true;  // All milestones need team assignment
                     
                     return `
                         <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
@@ -6786,7 +6868,104 @@ ${conflict.workload.map(w => `
                     showToast('❌ Lỗi: Không tìm thấy display container!', 'error');
                     return;
                 }
+
+            // ============= SURVEY TEAM MEMBER MANAGEMENT ============= //
+            window.addTeamMemberToSurvey = function(surveyId) {
+                console.log('[addTeamMemberToSurvey] Called with surveyId:', surveyId);
                 
+                const selectId = `member-select-${surveyId}`;
+                const selectElement = document.getElementById(selectId);
+                
+                if (!selectElement) {
+                    console.error('[addTeamMemberToSurvey] Select element not found:', selectId);
+                    return;
+                }
+                
+                const memberId = selectElement.value;
+                if (!memberId) {
+                    showToast('⚠️ Vui lòng chọn member', 'warning');
+                    return;
+                }
+                
+                // Get current members from hidden input
+                const hiddenInput = document.getElementById(`${surveyId}-members`);
+                let currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
+                
+                // Check if already added
+                if (currentMembers.includes(memberId)) {
+                    showToast('⚠️ Member đã được thêm rồi', 'warning');
+                    return;
+                }
+                
+                // Add member
+                currentMembers.push(memberId);
+                hiddenInput.value = currentMembers.join(',');
+                
+                // Update display
+                updateSurveyMemberDisplay(surveyId);
+                
+                // Reset select
+                selectElement.value = '';
+                showToast('✅ Đã thêm member', 'success');
+            }
+            
+            window.removeTeamMemberFromSurvey = function(surveyId, memberId) {
+                console.log('[removeTeamMemberFromSurvey] surveyId:', surveyId, 'memberId:', memberId);
+                
+                const hiddenInput = document.getElementById(`${surveyId}-members`);
+                let currentMembers = hiddenInput.value ? hiddenInput.value.split(',') : [];
+                
+                // Remove member
+                currentMembers = currentMembers.filter(id => id !== memberId);
+                hiddenInput.value = currentMembers.join(',');
+                
+                // Update display
+                updateSurveyMemberDisplay(surveyId);
+                showToast('✅ Đã xóa member', 'success');
+            }
+            
+            function updateSurveyMemberDisplay(surveyId) {
+                const displayContainer = document.getElementById(`selected-members-${surveyId}`);
+                const hiddenInput = document.getElementById(`${surveyId}-members`);
+                const memberIds = hiddenInput.value ? hiddenInput.value.split(',').filter(id => id) : [];
+                
+                const emptyMessage = displayContainer.querySelector('.empty-message');
+                
+                if (memberIds.length === 0) {
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'block';
+                    }
+                    displayContainer.querySelectorAll('.member-tag').forEach(tag => tag.remove());
+                } else {
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'none';
+                    }
+                    
+                    const memberTagsHtml = memberIds.map(memberId => {
+                        const member = teamMembers.find(m => m.id === memberId);
+                        if (!member) return '';
+                        return `
+                            <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                <span>👤 ${member.name}</span>
+                                <button type="button" 
+                                        onclick="removeTeamMemberFromSurvey('${surveyId}', '${memberId}')"
+                                        style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                        title="Xóa">
+                                    ×
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    displayContainer.querySelectorAll('.member-tag').forEach(tag => tag.remove());
+                    if (emptyMessage) {
+                        emptyMessage.insertAdjacentHTML('beforebegin', memberTagsHtml);
+                    } else {
+                        displayContainer.innerHTML = memberTagsHtml;
+                    }
+                }
+            }
+
                 const emptyMessage = displayContainer.querySelector('.empty-message');
                 console.log('[updateMilestoneTeamDisplay] Empty message element:', emptyMessage);
                 
@@ -7180,11 +7359,12 @@ ${conflict.workload.map(w => `
                 
                 const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
-                const leader = document.getElementById('project-leader').value;
+                // v5.11: project-leader removed, set to null
+                const leader = null; // document.getElementById('project-leader').value;
                 const status = document.getElementById('project-status').value || 'planning';
 
-                if (!name || !leader) {
-                    showToast('❌ Vui lòng điền đầy đủ thông tin!', 'error');
+                if (!name) {
+                    showToast('❌ Vui lòng điền tên dự án!', 'error');
                     return;
                 }
 
@@ -8538,6 +8718,8 @@ ${conflict.workload.map(w => `
                     document.getElementById('issue-status').value = issue.status;
                     document.getElementById('issue-assigned').value = issue.assignedTo || '';
                     document.getElementById('issue-notes').value = issue.notes || '';
+                    document.getElementById('issue-raised-date').value = issue.raisedDate || '';
+                    document.getElementById('issue-complete-date').value = issue.completeDate || '';
                 } else {
                     // Add mode
                     document.getElementById('issue-modal-title').textContent = '➕ Add Issue';
@@ -8560,6 +8742,8 @@ ${conflict.workload.map(w => `
                 const status = document.getElementById('issue-status').value;
                 const assignedTo = document.getElementById('issue-assigned').value || null;
                 const notes = document.getElementById('issue-notes').value.trim();
+                const raisedDate = document.getElementById('issue-raised-date').value || null;
+                const completeDate = document.getElementById('issue-complete-date').value || null;
                 
                 if (!description) {
                     window.showToast('⚠️ Please enter issue description', 'error');
@@ -8583,6 +8767,8 @@ ${conflict.workload.map(w => `
                         issue.status = status;
                         issue.assignedTo = assignedTo;
                         issue.notes = notes;
+                        issue.raisedDate = raisedDate;
+                        issue.completeDate = completeDate;
                         issue.updatedAt = new Date().toISOString();
                         const updatingUser = window.currentUser || currentUser;
                         issue.updatedBy = updatingUser ? updatingUser.id : null;
@@ -8606,7 +8792,9 @@ ${conflict.workload.map(w => `
                         createdBy: user ? user.id : null,
                         createdByName: user ? user.name : 'Unknown',
                         createdAt: new Date().toISOString(),
-                        resolvedAt: null
+                        resolvedAt: null,
+                        raisedDate: raisedDate,
+                        completeDate: completeDate
                     };
                     
                     project.issues.push(newIssue);
@@ -9087,6 +9275,16 @@ ${conflict.workload.map(w => `
  <option value="closed">⚫ Closed</option>
  </select>
  </div>
+                
+                <div class="form-group">
+                    <label>📅 Raised Date (Ngày Phát Sinh)</label>
+                    <input type="date" id="issue-raised-date" />
+                </div>
+                
+                <div class="form-group">
+                    <label>✅ Complete Date (Ngày Hoàn Thành)</label>
+                    <input type="date" id="issue-complete-date" />
+                </div>
  
  <div class="form-group">
  <label>👤 Assigned To</label>
