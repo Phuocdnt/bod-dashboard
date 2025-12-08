@@ -2293,7 +2293,7 @@
                         <span>💾</span>
                         Lưu Thủ Công
                     </button>
-                    <button class="btn btn-warning" onclick="loadFromStorage()">
+                    <button class="btn btn-warning" onclick="window.loadFromStorage()">
                         <span>🔄</span>
                         Tải Lại từ Storage
                     </button>
@@ -3026,6 +3026,238 @@
             const FAILED_ATTEMPTS_KEY = 'bod_failed_attempts_v5_4';
             const LOCK_UNTIL_KEY = 'bod_lock_until_v5_4';
             const DATA_VERSION = 5.6;
+
+            // ==================== ASYNC FUNCTIONS (Defined Early) ====================
+            // These must be defined BEFORE DOMContentLoaded to avoid hoisting issues
+
+                        window.hashPassword = async function(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return hashHex;
+            }
+
+                        window.validateCredentials = async function(userId, password) {
+                const passwordHash = await window.hashPassword(password);
+                
+                // Check if user exists and password matches
+                let user;
+                if (userId === 'admin') {
+                    const adminPassword = getAdminPassword();
+                    if (!adminPassword) return null; // Admin not set up yet
+                    
+                    if (passwordHash === adminPassword) {
+                        user = { ...ADMIN_USER, password: adminPassword };
+                    }
+                } else {
+                    const member = teamMembers.find(m => m.id === userId);
+                    
+                    if (member) {
+                        // If user has no password yet, set it now (first-time login)
+                        if (!member.password) {
+                            if (password.length < 8) {
+                                return 'PASSWORD_TOO_SHORT'; // Special flag
+                            }
+                            member.password = passwordHash;
+                            saveToStorage();
+                            user = member;
+                        } else {
+                            // Validate existing password
+                            if (member.password === passwordHash) {
+                                user = member;
+                            }
+                        }
+                    }
+                }
+                
+                return user || null;
+            }
+
+                        window.loadFromBlob = async function() {
+                if (!AZURE_CONFIG.enabled) return null;
+                
+                try {
+                    // Handle both container-level and blob-level SAS URLs
+                    const functionUrl = AZURE_CONFIG.functionUrl;
+                    const response = await fetch(functionUrl, {
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        return data;
+                    } else if (response.status === 401) {
+                        console.error('Authentication failed - Invalid API Key');
+                        showNotification('Xác thực thất bại - API Key không hợp lệ', 'error');
+                    }
+                    return null;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        lastBlobSync = new Date();
+                        return data;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error loading from blob:', error);
+                    return null;
+                }
+            }
+
+                        window.saveToBlob = async function(data) {
+                if (!AZURE_CONFIG.enabled) {
+                    console.warn('⚠️ [AZURE SYNC] Azure sync disabled');
+                    return false;
+                }
+                
+                try {
+                    console.log('🔄 [AZURE SYNC] Starting sync to Azure Blob...');
+                    console.log('📊 [AZURE SYNC] Data to sync:', {
+                        projects: data.projects?.length || 0,
+                        teamMembers: data.teamMembers?.length || 0,
+                        lastSave: data.lastSave
+                    });
+                    
+                    isSyncing = true;
+                    updateSyncStatus();
+                    
+                    const functionUrl = AZURE_CONFIG.functionUrl;
+                    console.log('🌐 [AZURE SYNC] URL:', functionUrl);
+                    
+                    const response = await fetch(functionUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey
+                        },
+                        body: JSON.stringify(data, null, 2)
+                    });
+                    
+                    console.log('📡 [AZURE SYNC] Response status:', response.status, response.statusText);
+                    
+                    if (response.ok) {
+                        console.log('✅ [AZURE SYNC] Success! Data synced to Azure');
+                        lastBlobSync = new Date();
+                        isSyncing = false;
+                        updateSyncStatus();
+                        window.showToast('✅ Đã đồng bộ lên Azure Cloud', 'success');
+                        return true;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ [AZURE SYNC] Failed:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            error: errorText
+                        });
+                        
+                        if (response.status === 401) {
+                            console.error('🔐 [AZURE SYNC] Authentication failed - Invalid API Key');
+                            window.showToast('❌ Xác thực Azure thất bại - Kiểm tra API Key', 'error');
+                        } else if (response.status === 404) {
+                            console.error('🔍 [AZURE SYNC] Blob not found - Check URL');
+                            window.showToast('❌ Không tìm thấy Azure Blob - Kiểm tra URL', 'error');
+                        } else {
+                            window.showToast(`❌ Lỗi đồng bộ Azure: ${response.status}`, 'error');
+                        }
+                        
+                        isSyncing = false;
+                        updateSyncStatus();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('💥 [AZURE SYNC] Exception:', error);
+                    console.error('📍 [AZURE SYNC] Error stack:', error.stack);
+                    window.showToast('❌ Lỗi kết nối Azure: ' + error.message, 'error');
+                    isSyncing = false;
+                    updateSyncStatus();
+                    return false;
+                }
+            }
+
+                        window.loadFromStorage = async function() {
+                console.log('📂 [LOAD] Loading data from storage...');
+                const blobData = await window.loadFromBlob();
+                
+                if (blobData) {
+                    console.log('☁️ [LOAD] Loaded from Azure Blob:', {
+                        projects: blobData.projects?.length || 0,
+                        teamMembers: blobData.teamMembers?.length || 0,
+                        lastSave: blobData.lastSave
+                    });
+                    projects = blobData.projects || [];
+                    teamMembers = blobData.teamMembers || [];
+                    window.projects = projects; // Sync to global
+                    window.teamMembers = teamMembers; // Sync to global
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                    window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    return;
+                }
+                
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        projects = data.projects || [];
+                        teamMembers = data.teamMembers || [];
+                        window.projects = projects; // Sync to global
+                        window.teamMembers = teamMembers; // Sync to global
+                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
+                            window.saveToBlob(data);
+                        }
+                    } catch (e) {
+                        console.error('Error loading data:', e);
+                    }
+                }
+
+// ============================================
+// FIX: Auto-sync changeHistory references after loading data
+// INSERT THIS CODE AFTER LINE 4457 (inside loadFromStorage function)
+// ============================================
+
+// 🔧 AUTO-FIX: Sync changeHistory and updatedAt references
+// This ensures backward compatibility with both field naming conventions
+console.log('🔧 [FIX] Auto-syncing changeHistory references...');
+
+let fixedProjectsCount = 0;
+
+projects.forEach(project => {
+    let fixed = false;
+    
+    // Fix 1: Make changeHistory POINT TO history (same reference)
+    if (project.history) {
+        project.changeHistory = project.history;
+        fixed = true;
+    }
+    
+    // Fix 2: Make updatedAt POINT TO lastModifiedAt (same reference)
+    if (project.lastModifiedAt) {
+        // Create getter/setter for updatedAt that always returns/sets lastModifiedAt
+        Object.defineProperty(project, 'updatedAt', {
+            get: function() { return this.lastModifiedAt; },
+            set: function(value) { this.lastModifiedAt = value; },
+            enumerable: true,
+            configurable: true
+        });
+        fixed = true;
+    }
+    
+    if (fixed) fixedProjectsCount++;
+});
+
+console.log(`✅ [FIX] Auto-fixed ${fixedProjectsCount} projects (changeHistory & updatedAt aliases)`);
+
+// Sync to global
+window.projects = projects;
+            }
+
+
             
             // Selected members for multi-select
             let selectedMembers = [];
@@ -3059,14 +3291,6 @@
             const LOCK_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
             
             // Password Hashing (Simple SHA-256)
-            async function hashPassword(password) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                return hashHex;
-            }
 
             // Check if first time setup is needed
             function needsSetup() {
@@ -3199,41 +3423,6 @@
             }
 
             // Validate credentials
-            async function validateCredentials(userId, password) {
-                const passwordHash = await hashPassword(password);
-                
-                // Check if user exists and password matches
-                let user;
-                if (userId === 'admin') {
-                    const adminPassword = getAdminPassword();
-                    if (!adminPassword) return null; // Admin not set up yet
-                    
-                    if (passwordHash === adminPassword) {
-                        user = { ...ADMIN_USER, password: adminPassword };
-                    }
-                } else {
-                    const member = teamMembers.find(m => m.id === userId);
-                    
-                    if (member) {
-                        // If user has no password yet, set it now (first-time login)
-                        if (!member.password) {
-                            if (password.length < 8) {
-                                return 'PASSWORD_TOO_SHORT'; // Special flag
-                            }
-                            member.password = passwordHash;
-                            saveToStorage();
-                            user = member;
-                        } else {
-                            // Validate existing password
-                            if (member.password === passwordHash) {
-                                user = member;
-                            }
-                        }
-                    }
-                }
-                
-                return user || null;
-            }
 
             // Check password strength
             function checkPasswordStrength(password) {
@@ -3295,7 +3484,7 @@
                 
                 // Has API Key → Continue with normal flow
                 // Load data (now we have API Key, so this will work)
-                await loadFromStorage();
+                await window.loadFromStorage();
                 
                 // v5.4 Authentication Flow
                 if (needsSetup()) {
@@ -3566,7 +3755,7 @@ function initializeDashboard() {
                     showToast('Đang tải dữ liệu từ Azure...', 'info');
                     
                     // Load data from Azure with new API Key
-                    await loadFromStorage();
+                    await window.loadFromStorage();
                     
                     // Hide API Key setup screen
                     hideApiKeySetupScreen();
@@ -3718,7 +3907,7 @@ function initializeDashboard() {
                 loginBtn.textContent = 'Đang xác thực...';
                 
                 // Validate credentials
-                const user = await validateCredentials(userId, password);
+                const user = await window.validateCredentials(userId, password);
                 
                 if (user === 'PASSWORD_TOO_SHORT') {
                     // First-time password setup but too short
@@ -3805,7 +3994,7 @@ function initializeDashboard() {
                 }
                 
                 // Save admin password
-                const passwordHash = await hashPassword(password);
+                const passwordHash = await window.hashPassword(password);
                 
                 // Add or update admin in teamMembers
                 const existingAdmin = teamMembers.findIndex(m => m.id === 'admin');
@@ -3895,7 +4084,7 @@ function initializeDashboard() {
                         }
                         
                         // Hash and save
-                        member.password = await hashPassword(password);
+                        member.password = await window.hashPassword(password);
                         passwordCount++;
                     }
                 }
@@ -3962,7 +4151,7 @@ function initializeDashboard() {
                 
                 const user = teamMembers.find(m => m.id === userId);
                 if (user) {
-                    user.password = await hashPassword(newPassword);
+                    user.password = await window.hashPassword(newPassword);
                     saveToStorage();
                     closePasswordResetModal();
                     showToast(`✅ Đã reset password cho ${user.name}!`, 'success');
@@ -3989,7 +4178,7 @@ function initializeDashboard() {
                 if (!currentUser) return;
                 
                 // Validate current password
-                const valid = await validateCredentials(currentUser.id, currentPassword);
+                const valid = await window.validateCredentials(currentUser.id, currentPassword);
                 if (!valid) {
                     showToast('❌ Mật khẩu hiện tại không đúng!', 'error');
                     return;
@@ -4008,7 +4197,7 @@ function initializeDashboard() {
                 // Update password
                 const user = teamMembers.find(m => m.id === currentUser.id);
                 if (user) {
-                    user.password = await hashPassword(newPassword);
+                    user.password = await window.hashPassword(newPassword);
                     saveToStorage();
                     closeChangePasswordModal();
                     showToast('✅ Đã đổi mật khẩu thành công!', 'success');
@@ -4332,111 +4521,7 @@ function initializeDashboard() {
             };
 
             // ============= STORAGE ============= //
-            async function loadFromBlob() {
-                if (!AZURE_CONFIG.enabled) return null;
-                
-                try {
-                    // Handle both container-level and blob-level SAS URLs
-                    const functionUrl = AZURE_CONFIG.functionUrl;
-                    const response = await fetch(functionUrl, {
-                        method: 'GET',
-                        headers: { 
-                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        lastBlobSync = new Date();
-                        return data;
-                    } else if (response.status === 401) {
-                        console.error('Authentication failed - Invalid API Key');
-                        showNotification('Xác thực thất bại - API Key không hợp lệ', 'error');
-                    }
-                    return null;
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        lastBlobSync = new Date();
-                        return data;
-                    }
-                    return null;
-                } catch (error) {
-                    console.error('Error loading from blob:', error);
-                    return null;
-                }
-            }
 
-            async function saveToBlob(data) {
-                if (!AZURE_CONFIG.enabled) {
-                    console.warn('⚠️ [AZURE SYNC] Azure sync disabled');
-                    return false;
-                }
-                
-                try {
-                    console.log('🔄 [AZURE SYNC] Starting sync to Azure Blob...');
-                    console.log('📊 [AZURE SYNC] Data to sync:', {
-                        projects: data.projects?.length || 0,
-                        teamMembers: data.teamMembers?.length || 0,
-                        lastSave: data.lastSave
-                    });
-                    
-                    isSyncing = true;
-                    updateSyncStatus();
-                    
-                    const functionUrl = AZURE_CONFIG.functionUrl;
-                    console.log('🌐 [AZURE SYNC] URL:', functionUrl);
-                    
-                    const response = await fetch(functionUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey
-                        },
-                        body: JSON.stringify(data, null, 2)
-                    });
-                    
-                    console.log('📡 [AZURE SYNC] Response status:', response.status, response.statusText);
-                    
-                    if (response.ok) {
-                        console.log('✅ [AZURE SYNC] Success! Data synced to Azure');
-                        lastBlobSync = new Date();
-                        isSyncing = false;
-                        updateSyncStatus();
-                        window.showToast('✅ Đã đồng bộ lên Azure Cloud', 'success');
-                        return true;
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ [AZURE SYNC] Failed:', {
-                            status: response.status,
-                            statusText: response.statusText,
-                            error: errorText
-                        });
-                        
-                        if (response.status === 401) {
-                            console.error('🔐 [AZURE SYNC] Authentication failed - Invalid API Key');
-                            window.showToast('❌ Xác thực Azure thất bại - Kiểm tra API Key', 'error');
-                        } else if (response.status === 404) {
-                            console.error('🔍 [AZURE SYNC] Blob not found - Check URL');
-                            window.showToast('❌ Không tìm thấy Azure Blob - Kiểm tra URL', 'error');
-                        } else {
-                            window.showToast(`❌ Lỗi đồng bộ Azure: ${response.status}`, 'error');
-                        }
-                        
-                        isSyncing = false;
-                        updateSyncStatus();
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('💥 [AZURE SYNC] Exception:', error);
-                    console.error('📍 [AZURE SYNC] Error stack:', error.stack);
-                    window.showToast('❌ Lỗi kết nối Azure: ' + error.message, 'error');
-                    isSyncing = false;
-                    updateSyncStatus();
-                    return false;
-                }
-            }
 
             function debouncedSaveToBlob() {
                 console.log('⏱️ [DEBOUNCED SYNC] Scheduling Azure sync in 2 seconds...');
@@ -4452,7 +4537,7 @@ function initializeDashboard() {
                         lastSave: new Date().toISOString(),
                         version: DATA_VERSION
                     };
-                    saveToBlob(data);
+                    window.saveToBlob(data);
                 }, 2000);
             }
 
@@ -4473,7 +4558,7 @@ function initializeDashboard() {
                 
                 if (immediate) {
                     console.log('⚡ [SAVE] IMMEDIATE sync mode - syncing NOW!');
-                    saveToBlob(data);
+                    window.saveToBlob(data);
                 } else {
                     console.log('⏱️ [SAVE] Debounced sync mode - syncing in 2s');
                     debouncedSaveToBlob();
@@ -4493,7 +4578,7 @@ function initializeDashboard() {
                     version: DATA_VERSION
                 };
                 
-                saveToBlob(data).then(success => {
+                window.saveToBlob(data).then(success => {
                     if (success) {
                         console.log('✅ [FORCE SYNC] Manual sync completed successfully!');
                     } else {
@@ -4502,81 +4587,6 @@ function initializeDashboard() {
                 });
             }
 
-            async function loadFromStorage() {
-                console.log('📂 [LOAD] Loading data from storage...');
-                const blobData = await loadFromBlob();
-                
-                if (blobData) {
-                    console.log('☁️ [LOAD] Loaded from Azure Blob:', {
-                        projects: blobData.projects?.length || 0,
-                        teamMembers: blobData.teamMembers?.length || 0,
-                        lastSave: blobData.lastSave
-                    });
-                    projects = blobData.projects || [];
-                    teamMembers = blobData.teamMembers || [];
-                    window.projects = projects; // Sync to global
-                    window.teamMembers = teamMembers; // Sync to global
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                    window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
-                    return;
-                }
-                
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    try {
-                        const data = JSON.parse(stored);
-                        projects = data.projects || [];
-                        teamMembers = data.teamMembers || [];
-                        window.projects = projects; // Sync to global
-                        window.teamMembers = teamMembers; // Sync to global
-                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
-                            saveToBlob(data);
-                        }
-                    } catch (e) {
-                        console.error('Error loading data:', e);
-                    }
-                }
-
-// ============================================
-// FIX: Auto-sync changeHistory references after loading data
-// INSERT THIS CODE AFTER LINE 4457 (inside loadFromStorage function)
-// ============================================
-
-// 🔧 AUTO-FIX: Sync changeHistory and updatedAt references
-// This ensures backward compatibility with both field naming conventions
-console.log('🔧 [FIX] Auto-syncing changeHistory references...');
-
-let fixedProjectsCount = 0;
-
-projects.forEach(project => {
-    let fixed = false;
-    
-    // Fix 1: Make changeHistory POINT TO history (same reference)
-    if (project.history) {
-        project.changeHistory = project.history;
-        fixed = true;
-    }
-    
-    // Fix 2: Make updatedAt POINT TO lastModifiedAt (same reference)
-    if (project.lastModifiedAt) {
-        // Create getter/setter for updatedAt that always returns/sets lastModifiedAt
-        Object.defineProperty(project, 'updatedAt', {
-            get: function() { return this.lastModifiedAt; },
-            set: function(value) { this.lastModifiedAt = value; },
-            enumerable: true,
-            configurable: true
-        });
-        fixed = true;
-    }
-    
-    if (fixed) fixedProjectsCount++;
-});
-
-console.log(`✅ [FIX] Auto-fixed ${fixedProjectsCount} projects (changeHistory & updatedAt aliases)`);
-
-// Sync to global
-window.projects = projects;
-            }
 
             function updateSyncStatus() {
                 const statusEl = document.getElementById('sync-status');
@@ -8522,7 +8532,7 @@ ${conflict.workload.map(w => `
                     teamMembers = [];
                     localStorage.removeItem(STORAGE_KEY);
                     const data = { projects: [], teamMembers: [], lastSave: new Date().toISOString(), version: DATA_VERSION };
-                    saveToBlob(data);
+                    window.saveToBlob(data);
                     renderAll();
                     showToast('✅ Đã xóa tất cả dữ liệu!', 'success');
                 }
@@ -8555,7 +8565,7 @@ ${conflict.workload.map(w => `
                 showToast('🔍 Đang kiểm tra kết nối...', 'info');
                 
                 try {
-                    const result = await loadFromBlob();
+                    const result = await window.loadFromBlob();
                     
                     if (result !== null) {
                         showToast('✅ Kết nối thành công! API Key hợp lệ.', 'success');
