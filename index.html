@@ -5148,8 +5148,8 @@ window.projects = projects;
                                                         })()}
                                                     </div>
                                                     ${(() => {
-                                                        // v5.6: Show teams for installation, assembly, commissioning
-                                                        if (['installation', 'assembly', 'commissioning'].includes(current.id) && current.teams && current.teams.length > 0) {
+                                                        // v5.11: Show teams for all milestones
+                                                        if (current.teams && current.teams.length > 0) { // v5.11: All milestones
                                                             const teamsList = current.teams.map(teamId => {
                                                                 const team = teams.find(t => t.id === teamId);
                                                                 if (!team) return null;
@@ -6607,7 +6607,7 @@ ${conflict.workload.map(w => `
                     const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                     
                     // v5.6: Check if milestone needs team assignment
-                    const needsTeam = ['installation', 'assembly', 'commissioning'].includes(milestone.id);
+                    const needsTeam = true; // v5.11: All milestones have teams
                     
                     return `
                         <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
@@ -7024,7 +7024,7 @@ ${conflict.workload.map(w => `
                         }
                     });
                     
-                    // v5.6: Track assignedMembers changes for installation, assembly, commissioning
+                    // v5.11: Track assignedMembers changes for all milestones
                     if (['installation', 'assembly', 'commissioning'].includes(milestone.id)) {
                         const oldMembers = (oldMs.assignedMembers || []).sort().join(',');
                         const newMembers = (newMs.assignedMembers || []).sort().join(',');
