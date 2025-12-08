@@ -2364,17 +2364,16 @@
                     <textarea id="project-description" placeholder="Mô tả chi tiết dự án..."></textarea>
                 </div>
                 
-                <!-- TEAM SECTION -->
+                <!-- TEAM SECTION - REMOVED FOR V5.11 -->
+                <!--
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
                     <h3 style="color: #2d3748; margin-bottom: 15px;">👥 Phân Công Nhân Sự</h3>
-                    
                     <div class="form-group">
                         <label>🎯 Leader (Người Phụ Trách Chính) *</label>
                         <select id="project-leader" required>
                             <option value="">Chọn Leader...</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label>👥 Members (Thành Viên Tham Gia)</label>
                         <div class="multi-select-container">
@@ -2386,18 +2385,20 @@
                         </div>
                         <div class="selected-items" id="selected-members"></div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>📊 Trạng Thái Dự Án</label>
-                        <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
-                            <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
-                            <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
-                            <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
-                            <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
-                            <option value="completed">✅ Completed (Hoàn thành)</option>
-                            <option value="cancelled">❌ Cancelled (Đã hủy)</option>
-                        </select>
-                    </div>
+                </div>
+                -->
+                
+                <!-- PROJECT STATUS - Kept outside team section (important for tracking) -->
+                <div class="form-group">
+                    <label>📊 Trạng Thái Dự Án</label>
+                    <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
+                        <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
+                        <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
+                        <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
+                        <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
+                        <option value="completed">✅ Completed (Hoàn thành)</option>
+                        <option value="cancelled">❌ Cancelled (Đã hủy)</option>
+                    </select>
                 </div>
                 
                 <!-- SURVEY SECTION -->
@@ -2428,6 +2429,25 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="survey1-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addSurveyTeamMember('survey1')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="survey1-members-display" 
+                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
                             <label>📝 Ghi Chú</label>
                             <textarea id="survey1-notes" rows="3" 
                                       placeholder="Nhập ghi chú về khảo sát lần 1..."
@@ -2454,6 +2474,25 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="survey2-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addSurveyTeamMember('survey2')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="survey2-members-display" 
+                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
                             <label>📝 Ghi Chú</label>
                             <textarea id="survey2-notes" rows="3" 
                                       placeholder="Nhập ghi chú về khảo sát lần 2..."
@@ -2477,6 +2516,25 @@
                             <div class="date-field">
                                 <label>Ngày Hoàn Thành</label>
                                 <input type="date" id="survey3-complete">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>👥 Team Members</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="survey3-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <option value="">Chọn member...</option>
+                                </select>
+                                <button type="button" 
+                                        onclick="addSurveyTeamMember('survey3')"
+                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            <div id="survey3-members-display" 
+                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                                <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                    Chưa có member nào. Click "Add" để thêm.
+                                </div>
                             </div>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
@@ -3408,7 +3466,8 @@ function initializeDashboard() {
                 initializeTabs();
                 renderAll();
                 updateSyncStatus();
-                setupMultiSelect();
+                // v5.11: Team section removed, setupMultiSelect no longer needed
+                // setupMultiSelect();
                 updateUserDisplay(); // v5.4: Update user menu display
                 
                 // Periodic sync
@@ -6479,32 +6538,56 @@ ${conflict.workload.map(w => `
                 document.getElementById('project-customer').value = currentEditingProject?.customer || '';
                 document.getElementById('project-description').value = currentEditingProject?.description || '';
                 
-                // v5.11: Budget field - Admin/BOD only (same as actualValue)
+                // v5.11: Budget field - Admin can edit, BOD can view only
                 const budgetField = document.getElementById('budget-field');
                 const budgetInput = document.getElementById('project-budget');
-                if (currentUser && (currentUser.isAdmin || currentUser.isBOD)) {
+                if (currentUser && currentUser.isAdmin) {
+                    // Admin: Can edit
                     budgetField.style.display = 'block';
                     budgetInput.value = currentEditingProject?.budget || '';
+                    budgetInput.readOnly = false;
+                    budgetInput.style.backgroundColor = '';
+                    budgetInput.style.cursor = '';
+                } else if (currentUser && currentUser.isBOD) {
+                    // BOD: Can view only (read-only)
+                    budgetField.style.display = 'block';
+                    budgetInput.value = currentEditingProject?.budget || '';
+                    budgetInput.readOnly = true;
+                    budgetInput.style.backgroundColor = '#f8f9fa';
+                    budgetInput.style.cursor = 'not-allowed';
                 } else {
+                    // Others: Hidden
                     budgetField.style.display = 'none';
                     budgetInput.value = '';
                 }
                 
-                // v5.6: Show/hide Actual Value field based on user role (Admin/BOD only)
+                // v5.11: Actual Value field - Admin can edit, BOD can view only
                 const actualValueField = document.getElementById('actual-value-field');
                 const actualValueInput = document.getElementById('project-actual-value');
-                if (currentUser && (currentUser.isAdmin || currentUser.isBOD)) {
+                if (currentUser && currentUser.isAdmin) {
+                    // Admin: Can edit
                     actualValueField.style.display = 'block';
                     actualValueInput.value = currentEditingProject?.actualValue || '';
+                    actualValueInput.readOnly = false;
+                    actualValueInput.style.backgroundColor = '';
+                    actualValueInput.style.cursor = '';
+                } else if (currentUser && currentUser.isBOD) {
+                    // BOD: Can view only (read-only)
+                    actualValueField.style.display = 'block';
+                    actualValueInput.value = currentEditingProject?.actualValue || '';
+                    actualValueInput.readOnly = true;
+                    actualValueInput.style.backgroundColor = '#f8f9fa';
+                    actualValueInput.style.cursor = 'not-allowed';
                 } else {
+                    // Others: Hidden
                     actualValueField.style.display = 'none';
                     actualValueInput.value = '';
                 }
                 
-                // Populate leader and members
-                const leaderSelect = document.getElementById('project-leader');
-                leaderSelect.innerHTML = '<option value="">Chọn Leader...</option>' +
-                    teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.leader === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
+                // v5.11: Team section removed
+                // const leaderSelect = document.getElementById('project-leader');
+                // leaderSelect.innerHTML = '<option value="">Chọn Leader...</option>' +
+                //     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.leader === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
                 
                 // Populate sale dropdown
                 const saleSelect = document.getElementById('project-sale');
@@ -6514,7 +6597,7 @@ ${conflict.workload.map(w => `
                 // Populate status
                 document.getElementById('project-status').value = currentEditingProject?.status || 'planning';
                 
-                // Populate survey person selects
+                // Populate survey person and member selects
                 ['survey1', 'survey2', 'survey3'].forEach(survey => {
                     const select = document.getElementById(`${survey}-person`);
                     select.innerHTML = '<option value="">Chọn người...</option>' +
@@ -6523,14 +6606,55 @@ ${conflict.workload.map(w => `
                             return `<option value="${m.id}" ${selected ? 'selected' : ''}>${m.name}</option>`;
                         }).join('');
                     
+                    // v5.11: Populate member dropdown for team selection
+                    const memberSelect = document.getElementById(`${survey}-member-select`);
+                    if (memberSelect) {
+                        memberSelect.innerHTML = '<option value="">Chọn member...</option>' +
+                            teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+                    }
+                    
                     // Set dates
                     document.getElementById(`${survey}-start`).value = currentEditingProject?.surveyRounds?.[survey]?.startDate || '';
                     document.getElementById(`${survey}-complete`).value = currentEditingProject?.surveyRounds?.[survey]?.completeDate || '';
                     document.getElementById(`${survey}-notes`).value = currentEditingProject?.surveyRounds?.[survey]?.notes || '';
+                    
+                    // v5.11: Load existing team members
+                    const displayDiv = document.getElementById(`${survey}-members-display`);
+                    if (displayDiv && currentEditingProject?.surveyRounds?.[survey]?.teamMembers) {
+                        const members = currentEditingProject.surveyRounds[survey].teamMembers;
+                        
+                        if (members.length > 0) {
+                            const emptyMsg = displayDiv.querySelector('.empty-message');
+                            if (emptyMsg) emptyMsg.style.display = 'none';
+                            
+                            // Clear existing tags
+                            displayDiv.querySelectorAll('.member-tag').forEach(tag => tag.remove());
+                            
+                            // Add member tags
+                            members.forEach(memberId => {
+                                const member = teamMembers.find(m => m.id === memberId);
+                                if (!member) return;
+                                
+                                const tag = document.createElement('div');
+                                tag.className = 'member-tag';
+                                tag.dataset.memberId = memberId;
+                                tag.style.cssText = 'display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;';
+                                tag.innerHTML = `
+                                    <span>👤 ${member.name}</span>
+                                    <button type="button" 
+                                            onclick="removeSurveyTeamMember('${survey}', '${memberId}')"
+                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                            title="Xóa">×</button>
+                                `;
+                                displayDiv.insertBefore(tag, emptyMsg);
+                            });
+                        }
+                    }
                 });
                 
-                renderMembersDropdown();
-                updateSelectedMembersDisplay();
+                // v5.11: Team section removed
+                // renderMembersDropdown();
+                // updateSelectedMembersDisplay();
                 renderMilestoneForm();
                 
                 // ============= v5.6 PERMISSION CONTROL (MOVED AFTER MILESTONE RENDERING) ============= //
@@ -6770,7 +6894,75 @@ ${conflict.workload.map(w => `
                 console.log('[addTeamMember] ✅ Complete!');
             };
 
-            window.removeTeamMember = function(milestoneId, memberId) {
+            // v5.11: Survey Team Management Functions
+            window.addSurveyTeamMember = function(surveyId) {
+                const selectId = `${surveyId}-member-select`;
+                const select = document.getElementById(selectId);
+                const memberId = select.value;
+                
+                if (!memberId) {
+                    window.showToast('⚠️ Vui lòng chọn member', 'error');
+                    return;
+                }
+                
+                // Get current members
+                const displayDiv = document.getElementById(`${surveyId}-members-display`);
+                const existingTags = displayDiv.querySelectorAll('.member-tag');
+                const currentMembers = Array.from(existingTags).map(tag => tag.dataset.memberId);
+                
+                // Check if already added
+                if (currentMembers.includes(memberId)) {
+                    window.showToast('⚠️ Member này đã được thêm rồi', 'error');
+                    return;
+                }
+                
+                // Get member info
+                const member = teamMembers.find(m => m.id === memberId);
+                if (!member) return;
+                
+                // Add member tag
+                const emptyMsg = displayDiv.querySelector('.empty-message');
+                if (emptyMsg) emptyMsg.style.display = 'none';
+                
+                const tag = document.createElement('div');
+                tag.className = 'member-tag';
+                tag.dataset.memberId = memberId;
+                tag.style.cssText = 'display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;';
+                tag.innerHTML = `
+                    <span>👤 ${member.name}</span>
+                    <button type="button" 
+                            onclick="removeSurveyTeamMember('${surveyId}', '${memberId}')"
+                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                            title="Xóa">×</button>
+                `;
+                
+                displayDiv.insertBefore(tag, emptyMsg);
+                
+                // Reset select
+                select.value = '';
+                
+                window.showToast('✅ Đã thêm member', 'success');
+            };
+            
+            window.removeSurveyTeamMember = function(surveyId, memberId) {
+                const displayDiv = document.getElementById(`${surveyId}-members-display`);
+                const tag = displayDiv.querySelector(`.member-tag[data-member-id="${memberId}"]`);
+                
+                if (tag) {
+                    tag.remove();
+                    
+                    // Check if empty
+                    const remainingTags = displayDiv.querySelectorAll('.member-tag');
+                    if (remainingTags.length === 0) {
+                        const emptyMsg = displayDiv.querySelector('.empty-message');
+                        if (emptyMsg) emptyMsg.style.display = 'block';
+                    }
+                    
+                    window.showToast('✅ Đã xóa member', 'success');
+                }
+            };
+
+                        window.removeTeamMember = function(milestoneId, memberId) {
                 // Get current members from hidden input
                 const membersInput = document.querySelector(`.milestone-members[data-milestone="${milestoneId}"]`);
                 const currentMembers = membersInput.value ? membersInput.value.split(',').filter(id => id.trim() !== '') : [];
@@ -7191,10 +7383,11 @@ ${conflict.workload.map(w => `
                 
                 const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
-                const leader = document.getElementById('project-leader').value;
+                // v5.11: Team section removed
+                // const leader = document.getElementById('project-leader').value;
                 const status = document.getElementById('project-status').value || 'planning';
 
-                if (!name || !leader) {
+                if (!name) {
                     showToast('❌ Vui lòng điền đầy đủ thông tin!', 'error');
                     return;
                 }
@@ -7229,8 +7422,20 @@ ${conflict.workload.map(w => `
                     const startDate = document.getElementById(`${survey}-start`).value;
                     const completeDate = document.getElementById(`${survey}-complete`).value;
                     const notes = document.getElementById(`${survey}-notes`).value;
-                    if (person || startDate || completeDate || notes) {
-                        surveyRounds[survey] = { person, startDate, completeDate, notes };
+                    
+                    // v5.11: Get team members
+                    const displayDiv = document.getElementById(`${survey}-members-display`);
+                    const memberTags = displayDiv ? displayDiv.querySelectorAll('.member-tag') : [];
+                    const surveyTeamMembers = Array.from(memberTags).map(tag => tag.dataset.memberId);
+                    
+                    if (person || startDate || completeDate || notes || surveyTeamMembers.length > 0) {
+                        surveyRounds[survey] = { 
+                            person, 
+                            startDate, 
+                            completeDate, 
+                            notes,
+                            teamMembers: surveyTeamMembers // v5.11: Save team members
+                        };
                     }
                 });
 
@@ -7271,9 +7476,10 @@ ${conflict.workload.map(w => `
                     currentEditingProject.pm = pm;
                     currentEditingProject.actualValue = actualValue ? parseFloat(actualValue) : null;
                     currentEditingProject.description = description;
-                    currentEditingProject.leader = leader;
+                    // v5.11: Team section removed
+                    // currentEditingProject.leader = leader;
                     currentEditingProject.status = status;
-                    currentEditingProject.members = selectedMembers;
+                    // currentEditingProject.members = selectedMembers;
                     currentEditingProject.surveyRounds = surveyRounds;
                     currentEditingProject.milestones = milestones;
                     
@@ -7300,9 +7506,10 @@ ${conflict.workload.map(w => `
                         pm: pm,
                         actualValue: actualValue ? parseFloat(actualValue) : null,
                         description: description,
-                        leader: leader,
+                        // v5.11: Team section removed
+                        // leader: leader,
                         status: status,
-                        members: selectedMembers,
+                        // members: selectedMembers,
                         surveyRounds: surveyRounds,
                         milestones: milestones,
                         createdDate: new Date().toISOString().split('T')[0],
@@ -8549,6 +8756,9 @@ ${conflict.workload.map(w => `
                     document.getElementById('issue-status').value = issue.status;
                     document.getElementById('issue-assigned').value = issue.assignedTo || '';
                     document.getElementById('issue-notes').value = issue.notes || '';
+                    // v5.11: Issue dates
+                    document.getElementById('issue-raised-date').value = issue.raisedDate || '';
+                    document.getElementById('issue-complete-date').value = issue.completeDate || '';
                 } else {
                     // Add mode
                     document.getElementById('issue-modal-title').textContent = '➕ Add Issue';
@@ -8571,6 +8781,9 @@ ${conflict.workload.map(w => `
                 const status = document.getElementById('issue-status').value;
                 const assignedTo = document.getElementById('issue-assigned').value || null;
                 const notes = document.getElementById('issue-notes').value.trim();
+                // v5.11: Issue dates
+                const raisedDate = document.getElementById('issue-raised-date').value;
+                const completeDate = document.getElementById('issue-complete-date').value;
                 
                 if (!description) {
                     window.showToast('⚠️ Please enter issue description', 'error');
@@ -8594,6 +8807,9 @@ ${conflict.workload.map(w => `
                         issue.status = status;
                         issue.assignedTo = assignedTo;
                         issue.notes = notes;
+                        // v5.11: Issue dates
+                        issue.raisedDate = raisedDate;
+                        issue.completeDate = completeDate;
                         issue.updatedAt = new Date().toISOString();
                         const updatingUser = window.currentUser || currentUser;
                         issue.updatedBy = updatingUser ? updatingUser.id : null;
@@ -8614,6 +8830,8 @@ ${conflict.workload.map(w => `
                         status: status,
                         assignedTo: assignedTo,
                         notes: notes,
+                        raisedDate: raisedDate,
+                        completeDate: completeDate,
                         createdBy: user ? user.id : null,
                         createdByName: user ? user.name : 'Unknown',
                         createdAt: new Date().toISOString(),
@@ -9104,6 +9322,16 @@ ${conflict.workload.map(w => `
  <select id="issue-assigned">
  <option value="">Not assigned</option>
  </select>
+ </div>
+ 
+ <div class="form-group">
+ <label>📅 Ngày Phát Sinh</label>
+ <input type="date" id="issue-raised-date">
+ </div>
+ 
+ <div class="form-group">
+ <label>✅ Ngày Hoàn Thành</label>
+ <input type="date" id="issue-complete-date">
  </div>
  
  <div class="form-group">
