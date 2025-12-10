@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.11 - LOGIN FIXED - Enterprise Edition</title>
+    <title>BOD Dashboard v5.11 - LOGIN + AZURE SYNC FIXED - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1943,7 +1943,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.11 - LOGIN FIXED</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.11 - 2 FIXES</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" 
@@ -2995,10 +2995,11 @@
             'use strict';
             
             // ============================================================
-            // BOD DASHBOARD v5.11 - LOGIN FIXED
+            // BOD DASHBOARD v5.11 - LOGIN FIXED + AZURE SYNC FIXED
             // ============================================================
             // CHANGELOG v5.11 (December 2025):
-            // ✅ FIXED: Login flow after API Key entry
+            // 
+            // ✅ FIX #1: Login flow after API Key entry
             //    - Removed Setup Wizard from normal login flow
             //    - All users now go directly to Login Screen after API Key
             //    - Users create password on first login (cleaner UX)
@@ -3012,6 +3013,19 @@
             //        screen when Azure Blob Storage was empty
             // Fix: Simplified routing logic in saveApiKeyAndContinue()
             //      Line ~3584 - removed needsSetup() check
+            //
+            // ✅ FIX #2: Azure sync "Failed to fetch" error
+            //    - Removed auto-save after loading from localStorage
+            //    - Prevented unnecessary sync with invalid/expired API keys
+            //    - Faster load time (no network call on load)
+            //    - Data still syncs when user makes actual changes
+            //
+            // PREVIOUS: Load data → Auto-save to Azure → "Failed to fetch" error
+            // NOW: Load data → No auto-save → User makes changes → Sync
+            //
+            // Issue: "Failed to fetch" error on load when API Key invalid/expired
+            // Fix: Removed auto-save in loadFromStorage() function
+            //      Line ~4556 - commented out saveToBlob(data) call
             // ============================================================
             
             // Standard Milestones (excluding Survey - handled separately)
@@ -4554,9 +4568,16 @@ function initializeDashboard() {
                         teamMembers = data.teamMembers || [];
                         window.projects = projects; // Sync to global
                         window.teamMembers = teamMembers; // Sync to global
-                        if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
-                            saveToBlob(data);
-                        }
+                        
+                        // ✅ v5.11 FIX: Removed auto-save after load
+                        // Auto-save caused "Failed to fetch" errors with invalid/expired API keys
+                        // Data will sync when user makes actual changes (create/update projects)
+                        console.log('📂 [LOAD] Data loaded from localStorage successfully (no auto-sync)');
+                        
+                        // REMOVED: Unnecessary auto-save that caused errors
+                        // if (AZURE_CONFIG.enabled && (projects.length > 0 || teamMembers.length > 0)) {
+                        //     saveToBlob(data);
+                        // }
                     } catch (e) {
                         console.error('Error loading data:', e);
                     }
