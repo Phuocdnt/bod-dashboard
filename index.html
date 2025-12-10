@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.10 - COMPLETE - Enterprise Edition</title>
+    <title>BOD Dashboard v5.11 - LOGIN FIXED - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1943,7 +1943,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.10 - COMPLETE</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.11 - LOGIN FIXED</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" 
@@ -2547,9 +2547,27 @@
                     </div>
                 </div>
                 
-                <!-- MILESTONES SECTION -->
+                <!-- MILESTONES SECTION - PART 1 (Design to Testing/QC) -->
                 <h3 style="margin: 30px 0 20px; color: #2d3748;">🔖 Các Bước Tiếp Theo (Milestones)</h3>
-                <div id="milestone-form-grid"></div>
+                <div id="milestone-form-grid-part1"></div>
+                
+                <!-- v5.11: INSTALLATION PHASES SECTION -->
+                <div style="background: #fff3cd; padding: 20px; border-radius: 12px; margin: 20px 0; border: 2px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #2d3748; margin: 0;">⚙️ Installation Phases</h3>
+                        <button type="button" 
+                                onclick="addInstallationPhase()"
+                                style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            ➕ Add Phase
+                        </button>
+                    </div>
+                    <div id="installation-phases-container">
+                        <!-- Installation phases will be rendered here dynamically -->
+                    </div>
+                </div>
+                
+                <!-- MILESTONES SECTION - PART 2 (Commissioning to Handover) -->
+                <div id="milestone-form-grid-part2"></div>
                 
                 <!-- CHANGE NOTE SECTION (shown only when editing) -->
                 <div id="change-note-container" style="display: none;">
@@ -2976,7 +2994,29 @@
         (function() {
             'use strict';
             
+            // ============================================================
+            // BOD DASHBOARD v5.11 - LOGIN FIXED
+            // ============================================================
+            // CHANGELOG v5.11 (December 2025):
+            // ✅ FIXED: Login flow after API Key entry
+            //    - Removed Setup Wizard from normal login flow
+            //    - All users now go directly to Login Screen after API Key
+            //    - Users create password on first login (cleaner UX)
+            //    - Setup Wizard no longer appears for regular users
+            //    - Consistent experience for all user roles
+            // 
+            // PREVIOUS: API Key → Setup Wizard → Login (confusing)
+            // NOW: API Key → Login Screen (simple & clear)
+            //
+            // Issue: Regular users were seeing "Create Admin Password" 
+            //        screen when Azure Blob Storage was empty
+            // Fix: Simplified routing logic in saveApiKeyAndContinue()
+            //      Line ~3584 - removed needsSetup() check
+            // ============================================================
+            
             // Standard Milestones (excluding Survey - handled separately)
+            // v5.11: Installation in array but filtered out - handled separately as phases
+            // Order matches project process: Survey → Design → BOM → Price → Bidding → Order → Production → Assembly → Installation → Testing → Commissioning → Handover
             const STANDARD_MILESTONES = [
                 { id: 'design', name: 'Design', icon: '✏️' },
                 { id: 'bom', name: 'BOM Drawing', icon: '📋' },
@@ -2985,7 +3025,8 @@
                 { id: 'order', name: 'Order', icon: '📦' },
                 { id: 'drawing-release', name: 'Phát hành bản vẽ gia công chi tiết', icon: '📐' },
                 { id: 'assembly', name: 'Assembly', icon: '🔧' },
-                { id: 'installation', name: 'Installation', icon: '⚙️' },
+                { id: 'installation', name: 'Installation', icon: '⚙️' }, // Kept in array, filtered in render
+                { id: 'testing', name: 'Testing/QC', icon: '🔬' },
                 { id: 'commissioning', name: 'Commissioning', icon: '🔌' },
                 { id: 'handover', name: 'Handover', icon: '✅' }
             ];
@@ -3561,14 +3602,17 @@ function initializeDashboard() {
                     // Hide API Key setup screen
                     hideApiKeySetupScreen();
                     
-                    // Continue to appropriate screen
-                    if (needsSetup()) {
-                        showSetupWizard();
-                    } else if (hasValidSession()) {
+                    // ✅ v5.11 FIX: Simplified login flow
+                    // Always go to Login Screen unless valid session exists
+                    // Setup Wizard removed from normal flow to fix UX issue
+                    if (hasValidSession()) {
+                        // Valid session exists → Skip login, go to dashboard
                         loadSession();
                         hideLoginScreen();
                         initializeDashboard();
                     } else {
+                        // No session → Show login screen
+                        // Users will create password on first login
                         showLoginScreen();
                     }
                     
@@ -6495,10 +6539,30 @@ ${conflict.workload.map(w => `
                 console.log('[openProjectModal] currentEditingProject set to:', currentEditingProject ? currentEditingProject.name : 'null');
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
+                // v5.11: Initialize Installation 1 for new projects or projects without phases
+                if (!currentEditingProject || !currentEditingProject.installationPhases) {
+                    if (!currentEditingProject) {
+                        currentEditingProject = {};
+                    }
+                    if (!currentEditingProject.installationPhases || currentEditingProject.installationPhases.length === 0) {
+                        currentEditingProject.installationPhases = [{
+                            id: 'installation-1',
+                            name: 'Installation 1',
+                            number: 1,
+                            person: '',
+                            assignedMembers: [],
+                            planStartDate: '',
+                            planCompleteDate: '',
+                            actualStartDate: '',
+                            actualCompleteDate: ''
+                        }];
+                    }
+                }
+                
                 // Feature #2: Handle Issues section visibility
                 const issuesSection = document.getElementById('issues-section');
                 if (issuesSection) {
-                    if (currentEditingProject) {
+                    if (currentEditingProject && currentEditingProject.id) {
                         console.log('[openProjectModal] ✅ Issues section will be shown');
                         issuesSection.style.display = 'block';
                         if (!currentEditingProject.issues) currentEditingProject.issues = [];
@@ -6657,6 +6721,9 @@ ${conflict.workload.map(w => `
                 // updateSelectedMembersDisplay();
                 renderMilestoneForm();
                 
+                // v5.11: Render Installation Phases
+                renderInstallationPhases();
+                
                 // ============= v5.6 PERMISSION CONTROL (MOVED AFTER MILESTONE RENDERING) ============= //
                 // CRITICAL: This section must run AFTER renderMilestoneForm() 
                 // to ensure milestone select dropdowns are properly enabled/disabled
@@ -6727,7 +6794,10 @@ ${conflict.workload.map(w => `
             };
 
             function renderMilestoneForm() {
-                const html = STANDARD_MILESTONES.map(milestone => {
+                // v5.11: Filter out 'installation' - it's handled as dynamic phases
+                const milestonesToRender = STANDARD_MILESTONES.filter(m => m.id !== 'installation');
+                
+                const html = milestonesToRender.map(milestone => {
                     const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                     
                     // v5.6: Check if milestone needs team assignment
@@ -6831,7 +6901,221 @@ ${conflict.workload.map(w => `
                     `;
                 }).join('');
 
-                document.getElementById('milestone-form-grid').innerHTML = html;
+                // v5.11: Split milestones - Part 1 (before Installation), Part 2 (after Installation)
+                const part1Milestones = ['design', 'bom', 'price_calc', 'bidding', 'order', 'drawing-release', 'assembly', 'testing'];
+                const part2Milestones = ['commissioning', 'handover'];
+                
+                // Generate HTML for each part
+                const htmlPart1 = milestonesToRender
+                    .filter(m => part1Milestones.includes(m.id))
+                    .map(milestone => {
+                        const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
+                        const needsTeam = true;
+                        
+                        return `
+                        <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
+                            <div>
+                                <strong>${milestone.icon} ${milestone.name}</strong>
+                            </div>
+                            <div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👤 Người thực hiện</label>
+                                    <select class="milestone-person" data-milestone="${milestone.id}">
+                                        <option value="">Chọn người...</option>
+                                        ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                
+                                ${needsTeam ? `
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👥 Team Members (Thành viên thực hiện)</label>
+                                    
+                                    <!-- Select + Add Button -->
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <select id="member-select-${milestone.id}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                            <option value="">Chọn member...</option>
+                                            ${teamMembers.map(member => 
+                                                `<option value="${member.id}">${member.name}</option>`
+                                            ).join('')}
+                                        </select>
+                                        <button type="button" 
+                                                onclick="addTeamMember('${milestone.id}')"
+                                                style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            ➕ Add
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Members List -->
+                                    <div id="selected-members-${milestone.id}" 
+                                         class="selected-members-list"
+                                         style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                        ${(existing.assignedMembers || []).map(memberId => {
+                                            const member = teamMembers.find(m => m.id === memberId);
+                                            if (!member) return '';
+                                            return `
+                                                <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                                    <span>👤 ${member.name}</span>
+                                                    <button type="button" 
+                                                            onclick="removeTeamMember('${milestone.id}', '${memberId}')"
+                                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                                            title="Xóa">
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                        <div class="empty-message" style="display: ${(existing.assignedMembers || []).length === 0 ? 'block' : 'none'}; text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                            Chưa có member nào. Click "Add" để thêm.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden input to store selected member IDs -->
+                                    <input type="hidden" class="milestone-members" data-milestone="${milestone.id}" value="${(existing.assignedMembers || []).join(',')}">
+                                </div>
+                                ` : ''}
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <!-- PLAN Column -->
+                                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.planStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.planCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- ACTUAL Column -->
+                                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    }).join('');
+                
+                const htmlPart2 = milestonesToRender
+                    .filter(m => part2Milestones.includes(m.id))
+                    .map(milestone => {
+                        const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
+                        const needsTeam = true;
+                        
+                        return `
+                        <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
+                            <div>
+                                <strong>${milestone.icon} ${milestone.name}</strong>
+                            </div>
+                            <div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👤 Người thực hiện</label>
+                                    <select class="milestone-person" data-milestone="${milestone.id}">
+                                        <option value="">Chọn người...</option>
+                                        ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                
+                                ${needsTeam ? `
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👥 Team Members (Thành viên thực hiện)</label>
+                                    
+                                    <!-- Select + Add Button -->
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <select id="member-select-${milestone.id}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                            <option value="">Chọn member...</option>
+                                            ${teamMembers.map(member => 
+                                                `<option value="${member.id}">${member.name}</option>`
+                                            ).join('')}
+                                        </select>
+                                        <button type="button" 
+                                                onclick="addTeamMember('${milestone.id}')"
+                                                style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            ➕ Add
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Members List -->
+                                    <div id="selected-members-${milestone.id}" 
+                                         class="selected-members-list"
+                                         style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                                        ${(existing.assignedMembers || []).map(memberId => {
+                                            const member = teamMembers.find(m => m.id === memberId);
+                                            if (!member) return '';
+                                            return `
+                                                <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                                    <span>👤 ${member.name}</span>
+                                                    <button type="button" 
+                                                            onclick="removeTeamMember('${milestone.id}', '${memberId}')"
+                                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                                            title="Xóa">
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                        <div class="empty-message" style="display: ${(existing.assignedMembers || []).length === 0 ? 'block' : 'none'}; text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                            Chưa có member nào. Click "Add" để thêm.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden input to store selected member IDs -->
+                                    <input type="hidden" class="milestone-members" data-milestone="${milestone.id}" value="${(existing.assignedMembers || []).join(',')}">
+                                </div>
+                                ` : ''}
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <!-- PLAN Column -->
+                                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.planStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.planCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- ACTUAL Column -->
+                                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualStartDate || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}" 
+                                                   value="${existing.actualCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    }).join('');
+
+                document.getElementById('milestone-form-grid-part1').innerHTML = htmlPart1;
+                document.getElementById('milestone-form-grid-part2').innerHTML = htmlPart2;
             }
 
             // ============= MILESTONE TEAM MEMBER MANAGEMENT ============= //
@@ -6944,7 +7228,203 @@ ${conflict.workload.map(w => `
                 window.showToast('✅ Đã thêm member', 'success');
             };
             
-            window.removeSurveyTeamMember = function(surveyId, memberId) {
+            // ============================================================
+            // v5.11: INSTALLATION PHASES MANAGEMENT
+            // ============================================================
+            
+            window.addInstallationPhase = function() {
+                if (!currentEditingProject) {
+                    currentEditingProject = { milestones: [], installationPhases: [] };
+                }
+                
+                if (!currentEditingProject.installationPhases) {
+                    currentEditingProject.installationPhases = [];
+                }
+                
+                const phaseNumber = currentEditingProject.installationPhases.length + 1;
+                const newPhase = {
+                    id: `installation-${phaseNumber}`,
+                    name: `Installation ${phaseNumber}`,
+                    number: phaseNumber,
+                    person: '',
+                    assignedMembers: [],
+                    planStartDate: '',
+                    planCompleteDate: '',
+                    actualStartDate: '',
+                    actualCompleteDate: ''
+                };
+                
+                currentEditingProject.installationPhases.push(newPhase);
+                renderInstallationPhases();
+                window.showToast(`✅ Added Installation ${phaseNumber}`, 'success');
+            };
+            
+            window.removeInstallationPhase = function(phaseNumber) {
+                if (!currentEditingProject || !currentEditingProject.installationPhases) return;
+                
+                const index = currentEditingProject.installationPhases.findIndex(p => p.number === phaseNumber);
+                if (index === -1) return;
+                
+                if (currentEditingProject.installationPhases.length === 1) {
+                    window.showToast('⚠️ Phải có ít nhất 1 Installation phase', 'error');
+                    return;
+                }
+                
+                currentEditingProject.installationPhases.splice(index, 1);
+                
+                // Renumber remaining phases
+                currentEditingProject.installationPhases.forEach((phase, idx) => {
+                    phase.number = idx + 1;
+                    phase.id = `installation-${idx + 1}`;
+                    phase.name = `Installation ${idx + 1}`;
+                });
+                
+                renderInstallationPhases();
+                window.showToast(`✅ Deleted phase and renumbered`, 'success');
+            };
+            
+            window.renderInstallationPhases = function() {
+                const container = document.getElementById('installation-phases-container');
+                if (!container) return;
+                
+                const phases = currentEditingProject?.installationPhases || [];
+                
+                if (phases.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #a0aec0; padding: 20px;">Chưa có Installation phase. Click "Add Phase" để thêm.</p>';
+                    return;
+                }
+                
+                const html = phases.map(phase => {
+                    return `
+                        <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #fff8e1; border-radius: 10px; margin-bottom: 15px; border: 2px solid #ffc107;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>⚙️ Installation ${phase.number}</strong>
+                                <button type="button" 
+                                        onclick="removeInstallationPhase(${phase.number})"
+                                        style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.9em;"
+                                        title="Delete this phase">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                            <div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👤 Người thực hiện</label>
+                                    <select class="installation-person" data-phase="${phase.number}">
+                                        <option value="">Chọn người...</option>
+                                        ${teamMembers.map(m => `<option value="${m.id}" ${phase.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label>👥 Team Members</label>
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <select id="member-select-installation-${phase.number}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                            <option value="">Chọn member...</option>
+                                            ${teamMembers.map(member => 
+                                                `<option value="${member.id}">${member.name}</option>`
+                                            ).join('')}
+                                        </select>
+                                        <button type="button" 
+                                                onclick="addTeamMemberToInstallation(${phase.number})"
+                                                style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            ➕ Add
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="selected-members-installation-${phase.number}" 
+                                         class="selected-members-list"
+                                         style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #fef3c7;">
+                                        ${(phase.assignedMembers || []).map(memberId => {
+                                            const member = teamMembers.find(m => m.id === memberId);
+                                            if (!member) return '';
+                                            return `
+                                                <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
+                                                    <span>👤 ${member.name}</span>
+                                                    <button type="button" 
+                                                            onclick="removeTeamMemberFromInstallation(${phase.number}, '${memberId}')"
+                                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
+                                                            title="Xóa">×</button>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                        <div class="empty-message" style="display: ${(phase.assignedMembers || []).length === 0 ? 'block' : 'none'}; text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
+                                            Chưa có member nào. Click "Add" để thêm.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="installation-plan-start" data-phase="${phase.number}" value="${phase.planStartDate || ''}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="installation-plan-complete" data-phase="${phase.number}" value="${phase.planCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                                        <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
+                                        <div class="form-group" style="margin-bottom: 10px;">
+                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
+                                            <input type="date" class="installation-actual-start" data-phase="${phase.number}" value="${phase.actualStartDate || ''}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
+                                            <input type="date" class="installation-actual-complete" data-phase="${phase.number}" value="${phase.actualCompleteDate || ''}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = html;
+            };
+            
+            window.addTeamMemberToInstallation = function(phaseNumber) {
+                const selectId = `member-select-installation-${phaseNumber}`;
+                const select = document.getElementById(selectId);
+                const memberId = select.value;
+                
+                if (!memberId) {
+                    window.showToast('⚠️ Vui lòng chọn member', 'error');
+                    return;
+                }
+                
+                const phase = currentEditingProject.installationPhases.find(p => p.number === phaseNumber);
+                if (!phase) return;
+                
+                if (!phase.assignedMembers) phase.assignedMembers = [];
+                
+                if (phase.assignedMembers.includes(memberId)) {
+                    window.showToast('⚠️ Member này đã được thêm rồi', 'error');
+                    return;
+                }
+                
+                phase.assignedMembers.push(memberId);
+                renderInstallationPhases();
+                select.value = '';
+                window.showToast('✅ Đã thêm member', 'success');
+            };
+            
+            window.removeTeamMemberFromInstallation = function(phaseNumber, memberId) {
+                const phase = currentEditingProject.installationPhases.find(p => p.number === phaseNumber);
+                if (!phase || !phase.assignedMembers) return;
+                
+                const index = phase.assignedMembers.indexOf(memberId);
+                if (index > -1) {
+                    phase.assignedMembers.splice(index, 1);
+                    renderInstallationPhases();
+                    window.showToast('✅ Đã xóa member', 'success');
+                }
+            };
+
+                        window.removeSurveyTeamMember = function(surveyId, memberId) {
                 const displayDiv = document.getElementById(`${surveyId}-members-display`);
                 const tag = displayDiv.querySelector(`.member-tag[data-member-id="${memberId}"]`);
                 
@@ -7039,6 +7519,12 @@ ${conflict.workload.map(w => `
                 currentEditingProject = null;
                 window.currentEditingProject = null; // Sync to global
                 selectedMembers = [];
+                
+                // v5.11: Clear installation phases
+                const phasesContainer = document.getElementById('installation-phases-container');
+                if (phasesContainer) {
+                    phasesContainer.innerHTML = '';
+                }
             };
 
             // ============= CHANGE TRACKING SYSTEM ============= //
@@ -7439,8 +7925,41 @@ ${conflict.workload.map(w => `
                     }
                 });
 
+                // v5.11: Collect Installation Phases
+                const installationPhases = [];
+                document.querySelectorAll('.installation-person').forEach(select => {
+                    const phaseNumber = parseInt(select.dataset.phase);
+                    const person = select.value;
+                    
+                    // Get team members
+                    const displayDiv = document.getElementById(`selected-members-installation-${phaseNumber}`);
+                    const memberTags = displayDiv ? displayDiv.querySelectorAll('.member-tag') : [];
+                    const assignedMembers = Array.from(memberTags).map(tag => tag.dataset.memberId);
+                    
+                    // Get dates
+                    const planStart = document.querySelector(`.installation-plan-start[data-phase="${phaseNumber}"]`)?.value || '';
+                    const planComplete = document.querySelector(`.installation-plan-complete[data-phase="${phaseNumber}"]`)?.value || '';
+                    const actualStart = document.querySelector(`.installation-actual-start[data-phase="${phaseNumber}"]`)?.value || '';
+                    const actualComplete = document.querySelector(`.installation-actual-complete[data-phase="${phaseNumber}"]`)?.value || '';
+                    
+                    installationPhases.push({
+                        id: `installation-${phaseNumber}`,
+                        name: `Installation ${phaseNumber}`,
+                        number: phaseNumber,
+                        person: person,
+                        assignedMembers: assignedMembers,
+                        planStartDate: planStart,
+                        planCompleteDate: planComplete,
+                        actualStartDate: actualStart,
+                        actualCompleteDate: actualComplete
+                    });
+                });
+                
                 // Collect milestones with 4 dates + teams (v5.6)
-                const milestones = STANDARD_MILESTONES.map(milestone => {
+                // v5.11: Filter out 'installation' - it's handled as dynamic phases
+                const milestones = STANDARD_MILESTONES
+                    .filter(m => m.id !== 'installation')
+                    .map(milestone => {
                     const person = document.querySelector(`.milestone-person[data-milestone="${milestone.id}"]`)?.value || '';
                     const planStartDate = document.querySelector(`.milestone-plan-start[data-milestone="${milestone.id}"]`)?.value || '';
                     const planCompleteDate = document.querySelector(`.milestone-plan-complete[data-milestone="${milestone.id}"]`)?.value || '';
@@ -7482,6 +8001,7 @@ ${conflict.workload.map(w => `
                     // currentEditingProject.members = selectedMembers;
                     currentEditingProject.surveyRounds = surveyRounds;
                     currentEditingProject.milestones = milestones;
+                    currentEditingProject.installationPhases = installationPhases; // v5.11
                     
                     // Compare and track changes
                     const changes = compareProjects(oldProject, currentEditingProject);
@@ -7512,6 +8032,7 @@ ${conflict.workload.map(w => `
                         // members: selectedMembers,
                         surveyRounds: surveyRounds,
                         milestones: milestones,
+                        installationPhases: installationPhases, // v5.11
                         createdDate: new Date().toISOString().split('T')[0],
                         createdBy: currentUser ? currentUser.id : null,
                         issues: [], // Feature #2: Issues array
