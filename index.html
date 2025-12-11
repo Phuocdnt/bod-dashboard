@@ -6470,9 +6470,16 @@ ${conflict.workload.map(w => `
                                         <div style="color: #667eea; font-size: 0.85em; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             📁 ${event.projectCode || event.project}
                                         </div>
-                                        ${!filterPersonId ? `<div style="color: #718096; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            👤 ${event.person}${!event.isFiltered && event.teamMembers && event.teamMembers.length > 0 ? ` (+${event.teamMembers.length} 👥)` : ''}
-                                        </div>` : ''}
+                                        ${!filterPersonId ? `
+                                            <div style="color: #718096; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                👤 Leader: ${event.person}
+                                            </div>
+                                            ${!event.isFiltered && event.teamMembers && event.teamMembers.length > 0 ? `
+                                                <div style="color: #718096; font-size: 0.85em; margin-top: 2px; line-height: 1.3;">
+                                                    👥 Team: ${event.teamMembers.join(', ')}
+                                                </div>
+                                            ` : ''}
+                                        ` : ''}
                                     </div>
                                 `).join('')}
                             </div>
