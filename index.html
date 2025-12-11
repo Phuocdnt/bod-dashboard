@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1900,6 +1901,48 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 0.9em;
+        }
+        
+        /* Calendar Day Cell Expand/Collapse Styles */
+        .calendar-day-cell {
+            cursor: default;
+        }
+        
+        .calendar-day-cell.expanded {
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .calendar-day-cell.has-many-events .expand-indicator {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .day-events-container {
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #e9ecef;
+        }
+        
+        .day-events-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .day-events-container::-webkit-scrollbar-track {
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        
+        .day-events-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        
+        .day-events-container::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
         }
     </style>
 </head>
@@ -6391,18 +6434,25 @@ ${conflict.workload.map(w => `
                     const hasConflict = dayEvents.length > 1;
                     
                     html += `
-                        <div style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                        <div class="calendar-day-cell ${dayEvents.length > 3 ? 'has-many-events' : ''}" 
+                             data-date="${dateKey}"
+                             style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
                             ${!isCurrentMonth ? 'background: #f8f9fa; opacity: 0.5;' : 'background: white;'}
                             ${isToday ? 'border-color: #667eea; border-width: 3px; background: rgba(102, 126, 234, 0.05);' : ''}
-                            ${hasConflict ? 'border-color: #f57c00; border-width: 2px;' : ''}">
+                            ${hasConflict ? 'border-color: #f57c00; border-width: 2px;' : ''}
+                            transition: all 0.3s ease;">
                             
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <div style="font-weight: 600; ${isToday ? 'color: #667eea;' : ''}">${currentDateIter.getDate()}</div>
-                                ${hasConflict ? '<span style="color: #f57c00; font-size: 0.85em;">âš¡</span>' : ''}
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    ${hasConflict ? '<span style="color: #f57c00; font-size: 0.85em;">⚡</span>' : ''}
+                                    ${dayEvents.length > 3 ? `<span class="expand-indicator" style="color: #667eea; font-size: 0.85em; cursor: pointer;" 
+                                        onclick="toggleDayExpand('${dateKey}', event)" title="Click để xem tất cả">▼</span>` : ''}
+                                </div>
                             </div>
                             
-                            <div style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto;">
-                                ${dayEvents.slice(0, 3).map(event => `
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                ${dayEvents.map(event => `
                                     <div style="background: ${event.type.includes('end') ? '#e8f5e9' : event.type.includes('ongoing') ? '#fff3e0' : '#e3f2fd'}; 
                                                 padding: 4px 6px; border-radius: 4px; font-size: 0.75em;
                                                 border-left: 3px solid ${event.type.includes('end') ? '#4caf50' : event.type.includes('ongoing') ? '#ff9800' : '#2196f3'};"
@@ -6425,12 +6475,12 @@ ${conflict.workload.map(w => `
                                         </div>` : ''}
                                     </div>
                                 `).join('')}
-                                ${dayEvents.length > 3 ? `
-                                    <div style="text-align: center; font-size: 0.7em; color: #718096; padding: 2px;">
-                                        +${dayEvents.length - 3} more
-                                    </div>
-                                ` : ''}
                             </div>
+                            ${dayEvents.length > 3 ? `
+                                <div class="event-count-badge" style="text-align: center; font-size: 0.7em; color: #667eea; padding: 4px 2px; margin-top: 3px; font-weight: 600;">
+                                    ${dayEvents.length} tasks total
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                     
@@ -6453,6 +6503,35 @@ ${conflict.workload.map(w => `
             window.todayMonth = function() {
                 currentDate = new Date();
                 renderCalendar();
+            };
+
+            // Toggle expand/collapse for calendar day cells
+            window.toggleDayExpand = function(dateKey, event) {
+                event.stopPropagation(); // Prevent event bubbling
+                
+                const dayCell = document.querySelector(`.calendar-day-cell[data-date="${dateKey}"]`);
+                if (!dayCell) return;
+                
+                const eventsContainer = dayCell.querySelector('.day-events-container');
+                const expandIndicator = dayCell.querySelector('.expand-indicator');
+                
+                if (!eventsContainer || !expandIndicator) return;
+                
+                const isExpanded = dayCell.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    // Collapse
+                    dayCell.classList.remove('expanded');
+                    eventsContainer.style.maxHeight = '85px';
+                    expandIndicator.textContent = '▼';
+                    expandIndicator.title = 'Click để xem tất cả';
+                } else {
+                    // Expand
+                    dayCell.classList.add('expanded');
+                    eventsContainer.style.maxHeight = '400px';
+                    expandIndicator.textContent = '▲';
+                    expandIndicator.title = 'Click để thu gọn';
+                }
             };
 
             function renderTeamGrid() {
