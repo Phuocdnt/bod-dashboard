@@ -6407,6 +6407,164 @@ ${conflict.workload.map(w => `
                             });
                         }
                     });
+                    
+                    // v5.11: Installation Phases
+                    if (project.installationPhases && project.installationPhases.length > 0) {
+                        project.installationPhases.forEach(installation => {
+                            // Check if this installation is relevant to the filtered person
+                            if (filterPersonId) {
+                                const isLeader = installation.person === filterPersonId;
+                                const isTeamMember = installation.assignedMembers && installation.assignedMembers.includes(filterPersonId);
+                                if (!isLeader && !isTeamMember) return; // Skip if not leader or team member
+                            }
+                            // Only require person (leader) when NOT filtering
+                            if (!filterPersonId && !installation.person) return;
+                            
+                            const person = teamMembers.find(m => m.id === installation.person);
+                            
+                            // Get team members names
+                            const teamMemberNames = [];
+                            if (installation.assignedMembers && installation.assignedMembers.length > 0) {
+                                installation.assignedMembers.forEach(memberId => {
+                                    const member = teamMembers.find(m => m.id === memberId);
+                                    if (member) teamMemberNames.push(member.name);
+                                });
+                            }
+                            
+                            // Use actual date if available, fallback to plan date
+                            const startDate = installation.actualStartDate || installation.planStartDate;
+                            if (startDate) {
+                                const dateKey = startDate;
+                                if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                                
+                                // Extract IQR code from project name
+                                const projectCode = project.name.split('-')[0].trim();
+                                
+                                // Determine who to display based on filter
+                                let displayPerson = person?.name || 'N/A';
+                                let displayPersonId = installation.person;
+                                
+                                if (filterPersonId) {
+                                    // If filtering, show the filtered person's name
+                                    const filteredPerson = teamMembers.find(m => m.id === filterPersonId);
+                                    if (filteredPerson) {
+                                        displayPerson = filteredPerson.name;
+                                        displayPersonId = filterPersonId;
+                                    }
+                                }
+                                
+                                eventsMap[dateKey].push({
+                                    type: 'installation-start',
+                                    project: project.name,
+                                    projectCode: projectCode,
+                                    task: installation.name || `Installation ${installation.number}`,
+                                    person: displayPerson,
+                                    personId: displayPersonId,
+                                    icon: '🔧',
+                                    teamMembers: teamMemberNames,
+                                    isFiltered: !!filterPersonId
+                                });
+                            }
+                            
+                            // Use actual date if available, fallback to plan date
+                            const completeDate = installation.actualCompleteDate || installation.planCompleteDate;
+                            if (completeDate) {
+                                const dateKey = completeDate;
+                                if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                                
+                                // Extract IQR code from project name
+                                const projectCode = project.name.split('-')[0].trim();
+                                
+                                // Get team members names (for complete event)
+                                const teamMemberNamesEnd = [];
+                                if (installation.assignedMembers && installation.assignedMembers.length > 0) {
+                                    installation.assignedMembers.forEach(memberId => {
+                                        const member = teamMembers.find(m => m.id === memberId);
+                                        if (member) teamMemberNamesEnd.push(member.name);
+                                    });
+                                }
+                                
+                                // Determine who to display based on filter
+                                let displayPersonEnd = person?.name || 'N/A';
+                                let displayPersonIdEnd = installation.person;
+                                
+                                if (filterPersonId) {
+                                    const filteredPersonEnd = teamMembers.find(m => m.id === filterPersonId);
+                                    if (filteredPersonEnd) {
+                                        displayPersonEnd = filteredPersonEnd.name;
+                                        displayPersonIdEnd = filterPersonId;
+                                    }
+                                }
+                                
+                                eventsMap[dateKey].push({
+                                    type: 'installation-end',
+                                    project: project.name,
+                                    projectCode: projectCode,
+                                    task: installation.name || `Installation ${installation.number}`,
+                                    person: displayPersonEnd,
+                                    personId: displayPersonIdEnd,
+                                    icon: '🔧',
+                                    teamMembers: teamMemberNamesEnd,
+                                    isFiltered: !!filterPersonId
+                                });
+                            }
+                            
+                            // Fill in all days between start and end (installation duration)
+                            const durationStartDate = installation.actualStartDate || installation.planStartDate;
+                            const durationEndDate = installation.actualCompleteDate || installation.planCompleteDate;
+                            if (durationStartDate && durationEndDate) {
+                                const startDateObj = new Date(durationStartDate);
+                                const endDateObj = new Date(durationEndDate);
+                                
+                                // Move to next day after start
+                                const currentDateLoop = new Date(startDateObj);
+                                currentDateLoop.setDate(currentDateLoop.getDate() + 1);
+                                
+                                // Fill all days between start and end (exclusive)
+                                while (currentDateLoop < endDateObj) {
+                                    const dateKey = currentDateLoop.toISOString().split('T')[0];
+                                    if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+                                    
+                                    // Get team members names (for ongoing)
+                                    const teamMemberNamesDuration = [];
+                                    if (installation.assignedMembers && installation.assignedMembers.length > 0) {
+                                        installation.assignedMembers.forEach(memberId => {
+                                            const member = teamMembers.find(m => m.id === memberId);
+                                            if (member) teamMemberNamesDuration.push(member.name);
+                                        });
+                                    }
+                                    
+                                    // Determine who to display based on filter
+                                    let displayPersonDuration = person?.name || 'N/A';
+                                    let displayPersonIdDuration = installation.person;
+                                    
+                                    if (filterPersonId) {
+                                        const filteredPersonDuration = teamMembers.find(m => m.id === filterPersonId);
+                                        if (filteredPersonDuration) {
+                                            displayPersonDuration = filteredPersonDuration.name;
+                                            displayPersonIdDuration = filterPersonId;
+                                        }
+                                    }
+                                    
+                                    const projectCode = project.name.split('-')[0].trim();
+                                    
+                                    eventsMap[dateKey].push({
+                                        type: 'installation-ongoing',
+                                        project: project.name,
+                                        projectCode: projectCode,
+                                        task: installation.name || `Installation ${installation.number}`,
+                                        person: displayPersonDuration,
+                                        personId: displayPersonIdDuration,
+                                        icon: '🔧',
+                                        teamMembers: teamMemberNamesDuration,
+                                        isFiltered: !!filterPersonId
+                                    });
+                                    
+                                    currentDateLoop.setDate(currentDateLoop.getDate() + 1);
+                                }
+                            }
+                        });
+                    }
                 });
                 
                 // Calendar header
