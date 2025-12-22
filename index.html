@@ -6,12 +6,13 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.13 - STATUS CONFIG FIXED - Enterprise Edition</title>
+    <title>BOD Dashboard v5.14 - FILTER FIXED - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2089,12 +2090,12 @@
                     <label>📊 Trạng thái</label>
                     <select id="filter-status">
                         <option value="">Tất cả</option>
-                        <option value="planning">📝 Planning</option>
-                        <option value="in-progress">🔄 In Progress</option>
-                        <option value="on-hold">⏸️ On Hold</option>
-                        <option value="delayed">⚠️ Delayed</option>
-                        <option value="completed">✅ Completed</option>
-                        <option value="cancelled">❌ Cancelled</option>
+                        <option value="Planning">📝 Planning</option>
+                        <option value="In Progress">🔄 In Progress</option>
+                        <option value="On Hold">⏸️ On Hold</option>
+                        <option value="Delayed">⚠️ Delayed</option>
+                        <option value="Completed">✅ Completed</option>
+                        <option value="Cancelled">❌ Cancelled</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -6780,7 +6781,7 @@ ${conflict.workload.map(w => `
                     if (memberId && !(p.members || []).includes(memberId)) return false;
                     if (customer && !(p.customer || '').toLowerCase().includes(customer)) return false;
                     if (saleId && p.sale !== saleId) return false;
-                    if (status && (p.status || 'planning') !== status) return false;
+                    if (status && (p.status || 'Planning') !== status) return false;
                     return true;
                 });
                 
