@@ -3191,7 +3191,7 @@
             const STORAGE_KEY = 'bod_dashboard_data_v5_6';
             const USER_STORAGE_KEY = 'bod_current_user_v5_4';
             const SESSION_KEY = 'bod_session_v5_4';
-            const SETUP_COMPLETE_KEY = 'bod_setup_complete_v5_4';
+            const SETUP_COMPLETE_KEY = 'bodSetupComplete';
             const FAILED_ATTEMPTS_KEY = 'bod_failed_attempts_v5_4';
             const LOCK_UNTIL_KEY = 'bod_lock_until_v5_4';
             const DATA_VERSION = 5.6;
@@ -4088,10 +4088,18 @@ function initializeDashboard() {
             };
 
             window.completeSetup = function() {
-                // Mark setup as complete
+                // Mark setup as complete (TRIPLE WRITE v5.17)
                 localStorage.setItem(SETUP_COMPLETE_KEY, 'true');
+                localStorage.setItem('bodSetupComplete', 'true');
+                localStorage.setItem('bod_setup_complete_v5_4', 'true');
                 
-                // Hide wizard, show login
+                console.log('✅ [SETUP v5.17] Setup marked complete:', {
+                    key1: localStorage.getItem(SETUP_COMPLETE_KEY),
+                    key2: localStorage.getItem('bodSetupComplete'),
+                    key3: localStorage.getItem('bod_setup_complete_v5_4')
+                });
+                
+// Hide wizard, show login
                 hideSetupWizard();
                 showLoginScreen();
                 showToast('🎉 Thiết lập hoàn tất! Vui lòng đăng nhập.', 'success');
