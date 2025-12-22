@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.11 - LOGIN + AZURE SYNC FIXED - Enterprise Edition</title>
+    <title>BOD Dashboard v5.12 - STORAGE LIMIT FIXED - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -4465,6 +4465,22 @@ function initializeDashboard() {
                         lastSave: data.lastSave
                     });
                     
+                    // Check data size before sending
+                    const dataString = JSON.stringify(data);
+                    const sizeInMB = (new Blob([dataString]).size / (1024 * 1024)).toFixed(2);
+                    console.log(`📦 [AZURE SYNC] Request size: ${sizeInMB} MB`);
+                    
+                    if (parseFloat(sizeInMB) > 25) {
+                        console.warn(`⚠️ [AZURE SYNC] Large request: ${sizeInMB} MB`);
+                        window.showToast(`⚠️ Dữ liệu đồng bộ rất lớn (${sizeInMB} MB), có thể mất nhiều thời gian!`, 'warning');
+                    }
+                    
+                    if (parseFloat(sizeInMB) > 100) {
+                        console.error(`❌ [AZURE SYNC] Request too large: ${sizeInMB} MB exceeds 100 MB limit`);
+                        window.showToast(`❌ Dữ liệu quá lớn (>${sizeInMB} MB), không thể đồng bộ Azure. Hãy dọn dẹp dữ liệu!`, 'error');
+                        return false;
+                    }
+                    
                     isSyncing = true;
                     updateSyncStatus();
                     
@@ -4477,7 +4493,7 @@ function initializeDashboard() {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + AZURE_CONFIG.apiKey
                         },
-                        body: JSON.stringify(data, null, 2)
+                        body: JSON.stringify(data)
                     });
                     
                     console.log('📡 [AZURE SYNC] Response status:', response.status, response.statusText);
@@ -4503,6 +4519,9 @@ function initializeDashboard() {
                         } else if (response.status === 404) {
                             console.error('🔍 [AZURE SYNC] Blob not found - Check URL');
                             window.showToast('❌ Không tìm thấy Azure Blob - Kiểm tra URL', 'error');
+                        } else if (response.status === 413) {
+                            console.error('📦 [AZURE SYNC] Payload too large - Data exceeds Azure limit');
+                            window.showToast('❌ Dữ liệu quá lớn! Azure từ chối request. Hãy dọn dẹp lịch sử và issues cũ.', 'error');
                         } else {
                             window.showToast(`❌ Lỗi đồng bộ Azure: ${response.status}`, 'error');
                         }
@@ -4539,6 +4558,29 @@ function initializeDashboard() {
                 }, 2000);
             }
 
+
+            // Cleanup old history to free up storage space
+            window.cleanupOldHistory = function(daysToKeep = 90) {
+                console.log(`🧹 [CLEANUP] Starting cleanup of history older than ${daysToKeep} days...`);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+                
+                let cleanedCount = 0;
+                projects.forEach(project => {
+                    if (project.history && Array.isArray(project.history)) {
+                        const originalLength = project.history.length;
+                        project.history = project.history.filter(entry => {
+                            const entryDate = new Date(entry.timestamp);
+                            return entryDate >= cutoffDate;
+                        });
+                        cleanedCount += (originalLength - project.history.length);
+                    }
+                });
+                
+                console.log(`✅ [CLEANUP] Cleaned ${cleanedCount} history entries older than ${daysToKeep} days`);
+                return cleanedCount;
+            }
+
             window.saveToStorage = function(immediate = true) {
                 console.log('💾 [SAVE] saveToStorage() called, immediate:', immediate);
                 const data = {
@@ -4547,12 +4589,55 @@ function initializeDashboard() {
                     lastSave: new Date().toISOString(),
                     version: DATA_VERSION
                 };
+                
                 console.log('💾 [SAVE] Saving to localStorage:', {
                     projects: data.projects?.length || 0,
                     teamMembers: data.teamMembers?.length || 0
                 });
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                console.log('✅ [SAVE] localStorage saved successfully');
+                
+                try {
+                    // Calculate size before saving
+                    const dataString = JSON.stringify(data);
+                    const sizeInMB = (new Blob([dataString]).size / (1024 * 1024)).toFixed(2);
+                    console.log(`📊 [SAVE] Data size: ${sizeInMB} MB`);
+                    
+                    // Warning when approaching limit
+                    if (parseFloat(sizeInMB) > 4) {
+                        console.warn(`⚠️ [SAVE] LocalStorage approaching limit: ${sizeInMB} MB`);
+                        window.showToast(`⚠️ Dung lượng lưu trữ: ${sizeInMB}/5 MB - Hãy dọn dẹp dữ liệu cũ!`, 'warning');
+                    }
+                    
+                    localStorage.setItem(STORAGE_KEY, dataString);
+                    console.log('✅ [SAVE] localStorage saved successfully');
+                    
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        console.error('❌ [SAVE] QuotaExceededError - LocalStorage is full!');
+                        window.showToast('❌ Bộ nhớ trình duyệt đã đầy! Không thể lưu dữ liệu mới.', 'error');
+                        
+                        // Offer auto-cleanup
+                        if (confirm('Bạn có muốn tự động xóa lịch sử thay đổi cũ hơn 90 ngày để giải phóng bộ nhớ?')) {
+                            const cleaned = window.cleanupOldHistory(90);
+                            if (cleaned > 0) {
+                                // Try saving again
+                                try {
+                                    const newDataString = JSON.stringify(data);
+                                    localStorage.setItem(STORAGE_KEY, newDataString);
+                                    window.showToast(`✅ Đã dọn dẹp ${cleaned} mục lịch sử và lưu thành công!`, 'success');
+                                } catch (e2) {
+                                    window.showToast('❌ Vẫn không đủ bộ nhớ. Hãy xóa thủ công các dự án hoàn thành.', 'error');
+                                    return;
+                                }
+                            }
+                        } else {
+                            return; // Don't sync to Azure if localStorage failed
+                        }
+                    } else {
+                        console.error('❌ [SAVE] LocalStorage error:', e);
+                        window.showToast('❌ Lỗi lưu trữ: ' + e.message, 'error');
+                        return;
+                    }
+                }
                 
                 if (immediate) {
                     console.log('⚡ [SAVE] IMMEDIATE sync mode - syncing NOW!');
@@ -7036,25 +7121,25 @@ ${conflict.workload.map(w => `
                     newInput.addEventListener('input', function() {
                         const name = this.value.trim();
                         if (!name) {
-                            window.hideIQRError();
+                            hideIQRError();
                             return;
                         }
                         
                         const currentProjectId = currentEditingProject ? currentEditingProject.id : null;
-                        const validation = window.validateIQRDuplicate(name, currentProjectId);
+                        const validation = validateIQRDuplicate(name, currentProjectId);
                         
                         if (!validation.isValid) {
                             const duplicateProject = validation.duplicate;
                             const errorMsg = `⚠️ IQR Code "${validation.iqrCode}" đã tồn tại trong dự án: "${duplicateProject.name}"`;
-                            window.showIQRError(errorMsg);
+                            showIQRError(errorMsg);
                         } else {
-                            window.hideIQRError();
+                            hideIQRError();
                         }
                     });
                 }
                 
                 // Clear error when opening modal
-                window.hideIQRError();
+                hideIQRError();
                 
                 document.getElementById('project-modal').classList.add('active');
             };
@@ -8023,17 +8108,17 @@ ${conflict.workload.map(w => `
             }
 
             // ============= IQR VALIDATION HELPERS ============= //
-            window.extractIQRCode = function(projectName) {
+            function extractIQRCode(projectName) {
                 // Extract IQR code from project name (everything before first '-')
                 const parts = projectName.trim().split('-');
                 if (parts.length > 0) {
                     return parts[0].trim().toUpperCase();
                 }
                 return projectName.trim().toUpperCase();
-            };
+            }
 
-            window.validateIQRDuplicate = function(projectName, currentProjectId = null) {
-                const iqrCode = window.extractIQRCode(projectName);
+            function validateIQRDuplicate(projectName, currentProjectId = null) {
+                const iqrCode = extractIQRCode(projectName);
                 
                 // Find any existing project with same IQR code
                 const duplicate = projects.find(p => {
@@ -8041,7 +8126,7 @@ ${conflict.workload.map(w => `
                     if (currentProjectId && p.id === currentProjectId) {
                         return false;
                     }
-                    const existingIQR = window.extractIQRCode(p.name);
+                    const existingIQR = extractIQRCode(p.name);
                     return existingIQR === iqrCode;
                 });
 
@@ -8050,9 +8135,9 @@ ${conflict.workload.map(w => `
                     duplicate: duplicate,
                     iqrCode: iqrCode
                 };
-            };
+            }
 
-            window.showIQRError = function(message) {
+            function showIQRError(message) {
                 const errorDiv = document.getElementById('iqr-error');
                 errorDiv.textContent = message;
                 errorDiv.style.display = 'block';
@@ -8061,9 +8146,9 @@ ${conflict.workload.map(w => `
                 const input = document.getElementById('project-name');
                 input.style.borderColor = '#f5c6cb';
                 input.style.background = '#fff5f5';
-            };
+            }
 
-            window.hideIQRError = function() {
+            function hideIQRError() {
                 const errorDiv = document.getElementById('iqr-error');
                 errorDiv.style.display = 'none';
                 
@@ -8071,7 +8156,7 @@ ${conflict.workload.map(w => `
                 const input = document.getElementById('project-name');
                 input.style.borderColor = '#e2e8f0';
                 input.style.background = 'white';
-            };
+            }
 
             // ============= PROJECT SAVE FUNCTION ============= //
 
@@ -8146,18 +8231,18 @@ ${conflict.workload.map(w => `
 
                 // ✅ VALIDATE IQR DUPLICATE
                 const currentProjectId = currentEditingProject ? currentEditingProject.id : null;
-                const validation = window.validateIQRDuplicate(name, currentProjectId);
+                const validation = validateIQRDuplicate(name, currentProjectId);
                 
                 if (!validation.isValid) {
                     const duplicateProject = validation.duplicate;
                     const errorMsg = `❌ IQR Code "${validation.iqrCode}" đã tồn tại trong dự án: "${duplicateProject.name}"`;
-                    window.showIQRError(errorMsg);
+                    showIQRError(errorMsg);
                     showToast(errorMsg, 'error');
                     return;
                 }
                 
                 // Hide error if validation passed
-                window.hideIQRError();
+                hideIQRError();
                 
                 // ============= v5.3 CHANGE NOTE VALIDATION ============= //
                 const changeNote = document.getElementById('change-note').value.trim();
