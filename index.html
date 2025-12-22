@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.14 - FILTER FIXED - Enterprise Edition</title>
+    <title>BOD Dashboard v5.15 - VERSION INDICATOR + ALL FIXES - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1946,6 +1946,86 @@
         .day-events-container::-webkit-scrollbar-thumb:hover {
             background: #5568d3;
         }
+    
+        /* ============= v5.15 VERSION BADGE ============= */
+        .version-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .version-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        .version-badge-icon {
+            font-size: 1.1em;
+        }
+        
+        .version-info-tooltip {
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 300px;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .version-info-tooltip.show {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .version-info-header {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .version-info-item {
+            padding: 6px 0;
+            color: #4a5568;
+            font-size: 0.9em;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .version-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .version-info-item strong {
+            color: #667eea;
+        }
+
     </style>
 </head>
 <body>
@@ -10140,6 +10220,53 @@ ${conflict.workload.map(w => `
  </form>
  </div>
  </div>
+
+
+    <!-- Version Badge v5.15 -->
+    <div class="version-badge" onclick="toggleVersionInfo()">
+        <span class="version-badge-icon">ℹ️</span>
+        <span>v5.15</span>
+        <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
+            <div class="version-info-header">📋 BOD Dashboard v5.15</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.15 - VERSION INDICATOR + ALL FIXES</div>
+            <div class="version-info-item"><strong>Build Date:</strong> 2025-12-22</div>
+            <div class="version-info-item"><strong>Fixed Issues:</strong>
+                <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>✅ Filter status (v5.14)</li>
+                    <li>✅ StatusConfig rendering (v5.13)</li>
+                    <li>✅ Storage limit handling (v5.12)</li>
+                    <li>✅ Azure sync (v5.11)</li>
+                    <li>✅ Version indicator (v5.15)</li>
+                </ul>
+            </div>
+            <div class="version-info-item"><strong>Total Projects:</strong> <span id="versionProjectCount">--</span></div>
+            <div class="version-info-item"><strong>Storage Used:</strong> <span id="versionStorageUsed">--</span></div>
+        </div>
+    </div>
+    
+    <script>
+        // Version badge toggle
+        window.toggleVersionInfo = function() {
+            const tooltip = document.getElementById('versionTooltip');
+            tooltip.classList.toggle('show');
+            
+            // Update stats
+            if (tooltip.classList.contains('show')) {
+                document.getElementById('versionProjectCount').textContent = window.projects?.length || 0;
+                const storageSize = (JSON.stringify(window.projects || []).length / 1024 / 1024).toFixed(2);
+                document.getElementById('versionStorageUsed').textContent = storageSize + ' MB / 5 MB';
+            }
+        };
+        
+        // Close tooltip when clicking outside
+        document.addEventListener('click', function(e) {
+            const tooltip = document.getElementById('versionTooltip');
+            const badge = document.querySelector('.version-badge');
+            if (!badge.contains(e.target) && tooltip.classList.contains('show')) {
+                tooltip.classList.remove('show');
+            }
+        });
+    </script>
 
 </body>
 </html>
