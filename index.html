@@ -5,6 +5,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7035,25 +7036,25 @@ ${conflict.workload.map(w => `
                     newInput.addEventListener('input', function() {
                         const name = this.value.trim();
                         if (!name) {
-                            hideIQRError();
+                            window.hideIQRError();
                             return;
                         }
                         
                         const currentProjectId = currentEditingProject ? currentEditingProject.id : null;
-                        const validation = validateIQRDuplicate(name, currentProjectId);
+                        const validation = window.validateIQRDuplicate(name, currentProjectId);
                         
                         if (!validation.isValid) {
                             const duplicateProject = validation.duplicate;
                             const errorMsg = `⚠️ IQR Code "${validation.iqrCode}" đã tồn tại trong dự án: "${duplicateProject.name}"`;
-                            showIQRError(errorMsg);
+                            window.showIQRError(errorMsg);
                         } else {
-                            hideIQRError();
+                            window.hideIQRError();
                         }
                     });
                 }
                 
                 // Clear error when opening modal
-                hideIQRError();
+                window.hideIQRError();
                 
                 document.getElementById('project-modal').classList.add('active');
             };
@@ -8022,17 +8023,17 @@ ${conflict.workload.map(w => `
             }
 
             // ============= IQR VALIDATION HELPERS ============= //
-            function extractIQRCode(projectName) {
+            window.extractIQRCode = function(projectName) {
                 // Extract IQR code from project name (everything before first '-')
                 const parts = projectName.trim().split('-');
                 if (parts.length > 0) {
                     return parts[0].trim().toUpperCase();
                 }
                 return projectName.trim().toUpperCase();
-            }
+            };
 
-            function validateIQRDuplicate(projectName, currentProjectId = null) {
-                const iqrCode = extractIQRCode(projectName);
+            window.validateIQRDuplicate = function(projectName, currentProjectId = null) {
+                const iqrCode = window.extractIQRCode(projectName);
                 
                 // Find any existing project with same IQR code
                 const duplicate = projects.find(p => {
@@ -8040,7 +8041,7 @@ ${conflict.workload.map(w => `
                     if (currentProjectId && p.id === currentProjectId) {
                         return false;
                     }
-                    const existingIQR = extractIQRCode(p.name);
+                    const existingIQR = window.extractIQRCode(p.name);
                     return existingIQR === iqrCode;
                 });
 
@@ -8049,9 +8050,9 @@ ${conflict.workload.map(w => `
                     duplicate: duplicate,
                     iqrCode: iqrCode
                 };
-            }
+            };
 
-            function showIQRError(message) {
+            window.showIQRError = function(message) {
                 const errorDiv = document.getElementById('iqr-error');
                 errorDiv.textContent = message;
                 errorDiv.style.display = 'block';
@@ -8060,9 +8061,9 @@ ${conflict.workload.map(w => `
                 const input = document.getElementById('project-name');
                 input.style.borderColor = '#f5c6cb';
                 input.style.background = '#fff5f5';
-            }
+            };
 
-            function hideIQRError() {
+            window.hideIQRError = function() {
                 const errorDiv = document.getElementById('iqr-error');
                 errorDiv.style.display = 'none';
                 
@@ -8070,7 +8071,7 @@ ${conflict.workload.map(w => `
                 const input = document.getElementById('project-name');
                 input.style.borderColor = '#e2e8f0';
                 input.style.background = 'white';
-            }
+            };
 
             // ============= PROJECT SAVE FUNCTION ============= //
 
@@ -8145,18 +8146,18 @@ ${conflict.workload.map(w => `
 
                 // ✅ VALIDATE IQR DUPLICATE
                 const currentProjectId = currentEditingProject ? currentEditingProject.id : null;
-                const validation = validateIQRDuplicate(name, currentProjectId);
+                const validation = window.validateIQRDuplicate(name, currentProjectId);
                 
                 if (!validation.isValid) {
                     const duplicateProject = validation.duplicate;
                     const errorMsg = `❌ IQR Code "${validation.iqrCode}" đã tồn tại trong dự án: "${duplicateProject.name}"`;
-                    showIQRError(errorMsg);
+                    window.showIQRError(errorMsg);
                     showToast(errorMsg, 'error');
                     return;
                 }
                 
                 // Hide error if validation passed
-                hideIQRError();
+                window.hideIQRError();
                 
                 // ============= v5.3 CHANGE NOTE VALIDATION ============= //
                 const changeNote = document.getElementById('change-note').value.trim();
