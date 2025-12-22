@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.15 - VERSION INDICATOR + ALL FIXES - Enterprise Edition</title>
+    <title>BOD Dashboard v5.16 - OVERVIEW CARDS FIXED - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -5045,7 +5045,7 @@ window.projects = projects;
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
                     <div class="stat-card green" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('in-progress', 'Đang Thực Hiện', '#56ab2f')"
+                         onclick="showProjectsByStatus('In Progress', 'Đang Thực Hiện', '#56ab2f')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>▶️ Đang Thực Hiện</h3>
@@ -5053,7 +5053,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card blue" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('planning', 'Planning', '#2193b0')"
+                         onclick="showProjectsByStatus('Planning', 'Planning', '#2193b0')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>📋 Planning</h3>
@@ -5061,7 +5061,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card purple" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('completed', 'Hoàn Thành', '#667eea')"
+                         onclick="showProjectsByStatus('Completed', 'Hoàn Thành', '#667eea')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>✅ Hoàn Thành</h3>
@@ -5069,7 +5069,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card gray" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('on-hold', 'On Hold', '#95a5a6')"
+                         onclick="showProjectsByStatus('On Hold', 'On Hold', '#95a5a6')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>⏸️ On Hold</h3>
@@ -5077,7 +5077,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card dark-gray" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('cancelled', 'Cancelled', '#636e72')"
+                         onclick="showProjectsByStatus('Cancelled', 'Cancelled', '#636e72')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>🚫 Cancelled</h3>
@@ -10225,17 +10225,17 @@ ${conflict.workload.map(w => `
     <!-- Version Badge v5.15 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.15</span>
+        <span>v5.16</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.15</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.16</div>
             <div class="version-info-item"><strong>Version:</strong> v5.15 - VERSION INDICATOR + ALL FIXES</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2025-12-22</div>
             <div class="version-info-item"><strong>Fixed Issues:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
-                    <li>✅ Filter status (v5.14)</li>
+                    <li>✅ Overview stat cards (v5.16)</li>
+                    <li>✅ Filter status dropdown (v5.14)</li>
                     <li>✅ StatusConfig rendering (v5.13)</li>
                     <li>✅ Storage limit handling (v5.12)</li>
-                    <li>✅ Azure sync (v5.11)</li>
                     <li>✅ Version indicator (v5.15)</li>
                 </ul>
             </div>
