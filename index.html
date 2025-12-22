@@ -6,12 +6,13 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.19 - SIMPLE FLOW - Enterprise Edition</title>
+    <title>BOD Dashboard v5.20 - FINAL - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1945,6 +1946,86 @@
         .day-events-container::-webkit-scrollbar-thumb:hover {
             background: #5568d3;
         }
+    
+        /* ============= v5.15 VERSION BADGE ============= */
+        .version-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .version-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        .version-badge-icon {
+            font-size: 1.1em;
+        }
+        
+        .version-info-tooltip {
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 300px;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .version-info-tooltip.show {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .version-info-header {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .version-info-item {
+            padding: 6px 0;
+            color: #4a5568;
+            font-size: 0.9em;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .version-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .version-info-item strong {
+            color: #667eea;
+        }
+
     </style>
 </head>
 <body>
@@ -1990,7 +2071,6 @@
                 <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.11 - 2 FIXES</span>
             </h1>
             <div class="header-actions">
-                <div class="version-badge" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 600; color: white; display: flex; align-items: center; gap: 5px;">ℹ️ v5.19</div>
                 <button onclick="window.forceSyncNow()" 
                         style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;"
                         onmouseover="this.style.background='#f44336'"
@@ -2090,12 +2170,12 @@
                     <label>📊 Trạng thái</label>
                     <select id="filter-status">
                         <option value="">Tất cả</option>
-                        <option value="planning">📝 Planning</option>
-                        <option value="in-progress">🔄 In Progress</option>
-                        <option value="on-hold">⏸️ On Hold</option>
-                        <option value="delayed">⚠️ Delayed</option>
-                        <option value="completed">✅ Completed</option>
-                        <option value="cancelled">❌ Cancelled</option>
+                        <option value="Planning">📝 Planning</option>
+                        <option value="In Progress">🔄 In Progress</option>
+                        <option value="On Hold">⏸️ On Hold</option>
+                        <option value="Delayed">⚠️ Delayed</option>
+                        <option value="Completed">✅ Completed</option>
+                        <option value="Cancelled">❌ Cancelled</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -3386,7 +3466,8 @@
                 // Load data (now we have API Key, so this will work)
                 await loadFromStorage();
                 
-                // v5.19: SIMPLIFIED LOGIN FLOW (NO Setup Wizard!)
+                // v5.20: SIMPLE LOGIN FLOW - NO Setup Wizard!
+                // Removed needsSetup() check to fix reload loop bug
                 if (isAccountLocked()) {
                     // Account locked due to failed attempts
                     showLockedScreen();
@@ -4962,7 +5043,7 @@ window.projects = projects;
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
                     <div class="stat-card green" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('in-progress', 'Đang Thực Hiện', '#56ab2f')"
+                         onclick="showProjectsByStatus('In Progress', 'Đang Thực Hiện', '#56ab2f')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>▶️ Đang Thực Hiện</h3>
@@ -4970,7 +5051,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card blue" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('planning', 'Planning', '#2193b0')"
+                         onclick="showProjectsByStatus('Planning', 'Planning', '#2193b0')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>📋 Planning</h3>
@@ -4978,7 +5059,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card purple" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('completed', 'Hoàn Thành', '#667eea')"
+                         onclick="showProjectsByStatus('Completed', 'Hoàn Thành', '#667eea')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>✅ Hoàn Thành</h3>
@@ -4986,7 +5067,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card gray" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('on-hold', 'On Hold', '#95a5a6')"
+                         onclick="showProjectsByStatus('On Hold', 'On Hold', '#95a5a6')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>⏸️ On Hold</h3>
@@ -4994,7 +5075,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     <div class="stat-card dark-gray" style="cursor: pointer;" 
-                         onclick="showProjectsByStatus('cancelled', 'Cancelled', '#636e72')"
+                         onclick="showProjectsByStatus('Cancelled', 'Cancelled', '#636e72')"
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>🚫 Cancelled</h3>
@@ -5238,16 +5319,18 @@ window.projects = projects;
                                 ${(currentUser && (currentUser.isAdmin || currentUser.isBOD) && project.actualValue) ? 
                                     `<p style="color: #ea580c; margin-top: 5px;">💵 Actual Value: ${new Intl.NumberFormat('vi-VN').format(project.actualValue)} VNĐ</p>` : ''}
                                 ${(() => {
+                                    // v5.13: Fixed statusConfig to match Title Case status values
                                     const statusConfig = {
-                                        'planning': { label: '📝 Planning', bg: '#e3f2fd', color: '#1565c0' },
-                                        'in-progress': { label: '🔄 In Progress', bg: '#e8f5e9', color: '#2e7d32' },
-                                        'on-hold': { label: '⏸️ On Hold', bg: '#fff3e0', color: '#e65100' },
-                                        'delayed': { label: '⚠️ Delayed', bg: '#ffebee', color: '#c62828' },
-                                        'completed': { label: '✅ Completed', bg: '#e0f2f1', color: '#00695c' },
-                                        'cancelled': { label: '❌ Cancelled', bg: '#f3e5f5', color: '#6a1b9a' }
+                                        'Planning': { label: '📝 Planning', bg: '#e3f2fd', color: '#1565c0' },
+                                        'In Progress': { label: '🔄 In Progress', bg: '#e8f5e9', color: '#2e7d32' },
+                                        'On Hold': { label: '⏸️ On Hold', bg: '#fff3e0', color: '#e65100' },
+                                        'Delayed': { label: '⚠️ Delayed', bg: '#ffebee', color: '#c62828' },
+                                        'Completed': { label: '✅ Completed', bg: '#e0f2f1', color: '#00695c' },
+                                        'Cancelled': { label: '❌ Cancelled', bg: '#f3e5f5', color: '#6a1b9a' }
                                     };
-                                    const status = project.status || 'planning';
-                                    const config = statusConfig[status];
+                                    // v5.13: Safe status lookup with fallback
+                                    const status = project.status || 'Planning';
+                                    const config = statusConfig[status] || statusConfig['Planning'];
                                     return `<span style="display: inline-block; background: ${config.bg}; color: ${config.color}; 
                                                    padding: 4px 12px; border-radius: 12px; font-size: 0.85em; 
                                                    font-weight: 600; margin-top: 8px;">${config.label}</span>`;
@@ -6776,7 +6859,7 @@ ${conflict.workload.map(w => `
                     if (memberId && !(p.members || []).includes(memberId)) return false;
                     if (customer && !(p.customer || '').toLowerCase().includes(customer)) return false;
                     if (saleId && p.sale !== saleId) return false;
-                    if (status && (p.status || 'planning') !== status) return false;
+                    if (status && (p.status || 'Planning') !== status) return false;
                     return true;
                 });
                 
@@ -10135,6 +10218,53 @@ ${conflict.workload.map(w => `
  </form>
  </div>
  </div>
+
+
+    <!-- Version Badge v5.15 -->
+    <div class="version-badge" onclick="toggleVersionInfo()">
+        <span class="version-badge-icon">ℹ️</span>
+        <span>v5.16</span>
+        <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
+            <div class="version-info-header">📋 BOD Dashboard v5.16</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.15 - VERSION INDICATOR + ALL FIXES</div>
+            <div class="version-info-item"><strong>Build Date:</strong> 2025-12-22</div>
+            <div class="version-info-item"><strong>Fixed Issues:</strong>
+                <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>✅ Overview stat cards (v5.16)</li>
+                    <li>✅ Filter status dropdown (v5.14)</li>
+                    <li>✅ StatusConfig rendering (v5.13)</li>
+                    <li>✅ Storage limit handling (v5.12)</li>
+                    <li>✅ Version indicator (v5.15)</li>
+                </ul>
+            </div>
+            <div class="version-info-item"><strong>Total Projects:</strong> <span id="versionProjectCount">--</span></div>
+            <div class="version-info-item"><strong>Storage Used:</strong> <span id="versionStorageUsed">--</span></div>
+        </div>
+    </div>
+    
+    <script>
+        // Version badge toggle
+        window.toggleVersionInfo = function() {
+            const tooltip = document.getElementById('versionTooltip');
+            tooltip.classList.toggle('show');
+            
+            // Update stats
+            if (tooltip.classList.contains('show')) {
+                document.getElementById('versionProjectCount').textContent = window.projects?.length || 0;
+                const storageSize = (JSON.stringify(window.projects || []).length / 1024 / 1024).toFixed(2);
+                document.getElementById('versionStorageUsed').textContent = storageSize + ' MB / 5 MB';
+            }
+        };
+        
+        // Close tooltip when clicking outside
+        document.addEventListener('click', function(e) {
+            const tooltip = document.getElementById('versionTooltip');
+            const badge = document.querySelector('.version-badge');
+            if (!badge.contains(e.target) && tooltip.classList.contains('show')) {
+                tooltip.classList.remove('show');
+            }
+        });
+    </script>
 
 </body>
 </html>
