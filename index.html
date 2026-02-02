@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.23 - Milestone Delay Tracking - Enterprise Edition</title>
+    <title>BOD Dashboard v5.24 - Milestone Delay Tracking - Enterprise Edition</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2028,7 +2028,7 @@
         }
 
     
-        /* ============= v5.23 MILESTONE DELAY TRACKING STYLES ============= */
+        /* ============= v5.24 MILESTONE DELAY TRACKING STYLES ============= */
         
         /* Delay Status Indicators */
         .delay-indicator {
@@ -2331,7 +2331,7 @@
             border-top-color: #1f2937;
         }
 
-        /* ============= END v5.23 STYLES ============= */
+        /* ============= END v5.24 STYLES ============= */
 
     </style>
 </head>
@@ -2372,7 +2372,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>BOD Dashboard v5.23
+            <h1>BOD Dashboard v5.24
                 <div class="header-icon">📊</div>
                 BOD Dashboard
                 <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.22 - STAT CARDS FIXED</span>
@@ -2562,7 +2562,7 @@
  <h2 style="color: #2d3748; margin-bottom: 10px;">🚨 Issues Management</h2>
 
                     
-                    <!-- v5.23: Issue Filters -->
+                    <!-- v5.24: Issue Filters -->
                     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 200px;">
                             <label style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #4a5568;">Filter by Milestone:</label>
@@ -3567,7 +3567,7 @@
             // Team Member structure: { id, name, role, email, password, isAdmin, isBOD }
 
             
-            // ============= v5.23 MILESTONE DELAY TRACKING FUNCTIONS ============= //
+            // ============= v5.24 MILESTONE DELAY TRACKING FUNCTIONS ============= //
             
             /**
              * Calculate delay days for a milestone
@@ -3957,7 +3957,7 @@
                 return overview;
             }
             
-            // ============= END v5.23 FUNCTIONS ============= //
+            // ============= END v5.24 FUNCTIONS ============= //
 
 
             // ============= v5.4 SECURITY & AUTHENTICATION SYSTEM ============= //
@@ -7626,10 +7626,9 @@ ${conflict.workload.map(w => `
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
                 // v5.11: Initialize Installation 1 for new projects or projects without phases
-                if (!currentEditingProject || !currentEditingProject.installationPhases) {
-                    if (!currentEditingProject) {
-                        currentEditingProject = {};
-                    }
+                // ✅ FIX v5.24: Don't create empty object for new projects - keep currentEditingProject = null
+                if (currentEditingProject) {
+                    // Existing project - ensure it has installationPhases
                     if (!currentEditingProject.installationPhases || currentEditingProject.installationPhases.length === 0) {
                         currentEditingProject.installationPhases = [{
                             id: 'installation-1',
@@ -7644,6 +7643,7 @@ ${conflict.workload.map(w => `
                         }];
                     }
                 }
+                // For new projects (currentEditingProject = null), installationPhases will be initialized during save
                 
                 // Feature #2: Handle Issues section visibility
                 const issuesSection = document.getElementById('issues-section');
@@ -7661,7 +7661,8 @@ ${conflict.workload.map(w => `
                 }
                 
                 // ============= v5.3 PERMISSION CHECK ============= //
-                const isEditing = !!currentEditingProject;
+                // ✅ FIX v5.24: Check if editing based on presence of ID, not just truthy value
+                const isEditing = !!(currentEditingProject && currentEditingProject.id);
                 const hasPermission = !isEditing || (currentUser && canEditProject(currentEditingProject));
                 
                 // Update modal title with permission badge
@@ -7983,7 +7984,7 @@ ${conflict.workload.map(w => `
                                     </div>
                                 </div>
                                 
-                                <!-- v5.23: DELAY TRACKING SECTION -->
+                                <!-- v5.24: DELAY TRACKING SECTION -->
                                 <div class="delay-section" id="delay-section-${milestone.id}" style="margin-top: 15px;">
                                     <div class="delay-section-header">
                                         <span>⚠️ Delay Tracking</span>
@@ -8036,7 +8037,7 @@ ${conflict.workload.map(w => `
                                         </button>
                                     </div>
                                 </div>
-                                <!-- END v5.23: DELAY TRACKING -->
+                                <!-- END v5.24: DELAY TRACKING -->
 
                             </div>
                         </div>
@@ -8148,7 +8149,7 @@ ${conflict.workload.map(w => `
                                     </div>
                                 </div>
                                 
-                                <!-- v5.23: DELAY TRACKING SECTION -->
+                                <!-- v5.24: DELAY TRACKING SECTION -->
                                 <div class="delay-section" id="delay-section-${milestone.id}" style="margin-top: 15px;">
                                     <div class="delay-section-header">
                                         <span>⚠️ Delay Tracking</span>
@@ -8201,7 +8202,7 @@ ${conflict.workload.map(w => `
                                         </button>
                                     </div>
                                 </div>
-                                <!-- END v5.23: DELAY TRACKING -->
+                                <!-- END v5.24: DELAY TRACKING -->
 
                             </div>
                         </div>
@@ -9092,8 +9093,9 @@ ${conflict.workload.map(w => `
                 hideIQRError();
                 
                 // ============= v5.3 CHANGE NOTE VALIDATION ============= //
+                // ✅ FIX v5.24: Only require change note when editing existing project (has ID)
                 const changeNote = document.getElementById('change-note').value.trim();
-                if (currentEditingProject && !changeNote) {
+                if (currentEditingProject && currentEditingProject.id && !changeNote) {
                     showToast('❌ Vui lòng nhập lý do thay đổi!', 'error');
                     document.getElementById('change-note').focus();
                     return;
@@ -11051,7 +11053,7 @@ ${conflict.workload.map(w => `
  </select>
  </div>
                     
-                    <!-- v5.23: Related Milestone Field -->
+                    <!-- v5.24: Related Milestone Field -->
                     <div class="form-group">
                         <label for="issue-related-milestone">🔗 Related Milestone (Optional)</label>
                         <select id="issue-related-milestone" class="form-control">
