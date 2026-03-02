@@ -278,13 +278,18 @@ function loadFromAzure(callback) {
 }
 
 // ── MAIN LOAD ORCHESTRATOR ────────────────────────────────
-// Returns: true (sync success), false (need async), 'file' (file:// blocked)
+// Returns: true (sync success, has data), false (no data), 'async' (need Azure fetch)
 function loadData() {
   // 1. Try localStorage (same origin share)
-  if(loadFromLS()) return true;
-  // 2. file:// cannot fetch, just return false
+  if(loadFromLS()) {
+    // If LS has real data, use it
+    if(projects.length > 0) return true;
+    // LS exists but empty (BOD not yet synced) → fall through to Azure
+    console.log('[TV] localStorage empty data, will try Azure');
+  }
+  // 2. file:// cannot fetch
   if(isFileProtocol) return false;
-  // 3. Try Azure API async (HTTPS origin)
+  // 3. Try Azure API async
   return 'async';
 }
 
@@ -608,14 +613,22 @@ function startDashboard() {
   bar.style.transition='width '+SLIDE_DURATION+'ms linear'; bar.style.width='100%';
   clearTimeout(slideTimer);
   slideTimer=setTimeout(function(){goSlide(1);}, SLIDE_DURATION);
-  // Periodic refresh: localStorage (fast) then Azure (if HTTPS)
+  // Periodic refresh: localStorage first, then Azure if empty
   setInterval(function(){
-    if(!loadFromLS() && !isFileProtocol) {
-      loadFromAzure(function(ok){ if(ok) renderAll(); });
-    } else {
+    var hadData = loadFromLS();
+    if(projects.length > 0) {
       renderAll();
+    } else if(!isFileProtocol) {
+      // LS empty - try Azure silently
+      loadFromAzure(function(ok){ if(ok) renderAll(); });
     }
   }, POLL_INTERVAL);
+  // If started with 0 projects, retry sooner (5s) to catch BOD Dashboard finishing its load
+  if(projects.length === 0 && !isFileProtocol) {
+    setTimeout(function(){
+      loadFromAzure(function(ok){ if(ok) renderAll(); });
+    }, 5000);
+  }
 }
 
 function tryInit() {
@@ -627,43 +640,53 @@ function tryInit() {
     var result = loadData();
 
     if(result === true) {
-      // Got data from localStorage immediately
+      // Got real data from localStorage immediately
       startDashboard();
     } else if(result === false && isFileProtocol) {
-      // Local file cannot fetch CORS — show deploy instructions
+      // Local file:// cannot fetch CORS — show deploy instructions
       showError('file');
     } else {
-      // HTTPS origin, no localStorage data, try Azure
+      // HTTPS origin: no data or empty LS → try Azure
       document.getElementById('ov-msg').textContent = 'Đang kết nối Azure...';
       var apiKey = localStorage.getItem(AZ_KEY_LS);
-      if(!apiKey) { showError('no-key'); return; }
+      if(!apiKey) {
+        // No API key — if we at least had empty LS data, start anyway with empty
+        if(result === false) { showError('no-key'); return; }
+        // result === 'async' but no key
+        showError('no-key'); return;
+      }
       loadFromAzure(function(ok, reason){
         if(ok) {
           startDashboard();
         } else {
-          showError(reason === 'no-key' ? 'no-key' : 'error');
+          // Azure failed but we might have stale LS data — start with whatever we have
+          if(projects.length > 0) {
+            console.warn('[TV] Azure failed, using stale localStorage data');
+            startDashboard();
+          } else {
+            showError(reason === 'no-key' ? 'no-key' : 'error');
+          }
         }
       });
     }
   }, 600);
 }
 
-// Keyboard shortcuts
+// Keyboard shortcuts  (D = dump debug to console)
 document.addEventListener('keydown', function(e){
   if(e.key==='ArrowRight'||e.key==='ArrowDown') goSlide((curSlide+1)%3);
   if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goSlide((curSlide+2)%3);
   if(e.key==='r'||e.key==='R'){ if(loadData()) renderAll(); }
   if(e.key==='d'||e.key==='D'){
     var raw=localStorage.getItem(LS_KEY);
-    if(!raw){alert('localStorage EMPTY for key: '+LS_KEY);return;}
+    if(!raw){ console.warn('[TV DEBUG] localStorage EMPTY key:', LS_KEY); return; }
     var d=JSON.parse(raw);
     var statuses={};
-    (d.projects||[]).forEach(function(p){statuses[p.status||'?']=(statuses[p.status||'?']||0)+1;});
-    alert('DATA DEBUG\n'
-      +'Projects: '+(d.projects||[]).length+'\n'
-      +'Members: '+(d.teamMembers||[]).length+'\n'
-      +'LastSave: '+d.lastSave+'\n'
-      +'Status breakdown:\n'+JSON.stringify(statuses,null,2));
+    (d.projects||[]).forEach(function(p){ statuses[p.status||'?']=(statuses[p.status||'?']||0)+1; });
+    console.log('[TV DEBUG] projects:', (d.projects||[]).length,
+      '| members:', (d.teamMembers||[]).length,
+      '| lastSave:', d.lastSave,
+      '| statuses:', JSON.stringify(statuses));
   }
 });
 
