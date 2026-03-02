@@ -659,16 +659,11 @@ document.addEventListener('keydown', function(e){
     var d=JSON.parse(raw);
     var statuses={};
     (d.projects||[]).forEach(function(p){statuses[p.status||'?']=(statuses[p.status||'?']||0)+1;});
-    alert('DATA DEBUG
-'
-      +'Projects: '+(d.projects||[]).length+'
-'
-      +'Members: '+(d.teamMembers||[]).length+'
-'
-      +'LastSave: '+d.lastSave+'
-'
-      +'Status breakdown:
-'+JSON.stringify(statuses,null,2));
+    alert('DATA DEBUG\n'
+      +'Projects: '+(d.projects||[]).length+'\n'
+      +'Members: '+(d.teamMembers||[]).length+'\n'
+      +'LastSave: '+d.lastSave+'\n'
+      +'Status breakdown:\n'+JSON.stringify(statuses,null,2));
   }
 });
 
