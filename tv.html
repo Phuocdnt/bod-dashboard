@@ -290,9 +290,13 @@ function loadData() {
 
 // ── SLIDE 1: PROJECTS ─────────────────────────────────────
 function renderProjects() {
+  console.log('[TV] projects loaded:', projects.length, 'members:', members.length);
   var active = projects.filter(function(p){
-    return p.status !== 'completed' && p.status !== 'cancelled';
+    // Status stored as lowercase: 'planning','in-progress','on-hold','delayed','completed','cancelled'
+    var s = (p.status||'').toLowerCase();
+    return s !== 'completed' && s !== 'cancelled';
   });
+  console.log('[TV] active projects:', active.length);
   document.getElementById('proj-badge').textContent = active.length + ' dự án';
   if(!active.length) {
     document.getElementById('proj-grid').innerHTML = '<div class="no-data">Không có dự án đang triển khai</div>';
@@ -350,11 +354,17 @@ function renderMilestones() {
 }
 function renderWeekMs(elId, wb) {
   var today = new Date(), items = [];
-  projects.filter(function(p){return p.status!=='completed'&&p.status!=='cancelled';})
-    .forEach(function(proj){
+  projects.filter(function(p){
+    var s=(p.status||'').toLowerCase();
+    return s!=='completed'&&s!=='cancelled';
+  }).forEach(function(proj){
+      // Regular milestones
       (proj.milestones||[]).forEach(function(ms){
         if(!ms.person || ms.actualCompleteDate) return;
-        if(!msInWeek(ms, wb)) return;
+        // Show if deadline falls within week (even without planStartDate)
+        var ded = ms.planCompleteDate ? new Date(ms.planCompleteDate) : null;
+        if(!ded) return;
+        if(ded < wb.s || ded > wb.e) return;
         var ded  = ms.planCompleteDate ? new Date(ms.planCompleteDate) : null;
         items.push({
           proj:proj, ms:ms,
@@ -404,11 +414,13 @@ function buildSchedTbl(wb) {
   for(var i=0;i<7;i++){var d=new Date(wb.s);d.setDate(wb.s.getDate()+i);DAYS.push(d);}
   var asgn = {};
 
-  projects.filter(function(p){return p.status!=='completed'&&p.status!=='cancelled';})
-    .forEach(function(proj){
+  projects.filter(function(p){
+    var s=(p.status||'').toLowerCase();
+    return s!=='completed'&&s!=='cancelled';
+  }).forEach(function(proj){
       var mc = (proj.name||'').match(/^([A-Z0-9\-]+)/);
       var code = mc ? mc[1] : (proj.name||'').substring(0,8);
-      // milestones
+      // milestones (installation filtered out - handled via installationPhases)
       (proj.milestones||[]).forEach(function(ms){
         if(!ms.person||!ms.planStartDate) return;
         var sm = smFind(ms.id);
@@ -425,8 +437,22 @@ function buildSchedTbl(wb) {
           }
         });
       });
-      // surveys
-      (proj.surveys||[]).forEach(function(sv){
+      // installationPhases (separate array, not in milestones)
+      (proj.installationPhases||[]).forEach(function(ph){
+        if(!ph.person||!ph.planStartDate||ph.actualCompleteDate) return;
+        var ps=new Date(ph.planStartDate); ps.setHours(0,0,0,0);
+        var pe=ph.planCompleteDate?new Date(ph.planCompleteDate):new Date(ps); pe.setHours(23,59,59,0);
+        DAYS.forEach(function(d){
+          if(d>=ps&&d<=pe){
+            if(!asgn[ph.person]) asgn[ph.person]={};
+            var k=d.toDateString();
+            if(!asgn[ph.person][k]) asgn[ph.person][k]=[];
+            asgn[ph.person][k].push({label:code+': Installation', type:'asm'});
+          }
+        });
+      });
+      // surveyRounds is an OBJECT {survey1:{}, survey2:{}, survey3:{}} not array
+      Object.values(proj.surveyRounds||{}).forEach(function(sv){
         if(!sv.person||!sv.startDate) return;
         var sd=new Date(sv.startDate); sd.setHours(0,0,0,0);
         DAYS.forEach(function(d){
@@ -627,6 +653,23 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowRight'||e.key==='ArrowDown') goSlide((curSlide+1)%3);
   if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goSlide((curSlide+2)%3);
   if(e.key==='r'||e.key==='R'){ if(loadData()) renderAll(); }
+  if(e.key==='d'||e.key==='D'){
+    var raw=localStorage.getItem(LS_KEY);
+    if(!raw){alert('localStorage EMPTY for key: '+LS_KEY);return;}
+    var d=JSON.parse(raw);
+    var statuses={};
+    (d.projects||[]).forEach(function(p){statuses[p.status||'?']=(statuses[p.status||'?']||0)+1;});
+    alert('DATA DEBUG
+'
+      +'Projects: '+(d.projects||[]).length+'
+'
+      +'Members: '+(d.teamMembers||[]).length+'
+'
+      +'LastSave: '+d.lastSave+'
+'
+      +'Status breakdown:
+'+JSON.stringify(statuses,null,2));
+  }
 });
 
 tryInit();
