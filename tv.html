@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AES/DHI Vietnam – Realtime TV Dashboard v4</title>
+<title>AES/DHI Vietnam – Realtime TV Dashboard v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -268,7 +269,7 @@ function loadFromAzure(callback) {
     if(!r.ok) throw new Error('HTTP '+r.status);
     return r.json();
   }).then(function(d){
-    // v4 SAFETY: Never overwrite good localStorage with empty Azure data
+    // v5 SAFETY: Never overwrite good localStorage with empty Azure data
     var azProjects = (d.projects||[]).length;
     var azMembers  = (d.teamMembers||[]).length;
     if(azProjects === 0 && azMembers === 0) {
@@ -277,7 +278,7 @@ function loadFromAzure(callback) {
         try {
           var _local = JSON.parse(_raw);
           if((_local.projects||[]).length > 0) {
-            console.warn('[TV v4 SAFETY] Azure returned empty data but localStorage has '
+            console.warn('[TV v5 SAFETY] Azure returned empty data but localStorage has '
               + _local.projects.length + ' projects — keeping local data!');
             applyData(_local);
             callback(true);
@@ -286,7 +287,8 @@ function loadFromAzure(callback) {
         } catch(e2) {}
       }
     }
-    localStorage.setItem(LS_KEY, JSON.stringify(d));
+    // v5 FIX: TV dashboard is READ-ONLY — NEVER write back to localStorage
+    // (writing would overwrite main dashboard's richer local data with Azure subset)
     applyData(d);
     callback(true);
   }).catch(function(e){
@@ -701,7 +703,7 @@ document.addEventListener('keydown', function(e){
     var d=JSON.parse(raw);
     var statuses={};
     (d.projects||[]).forEach(function(p){ statuses[p.status||'?']=(statuses[p.status||'?']||0)+1; });
-    console.log('%c[TV v4 DEBUG]', 'color:#00d4ff;font-weight:bold',
+    console.log('%c[TV v5 DEBUG]', 'color:#00d4ff;font-weight:bold',
       '\n  localStorage key:', LS_KEY,
       '\n  projects:', (d.projects||[]).length,
       '\n  members:', (d.teamMembers||[]).length,
