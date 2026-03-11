@@ -14,9 +14,10 @@
 </style>
 <script>
 const CONFIG = {
-  siteUrl: "",          // Để rỗng để tự detect từ SharePoint
-  listName: "InsightsResponses",
-  pageSize: 100         // Số records tối đa tải về
+  // ⚠️ Dán URL từ Power Automate Flow (Write) vào đây
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1",
+  // ⚠️ Dán URL từ Power Automate Flow (Read) vào đây
+  flowReadUrl:  "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1"
 };
 </script>
 <style>
@@ -350,24 +351,35 @@ let currentItem = null;
 // ════════════════════════════════════════
 // SHAREPOINT API
 // ════════════════════════════════════════
-function getSiteUrl(){
-  if(CONFIG.siteUrl) return CONFIG.siteUrl.replace(/\/$/,'');
-  try{return window._spPageContextInfo?.webAbsoluteUrl?.replace(/\/$/,'')||window.location.origin;}
-  catch(e){return window.location.origin;}
-}
+
 
 async function loadData(){
   showLoading();
-  const siteUrl=getSiteUrl();
-  const url=`${siteUrl}/_api/web/lists/getbytitle('${CONFIG.listName}')/items?$top=${CONFIG.pageSize}&$orderby=Created desc&$select=ID,Title,EmployeeRole,Department,Answers,RedScore,YellowScore,GreenScore,BlueScore,PrimaryColor,SecondaryColor,Created`;
   try{
-    const res=await fetch(url,{headers:{Accept:'application/json;odata=verbose'}});
-    if(!res.ok){
-      if(res.status===404) throw new Error('List "'+CONFIG.listName+'" không tìm thấy. Hãy tạo list theo hướng dẫn bên trên.');
-      throw new Error(`HTTP ${res.status} — Kiểm tra quyền truy cập SharePoint`);
+    if(!CONFIG.flowReadUrl || CONFIG.flowReadUrl.includes('PASTE_YOUR')){
+      showError('⚠️ Chưa cấu hình Flow Read URL trong file admin.html');
+      return;
     }
+    const res=await fetch(CONFIG.flowReadUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const json=await res.json();
-    allData=json.d.results||[];
+    // Power Automate trả về dạng {value: [...]} hoặc trực tiếp array
+    const raw=json.value||json.d?.results||json||[];
+    // Normalize field names (PA trả về camelCase hoặc PascalCase)
+    allData=raw.map(item=>({
+      ID:             item.ID||item.id||item.Id,
+      Title:          item.Title||item.title,
+      EmployeeRole:   item.EmployeeRole||item.employeeRole||item.employeerole,
+      Department:     item.Department||item.department,
+      Answers:        item.Answers||item.answers,
+      RedScore:       item.RedScore||item.redScore||0,
+      YellowScore:    item.YellowScore||item.yellowScore||0,
+      GreenScore:     item.GreenScore||item.greenScore||0,
+      BlueScore:      item.BlueScore||item.blueScore||0,
+      PrimaryColor:   item.PrimaryColor||item.primaryColor||item.primarycolor,
+      SecondaryColor: item.SecondaryColor||item.secondaryColor||item.secondarycolor,
+      Created:        item.Created||item.created
+    }));
     applyFilter();
     updateSidebar();
     toast(`✅ Đã tải ${allData.length} phản hồi`);

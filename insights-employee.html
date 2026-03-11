@@ -13,9 +13,8 @@
 </style>
 <script>
 const CONFIG = {
-  // Nếu để rỗng (""), sẽ tự detect từ SharePoint context
-  siteUrl: "",
-  listName: "InsightsResponses"
+  // ⚠️ Dán URL từ Power Automate Flow (Write) vào đây
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1"
 };
 </script>
 <style>
@@ -398,7 +397,7 @@ async function nextBatch(){
 }
 
 // ════════════════════════════════════════
-// SUBMIT TO SHAREPOINT
+// SUBMIT VIA POWER AUTOMATE
 // ════════════════════════════════════════
 async function submitResults(){
   const name=document.getElementById('iName').value.trim();
@@ -414,58 +413,31 @@ async function submitResults(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span>Đang lưu…';
 
-  const siteUrl=getSiteUrl();
+  const payload={
+    name, role,
+    department: dept,
+    answers: JSON.stringify(answers),
+    redScore:    scores.red,
+    yellowScore: scores.yellow,
+    greenScore:  scores.green,
+    blueScore:   scores.blue,
+    primaryColor:   primary,
+    secondaryColor: secondary
+  };
 
   try{
-    // 1. Get Request Digest
-    const digestRes=await fetch(`${siteUrl}/_api/contextinfo`,{
-      method:'POST',
-      headers:{Accept:'application/json;odata=verbose','Content-Type':'application/json;odata=verbose'}
-    });
-
-    let digest='';
-    if(digestRes.ok){
-      const dj=await digestRes.json();
-      digest=dj.d?.GetContextWebInformation?.FormDigestValue||'';
+    if(!CONFIG.flowWriteUrl || CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
+      throw new Error('Chưa cấu hình Flow URL');
     }
-
-    // 2. Submit list item
-    const listTypeName=CONFIG.listName.replace(/[^a-zA-Z0-9]/g,'_');
-    const payload={
-      __metadata:{type:`SP.Data.${listTypeName}ListItem`},
-      Title: name,
-      EmployeeRole: role,
-      Department: dept,
-      Answers: JSON.stringify(answers),
-      RedScore: scores.red,
-      YellowScore: scores.yellow,
-      GreenScore: scores.green,
-      BlueScore: scores.blue,
-      PrimaryColor: primary,
-      SecondaryColor: secondary,
-      TotalQuestions: QS.length
-    };
-
-    const res=await fetch(`${siteUrl}/_api/web/lists/getbytitle('${CONFIG.listName}')/items`,{
+    const res=await fetch(CONFIG.flowWriteUrl,{
       method:'POST',
-      headers:{
-        'Accept':'application/json;odata=verbose',
-        'Content-Type':'application/json;odata=verbose',
-        'X-RequestDigest': digest
-      },
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
-
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      throw new Error(err?.error?.message?.value || `HTTP ${res.status}`);
-    }
-
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     showSuccess(name, scores, primary, secondary);
-
   } catch(err){
-    // Fallback: show result anyway, note the save issue
-    console.error('SharePoint save error:', err);
+    console.error('Flow error:', err);
     showSuccess(name, scores, primary, secondary, err.message);
   }
 }
