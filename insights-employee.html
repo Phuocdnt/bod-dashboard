@@ -10,6 +10,16 @@
 /* ═══════════════════════════════════════════════════
    SHAREPOINT CONFIG — Chỉnh sửa 2 dòng này
 ═══════════════════════════════════════════════════ */
+
+/* Extended dimension cards */
+.ext-dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:20px}
+.dim-card{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:16px}
+.dim-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.dim-val{font-size:15px;font-weight:600;margin-bottom:10px}
+.dim-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.dim-bar-lbl{font-size:11px;font-weight:700;color:var(--muted);width:16px}
+.dim-bar-bg{flex:1;height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
 </style>
 <script>
 const CONFIG = {
@@ -205,6 +215,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <h2>Khảo sát hoàn thành!</h2>
         <p>Cảm ơn bạn đã hoàn thành bộ câu hỏi Insights Discovery.<br>Kết quả đã được ghi nhận và Admin sẽ xử lý profile của bạn.</p>
         <div class="result-preview" id="resultPreview"></div>
+        <div id="extDimensions" class="ext-dims" style="margin-top:16px"></div>
         <div style="background:var(--sur2);border-radius:12px;padding:16px;border:1px solid var(--bdr);text-align:left;max-width:400px;margin:0 auto">
           <p style="font-size:12px;color:var(--muted);line-height:1.7">
             📬 Kết quả của bạn đã được lưu vào hệ thống.<br>
@@ -225,54 +236,105 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 // QUESTIONS DATA
 // ════════════════════════════════════════
 const QS = [
+  // ── BATCH 1: Core color (câu 1–12) ─────────────────────────────
   {t:"Khi đối mặt với một thách thức mới, bạn thường:",
    opts:{red:"Lập tức xác định mục tiêu và bắt tay hành động",yellow:"Chia sẻ với người khác và tìm kiếm ý tưởng mới",green:"Cân nhắc kỹ và đảm bảo mọi người cùng sẵn sàng",blue:"Thu thập đầy đủ thông tin trước khi quyết định"}},
-  {t:"Trong cuộc họp nhóm, bạn thường đóng vai trò:",
-   opts:{red:"Người định hướng và thúc đẩy đi đến kết luận nhanh",yellow:"Người tạo năng lượng và đề xuất ý tưởng sáng tạo",green:"Người lắng nghe và đảm bảo mọi tiếng nói được nghe",blue:"Người phân tích dữ liệu và đặt câu hỏi chính xác"}},
-  {t:"Điều bạn đánh giá cao nhất ở một đồng nghiệp là:",
-   opts:{red:"Hiệu quả làm việc và khả năng ra quyết định nhanh",yellow:"Sự nhiệt tình và khả năng truyền cảm hứng cho đội nhóm",green:"Sự chân thành và tinh thần hỗ trợ lẫn nhau",blue:"Sự cẩn thận và cam kết với chất lượng công việc"}},
-  {t:"Khi có áp lực cao, bạn thường:",
-   opts:{red:"Tập trung toàn lực vào việc giải quyết vấn đề trực tiếp",yellow:"Giữ tinh thần lạc quan và truyền động lực cho người khác",green:"Tìm sự đồng thuận và giảm căng thẳng trong nhóm",blue:"Xem xét lại dữ liệu và tìm giải pháp có cơ sở"}},
-  {t:"Khi bắt đầu một dự án mới, bạn ưu tiên:",
-   opts:{red:"Xác định kết quả cần đạt và timeline rõ ràng",yellow:"Xây dựng nhóm nhiệt huyết và định hình tầm nhìn",green:"Đảm bảo mọi người hiểu vai trò và cảm thấy thoải mái",blue:"Lập kế hoạch chi tiết và phân tích rủi ro"}},
-  {t:"Phong cách giao tiếp của bạn thường là:",
-   opts:{red:"Thẳng thắn, súc tích và định hướng kết quả",yellow:"Sôi nổi, biểu cảm và lôi cuốn",green:"Ấm áp, chân thành và lắng nghe chủ động",blue:"Chính xác, có cấu trúc và dựa trên bằng chứng"}},
-  {t:"Bạn cảm thấy mình tạo ra giá trị nhất khi:",
-   opts:{red:"Dẫn dắt đội nhóm vượt qua khó khăn và đạt mục tiêu",yellow:"Khơi dậy sáng tạo và tạo ra những điều mới mẻ",green:"Xây dựng môi trường làm việc gắn kết và tin tưởng",blue:"Đảm bảo chất lượng và độ chính xác của công việc"}},
-  {t:"Khi ra quyết định quan trọng, bạn dựa chủ yếu vào:",
-   opts:{red:"Trực giác và kinh nghiệm thực tế đã có",yellow:"Cảm hứng và tiềm năng tương lai của phương án",green:"Tác động đến con người và sự đồng thuận của nhóm",blue:"Phân tích dữ liệu và so sánh các phương án"}},
-  {t:"Điều bạn không thích nhất trong công việc là:",
-   opts:{red:"Trì hoãn, quá nhiều quy trình không cần thiết",yellow:"Môi trường cứng nhắc, thiếu sáng tạo",green:"Xung đột và thiếu sự hòa hợp trong nhóm",blue:"Làm việc thiếu cẩn thận, bỏ qua chi tiết quan trọng"}},
-  {t:"Bạn muốn được công nhận vì:",
-   opts:{red:"Đạt được kết quả vượt trội và hiệu quả cao",yellow:"Truyền cảm hứng và tạo ra sự thay đổi tích cực",green:"Xây dựng mối quan hệ bền vững và hỗ trợ đội nhóm",blue:"Đóng góp chuyên môn và đảm bảo chất lượng"}},
-  {t:"Khi nhận phản hồi về công việc, bạn mong muốn:",
-   opts:{red:"Phản hồi thẳng thắn, ngắn gọn về kết quả",yellow:"Phản hồi nhiệt tình, nhấn mạnh tiềm năng phát triển",green:"Phản hồi chân thành, tôn trọng cảm xúc của bạn",blue:"Phản hồi chi tiết, cụ thể với ví dụ minh họa"}},
-  {t:"Trong nhóm làm việc, bạn thường:",
-   opts:{red:"Dẫn dắt và thúc đẩy nhóm đạt mục tiêu",yellow:"Tạo không khí vui vẻ và gắn kết mọi người",green:"Hỗ trợ người khác và đảm bảo sự hòa thuận",blue:"Đảm bảo quy trình đúng và kết quả chính xác"}},
+  {t:"Đồng nghiệp thường nhận xét bạn là người:",
+   opts:{red:"Quyết đoán và thẳng thắn",yellow:"Vui vẻ và truyền cảm hứng",green:"Quan tâm và đáng tin cậy",blue:"Cẩn thận và chính xác"}},
+  {t:"Trong cuộc họp nhóm, bạn thường:",
+   opts:{red:"Dẫn dắt thảo luận và đưa ra quyết định",yellow:"Đưa ra nhiều ý tưởng sáng tạo",green:"Lắng nghe và đảm bảo mọi người được lắng nghe",blue:"Phân tích và đặt câu hỏi chi tiết"}},
+  {t:"Khi được giao dự án mới, điều đầu tiên bạn làm là:",
+   opts:{red:"Xác định mục tiêu và phân công ngay",yellow:"Nghĩ đến những cách tiếp cận thú vị",green:"Tìm hiểu xem ai cần hỗ trợ gì",blue:"Lập kế hoạch chi tiết và đánh giá rủi ro"}},
+  {t:"Phong cách giao tiếp của bạn thiên về:",
+   opts:{red:"Trực tiếp, rõ ràng, đi thẳng vào vấn đề",yellow:"Nhiệt tình, cởi mở, hay kể chuyện",green:"Ấm áp, kiên nhẫn, lắng nghe nhiều",blue:"Có cấu trúc, chi tiết, cân nhắc từng lời"}},
+  {t:"Khi ra quyết định quan trọng, bạn tin vào:",
+   opts:{red:"Trực giác và kinh nghiệm bản thân",yellow:"Cảm nhận và phản ứng của mọi người",green:"Sự đồng thuận và tác động tới tập thể",blue:"Dữ liệu và phân tích khách quan"}},
+  {t:"Bạn cảm thấy tự hào nhất khi:",
+   opts:{red:"Đạt được kết quả vượt mục tiêu",yellow:"Truyền cảm hứng cho người xung quanh",green:"Xây dựng được môi trường làm việc hòa hợp",blue:"Tạo ra giải pháp hoàn hảo không có lỗi"}},
+  {t:"Điều bạn không thích nhất trong công việc:",
+   opts:{red:"Làm việc chậm chạp, thiếu hiệu quả",yellow:"Môi trường quá cứng nhắc, thiếu sáng tạo",green:"Xung đột và cạnh tranh không lành mạnh",blue:"Thiếu quy trình rõ ràng và cẩu thả"}},
+  {t:"Khi làm việc nhóm, vai trò bạn thích nhất là:",
+   opts:{red:"Người quyết định hướng đi",yellow:"Người kết nối và tạo năng lượng",green:"Người hỗ trợ và giữ gìn đoàn kết",blue:"Người đảm bảo chất lượng và chuẩn mực"}},
+  {t:"Bạn đánh giá thành công dựa trên:",
+   opts:{red:"Kết quả cụ thể đạt được",yellow:"Sự hài lòng và hào hứng của mọi người",green:"Tất cả mọi người cùng tiến lên",blue:"Sự chính xác và hoàn thiện của sản phẩm"}},
+  {t:"Khi gặp người mới, bạn thường:",
+   opts:{red:"Nhanh chóng tìm hiểu họ có thể giúp ích gì",yellow:"Hào hứng kết bạn và chia sẻ câu chuyện",green:"Lắng nghe và cố gắng hiểu họ",blue:"Quan sát và đánh giá trước khi giao tiếp sâu"}},
+  {t:"Môi trường làm việc lý tưởng của bạn:",
+   opts:{red:"Nhanh, cạnh tranh, nhiều thách thức",yellow:"Sáng tạo, năng động, nhiều tương tác",green:"Ổn định, hòa thuận, có hỗ trợ nhau",blue:"Có cấu trúc, yên tĩnh, chú trọng chất lượng"}},
+  // ── BATCH 2: Core color (câu 13–24) ────────────────────────────
+  {t:"Khi có ý kiến bất đồng trong nhóm, bạn:",
+   opts:{red:"Nói thẳng quan điểm và bảo vệ lập trường",yellow:"Tìm cách hòa giải bằng sự hài hước và sáng tạo",green:"Ưu tiên giữ hòa khí hơn thắng lý lẽ",blue:"Trình bày dữ liệu và lý lẽ logic"}},
   {t:"Bạn học tốt nhất khi:",
-   opts:{red:"Thực hành trực tiếp và đối mặt với thách thức thực tế",yellow:"Thảo luận, trao đổi và khám phá ý tưởng mới",green:"Học trong môi trường an toàn, được hỗ trợ",blue:"Nghiên cứu tài liệu kỹ lưỡng và có phương pháp"}},
-  {t:"Khi có xung đột trong nhóm, bạn thường:",
-   opts:{red:"Đối mặt trực tiếp và giải quyết ngay lập tức",yellow:"Dùng sự hài hước và tích cực để xoa dịu căng thẳng",green:"Tìm hiểu cảm xúc của mọi người và hòa giải",blue:"Phân tích nguyên nhân và đề xuất giải pháp logic"}},
-  {t:"Môi trường làm việc lý tưởng của bạn là:",
-   opts:{red:"Năng động, cạnh tranh lành mạnh và kết quả rõ ràng",yellow:"Sáng tạo, linh hoạt và đầy ắp năng lượng tích cực",green:"Hòa thuận, tin tưởng và coi trọng từng cá nhân",blue:"Có cấu trúc, chuẩn mực rõ ràng và tập trung chuyên môn"}},
-  {t:"Khi lập kế hoạch, bạn thường:",
-   opts:{red:"Tập trung vào các bước hành động chính, bỏ qua tiểu tiết",yellow:"Phác thảo tầm nhìn lớn rồi để nhóm bổ sung chi tiết",green:"Đảm bảo kế hoạch phù hợp với tất cả mọi người",blue:"Lập kế hoạch chi tiết từng bước với các điểm kiểm tra"}},
-  {t:"Điều quan trọng nhất với bạn trong công việc là:",
-   opts:{red:"Đạt được mục tiêu và tạo ra tác động thực sự",yellow:"Được sáng tạo và làm việc trong môi trường đổi mới",green:"Có mối quan hệ tốt đẹp và đồng nghiệp tin tưởng",blue:"Làm việc chất lượng cao và có thể tự hào về kết quả"}},
-  {t:"Khi trình bày ý tưởng, bạn thường:",
-   opts:{red:"Đi thẳng vào trọng tâm với kết quả kỳ vọng rõ ràng",yellow:"Dùng câu chuyện, hình ảnh và sự nhiệt huyết để thuyết phục",green:"Nhấn mạnh lợi ích cho con người và sự đồng thuận",blue:"Trình bày dữ liệu, bằng chứng và phân tích rủi ro"}},
-  {t:"Bạn cảm thấy căng thẳng nhất khi:",
-   opts:{red:"Thiếu quyền kiểm soát hoặc bị cản trở không rõ lý do",yellow:"Bị bó buộc trong môi trường đơn điệu, không có sự đổi mới",green:"Phải đối mặt với xung đột kéo dài hoặc bị áp lực",blue:"Phải ra quyết định quan trọng mà không có đủ thông tin"}},
-  {t:"Bạn định nghĩa thành công trong công việc là:",
-   opts:{red:"Đạt và vượt các KPI, tạo ra tác động đo lường được",yellow:"Truyền cảm hứng và tạo ra thay đổi tích cực cho tổ chức",green:"Đội nhóm gắn kết, mọi người phát triển và hạnh phúc",blue:"Công việc hoàn thành đúng chuẩn, không có sai sót"}},
-  {t:"Bạn xử lý thay đổi như thế nào?",
-   opts:{red:"Nắm bắt cơ hội trong thay đổi và dẫn dắt quá trình",yellow:"Hứng khởi với những điều mới và truyền sự tích cực",green:"Cần thời gian để thích nghi, nhưng sẽ ủng hộ khi sẵn sàng",blue:"Phân tích tác động và lập kế hoạch chuyển đổi cẩn thận"}},
-  {t:"Điều khiến bạn cảm thấy được tôn trọng nhất là:",
-   opts:{red:"Được trao quyền tự chủ và trách nhiệm rõ ràng",yellow:"Được lắng nghe ý tưởng và khuyến khích sáng tạo",green:"Được nhìn nhận như một cá nhân, không chỉ là nhân viên",blue:"Được công nhận về chuyên môn và đóng góp chất lượng"}},
-  {t:"Khi dự án gặp khó khăn, phản ứng tự nhiên của bạn là:",
-   opts:{red:"Xác định vấn đề cốt lõi và đưa ra quyết định ngay",yellow:"Giữ tinh thần lạc quan và tìm cách sáng tạo thoát khỏi khó khăn",green:"Tập hợp nhóm, lắng nghe và tìm giải pháp chung",blue:"Xem xét dữ liệu, xác định nguyên nhân gốc rễ một cách có hệ thống"}},
-  {t:"Bạn muốn được lãnh đạo theo cách:",
-   opts:{red:"Trao mục tiêu rõ ràng rồi để bạn tự quyết định cách đạt được",yellow:"Chia sẻ tầm nhìn truyền cảm hứng và tin tưởng vào bạn",green:"Thể hiện sự quan tâm thực sự và hỗ trợ khi cần thiết",blue:"Cung cấp đầy đủ thông tin, tiêu chí rõ ràng và phản hồi chi tiết"}}
+   opts:{red:"Thực hành thực tế và thấy kết quả ngay",yellow:"Học qua trải nghiệm thú vị và trao đổi",green:"Học trong nhóm với sự hỗ trợ lẫn nhau",blue:"Đọc tài liệu, nghiên cứu kỹ trước khi làm"}},
+  {t:"Điều khiến bạn mất động lực nhất:",
+   opts:{red:"Bị kiểm soát quá chặt hoặc thiếu quyền tự chủ",yellow:"Công việc nhàm chán, lặp đi lặp lại",green:"Cảm thấy bị cô lập hoặc không được trân trọng",blue:"Bị yêu cầu làm ẩu hoặc bỏ qua quy trình"}},
+  {t:"Khi nói chuyện với ai đó, bạn thường:",
+   opts:{red:"Đi thẳng vào vấn đề, không vòng vo",yellow:"Chia sẻ câu chuyện cá nhân và cảm xúc",green:"Hỏi về họ và chú ý lắng nghe",blue:"Đặt câu hỏi logic và kiểm chứng thông tin"}},
+  {t:"Khi bị chỉ trích, phản ứng đầu tiên của bạn là:",
+   opts:{red:"Phản bác nếu thấy không đúng",yellow:"Cố gắng hiểu và duy trì không khí tích cực",green:"Cảm thấy tổn thương nhưng vẫn lắng nghe",blue:"Phân tích xem chỉ trích đó có cơ sở không"}},
+  {t:"Bạn thích làm việc theo kiểu nào hơn:",
+   opts:{red:"Độc lập, tự quyết định",yellow:"Làm với nhiều người, không khí vui vẻ",green:"Trong nhóm nhỏ thân thiết, tin tưởng nhau",blue:"Một mình hoặc với ít người, tập trung"}},
+  {t:"Điểm mạnh lớn nhất của bạn trong mắt người khác:",
+   opts:{red:"Khả năng lãnh đạo và ra quyết định",yellow:"Sự nhiệt tình và khả năng kết nối",green:"Sự quan tâm và đáng tin cậy",blue:"Sự cẩn thận và tư duy phân tích"}},
+  {t:"Khi dự án gặp khó khăn, bạn:",
+   opts:{red:"Tìm ngay giải pháp và hành động",yellow:"Motivate cả nhóm tiếp tục cố gắng",green:"Đảm bảo mọi người vẫn ổn và hỗ trợ nhau",blue:"Phân tích nguyên nhân gốc rễ và đề xuất giải pháp hệ thống"}},
+  {t:"Cách bạn quản lý thời gian:",
+   opts:{red:"Tập trung vào ưu tiên cao nhất, bỏ qua phần dư",yellow:"Linh hoạt, làm những gì hứng thú nhất",green:"Cân bằng giữa công việc và hỗ trợ người khác",blue:"Lập kế hoạch chi tiết và tuân thủ nghiêm ngặt"}},
+  {t:"Khi nhận phản hồi từ cấp trên, bạn muốn được:",
+   opts:{red:"Phản hồi thẳng thắn, tập trung vào kết quả",yellow:"Được khích lệ và công nhận đóng góp",green:"Được lắng nghe và thấu hiểu",blue:"Phản hồi cụ thể, có số liệu và ví dụ rõ ràng"}},
+  {t:"Khi hoàn thành một dự án lớn, bạn cảm thấy:",
+   opts:{red:"Hài lòng vì đạt mục tiêu, sẵn sàng cho thách thức tiếp theo",yellow:"Muốn ăn mừng và chia sẻ thành công với mọi người",green:"Hạnh phúc vì mọi người đều đóng góp được",blue:"Nhìn lại để cải thiện những gì chưa hoàn hảo"}},
+  // ── BATCH 3: Introvert / Extrovert (câu 25–32) ──────────────────
+  {t:"Sau một ngày làm việc dài, bạn nạp năng lượng bằng cách:",
+   opts:{red:"Tập gym hoặc hoạt động thể chất mạnh",yellow:"Gặp bạn bè, ra ngoài, giao lưu",green:"Ở nhà cùng người thân hoặc nhóm nhỏ",blue:"Đọc sách, nghe nhạc, tận hưởng sự yên tĩnh"},dim:"ie"},
+  {t:"Trong bữa tiệc lớn có nhiều người xa lạ, bạn thường:",
+   opts:{red:"Chủ động gặp gỡ và kết nối nhiều người",yellow:"Là trung tâm sự chú ý, tạo không khí vui",green:"Nói chuyện sâu với vài người quen",blue:"Cảm thấy mệt sau một lúc và muốn về sớm"},dim:"ie"},
+  {t:"Bạn suy nghĩ rõ ràng nhất khi:",
+   opts:{red:"Nói ra và thảo luận với người khác",yellow:"Trong không khí sôi động, nhiều kích thích",green:"Ở không gian yên tĩnh với ít người",blue:"Một mình, hoàn toàn tập trung"},dim:"ie"},
+  {t:"Khi cần đưa ra quyết định phức tạp, bạn:",
+   opts:{red:"Bàn luận với nhiều người trước",yellow:"Thảo luận nhanh rồi quyết luôn",green:"Suy nghĩ một mình trong thời gian dài",blue:"Nghiên cứu kỹ một mình rồi mới quyết"},dim:"ie"},
+  {t:"Trong cuộc họp đông người, bạn:",
+   opts:{red:"Chủ động phát biểu, không ngại đám đông",yellow:"Hào hứng chia sẻ và tương tác",green:"Nói khi cần thiết, không thích spotlight",blue:"Lắng nghe và chỉ nói khi có điểm thực sự quan trọng"},dim:"ie"},
+  {t:"Bạn thích không gian làm việc:",
+   opts:{red:"Văn phòng mở, năng động, có người xung quanh",yellow:"Không gian chung vui, nhiều tương tác tự nhiên",green:"Văn phòng nhỏ hoặc làm remote gần gũi",blue:"Phòng riêng hoặc góc yên tĩnh ít bị làm phiền"},dim:"ie"},
+  {t:"Khi có vấn đề cần giải quyết, bạn:",
+   opts:{red:"Tìm người để trao đổi và hành động ngay",yellow:"Kể cho nhiều người nghe để nghe nhiều góc nhìn",green:"Chỉ tâm sự với vài người thực sự tin tưởng",blue:"Tự suy nghĩ và xử lý trước khi chia sẻ"},dim:"ie"},
+  {t:"Thời gian ở một mình đối với bạn:",
+   opts:{red:"Cần đôi khi nhưng không thích kéo dài",yellow:"Hiếm khi cần, thích có người bên cạnh hơn",green:"Cần để tái tạo năng lượng sau khi giao tiếp nhiều",blue:"Rất quan trọng và cần nhiều thời gian một mình"},dim:"ie"},
+  // ── BATCH 4: Leadership style (câu 33–40) ───────────────────────
+  {t:"Là trưởng nhóm, bạn phân công công việc bằng cách:",
+   opts:{red:"Giao nhiệm vụ rõ ràng, kỳ vọng kết quả cụ thể",yellow:"Hỏi mọi người muốn làm gì để ai cũng hào hứng",green:"Xét đến năng lực và cảm xúc từng người",blue:"Phân tích kỹ từng người rồi phân công tối ưu nhất"},dim:"lead"},
+  {t:"Khi nhân viên mắc lỗi nghiêm trọng, bạn:",
+   opts:{red:"Nói thẳng vấn đề và yêu cầu sửa ngay",yellow:"Tìm cách nhẹ nhàng và động viên họ cải thiện",green:"Gặp riêng, lắng nghe nguyên nhân và hỗ trợ",blue:"Phân tích nguyên nhân hệ thống và cải tiến quy trình"},dim:"lead"},
+  {t:"Phong cách lãnh đạo bạn ngưỡng mộ nhất:",
+   opts:{red:"Lãnh đạo mạnh mẽ, dám quyết và chịu trách nhiệm",yellow:"Lãnh đạo truyền cảm hứng, tạo văn hóa tích cực",green:"Lãnh đạo phục vụ, đặt con người lên trên kết quả",blue:"Lãnh đạo chiến lược, xây dựng hệ thống bền vững"},dim:"lead"},
+  {t:"Khi đội nhóm gặp xung đột nội bộ, bạn:",
+   opts:{red:"Ra quyết định dứt khoát để giải quyết nhanh",yellow:"Tạo không khí nhẹ nhàng và tìm điểm chung",green:"Nghe cả hai bên và tìm giải pháp win-win",blue:"Phân tích khách quan và đề xuất giải pháp có cơ sở"},dim:"lead"},
+  {t:"Bạn đo lường hiệu quả lãnh đạo bằng:",
+   opts:{red:"KPIs và kết quả kinh doanh đạt được",yellow:"Mức độ hài lòng và gắn kết của nhóm",green:"Sự phát triển của từng cá nhân trong nhóm",blue:"Chất lượng quy trình và tính nhất quán"},dim:"lead"},
+  {t:"Khi cần thay đổi lớn trong tổ chức, bạn:",
+   opts:{red:"Công bố quyết định và triển khai nhanh chóng",yellow:"Tạo buzz, hype up mọi người về sự thay đổi",green:"Tham khảo ý kiến rộng rãi trước khi quyết định",blue:"Nghiên cứu kỹ, thí điểm nhỏ rồi mới mở rộng"},dim:"lead"},
+  {t:"Điều bạn ưu tiên nhất khi xây dựng đội nhóm:",
+   opts:{red:"Người có năng lực cao và tham vọng mạnh",yellow:"Người có tinh thần tích cực và hợp tác tốt",green:"Sự đa dạng và mỗi người đều được phát huy",blue:"Kỹ năng chuyên môn sâu và tính kỷ luật"},dim:"lead"},
+  {t:"Khi ra quyết định với tư cách lãnh đạo, bạn:",
+   opts:{red:"Quyết đoán nhanh và chịu trách nhiệm hoàn toàn",yellow:"Tạo sự đồng thuận bằng cách truyền cảm hứng",green:"Tham khảo nhiều bên và đảm bảo mọi người đồng ý",blue:"Cân nhắc kỹ lưỡng dựa trên dữ liệu và tiền lệ"},dim:"lead"},
+  // ── BATCH 5: Stress behavior (câu 41–48) ────────────────────────
+  {t:"Khi áp lực công việc tăng cao đột ngột, bạn:",
+   opts:{red:"Tăng tốc, kiểm soát chặt hơn và thúc đẩy mọi người",yellow:"Trở nên hời hợt và mất tập trung dễ hơn",green:"Im lặng chịu đựng và cố tránh xung đột",blue:"Thu mình lại, phân tích liên tục nhưng khó hành động"},dim:"stress"},
+  {t:"Dấu hiệu rõ nhất khi bạn đang bị stress:",
+   opts:{red:"Trở nên nóng nảy và mất kiên nhẫn với người khác",yellow:"Nói nhiều hơn, phân tán và khó tập trung",green:"Rút lui và trở nên im lặng bất thường",blue:"Quá cầu toàn, phân tích quá mức và không thể quyết"},dim:"stress"},
+  {t:"Khi bị quá tải với quá nhiều việc, bạn:",
+   opts:{red:"Cắt giảm những gì không thiết yếu và ép tiến độ",yellow:"Tìm người chia sẻ gánh nặng và vẫn cố lạc quan",green:"Cố gánh tất cả một mình để người khác không bị ảnh hưởng",blue:"Tạo danh sách ưu tiên rất chi tiết và hệ thống"},dim:"stress"},
+  {t:"Cách bạn phục hồi tốt nhất sau giai đoạn stress:",
+   opts:{red:"Tập thể thao mạnh hoặc làm gì đó quyết liệt, dứt khoát",yellow:"Gặp bạn bè, cười đùa và chia sẻ mọi thứ",green:"Nghỉ ngơi yên tĩnh cùng gia đình hoặc người thân",blue:"Có thời gian riêng để suy nghĩ và tái cấu trúc bản thân"},dim:"stress"},
+  {t:"Khi deadline cận kề và kết quả chưa như mong đợi:",
+   opts:{red:"Đẩy nhanh hơn, làm thêm giờ và yêu cầu mọi người tương tự",yellow:"Cố giữ tinh thần cả nhóm dù bản thân cũng đang lo lắng",green:"Lo lắng thầm nhưng vẫn hỗ trợ và không muốn ai biết",blue:"Làm một mình đến tối muộn để đảm bảo từng chi tiết"},dim:"stress"},
+  {t:"Khi nhận phản hồi tiêu cực về kết quả công việc:",
+   opts:{red:"Phản bác nếu không đồng ý và bảo vệ quyết định",yellow:"Giải thích và vẫn cố duy trì sự tự tin bên ngoài",green:"Nhận lỗi dù không hoàn toàn là lỗi của mình",blue:"Tự trách bản thân và phân tích sâu đến mức quá mức"},dim:"stress"},
+  {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",
+   opts:{red:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",yellow:"Coi đó là phiêu lưu thú vị và hứng khởi",green:"Lo lắng về tác động đến mọi người xung quanh",blue:"Cần thời gian để xử lý và tìm lại sự trật tự"},dim:"stress"},
+  {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",
+   opts:{red:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",yellow:"Môi trường tích cực, được công nhận và tương tác nhiều",green:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",blue:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},dim:"stress"}
 ];
 
 const COLOR_INFO = {
@@ -405,9 +467,29 @@ async function submitResults(){
   const dept=document.getElementById('iDept').value;
 
   const scores={red:0,yellow:0,green:0,blue:0};
-  Object.values(answers).forEach(c=>scores[c]++);
+  const ieScore={E:0,I:0}; // Extrovert vs Introvert
+  const leadScore={red:0,yellow:0,green:0,blue:0};
+  const stressScore={red:0,yellow:0,green:0,blue:0};
+
+  QS.forEach((q,i)=>{
+    const ans=answers[i];
+    if(!ans) return;
+    if(!q.dim){ scores[ans]++; }
+    else if(q.dim==='ie'){
+      // red/yellow = Extrovert, green/blue = Introvert
+      if(ans==='red'||ans==='yellow') ieScore.E++;
+      else ieScore.I++;
+    } else if(q.dim==='lead'){ leadScore[ans]++; }
+    else if(q.dim==='stress'){ stressScore[ans]++; }
+  });
+
   const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
   const primary=sorted[0][0], secondary=sorted[1][0];
+  const ieType=ieScore.E>=ieScore.I?'Extrovert':'Introvert';
+  const leadSorted=Object.entries(leadScore).sort((a,b)=>b[1]-a[1]);
+  const leadStyle=leadSorted[0][0];
+  const stressSorted=Object.entries(stressScore).sort((a,b)=>b[1]-a[1]);
+  const stressBehavior=stressSorted[0][0];
 
   const btn=document.getElementById('nextBtn');
   btn.disabled=true;
@@ -422,7 +504,12 @@ async function submitResults(){
     greenScore:  scores.green,
     blueScore:   scores.blue,
     primaryColor:   primary,
-    secondaryColor: secondary
+    secondaryColor: secondary,
+    ieType,
+    leadStyle,
+    stressBehavior,
+    ieScoreE: ieScore.E,
+    ieScoreI: ieScore.I
   };
 
   try{
@@ -435,14 +522,14 @@ async function submitResults(){
       body: JSON.stringify(payload)
     });
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    showSuccess(name, scores, primary, secondary);
+    showSuccess(name,scores,primary,secondary,null,ieType,leadStyle,stressBehavior,ieScore);
   } catch(err){
     console.error('Flow error:', err);
-    showSuccess(name, scores, primary, secondary, err.message);
+    showSuccess(name,scores,primary,secondary,err.message,ieType,leadStyle,stressBehavior,ieScore);
   }
 }
 
-function showSuccess(name, scores, primary, secondary, errMsg=null){
+function showSuccess(name, scores, primary, secondary, errMsg=null, ieType='', leadStyle='', stressBehavior='', ieScore={E:0,I:0}){
   const pi=COLOR_INFO[primary], si=COLOR_INFO[secondary];
   const pct=c=>Math.round(scores[c]/QS.length*100);
   document.getElementById('resultPreview').innerHTML=`
@@ -457,8 +544,42 @@ function showSuccess(name, scores, primary, secondary, errMsg=null){
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${pct(secondary)}%</div>
     </div>`;
 
+  // Show extended dimensions
+  const LEAD_LABELS={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Lãnh đạo Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
+  const STRESS_LABELS={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
+  const ieTotal = ieScore.E + ieScore.I || 1;
+  const extPct = Math.round(ieScore.E/ieTotal*100);
+  const intPct = 100-extPct;
+  const extDiv = document.getElementById('extDimensions');
+  if(extDiv && ieType){
+    extDiv.innerHTML = `
+      <div class="dim-card">
+        <div class="dim-title">🔋 Năng lượng xã hội</div>
+        <div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">
+          ${ieType==='Extrovert'?'🌟 Hướng ngoại (Extrovert)':'🌙 Hướng nội (Introvert)'}
+        </div>
+        <div class="dim-bar-wrap">
+          <span class="dim-bar-lbl">E</span>
+          <div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${extPct}%;background:var(--yellow)"></div></div>
+          <span class="dim-bar-lbl">${extPct}%</span>
+        </div>
+        <div class="dim-bar-wrap">
+          <span class="dim-bar-lbl">I</span>
+          <div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${intPct}%;background:var(--blue)"></div></div>
+          <span class="dim-bar-lbl">${intPct}%</span>
+        </div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-title">👑 Phong cách lãnh đạo</div>
+        <div class="dim-val" style="color:var(--${leadStyle})">${LEAD_LABELS[leadStyle]||'—'}</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-title">⚠️ Hành vi dưới áp lực</div>
+        <div class="dim-val" style="color:var(--${stressBehavior})">${STRESS_LABELS[stressBehavior]||'—'}</div>
+      </div>`;
+  }
   if(errMsg){
-    toast('⚠ Chưa kết nối SharePoint – kết quả hiển thị local',true);
+    toast('⚠ Chưa kết nối – kết quả hiển thị local',true);
   } else {
     toast('✅ Đã lưu kết quả thành công!');
   }

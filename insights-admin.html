@@ -379,6 +379,9 @@ async function loadData(){
       BlueScore:      item.BlueScore||item.blueScore||0,
       PrimaryColor:   item.PrimaryColor||item.primaryColor||item.primarycolor,
       SecondaryColor: item.SecondaryColor||item.secondaryColor||item.secondarycolor,
+      IEType:         item.IEType||item.ieType||item.ietype||'',
+      LeadStyle:      item.LeadStyle||item.leadStyle||item.leadstyle||'',
+      StressBehavior: item.StressBehavior||item.stressBehavior||item.stressbehavior||'',
       Created:        item.Created||item.created
     }));
     applyFilter();
@@ -653,7 +656,22 @@ async function exportPDF(){
         <div style="margin-top:14px;background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
           <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">🤝 CÁCH LÀM VIỆC HIỆU QUẢ</div>
           ${p.tips.map(t=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${t}</div>`).join('')}
-        </div>
+        </div><!-- Extended Dimensions -->
+        \${(item.IEType||item.LeadStyle||item.StressBehavior)?`
+        <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          \${item.IEType?\`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">🔋 NĂNG LƯỢNG</div>
+            <div style="font-size:13px;font-weight:600;color:\${item.IEType==='Extrovert'?'#F5A623':'#2B6CB0'}">\${item.IEType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}</div>
+          </div>\`:''}
+          \${item.LeadStyle?\`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">👑 LÃNH ĐẠO</div>
+            <div style="font-size:12px;font-weight:600;color:#e6edf3">\${{red:'🎯 Kết quả',yellow:'⚡ Cảm hứng',green:'🤝 Phục vụ',blue:'📊 Chiến lược'}[item.LeadStyle]||'—'}</div>
+          </div>\`:''}
+          \${item.StressBehavior?\`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">⚠️ STRESS</div>
+            <div style="font-size:12px;font-weight:600;color:#e6edf3">\${{red:'⚔️ Kiểm soát↑',yellow:'🌀 Phân tán',green:'🐢 Thu mình',blue:'🔍 Phân tích↑'}[item.StressBehavior]||'—'}</div>
+          </div>\`:''}
+        </div>\`:''}
 
         <!-- Footer -->
         <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">
