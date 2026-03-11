@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insights Discovery – Khảo Sát</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   SHAREPOINT CONFIG — Chỉnh sửa 2 dòng này
+═══════════════════════════════════════════════════ */
+</style>
+<script>
+const CONFIG = {
+  // Nếu để rỗng (""), sẽ tự detect từ SharePoint context
+  siteUrl: "",
+  listName: "InsightsResponses"
+};
+</script>
+<style>
+:root{
+  --red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
+  --red-s:rgba(232,57,42,.12);--yellow-s:rgba(245,166,35,.12);
+  --green-s:rgba(60,179,113,.12);--blue-s:rgba(43,108,176,.12);
+  --bg:#0D1117;--sur:#161B22;--sur2:#1C2333;--bdr:rgba(255,255,255,.08);
+  --txt:#E6EDF3;--muted:#8B949E;
+  --ff:'DM Sans',sans-serif;--fd:'Cormorant Garamond',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.15;animation:drift 12s ease-in-out infinite alternate}
+.orb-r{width:480px;height:480px;background:var(--red);top:-10%;left:-10%;animation-delay:0s}
+.orb-b{width:420px;height:420px;background:var(--blue);bottom:-5%;right:-5%;animation-delay:6s}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(25px,30px)}}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:40px 20px 80px}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:44px}
+.hdr .eye{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.hdr h1{font-family:var(--fd);font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.hdr p{color:var(--muted);font-size:14px;line-height:1.7}
+.wheel{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 20px;animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Progress */
+.prog-wrap{margin-bottom:28px}
+.prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.prog-bg{height:3px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green),var(--yellow),var(--red));transition:width .4s ease}
+
+/* Steps */
+.step{display:none;animation:fadeUp .35s ease both}
+.step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Card */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:18px;padding:28px;margin-bottom:18px}
+
+/* Form inputs */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.field input,.field select{background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:10px;padding:12px 14px;font-family:var(--ff);font-size:15px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.field input::placeholder{color:var(--muted)}
+.field select option{background:var(--sur2)}
+
+/* Question card */
+.qcard{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+.qcard.done{border-color:rgba(43,108,176,.4)}
+.qnum{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.qtxt{font-family:var(--fd);font-size:1.15rem;font-weight:400;margin-bottom:18px;line-height:1.5}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:540px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .2s}
+.opt:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
+.opt.sel-red{border-color:var(--red)!important;background:var(--red-s)!important}
+.opt.sel-yellow{border-color:var(--yellow)!important;background:var(--yellow-s)!important}
+.opt.sel-green{border-color:var(--green)!important;background:var(--green-s)!important}
+.opt.sel-blue{border-color:var(--blue)!important;background:var(--blue-s)!important}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-r{background:var(--red);box-shadow:0 0 7px var(--red)}
+.dot-y{background:var(--yellow);box-shadow:0 0 7px var(--yellow)}
+.dot-g{background:var(--green);box-shadow:0 0 7px var(--green)}
+.dot-b{background:var(--blue);box-shadow:0 0 7px var(--blue)}
+.opt-lbl{font-size:13px;line-height:1.55;color:var(--txt)}
+
+/* Buttons */
+.btn{display:block;width:100%;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;font-family:var(--ff);font-size:15px;font-weight:600;transition:all .2s;margin-top:10px}
+.btn-pri{background:linear-gradient(135deg,#2563EB,#1E40AF);color:#fff;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+.btn-pri:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,99,235,.45)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-sec{background:var(--sur2);color:var(--muted);border:1px solid var(--bdr)!important;margin-top:10px}
+.btn-sec:hover{color:var(--txt);border-color:rgba(255,255,255,.2)!important}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{margin-top:0}
+
+/* Batch info */
+.batch-info{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 6px}
+
+/* Intro color grid */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 24px}
+@media(max-width:500px){.cg{grid-template-columns:1fr}}
+.ci{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:12px;border:1px solid var(--bdr);background:var(--sur2)}
+.ci-bar{width:4px;border-radius:99px;flex-shrink:0;align-self:stretch}
+.ci h3{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.ci p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* Success screen */
+.success{text-align:center;padding:40px 20px}
+.success .big-wheel{width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 24px}
+.success h2{font-family:var(--fd);font-size:2rem;font-weight:300;margin-bottom:12px}
+.success p{color:var(--muted);font-size:14px;line-height:1.7;max-width:400px;margin:0 auto 24px}
+.result-preview{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;margin:0 auto 24px;text-align:left}
+@media(max-width:480px){.result-preview{grid-template-columns:1fr}}
+.rp-box{padding:14px;border-radius:12px;background:var(--sur2);border:1px solid var(--bdr)}
+.rp-box .label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.rp-box .val{font-size:16px;font-weight:600}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-r"></div>
+  <div class="orb orb-b"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="wheel"></div>
+    <div class="eye">DHI CO LTD · Khảo Sát Nhân Viên</div>
+    <h1>Insights Discovery<br><em>Khám Phá Bản Thân</em></h1>
+    <p>Bộ câu hỏi 24 mục giúp xác định phong cách làm việc và giao tiếp của bạn.</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap" id="progWrap" style="display:none">
+    <div class="prog-lbl">
+      <span id="progLbl">0 / 24 câu</span>
+      <span id="progPct">0%</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- ══ STEP 0: INTRO ══ -->
+  <div class="step active" id="s0">
+    <div class="card">
+      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
+      <div class="cg">
+        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">🔴 Fiery Red</h3><p>Quyết đoán, tập trung kết quả</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">🟡 Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">🟢 Earth Green</h3><p>Đồng cảm, ổn định, gắn kết</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">🔵 Cool Blue</h3><p>Phân tích, cẩn thận, chính xác</p></div></div>
+      </div>
+
+      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Thông Tin Của Bạn</p>
+      <div class="field"><label>Họ và tên *</label><input id="iName" placeholder="Nguyễn Văn A"/></div>
+      <div class="field"><label>Chức danh *</label><input id="iRole" placeholder="Project Engineer, Sales Manager…"/></div>
+      <div class="field">
+        <label>Phòng ban</label>
+        <select id="iDept">
+          <option value="">-- Chọn phòng ban --</option>
+          <option>Kỹ Thuật</option>
+          <option>Kinh Doanh & Sales</option>
+          <option>Dự Án & PMO</option>
+          <option>Tài Chính & Kế Toán</option>
+          <option>Nhân Sự</option>
+          <option>Mua Hàng</option>
+          <option>Vận Hành</option>
+          <option>Marketing</option>
+          <option>Ban Giám Đốc</option>
+          <option>Khác</option>
+        </select>
+      </div>
+
+      <button class="btn btn-pri" onclick="startQuiz()">Bắt đầu khảo sát — 24 câu hỏi →</button>
+      <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏱ Khoảng 8–10 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1: QUESTIONS ══ -->
+  <div class="step" id="s1">
+    <div id="qContainer"></div>
+    <div class="batch-info" id="batchInfo"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" style="flex:0 0 auto;padding:14px 20px" onclick="prevBatch()">← Quay lại</button>
+      <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()" style="flex:1">Tiếp theo →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: SUCCESS ══ -->
+  <div class="step" id="s2">
+    <div class="card">
+      <div class="success">
+        <div class="big-wheel"></div>
+        <h2>Khảo sát hoàn thành!</h2>
+        <p>Cảm ơn bạn đã hoàn thành bộ câu hỏi Insights Discovery.<br>Kết quả đã được ghi nhận và Admin sẽ xử lý profile của bạn.</p>
+        <div class="result-preview" id="resultPreview"></div>
+        <div style="background:var(--sur2);border-radius:12px;padding:16px;border:1px solid var(--bdr);text-align:left;max-width:400px;margin:0 auto">
+          <p style="font-size:12px;color:var(--muted);line-height:1.7">
+            📬 Kết quả của bạn đã được lưu vào hệ thống.<br>
+            Admin sẽ phân tích và chia sẻ báo cáo chi tiết với bạn.
+          </p>
+        </div>
+        <button class="btn btn-sec" onclick="resetForm()" style="max-width:300px;margin:20px auto 0">Điền lại từ đầu</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+// QUESTIONS DATA
+// ════════════════════════════════════════
+const QS = [
+  {t:"Khi đối mặt với một thách thức mới, bạn thường:",
+   opts:{red:"Lập tức xác định mục tiêu và bắt tay hành động",yellow:"Chia sẻ với người khác và tìm kiếm ý tưởng mới",green:"Cân nhắc kỹ và đảm bảo mọi người cùng sẵn sàng",blue:"Thu thập đầy đủ thông tin trước khi quyết định"}},
+  {t:"Trong cuộc họp nhóm, bạn thường đóng vai trò:",
+   opts:{red:"Người định hướng và thúc đẩy đi đến kết luận nhanh",yellow:"Người tạo năng lượng và đề xuất ý tưởng sáng tạo",green:"Người lắng nghe và đảm bảo mọi tiếng nói được nghe",blue:"Người phân tích dữ liệu và đặt câu hỏi chính xác"}},
+  {t:"Điều bạn đánh giá cao nhất ở một đồng nghiệp là:",
+   opts:{red:"Hiệu quả làm việc và khả năng ra quyết định nhanh",yellow:"Sự nhiệt tình và khả năng truyền cảm hứng cho đội nhóm",green:"Sự chân thành và tinh thần hỗ trợ lẫn nhau",blue:"Sự cẩn thận và cam kết với chất lượng công việc"}},
+  {t:"Khi có áp lực cao, bạn thường:",
+   opts:{red:"Tập trung toàn lực vào việc giải quyết vấn đề trực tiếp",yellow:"Giữ tinh thần lạc quan và truyền động lực cho người khác",green:"Tìm sự đồng thuận và giảm căng thẳng trong nhóm",blue:"Xem xét lại dữ liệu và tìm giải pháp có cơ sở"}},
+  {t:"Khi bắt đầu một dự án mới, bạn ưu tiên:",
+   opts:{red:"Xác định kết quả cần đạt và timeline rõ ràng",yellow:"Xây dựng nhóm nhiệt huyết và định hình tầm nhìn",green:"Đảm bảo mọi người hiểu vai trò và cảm thấy thoải mái",blue:"Lập kế hoạch chi tiết và phân tích rủi ro"}},
+  {t:"Phong cách giao tiếp của bạn thường là:",
+   opts:{red:"Thẳng thắn, súc tích và định hướng kết quả",yellow:"Sôi nổi, biểu cảm và lôi cuốn",green:"Ấm áp, chân thành và lắng nghe chủ động",blue:"Chính xác, có cấu trúc và dựa trên bằng chứng"}},
+  {t:"Bạn cảm thấy mình tạo ra giá trị nhất khi:",
+   opts:{red:"Dẫn dắt đội nhóm vượt qua khó khăn và đạt mục tiêu",yellow:"Khơi dậy sáng tạo và tạo ra những điều mới mẻ",green:"Xây dựng môi trường làm việc gắn kết và tin tưởng",blue:"Đảm bảo chất lượng và độ chính xác của công việc"}},
+  {t:"Khi ra quyết định quan trọng, bạn dựa chủ yếu vào:",
+   opts:{red:"Trực giác và kinh nghiệm thực tế đã có",yellow:"Cảm hứng và tiềm năng tương lai của phương án",green:"Tác động đến con người và sự đồng thuận của nhóm",blue:"Phân tích dữ liệu và so sánh các phương án"}},
+  {t:"Điều bạn không thích nhất trong công việc là:",
+   opts:{red:"Trì hoãn, quá nhiều quy trình không cần thiết",yellow:"Môi trường cứng nhắc, thiếu sáng tạo",green:"Xung đột và thiếu sự hòa hợp trong nhóm",blue:"Làm việc thiếu cẩn thận, bỏ qua chi tiết quan trọng"}},
+  {t:"Bạn muốn được công nhận vì:",
+   opts:{red:"Đạt được kết quả vượt trội và hiệu quả cao",yellow:"Truyền cảm hứng và tạo ra sự thay đổi tích cực",green:"Xây dựng mối quan hệ bền vững và hỗ trợ đội nhóm",blue:"Đóng góp chuyên môn và đảm bảo chất lượng"}},
+  {t:"Khi nhận phản hồi về công việc, bạn mong muốn:",
+   opts:{red:"Phản hồi thẳng thắn, ngắn gọn về kết quả",yellow:"Phản hồi nhiệt tình, nhấn mạnh tiềm năng phát triển",green:"Phản hồi chân thành, tôn trọng cảm xúc của bạn",blue:"Phản hồi chi tiết, cụ thể với ví dụ minh họa"}},
+  {t:"Trong nhóm làm việc, bạn thường:",
+   opts:{red:"Dẫn dắt và thúc đẩy nhóm đạt mục tiêu",yellow:"Tạo không khí vui vẻ và gắn kết mọi người",green:"Hỗ trợ người khác và đảm bảo sự hòa thuận",blue:"Đảm bảo quy trình đúng và kết quả chính xác"}},
+  {t:"Bạn học tốt nhất khi:",
+   opts:{red:"Thực hành trực tiếp và đối mặt với thách thức thực tế",yellow:"Thảo luận, trao đổi và khám phá ý tưởng mới",green:"Học trong môi trường an toàn, được hỗ trợ",blue:"Nghiên cứu tài liệu kỹ lưỡng và có phương pháp"}},
+  {t:"Khi có xung đột trong nhóm, bạn thường:",
+   opts:{red:"Đối mặt trực tiếp và giải quyết ngay lập tức",yellow:"Dùng sự hài hước và tích cực để xoa dịu căng thẳng",green:"Tìm hiểu cảm xúc của mọi người và hòa giải",blue:"Phân tích nguyên nhân và đề xuất giải pháp logic"}},
+  {t:"Môi trường làm việc lý tưởng của bạn là:",
+   opts:{red:"Năng động, cạnh tranh lành mạnh và kết quả rõ ràng",yellow:"Sáng tạo, linh hoạt và đầy ắp năng lượng tích cực",green:"Hòa thuận, tin tưởng và coi trọng từng cá nhân",blue:"Có cấu trúc, chuẩn mực rõ ràng và tập trung chuyên môn"}},
+  {t:"Khi lập kế hoạch, bạn thường:",
+   opts:{red:"Tập trung vào các bước hành động chính, bỏ qua tiểu tiết",yellow:"Phác thảo tầm nhìn lớn rồi để nhóm bổ sung chi tiết",green:"Đảm bảo kế hoạch phù hợp với tất cả mọi người",blue:"Lập kế hoạch chi tiết từng bước với các điểm kiểm tra"}},
+  {t:"Điều quan trọng nhất với bạn trong công việc là:",
+   opts:{red:"Đạt được mục tiêu và tạo ra tác động thực sự",yellow:"Được sáng tạo và làm việc trong môi trường đổi mới",green:"Có mối quan hệ tốt đẹp và đồng nghiệp tin tưởng",blue:"Làm việc chất lượng cao và có thể tự hào về kết quả"}},
+  {t:"Khi trình bày ý tưởng, bạn thường:",
+   opts:{red:"Đi thẳng vào trọng tâm với kết quả kỳ vọng rõ ràng",yellow:"Dùng câu chuyện, hình ảnh và sự nhiệt huyết để thuyết phục",green:"Nhấn mạnh lợi ích cho con người và sự đồng thuận",blue:"Trình bày dữ liệu, bằng chứng và phân tích rủi ro"}},
+  {t:"Bạn cảm thấy căng thẳng nhất khi:",
+   opts:{red:"Thiếu quyền kiểm soát hoặc bị cản trở không rõ lý do",yellow:"Bị bó buộc trong môi trường đơn điệu, không có sự đổi mới",green:"Phải đối mặt với xung đột kéo dài hoặc bị áp lực",blue:"Phải ra quyết định quan trọng mà không có đủ thông tin"}},
+  {t:"Bạn định nghĩa thành công trong công việc là:",
+   opts:{red:"Đạt và vượt các KPI, tạo ra tác động đo lường được",yellow:"Truyền cảm hứng và tạo ra thay đổi tích cực cho tổ chức",green:"Đội nhóm gắn kết, mọi người phát triển và hạnh phúc",blue:"Công việc hoàn thành đúng chuẩn, không có sai sót"}},
+  {t:"Bạn xử lý thay đổi như thế nào?",
+   opts:{red:"Nắm bắt cơ hội trong thay đổi và dẫn dắt quá trình",yellow:"Hứng khởi với những điều mới và truyền sự tích cực",green:"Cần thời gian để thích nghi, nhưng sẽ ủng hộ khi sẵn sàng",blue:"Phân tích tác động và lập kế hoạch chuyển đổi cẩn thận"}},
+  {t:"Điều khiến bạn cảm thấy được tôn trọng nhất là:",
+   opts:{red:"Được trao quyền tự chủ và trách nhiệm rõ ràng",yellow:"Được lắng nghe ý tưởng và khuyến khích sáng tạo",green:"Được nhìn nhận như một cá nhân, không chỉ là nhân viên",blue:"Được công nhận về chuyên môn và đóng góp chất lượng"}},
+  {t:"Khi dự án gặp khó khăn, phản ứng tự nhiên của bạn là:",
+   opts:{red:"Xác định vấn đề cốt lõi và đưa ra quyết định ngay",yellow:"Giữ tinh thần lạc quan và tìm cách sáng tạo thoát khỏi khó khăn",green:"Tập hợp nhóm, lắng nghe và tìm giải pháp chung",blue:"Xem xét dữ liệu, xác định nguyên nhân gốc rễ một cách có hệ thống"}},
+  {t:"Bạn muốn được lãnh đạo theo cách:",
+   opts:{red:"Trao mục tiêu rõ ràng rồi để bạn tự quyết định cách đạt được",yellow:"Chia sẻ tầm nhìn truyền cảm hứng và tin tưởng vào bạn",green:"Thể hiện sự quan tâm thực sự và hỗ trợ khi cần thiết",blue:"Cung cấp đầy đủ thông tin, tiêu chí rõ ràng và phản hồi chi tiết"}}
+];
+
+const COLOR_INFO = {
+  red:    {label:'Fiery Red',    emoji:'🔴', color:'#E8392A'},
+  yellow: {label:'Sunshine Yellow', emoji:'🟡', color:'#F5A623'},
+  green:  {label:'Earth Green', emoji:'🟢', color:'#3CB371'},
+  blue:   {label:'Cool Blue',   emoji:'🔵', color:'#2B6CB0'}
+};
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let answers = {}, currentBatch = 0;
+const BATCH = 4;
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+function show(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toast(msg, isErr=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=isErr?'#7f1d1d':'#1e293b';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function getSiteUrl(){
+  if(CONFIG.siteUrl) return CONFIG.siteUrl.replace(/\/$/,'');
+  try{ return window._spPageContextInfo?.webAbsoluteUrl?.replace(/\/$/,'') || window.location.origin; }
+  catch(e){ return window.location.origin; }
+}
+
+// ════════════════════════════════════════
+// QUIZ LOGIC
+// ════════════════════════════════════════
+function startQuiz(){
+  const name=document.getElementById('iName').value.trim();
+  const role=document.getElementById('iRole').value.trim();
+  if(!name) return toast('Vui lòng nhập họ tên',true);
+  if(!role) return toast('Vui lòng nhập chức danh',true);
+  document.getElementById('progWrap').style.display='block';
+  currentBatch=0; answers={};
+  renderBatch();
+  show(1);
+}
+
+function renderBatch(){
+  const start=currentBatch*BATCH, end=Math.min(start+BATCH,QS.length);
+  const c=document.getElementById('qContainer'); c.innerHTML='';
+  for(let i=start;i<end;i++){
+    const q=QS[i];
+    const div=document.createElement('div');
+    div.className='qcard'+(answers[i]?' done':'');
+    div.id='qc'+i;
+    const order=shuffleOpts(['red','yellow','green','blue'],i);
+    let optsHtml='';
+    order.forEach(clr=>{
+      const sel=answers[i]===clr?`sel-${clr}`:'';
+      optsHtml+=`<button class="opt ${sel}" onclick="pick(${i},'${clr}',this)">
+        <span class="dot dot-${clr[0]}"></span>
+        <span class="opt-lbl">${q.opts[clr]}</span>
+      </button>`;
+    });
+    div.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div>
+      <div class="qtxt">${q.t}</div>
+      <div class="opts">${optsHtml}</div>`;
+    c.appendChild(div);
+  }
+  updateProg();
+  const isLast=end>=QS.length;
+  document.getElementById('nextBtn').textContent=isLast?'Nộp kết quả ✓':'Tiếp theo →';
+  document.getElementById('batchInfo').textContent=`Nhóm câu hỏi ${currentBatch+1} / ${Math.ceil(QS.length/BATCH)}`;
+}
+
+function shuffleOpts(arr, seed){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function pick(idx,clr,btn){
+  answers[idx]=clr;
+  const card=document.getElementById('qc'+idx);
+  card.classList.add('done');
+  card.querySelectorAll('.opt').forEach(b=>{b.className='opt'});
+  btn.classList.add('sel-'+clr);
+  updateProg();
+}
+
+function updateProg(){
+  const done=Object.keys(answers).length, total=QS.length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=`${done} / ${total} câu`;
+  document.getElementById('progPct').textContent=pct+'%';
+}
+
+function prevBatch(){
+  if(currentBatch===0){show(0);return;}
+  currentBatch--; renderBatch();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function nextBatch(){
+  const start=currentBatch*BATCH, end=Math.min(start+BATCH,QS.length);
+  for(let i=start;i<end;i++){
+    if(answers[i]===undefined){
+      toast(`Vui lòng trả lời câu ${i+1}`,true);
+      document.getElementById('qc'+i).scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+  }
+  if(end>=QS.length){ await submitResults(); return; }
+  currentBatch++; renderBatch();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════
+// SUBMIT TO SHAREPOINT
+// ════════════════════════════════════════
+async function submitResults(){
+  const name=document.getElementById('iName').value.trim();
+  const role=document.getElementById('iRole').value.trim();
+  const dept=document.getElementById('iDept').value;
+
+  const scores={red:0,yellow:0,green:0,blue:0};
+  Object.values(answers).forEach(c=>scores[c]++);
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const primary=sorted[0][0], secondary=sorted[1][0];
+
+  const btn=document.getElementById('nextBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Đang lưu…';
+
+  const siteUrl=getSiteUrl();
+
+  try{
+    // 1. Get Request Digest
+    const digestRes=await fetch(`${siteUrl}/_api/contextinfo`,{
+      method:'POST',
+      headers:{Accept:'application/json;odata=verbose','Content-Type':'application/json;odata=verbose'}
+    });
+
+    let digest='';
+    if(digestRes.ok){
+      const dj=await digestRes.json();
+      digest=dj.d?.GetContextWebInformation?.FormDigestValue||'';
+    }
+
+    // 2. Submit list item
+    const listTypeName=CONFIG.listName.replace(/[^a-zA-Z0-9]/g,'_');
+    const payload={
+      __metadata:{type:`SP.Data.${listTypeName}ListItem`},
+      Title: name,
+      EmployeeRole: role,
+      Department: dept,
+      Answers: JSON.stringify(answers),
+      RedScore: scores.red,
+      YellowScore: scores.yellow,
+      GreenScore: scores.green,
+      BlueScore: scores.blue,
+      PrimaryColor: primary,
+      SecondaryColor: secondary,
+      TotalQuestions: QS.length
+    };
+
+    const res=await fetch(`${siteUrl}/_api/web/lists/getbytitle('${CONFIG.listName}')/items`,{
+      method:'POST',
+      headers:{
+        'Accept':'application/json;odata=verbose',
+        'Content-Type':'application/json;odata=verbose',
+        'X-RequestDigest': digest
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err?.error?.message?.value || `HTTP ${res.status}`);
+    }
+
+    showSuccess(name, scores, primary, secondary);
+
+  } catch(err){
+    // Fallback: show result anyway, note the save issue
+    console.error('SharePoint save error:', err);
+    showSuccess(name, scores, primary, secondary, err.message);
+  }
+}
+
+function showSuccess(name, scores, primary, secondary, errMsg=null){
+  const pi=COLOR_INFO[primary], si=COLOR_INFO[secondary];
+  const pct=c=>Math.round(scores[c]/QS.length*100);
+  document.getElementById('resultPreview').innerHTML=`
+    <div class="rp-box">
+      <div class="label">Màu Chính</div>
+      <div class="val" style="color:${pi.color}">${pi.emoji} ${pi.label}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${pct(primary)}%</div>
+    </div>
+    <div class="rp-box">
+      <div class="label">Màu Phụ</div>
+      <div class="val" style="color:${si.color}">${si.emoji} ${si.label}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${pct(secondary)}%</div>
+    </div>`;
+
+  if(errMsg){
+    toast('⚠ Chưa kết nối SharePoint – kết quả hiển thị local',true);
+  } else {
+    toast('✅ Đã lưu kết quả thành công!');
+  }
+  show(2);
+}
+
+function resetForm(){
+  answers={}; currentBatch=0;
+  ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iDept').value='';
+  document.getElementById('progFill').style.width='0%';
+  document.getElementById('progWrap').style.display='none';
+  show(0);
+}
+</script>
+</body>
+</html>
