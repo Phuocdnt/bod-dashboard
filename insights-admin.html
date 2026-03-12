@@ -1,23 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Admin Dashboard</title>
+<title>Insights Discovery – Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<style>
-/* ═══════════════════════════════════════
-   SHAREPOINT CONFIG
-═══════════════════════════════════════ */
-</style>
 <script>
 const CONFIG = {
-  // ⚠️ Dán URL từ Power Automate Flow (Write) vào đây
   flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-  // ⚠️ Dán URL từ Power Automate Flow (Read) vào đây
   flowReadUrl:  "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8"
 };
 </script>
@@ -32,193 +25,139 @@ const CONFIG = {
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
-
-/* ── Top bar ── */
-.topbar{
-  height:52px;background:var(--sur);border-bottom:1px solid var(--bdr);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;position:sticky;top:0;z-index:100;flex-shrink:0;
-}
-.topbar-logo{display:flex;align-items:center;gap:10px}
-.topbar-logo .wheel-sm{width:24px;height:24px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);animation:spin 20s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.topbar-logo span{font-weight:600;font-size:14px}
-.topbar-logo em{font-style:normal;color:var(--muted);font-weight:400;font-size:13px}
-.topbar-right{display:flex;align-items:center;gap:10px}
+/* Topbar */
+.topbar{height:52px;background:var(--sur);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:10px}
+.tb-wheel{width:24px;height:24px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);animation:spin 20s linear infinite;flex-shrink:0}
+.tb-logo span{font-weight:600;font-size:14px}
+.tb-logo em{font-style:normal;color:var(--muted);font-weight:400;font-size:13px}
 .tag-admin{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(37,99,235,.2);color:#60a5fa;padding:3px 10px;border-radius:99px;border:1px solid rgba(37,99,235,.3)}
-
-/* ── Main layout ── */
-.main{display:flex;flex:1;overflow:hidden}
-
-/* ── Sidebar ── */
-.sidebar{
-  width:var(--sidebar);flex-shrink:0;
-  background:var(--sur);border-right:1px solid var(--bdr);
-  padding:20px 0;overflow-y:auto;
-  display:flex;flex-direction:column;gap:0;
-}
-.sb-section{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
-.sb-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:12px 16px 8px;display:block}
+/* Layout */
+.main-layout{display:flex;flex:1;overflow:hidden}
+/* Sidebar */
+.sidebar{width:var(--sidebar);flex-shrink:0;background:var(--sur);border-right:1px solid var(--bdr);padding:20px 0;overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.sb-sec{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
+.sb-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:12px 16px 8px;display:block}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat-box{background:var(--sur2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--bdr)}
-.stat-box .sval{font-size:1.4rem;font-weight:700;line-height:1}
-.stat-box .slbl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
-.color-dist{display:flex;flex-direction:column;gap:6px;padding:0 16px}
+.stat-box .sv{font-size:1.4rem;font-weight:700;line-height:1}
+.stat-box .sl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.color-dist{display:flex;flex-direction:column;gap:6px;padding:0 16px 0}
 .cd-row{display:flex;align-items:center;gap:8px}
-.cd-bar-bg{flex:1;height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
-.cd-bar-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.cd-bg{flex:1;height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.cd-fill{height:100%;border-radius:99px;transition:width .8s ease}
 .cd-val{font-size:11px;color:var(--muted);min-width:28px;text-align:right}
-
-/* ── Filter ── */
 .filter-wrap{padding:8px 16px}
-.filter-wrap input,.filter-wrap select{
-  width:100%;background:var(--sur2);border:1px solid var(--bdr);
-  color:var(--txt);border-radius:8px;padding:8px 10px;
-  font-family:var(--ff);font-size:13px;outline:none;margin-bottom:6px;
-}
+.filter-wrap input,.filter-wrap select{width:100%;background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-family:var(--ff);font-size:13px;outline:none;margin-bottom:6px}
 .filter-wrap input:focus,.filter-wrap select:focus{border-color:var(--blue)}
 .filter-wrap input::placeholder{color:var(--muted)}
 .filter-wrap select option{background:var(--sur2)}
-
-/* ── Content ── */
+@media(max-width:720px){.sidebar{display:none}}
+/* Content */
 .content{flex:1;overflow-y:auto;padding:24px}
-
-/* ── Table ── */
-.table-wrap{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
-.table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bdr)}
-.table-header h2{font-size:15px;font-weight:600}
+/* Table */
+.tbl-wrap{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
+.tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bdr)}
+.tbl-hdr h2{font-size:15px;font-weight:600}
 .btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:12px;transition:all .2s}
 .btn-refresh:hover{color:var(--txt);border-color:var(--bdr2)}
-.tbl{width:100%;border-collapse:collapse}
-.tbl th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);background:var(--sur2);border-bottom:1px solid var(--bdr)}
-.tbl td{padding:12px 16px;border-bottom:1px solid var(--bdr);font-size:13.5px;vertical-align:middle}
-.tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
-.color-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
-.score-bar-wrap{display:flex;align-items:center;gap:6px}
+table.tbl{width:100%;border-collapse:collapse}
+table.tbl th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);background:var(--sur2);border-bottom:1px solid var(--bdr)}
+table.tbl td{padding:12px 16px;border-bottom:1px solid var(--bdr);font-size:13.5px;vertical-align:middle}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .score-mini{display:flex;gap:3px}
 .score-seg{height:4px;width:18px;border-radius:99px}
 .name-cell{display:flex;flex-direction:column}
 .name-cell .nm{font-weight:600}
 .name-cell .rl{font-size:11px;color:var(--muted)}
-
-/* ── Empty / loading ── */
+/* Empty/loading */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty .big{font-size:2.5rem;margin-bottom:12px}
-.empty p{font-size:14px;line-height:1.7}
 .spinner-row{display:flex;justify-content:center;padding:48px}
 .spinner{width:32px;height:32px;border:3px solid var(--bdr2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
-
-/* ── Modal ── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;
-  display:flex;align-items:flex-start;justify-content:center;
-  padding:24px 16px;overflow-y:auto;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
+.spin-sm{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{
-  background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;
-  width:100%;max-width:680px;overflow:hidden;
-  transform:translateY(20px);transition:transform .25s;flex-shrink:0;
-  margin:auto;
-}
+.modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;width:100%;max-width:700px;overflow:hidden;transform:translateY(20px);transition:transform .25s;flex-shrink:0;margin:auto}
 .modal-overlay.open .modal{transform:translateY(0)}
-.modal-hero{padding:32px 28px 24px;background:linear-gradient(135deg,#0d1117,#1c2333)}
-.modal-hero .mbadge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
-.modal-hero h2{font-family:var(--fd);font-size:1.9rem;font-weight:300;margin-bottom:4px}
-.modal-hero .msub{color:var(--muted);font-size:13px}
-.modal-body{padding:24px 28px}
-.modal-close{position:absolute;top:16px;right:16px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.modal-close:hover{color:var(--txt);border-color:var(--bdr2)}
-.modal-hero{position:relative}
-
-/* Modal sections */
-.m-section{margin-bottom:24px}
+.modal-hero{padding:28px 28px 20px;position:relative}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{color:var(--txt)}
+.m-badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
+.m-name{font-family:var(--fd);font-size:1.9rem;font-weight:300;margin-bottom:4px}
+.m-sub{color:var(--muted);font-size:13px}
+.modal-tabs{display:flex;gap:2px;padding:0 28px;border-bottom:1px solid var(--bdr);background:var(--sur2)}
+.m-tab{padding:9px 14px;border:none;background:none;color:var(--muted);font-family:var(--ff);font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.m-tab.active{color:var(--txt);border-bottom-color:var(--yellow)}
+.m-pane{display:none;padding:20px 28px}
+.m-pane.active{display:block}
 .m-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .m-label::after{content:'';flex:1;height:1px;background:var(--bdr)}
-.energy-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:480px){.energy-row{grid-template-columns:1fr}}
+.energy-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .e-box{background:var(--sur2);border-radius:10px;padding:14px;border:1px solid var(--bdr)}
-.e-box .e-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.e-box .e-name{font-size:12px;font-weight:600}
-.e-box .e-score{font-size:12px;color:var(--muted)}
-.e-bar{height:5px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.e-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e-name{font-size:12px;font-weight:600}
+.e-score{font-size:12px;color:var(--muted)}
+.e-bar-bg{height:5px;background:var(--bdr);border-radius:99px;overflow:hidden}
 .e-bar-fill{height:100%;border-radius:99px;transition:width 1s ease .2s}
-.profile-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:480px){.profile-2col{grid-template-columns:1fr}}
+.p2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .p-box{background:var(--sur2);border-radius:10px;padding:14px;border:1px solid var(--bdr)}
 .p-box h4{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px}
 .p-box ul{list-style:none;display:flex;flex-direction:column;gap:6px}
 .p-box li{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.8);display:flex;gap:6px}
 .p-box li::before{content:'·';flex-shrink:0;color:var(--muted)}
-.modal-footer{padding:16px 28px;border-top:1px solid var(--bdr);display:flex;gap:10px;flex-wrap:wrap}
-.btn-pdf{flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:10px;background:linear-gradient(135deg,#E8392A,#c0291c);color:#fff;border:none;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;transition:all .2s;box-shadow:0 3px 16px rgba(232,57,42,.3)}
-.btn-pdf:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(232,57,42,.4)}
-.btn-close2{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:10px;background:var(--sur2);color:var(--muted);border:1px solid var(--bdr);cursor:pointer;font-family:var(--ff);font-size:13px;transition:all .2s}
-.btn-close2:hover{color:var(--txt);border-color:var(--bdr2)}
-
-/* ── Setup guide ── */
-.setup-card{background:var(--sur);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:24px;margin-bottom:20px}
-.setup-card h3{color:var(--yellow);font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.setup-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px}
-.setup-card code{background:var(--sur2);border:1px solid var(--bdr);padding:2px 6px;border-radius:5px;font-size:12px;color:#7dd3fc}
-.setup-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin:8px 0}
-.setup-card li{font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5}
-.setup-card li::before{content:'✓';color:var(--green);flex-shrink:0}
-.dismiss-btn{margin-top:12px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;font-family:var(--ff)}
-.dismiss-btn:hover{color:var(--txt)}
-
-/* ── Toast ── */
+.p-prose{font-size:13.5px;line-height:1.8;color:rgba(232,237,243,.85)}
+.p-prose p{margin-bottom:10px}
+.ai-narrative-block{background:rgba(245,166,35,.05);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:16px;margin-bottom:14px}
+.ai-narrative-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:12px}
+.ai-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.ai-list li{font-size:12.5px;line-height:1.5;color:rgba(232,237,243,.8);display:flex;gap:7px;padding:7px 10px;background:var(--sur);border-radius:8px;border:1px solid var(--bdr)}
+.ai-list li::before{content:'↗';color:var(--yellow);flex-shrink:0;font-size:11px}
+.dims3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.dim-card{background:var(--sur2);border-radius:10px;padding:14px;border:1px solid var(--bdr)}
+.dim-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px}
+.dim-val{font-size:13px;font-weight:600}
+.modal-footer{padding:14px 28px;border-top:1px solid var(--bdr);display:flex;gap:10px;flex-wrap:wrap}
+.btn-pdf{flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:10px;background:linear-gradient(135deg,#E8392A,#c0291c);color:#fff;border:none;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;transition:all .2s;box-shadow:0 3px 16px rgba(232,57,42,.3)}
+.btn-pdf:hover{transform:translateY(-1px)}
+.btn-close2{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:10px;background:var(--sur2);color:var(--muted);border:1px solid var(--bdr);cursor:pointer;font-family:var(--ff);font-size:13px;transition:all .2s}
+.btn-close2:hover{color:var(--txt)}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap;border:1px solid var(--bdr2)}
 #toast.show{transform:translateX(-50%) translateY(0)}
-
-/* ── Responsive ── */
-@media(max-width:720px){
-  .sidebar{display:none}
-  .content{padding:16px}
-}
+@media(max-width:480px){.energy-row,.p2col,.dims3{grid-template-columns:1fr}.ai-list{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<!-- TOP BAR -->
 <div class="topbar">
-  <div class="topbar-logo">
-    <div class="wheel-sm"></div>
-    <span>Insights Discovery&nbsp;<em>Admin</em></span>
+  <div class="tb-logo">
+    <div class="tb-wheel"></div>
+    <span>Insights Discovery &nbsp;<em>Admin</em></span>
   </div>
-  <div class="topbar-right">
-    <span class="tag-admin">Admin Only</span>
-  </div>
+  <span class="tag-admin">Admin Only</span>
 </div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <span class="sb-label">Tổng Quan</span>
-    <div class="sb-section">
-      <div class="stat-grid" id="statsGrid">
-        <div class="stat-box"><div class="sval" id="statTotal">–</div><div class="slbl">Phản hồi</div></div>
-        <div class="stat-box"><div class="sval" id="statDepts">–</div><div class="slbl">Phòng ban</div></div>
-        <div class="stat-box"><div class="sval" id="statPrimary">–</div><div class="slbl">Màu chính</div></div>
-        <div class="stat-box"><div class="sval" id="statAvgRed">–</div><div class="slbl">Avg Red</div></div>
+<div class="main-layout">
+  <aside class="sidebar">
+    <span class="sb-lbl">Tổng Quan</span>
+    <div class="sb-sec">
+      <div class="stat-grid">
+        <div class="stat-box"><div class="sv" id="statTotal">–</div><div class="sl">Phản hồi</div></div>
+        <div class="stat-box"><div class="sv" id="statDepts">–</div><div class="sl">Phòng ban</div></div>
+        <div class="stat-box"><div class="sv" id="statTop">–</div><div class="sl">Màu chủ đạo</div></div>
+        <div class="stat-box"><div class="sv" id="statAvgDays">–</div><div class="sl">Avg/ngày</div></div>
       </div>
     </div>
-
-    <span class="sb-label">Phân Bổ Màu</span>
+    <span class="sb-lbl">Phân Bổ Màu</span>
     <div class="color-dist" id="colorDist" style="padding:0 16px 16px">
       <div style="text-align:center;color:var(--muted);font-size:12px;padding:12px 0">Đang tải…</div>
     </div>
-
-    <span class="sb-label">Lọc & Tìm Kiếm</span>
+    <span class="sb-lbl">Lọc & Tìm Kiếm</span>
     <div class="filter-wrap">
       <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()"/>
-      <select id="fDept" onchange="applyFilter()">
-        <option value="">Tất cả phòng ban</option>
-      </select>
+      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option></select>
       <select id="fColor" onchange="applyFilter()">
         <option value="">Tất cả màu chính</option>
         <option value="red">🔴 Fiery Red</option>
@@ -227,501 +166,344 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <option value="blue">🔵 Cool Blue</option>
       </select>
     </div>
-  </div>
-
-  <!-- CONTENT -->
+  </aside>
   <div class="content">
-
-    <!-- Setup guide (hidden after first load) -->
-    <div class="setup-card" id="setupGuide">
-      <h3>⚙️ Hướng Dẫn Thiết Lập SharePoint List</h3>
-      <p>Tạo một SharePoint List tên <code>InsightsResponses</code> với các cột sau:</p>
-      <ul>
-        <li><code>Title</code> (Single line) — Họ tên nhân viên (cột mặc định)</li>
-        <li><code>EmployeeRole</code> (Single line) — Chức danh</li>
-        <li><code>Department</code> (Single line) — Phòng ban</li>
-        <li><code>Answers</code> (Multiple lines) — JSON câu trả lời</li>
-        <li><code>RedScore</code> (Number) — Điểm Red (0–24)</li>
-        <li><code>YellowScore</code> (Number) — Điểm Yellow</li>
-        <li><code>GreenScore</code> (Number) — Điểm Green</li>
-        <li><code>BlueScore</code> (Number) — Điểm Blue</li>
-        <li><code>PrimaryColor</code> (Single line) — Màu chính</li>
-        <li><code>SecondaryColor</code> (Single line) — Màu phụ</li>
-      </ul>
-      <p style="margin-top:8px">Sau đó upload cả 2 file HTML vào thư viện tài liệu SharePoint. Mở file này (<code>insights-admin.html</code>) — hệ thống sẽ tự detect site URL.</p>
-      <button class="dismiss-btn" onclick="document.getElementById('setupGuide').style.display='none'">Đã hiểu, ẩn hướng dẫn →</button>
-    </div>
-
-    <!-- Table -->
-    <div class="table-wrap">
-      <div class="table-header">
+    <div class="tbl-wrap">
+      <div class="tbl-hdr">
         <h2 id="tableTitle">Tất cả phản hồi</h2>
-        <button class="btn-refresh" onclick="loadData()">
-          🔄 Làm mới
-        </button>
+        <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
       </div>
-      <div id="tableBody">
-        <div class="spinner-row"><div class="spinner"></div></div>
-      </div>
+      <div id="tableBody"><div class="spinner-row"><div class="spinner"></div></div></div>
     </div>
-
   </div>
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalBg(event)">
+  <div class="modal">
     <div class="modal-hero" id="mHero">
-      <button class="modal-close" onclick="closeModalBtn()">✕</button>
-      <div class="mbadge" id="mBadge">–</div>
-      <h2 id="mName">–</h2>
-      <p class="msub" id="mSub">–</p>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="m-badge" id="mBadge"></div>
+      <div class="m-name" id="mName"></div>
+      <div class="m-sub" id="mSub"></div>
     </div>
-    <div class="modal-body" id="mBody"></div>
+    <div class="modal-tabs">
+      <button class="m-tab active" onclick="mTab('scores')">📊 Kết quả</button>
+      <button class="m-tab" onclick="mTab('profile')">👤 Profile</button>
+      <button class="m-tab" id="mTabAI" onclick="mTab('ai')" style="display:none">🤖 AI Narrative</button>
+    </div>
+    <!-- PANE: Scores -->
+    <div class="m-pane active" id="mp-scores">
+      <div class="m-label" style="margin-bottom:10px">Phân Bổ Năng Lượng</div>
+      <div class="energy-row" id="mEnergyRow"></div>
+      <div class="dims3" id="mDims"></div>
+      <div id="mWheel" style="display:flex;justify-content:center;margin-bottom:14px"></div>
+    </div>
+    <!-- PANE: Profile -->
+    <div class="m-pane" id="mp-profile">
+      <div id="mProfileContent"></div>
+    </div>
+    <!-- PANE: AI Narrative -->
+    <div class="m-pane" id="mp-ai">
+      <div id="mAIContent"></div>
+    </div>
     <div class="modal-footer">
-      <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF Báo Cáo</button>
-      <button class="btn-close2" onclick="closeModalBtn()">Đóng</button>
+      <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
+      <button class="btn-close2" onclick="closeModal()">Đóng</button>
     </div>
   </div>
 </div>
-
+<div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
 <div id="toast"></div>
 
 <script>
-// ════════════════════════════════════════
-// PROFILES DATA
-// ════════════════════════════════════════
-const PROFILES = {
-  red:{
-    label:'Fiery Red',emoji:'🔴',color:'#E8392A',
-    heroGrad:'linear-gradient(135deg,#3d0c0c,#7f1d1d,#c0291c)',
-    tagline:'Nhà Lãnh Đạo Quyết Đoán',
-    summary:'Định hướng kết quả, mạnh mẽ và quyết đoán. Thúc đẩy hành động nhanh và dẫn dắt người khác vượt qua thách thức.',
-    strengths:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt và tạo đà tiến trong tình huống khó khăn','Hiệu quả và không ngại thách thức'],
-    blindspots:['Có thể bỏ qua cảm xúc và nhu cầu của người khác','Đôi khi quá áp lực và thúc ép đội nhóm','Thiếu kiên nhẫn với quy trình và chi tiết'],
-    motivation:['Môi trường cạnh tranh lành mạnh','Mục tiêu rõ ràng, kết quả đo lường được','Được trao quyền và tự chủ','Thách thức và cơ hội khẳng định bản thân'],
-    careers:['Lãnh đạo / Giám đốc cấp cao','Sales & Business Development','Project Manager / PMO','Entrepreneur / Startup Founder'],
-    commStyle:'Thẳng thắn, súc tích, định hướng hành động. Đi thẳng vào vấn đề, không vòng vo.',
-    tips:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng thời gian và quyết định của họ','Đừng giải thích quá dài dòng']
-  },
-  yellow:{
-    label:'Sunshine Yellow',emoji:'🟡',color:'#F5A623',
-    heroGrad:'linear-gradient(135deg,#3d2000,#78350f,#b45309)',
-    tagline:'Người Truyền Cảm Hứng Sáng Tạo',
-    summary:'Nguồn năng lượng tích cực của đội nhóm. Truyền cảm hứng, xây dựng mối quan hệ và tạo ra những ý tưởng đột phá.',
-    strengths:['Nhiệt tình và tạo động lực cho người khác','Sáng tạo và linh hoạt trong cách tiếp cận','Xây dựng mối quan hệ và tạo không khí tích cực','Nhìn thấy tiềm năng trong mọi tình huống'],
-    blindspots:['Có thể thiếu tập trung và dễ bị phân tâm','Đôi khi lạc quan quá mức, bỏ qua rủi ro','Khó hoàn thành công việc chi tiết, tỉ mỉ'],
-    motivation:['Môi trường sáng tạo và đổi mới','Được công nhận và khen ngợi','Dự án đa dạng và thú vị','Làm việc với người nhiệt huyết'],
-    careers:['Marketing & Brand Management','Training & L&D','Business Development','Creative / Innovation Lead'],
-    commStyle:'Sôi nổi, biểu cảm, dùng câu chuyện và hình ảnh. Thích giao tiếp trực tiếp và cởi mở.',
-    tips:['Tạo không gian cho họ chia sẻ ý tưởng','Phản hồi nhiệt tình và cởi mở','Giúp họ tập trung vào ưu tiên chính','Công nhận đóng góp thường xuyên']
-  },
-  green:{
-    label:'Earth Green',emoji:'🟢',color:'#3CB371',
-    heroGrad:'linear-gradient(135deg,#052e16,#14532d,#166534)',
-    tagline:'Người Kết Nối Đội Nhóm',
-    summary:'Trái tim của đội nhóm — đồng cảm, ổn định và luôn sẵn sàng hỗ trợ. Tạo ra sự tin tưởng và môi trường làm việc gắn kết.',
-    strengths:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và mối quan hệ bền vững','Kiên nhẫn, ổn định trong mọi tình huống','Đảm bảo hòa hợp và đồng thuận trong nhóm'],
-    blindspots:['Khó nói "không" và dễ bị quá tải','Tránh xung đột dù đôi khi cần thiết','Quyết định chậm khi có nhiều ý kiến khác nhau'],
-    motivation:['Môi trường hòa thuận và tin tưởng','Được đánh giá cao như một cá nhân','Cơ hội giúp đỡ và phát triển người khác'],
-    careers:['HR & Talent Management','Coaching & Mentoring','Customer Success','Team Lead / People Manager'],
-    commStyle:'Ấm áp, chân thành, lắng nghe nhiều hơn nói. Thích face-to-face và đủ thời gian chia sẻ.',
-    tips:['Tạo không gian an toàn để họ chia sẻ','Không ép quyết định quá nhanh','Công nhận sự đóng góp thầm lặng','Thể hiện sự quan tâm thực sự']
-  },
-  blue:{
-    label:'Cool Blue',emoji:'🔵',color:'#2B6CB0',
-    heroGrad:'linear-gradient(135deg,#0a1628,#1e3a5f,#1d4ed8)',
-    tagline:'Chuyên Gia Phân Tích & Chất Lượng',
-    summary:'Đảm bảo chất lượng và độ chính xác của mọi việc. Phân tích sâu, lập kế hoạch tỉ mỉ và duy trì tiêu chuẩn cao.',
-    strengths:['Phân tích logic và tư duy hệ thống sắc bén','Chú trọng chi tiết và đảm bảo chất lượng cao','Cẩn thận và chính xác trong từng bước','Duy trì tiêu chuẩn và quy trình rõ ràng'],
-    blindspots:['Phân tích quá lâu, có thể chậm ra quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, đôi khi có vẻ xa cách'],
-    motivation:['Công việc đòi hỏi chuyên môn sâu','Tiêu chuẩn và quy trình rõ ràng','Được công nhận về chuyên môn và chất lượng'],
-    careers:['Finance & Accounting','Engineering & Technical','Data Analytics / BI','Quality Assurance / Process'],
-    commStyle:'Chính xác, có cấu trúc, dựa trên dữ liệu. Thích email hơn cuộc gọi, cần thời gian suy nghĩ.',
-    tips:['Cung cấp tài liệu chi tiết trước cuộc họp','Trình bày bằng dữ liệu và logic','Tôn trọng thời gian phân tích của họ','Không ép quyết định nhanh khi thiếu thông tin']
-  }
-};
+const CI={red:{l:'Fiery Red',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
+yellow:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623',tag:'Người Truyền Cảm Hứng Sáng Tạo',grad:'linear-gradient(135deg,#3d2000,#78350f)',s:['Nhiệt tình, tạo động lực cho người khác','Sáng tạo và linh hoạt trong tiếp cận','Xây dựng mối quan hệ và không khí tích cực','Nhìn thấy tiềm năng trong mọi tình huống'],b:['Thiếu tập trung, dễ bị phân tâm','Lạc quan quá mức, bỏ qua rủi ro','Khó hoàn thành việc chi tiết, tỉ mỉ'],t:['Tạo không gian chia sẻ ý tưởng','Phản hồi nhiệt tình','Giúp họ tập trung ưu tiên chính','Công nhận đóng góp thường xuyên']},
+green:{l:'Earth Green',e:'🟢',c:'#3CB371',tag:'Người Kết Nối Đội Nhóm',grad:'linear-gradient(135deg,#052e16,#14532d)',s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn, ổn định trong mọi tình huống','Đảm bảo hòa hợp và đồng thuận nhóm'],b:['Khó nói "không", dễ bị quá tải','Tránh xung đột dù đôi khi cần thiết','Quyết định chậm khi có nhiều ý kiến'],t:['Tạo không gian an toàn để chia sẻ','Không ép quyết định quá nhanh','Công nhận sự đóng góp thầm lặng','Thể hiện sự quan tâm thực sự']},
+blue:{l:'Cool Blue',e:'🔵',c:'#2B6CB0',tag:'Chuyên Gia Phân Tích & Chất Lượng',grad:'linear-gradient(135deg,#0a1628,#1e3a5f)',s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và đảm bảo chất lượng cao','Cẩn thận và chính xác trong từng bước','Duy trì tiêu chuẩn và quy trình rõ ràng'],b:['Phân tích quá lâu, chậm ra quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, có vẻ xa cách'],t:['Cung cấp tài liệu chi tiết trước họp','Trình bày bằng dữ liệu và logic','Tôn trọng thời gian phân tích','Không ép quyết định nhanh']}};
+const LL={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
+const SL={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
+let allData=[],filtered=[],currentItem=null;
 
-// ════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════
-let allData = [];
-let filtered = [];
-let currentItem = null;
+function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
-// ════════════════════════════════════════
-// SHAREPOINT API
-// ════════════════════════════════════════
-
+function normalizeItem(raw){
+  return{
+    ID:raw.ID||raw.id||raw.Id,
+    Title:raw.Title||raw.title||raw.name||'',
+    EmployeeRole:raw.EmployeeRole||raw.employeeRole||raw.role||'',
+    Department:raw.Department||raw.department||'',
+    Answers:raw.Answers||raw.answers||'',
+    RedScore:Number(raw.RedScore||raw.redScore||0),
+    YellowScore:Number(raw.YellowScore||raw.yellowScore||0),
+    GreenScore:Number(raw.GreenScore||raw.greenScore||0),
+    BlueScore:Number(raw.BlueScore||raw.blueScore||0),
+    PrimaryColor:(raw.PrimaryColor||raw.primaryColor||'blue').toLowerCase(),
+    SecondaryColor:(raw.SecondaryColor||raw.secondaryColor||'green').toLowerCase(),
+    IEType:raw.IEType||raw.ieType||'',
+    LeadStyle:(raw.LeadStyle||raw.leadStyle||'').toLowerCase(),
+    StressBehavior:(raw.StressBehavior||raw.stressBehavior||'').toLowerCase(),
+    Archetype:raw.Archetype||raw.archetype||'',
+    AIProfile:raw.AIProfile||raw.aiProfile||null,
+    Created:raw.Created||raw.created||''
+  };
+}
 
 async function loadData(){
-  showLoading();
-  try{
-    if(!CONFIG.flowReadUrl || CONFIG.flowReadUrl.includes('PASTE_YOUR')){
-      showError('⚠️ Chưa cấu hình Flow Read URL trong file admin.html');
-      return;
-    }
-    const res=await fetch(CONFIG.flowReadUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json=await res.json();
-    // Power Automate trả về dạng {value: [...]} hoặc trực tiếp array
-    const raw=json.value||json.d?.results||json||[];
-    // Normalize field names (PA trả về camelCase hoặc PascalCase)
-    allData=raw.map(item=>({
-      ID:             item.ID||item.id||item.Id,
-      Title:          item.Title||item.title,
-      EmployeeRole:   item.EmployeeRole||item.employeeRole||item.employeerole,
-      Department:     item.Department||item.department,
-      Answers:        item.Answers||item.answers,
-      RedScore:       item.RedScore||item.redScore||0,
-      YellowScore:    item.YellowScore||item.yellowScore||0,
-      GreenScore:     item.GreenScore||item.greenScore||0,
-      BlueScore:      item.BlueScore||item.blueScore||0,
-      PrimaryColor:   item.PrimaryColor||item.primaryColor||item.primarycolor,
-      SecondaryColor: item.SecondaryColor||item.secondaryColor||item.secondarycolor,
-      IEType:         item.IEType||item.ieType||item.ietype||'',
-      LeadStyle:      item.LeadStyle||item.leadStyle||item.leadstyle||'',
-      StressBehavior: item.StressBehavior||item.stressBehavior||item.stressbehavior||'',
-      Created:        item.Created||item.created
-    }));
-    applyFilter();
-    updateSidebar();
-    toast(`✅ Đã tải ${allData.length} phản hồi`);
-  } catch(err){
-    showError(err.message);
-  }
-}
-
-// ════════════════════════════════════════
-// RENDER
-// ════════════════════════════════════════
-function showLoading(){
   document.getElementById('tableBody').innerHTML='<div class="spinner-row"><div class="spinner"></div></div>';
+  try{
+    if(!CONFIG.flowReadUrl||CONFIG.flowReadUrl.includes('PASTE_YOUR'))throw new Error('Chưa cấu hình Read URL');
+    const res=await fetch(CONFIG.flowReadUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    const raw=Array.isArray(json)?json:(json.value||json.items||json.d?.results||[]);
+    allData=raw.map(normalizeItem).filter(m=>m.Title);
+    applyFilter();updateSidebar();
+    toast(`✅ Đã tải ${allData.length} phản hồi`);
+  }catch(e){showError(e.message);}
 }
 
-function showError(msg){
-  document.getElementById('tableBody').innerHTML=`
-    <div class="empty">
-      <div class="big">⚠️</div>
-      <p style="color:var(--red);font-weight:600;margin-bottom:8px">Không thể kết nối SharePoint</p>
-      <p>${msg}</p>
-    </div>`;
+function showError(m){
+  document.getElementById('tableBody').innerHTML=`<div class="empty"><div class="big">⚠️</div><p style="color:var(--red);font-weight:600;margin-bottom:8px">Không thể kết nối SharePoint</p><p>${m}</p></div>`;
 }
 
 function applyFilter(){
-  const search=(document.getElementById('fSearch').value||'').toLowerCase();
-  const dept=document.getElementById('fDept').value;
-  const color=document.getElementById('fColor').value;
-
-  filtered=allData.filter(item=>{
-    const name=(item.Title||'').toLowerCase();
-    const role=(item.EmployeeRole||'').toLowerCase();
-    const matchSearch=!search||(name+role).includes(search);
-    const matchDept=!dept||(item.Department||'')===dept;
-    const matchColor=!color||(item.PrimaryColor||'')=== color;
-    return matchSearch&&matchDept&&matchColor;
+  const s=(document.getElementById('fSearch').value||'').toLowerCase();
+  const d=document.getElementById('fDept').value;
+  const c=document.getElementById('fColor').value;
+  filtered=allData.filter(i=>{
+    const matchS=!s||((i.Title+i.EmployeeRole).toLowerCase().includes(s));
+    const matchD=!d||i.Department===d;
+    const matchC=!c||i.PrimaryColor===c;
+    return matchS&&matchD&&matchC;
   });
-
   renderTable();
-  document.getElementById('tableTitle').textContent=
-    filtered.length===allData.length?`Tất cả phản hồi (${allData.length})`:
-    `Lọc: ${filtered.length} / ${allData.length}`;
+  document.getElementById('tableTitle').textContent=filtered.length===allData.length?`Tất cả phản hồi (${allData.length})`:`Lọc: ${filtered.length} / ${allData.length}`;
 }
 
 function renderTable(){
-  const tbody=document.getElementById('tableBody');
-  if(filtered.length===0){
-    tbody.innerHTML=`<div class="empty"><div class="big">📭</div><p>Không có dữ liệu phù hợp</p></div>`;
-    return;
-  }
-  let html=`<table class="tbl"><thead><tr>
-    <th>Nhân Viên</th>
-    <th>Phòng Ban</th>
-    <th>Màu Chính</th>
-    <th>Màu Phụ</th>
-    <th>Phân Bổ</th>
-    <th>Ngày</th>
-  </tr></thead><tbody>`;
-
+  if(!filtered.length){document.getElementById('tableBody').innerHTML='<div class="empty"><div class="big">📭</div><p>Không có dữ liệu phù hợp</p></div>';return;}
+  let html=`<table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody>`;
   filtered.forEach(item=>{
-    const p=PROFILES[item.PrimaryColor]||{label:item.PrimaryColor||'?',emoji:'',color:'#8B949E'};
-    const s=PROFILES[item.SecondaryColor]||{label:item.SecondaryColor||'?',emoji:'',color:'#8B949E'};
-    const r=item.RedScore||0,y=item.YellowScore||0,g=item.GreenScore||0,b=item.BlueScore||0;
+    const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
+    const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
     const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'–';
-    html+=`<tr onclick="openModal(${item.ID})">
-      <td><div class="name-cell"><span class="nm">${item.Title||'?'}</span><span class="rl">${item.EmployeeRole||''}</span></div></td>
+    html+=`<tr onclick="openModal(${JSON.stringify(item.ID||'').replace(/"/g,'&quot;')})">
+      <td><div class="name-cell"><span class="nm">${item.Title}</span><span class="rl">${item.EmployeeRole||''}</span></div></td>
       <td style="color:var(--muted);font-size:13px">${item.Department||'–'}</td>
-      <td><span class="color-pill" style="background:${p.color}22;color:${p.color}">${p.emoji} ${p.label}</span></td>
-      <td><span class="color-pill" style="background:${s.color}15;color:${s.color}">${s.emoji} ${s.label}</span></td>
-      <td>
-        <div class="score-mini">
-          <div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/24)}" title="Red: ${r}"></div>
-          <div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/24)}" title="Yellow: ${y}"></div>
-          <div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/24)}" title="Green: ${g}"></div>
-          <div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/24)}" title="Blue: ${b}"></div>
-        </div>
-      </td>
+      <td><span class="pill" style="background:${p.c}22;color:${p.c}">${p.e} ${p.l}</span></td>
+      <td><span class="pill" style="background:${s.c}18;color:${s.c}">${s.e} ${s.l}</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/24)}" title="Red:${r}"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/24)}" title="Yellow:${y}"></div>
+        <div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/24)}" title="Green:${g}"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/24)}" title="Blue:${b}"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">${item.Archetype||'–'}</td>
       <td style="color:var(--muted);font-size:12px">${date}</td>
     </tr>`;
   });
-  html+='</tbody></table>';
-  tbody.innerHTML=html;
+  document.getElementById('tableBody').innerHTML=html+'</tbody></table>';
 }
 
 function updateSidebar(){
   const total=allData.length;
   document.getElementById('statTotal').textContent=total;
-
   const depts=new Set(allData.map(i=>i.Department).filter(Boolean));
   document.getElementById('statDepts').textContent=depts.size;
-
-  // Department filter
-  const deptSel=document.getElementById('fDept');
-  deptSel.innerHTML='<option value="">Tất cả phòng ban</option>';
-  [...depts].sort().forEach(d=>{
-    deptSel.innerHTML+=`<option value="${d}">${d}</option>`;
-  });
-
+  const dSel=document.getElementById('fDept');
+  dSel.innerHTML='<option value="">Tất cả phòng ban</option>';
+  [...depts].sort().forEach(d=>{dSel.innerHTML+=`<option value="${d}">${d}</option>`;});
   const counts={red:0,yellow:0,green:0,blue:0};
-  allData.forEach(i=>{ if(counts[i.PrimaryColor]!==undefined) counts[i.PrimaryColor]++; });
-  const topColor=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('statPrimary').textContent=topColor?PROFILES[topColor[0]].emoji:'–';
-  const avgRed=total?Math.round(allData.reduce((s,i)=>s+(i.RedScore||0),0)/total*10)/10:0;
-  document.getElementById('statAvgRed').textContent=avgRed;
-
-  // Color bars
-  const dist=document.getElementById('colorDist');
-  dist.innerHTML='';
+  allData.forEach(i=>{if(counts[i.PrimaryColor]!==undefined)counts[i.PrimaryColor]++;});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('statTop').textContent=top?CI[top[0]].e:'–';
+  if(total>1){const d=new Date(allData[0]?.Created),d2=new Date(allData[allData.length-1]?.Created);const days=Math.max(1,Math.round(Math.abs(d-d2)/86400000));document.getElementById('statAvgDays').textContent=(total/days).toFixed(1);}
+  const dist=document.getElementById('colorDist');dist.innerHTML='';
   [['red','🔴'],['yellow','🟡'],['green','🟢'],['blue','🔵']].forEach(([c,e])=>{
     const pct=total?Math.round(counts[c]/total*100):0;
-    dist.innerHTML+=`
-      <div class="cd-row">
-        <span style="font-size:12px;width:20px">${e}</span>
-        <div class="cd-bar-bg"><div class="cd-bar-fill" style="width:${pct}%;background:${PROFILES[c].color}" data-w="${pct}%"></div></div>
-        <span class="cd-val">${counts[c]}</span>
-      </div>`;
+    dist.innerHTML+=`<div class="cd-row"><span style="font-size:12px;width:20px">${e}</span><div class="cd-bg"><div class="cd-fill" style="width:${pct}%;background:${CI[c].c}" data-w="${pct}%"></div></div><span class="cd-val">${counts[c]}</span></div>`;
   });
-  setTimeout(()=>{
-    document.querySelectorAll('.cd-bar-fill').forEach(el=>el.style.width=el.dataset.w);
-  },100);
+  setTimeout(()=>document.querySelectorAll('.cd-fill').forEach(el=>el.style.width=el.dataset.w),100);
 }
 
-// ════════════════════════════════════════
-// MODAL
-// ════════════════════════════════════════
+function buildMiniWheel(pr,sec){
+  const cx=80,cy=80,R=74,r=30;
+  const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
+  const SL=['D','M','I','IH','Su','Co','Ob','Re'];
+  const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
+  const hl=PM[`${pr}-${sec}`]??0;
+  const toR=d=>d*Math.PI/180;const pol=(r2,d)=>[cx+r2*Math.cos(toR(d)),cy+r2*Math.sin(toR(d))];
+  let svg='';
+  for(let i=0;i<8;i++){
+    const isHL=i===hl,s=i*45-90-22.5,e=s+45;
+    const [x1,y1]=pol(r,s);const [x2,y2]=pol(R,s);const [x3,y3]=pol(R,e);const [x4,y4]=pol(r,e);
+    svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r} ${r} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.3}" stroke="${isHL?'rgba(255,255,255,.6)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2:1}"/>`;
+    const [lx,ly]=pol((r+R)/2,i*45-90);
+    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?7:6}" font-family="DM Sans" font-weight="${isHL?700:400}" opacity="${isHL?1:.5}">${SL[i]}</text>`;
+  }
+  const kc=CI[pr]||CI.blue;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r-2}" fill="var(--sur2)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
+  svg+=`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="${kc.c}" font-size="18">●</text>`;
+  return `<svg viewBox="0 0 ${cx*2} ${cy*2}" style="width:160px;height:160px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))">${svg}</svg>`;
+}
+
 function openModal(id){
-  const item=allData.find(i=>i.ID===id); if(!item) return;
+  const item=allData.find(i=>i.ID==id||i.ID===id);if(!item)return;
   currentItem=item;
-  const p=PROFILES[item.PrimaryColor]||PROFILES.blue;
-  const s=PROFILES[item.SecondaryColor]||PROFILES.green;
-  const r=item.RedScore||0,y=item.YellowScore||0,g=item.GreenScore||0,b=item.BlueScore||0;
-  const total=r+y+g+b||24;
-  const pct=v=>Math.round(v/total*100);
-  const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN',''):'';
-
-  document.getElementById('mHero').style.background=p.heroGrad;
-  document.getElementById('mBadge').textContent=`${p.emoji} ${p.label}  ·  ${p.tagline}`;
-  document.getElementById('mName').textContent=item.Title||'?';
-  document.getElementById('mSub').textContent=`${item.EmployeeRole||''} ${item.Department?'· '+item.Department:''} ${date?'· '+date:''}`;
-
-  document.getElementById('mBody').innerHTML=`
-    <div class="m-section">
-      <div class="m-label">Phân Bổ Năng Lượng</div>
-      <div class="energy-row">
-        ${[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
-          <div class="e-box">
-            <div class="e-top">
-              <span class="e-name" style="color:${PROFILES[c].color}">${PROFILES[c].emoji} ${PROFILES[c].label}</span>
-              <span class="e-score">${sc}/24 (${pct(sc)}%)</span>
-            </div>
-            <div class="e-bar"><div class="e-bar-fill" style="width:0%;background:${PROFILES[c].color}" data-w="${pct(sc)}%"></div></div>
-          </div>`).join('')}
-      </div>
-      <div style="margin-top:12px;padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr)">
-        <span style="font-size:12px;color:var(--muted)">Màu Phụ: </span>
-        <span class="color-pill" style="background:${s.color}20;color:${s.color};font-size:12px">${s.emoji} ${s.label}</span>
-        <span style="font-size:12px;color:var(--muted);margin-left:8px">${s.tagline}</span>
-      </div>
+  const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
+  const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
+  const total=r+y+g+b||96;
+  const pct=v=>Math.round(v/24*100);
+  const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
+  // Hero
+  document.getElementById('mHero').style.background=p.grad;
+  document.getElementById('mBadge').textContent=`${p.e} ${p.l}  ·  ${p.tag}`;
+  document.getElementById('mName').textContent=item.Title;
+  document.getElementById('mSub').textContent=[item.EmployeeRole,item.Department,date].filter(Boolean).join(' · ');
+  // Scores pane
+  document.getElementById('mEnergyRow').innerHTML=[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/24 (${pct(sc)}%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width:0%;background:${CI[c].c}" data-w="${pct(sc)}%"></div></div></div>`).join('');
+  document.getElementById('mDims').innerHTML=`
+    <div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:${item.IEType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':item.IEType==='Introvert'?'🌙 Hướng nội':'—'}</div></div>
+    <div class="dim-card"><div class="dim-title">👑 Lãnh đạo</div><div class="dim-val">${LL[item.LeadStyle]||'—'}</div></div>
+    <div class="dim-card"><div class="dim-title">⚠️ Stress</div><div class="dim-val">${SL[item.StressBehavior]||'—'}</div></div>`;
+  document.getElementById('mWheel').innerHTML=buildMiniWheel(item.PrimaryColor,item.SecondaryColor);
+  // Profile pane
+  document.getElementById('mProfileContent').innerHTML=`
+    <div class="m-label">Màu Phụ & Archetype</div>
+    <div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
+      <span style="font-size:12px;color:var(--muted)">Màu phụ: </span>
+      <span class="pill" style="background:${s.c}20;color:${s.c}">${s.e} ${s.l}</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:8px">${s.tag}</span>
+      ${item.Archetype?`<div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 ${item.Archetype}</div>`:''}
     </div>
-    <div class="m-section">
-      <div class="m-label">Hồ Sơ Cá Nhân</div>
-      <div class="profile-2col">
-        <div class="p-box"><h4>💪 Điểm Mạnh</h4><ul>${p.strengths.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-        <div class="p-box"><h4>🔍 Điểm Cần Chú Ý</h4><ul>${p.blindspots.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-        <div class="p-box"><h4>⚡ Động Lực</h4><ul>${p.motivation.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-        <div class="p-box"><h4>🎯 Vai Trò Phù Hợp</h4><ul>${p.careers.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-      </div>
+    <div class="m-label">Hồ Sơ Cá Nhân</div>
+    <div class="p2col">
+      <div class="p-box"><h4>💪 Điểm Mạnh</h4><ul>${p.s.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      <div class="p-box"><h4>🔧 Điểm Cần Phát Triển</h4><ul>${p.b.map(t=>`<li>${t}</li>`).join('')}</ul></div>
     </div>
-    <div class="m-section">
-      <div class="m-label">Giao Tiếp & Quản Lý</div>
-      <div class="p-box" style="margin-bottom:10px">
-        <h4>💬 Phong Cách Giao Tiếp</h4>
-        <p style="font-size:13px;line-height:1.6;color:rgba(255,255,255,.8)">${p.commStyle}</p>
-      </div>
-      <div class="p-box">
-        <h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4>
-        <ul>${p.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
-      </div>
-    </div>`;
-
+    <div class="m-label" style="margin-top:14px">Giao Tiếp & Quản Lý</div>
+    <div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4><ul>${p.t.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
+  // AI tab
+  const tabAI=document.getElementById('mTabAI');
+  if(item.AIProfile){
+    tabAI.style.display='';
+    renderAIPane(item.AIProfile);
+  } else {
+    tabAI.style.display='none';
+  }
+  // Reset to first tab
+  mTab('scores');
   document.getElementById('modalOverlay').classList.add('open');
-  setTimeout(()=>{
-    document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w);
-  },100);
+  setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
 }
 
-function closeModal(e){
-  if(e.target===document.getElementById('modalOverlay')) closeModalBtn();
-}
-function closeModalBtn(){
-  document.getElementById('modalOverlay').classList.remove('open');
-  currentItem=null;
-}
-
-// ════════════════════════════════════════
-// PDF EXPORT — html2canvas (full Unicode)
-// ════════════════════════════════════════
-async function exportPDF(){
-  if(!currentItem) return;
-  const item = currentItem;
-  const p = PROFILES[item.PrimaryColor] || PROFILES.blue;
-  const s = PROFILES[item.SecondaryColor] || PROFILES.green;
-  const r=item.RedScore||0, y=item.YellowScore||0, g=item.GreenScore||0, b=item.BlueScore||0;
-  const pct = v => Math.round(v/24*100);
-  const date = item.Created ? new Date(item.Created).toLocaleDateString('vi-VN') : '';
-
-  // Build hidden printable div
-  const printDiv = document.getElementById('printArea');
-  printDiv.innerHTML = `
-    <div style="font-family:'DM Sans',sans-serif;background:#fff;width:760px;padding:0;margin:0;color:#1a1a2e">
-
-      <!-- Header band -->
-      <div style="background:${p.color};padding:36px 40px 28px;color:#fff">
-        <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:.75;margin-bottom:10px">
-          DHI CO LTD · INSIGHTS DISCOVERY PERSONAL REPORT &nbsp;&nbsp;|&nbsp;&nbsp; ID: ${item.ID||''} · ${date}
-        </div>
-        <div style="font-size:32px;font-weight:700;letter-spacing:1px;margin-bottom:6px">${p.emoji} ${p.label.toUpperCase()}</div>
-        <div style="font-size:16px;font-weight:400;opacity:.9;margin-bottom:14px">${p.tagline}</div>
-        <div style="font-size:13px;opacity:.85">${item.Title||''} &nbsp;·&nbsp; ${item.EmployeeRole||''} ${item.Department ? '&nbsp;·&nbsp; '+item.Department : ''}</div>
-      </div>
-
-      <!-- Body -->
-      <div style="padding:32px 40px;background:#0d1117;color:#e6edf3">
-
-        <!-- Energy bars -->
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8b949e;margin-bottom:12px">PHÂN BỔ NĂNG LƯỢNG (0–24)</div>
-        ${[['Red',r,'#E8392A'],['Yellow',y,'#F5A623'],['Green',g,'#3CB371'],['Blue',b,'#2B6CB0']].map(([lbl,sc,clr])=>`
-          <div style="margin-bottom:10px">
-            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px">
-              <span style="color:${clr}">${lbl}</span>
-              <span style="color:#8b949e">${sc}/24 &nbsp;(${pct(sc)}%)</span>
-            </div>
-            <div style="background:#21262d;border-radius:99px;height:8px;overflow:hidden">
-              <div style="width:${pct(sc)}%;height:100%;background:${clr};border-radius:99px"></div>
-            </div>
-          </div>`).join('')}
-
-        <!-- Secondary -->
-        <div style="background:#161b22;border-radius:10px;padding:12px 16px;margin:16px 0;border:1px solid rgba(255,255,255,.08)">
-          <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e">MÀU PHỤ: </span>
-          <span style="color:${s.color};font-weight:700">${s.emoji} ${s.label.toUpperCase()}</span>
-          <span style="color:#8b949e;font-size:13px"> — ${s.tagline}</span>
-        </div>
-
-        <!-- Summary -->
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8b949e;margin:20px 0 8px">MÔ TẢ TỔNG QUAN</div>
-        <div style="font-size:13.5px;line-height:1.7;color:#c9d1d9">${p.summary}</div>
-
-        <!-- 2 col -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px">
-          ${[
-            ['💪 ĐIỂM MẠNH', p.strengths],
-            ['🔍 ĐIỂM CẦN PHÁT TRIỂN', p.blindspots],
-            ['⚡ ĐỘNG LỰC', p.motivation],
-            ['🎯 VAI TRÒ PHÙ HỢP', p.careers]
-          ].map(([title, items])=>`
-            <div style="background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
-              <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">${title}</div>
-              ${items.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${i}</div>`).join('')}
-            </div>`).join('')}
-        </div>
-
-        <!-- Communication -->
-        <div style="margin-top:20px;background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:8px">💬 PHONG CÁCH GIAO TIẾP</div>
-          <div style="font-size:13px;line-height:1.7;color:#c9d1d9">${p.commStyle}</div>
-        </div>
-
-        <!-- Tips -->
-        <div style="margin-top:14px;background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">🤝 CÁCH LÀM VIỆC HIỆU QUẢ</div>
-          ${p.tips.map(t=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${t}</div>`).join('')}
-        </div>
-
-        <!-- Extended Dimensions -->
-        ${(()=>{
-          if(!item.IEType && !item.LeadStyle && !item.StressBehavior) return '';
-          const LEAD={red:'🎯 Kết quả',yellow:'⚡ Cảm hứng',green:'🤝 Phục vụ',blue:'📊 Chiến lược'};
-          const STRESS={red:'⚔️ Kiểm soát↑',yellow:'🌀 Phân tán',green:'🐢 Thu mình',blue:'🔍 Phân tích↑'};
-          const ieClr=item.IEType==='Extrovert'?'#F5A623':'#2B6CB0';
-          const ieLabel=item.IEType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội';
-          return `<div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-            ${item.IEType?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">🔋 NĂNG LƯỢNG XÃ HỘI</div><div style="font-size:13px;font-weight:600;color:${ieClr}">${ieLabel}</div></div>`:''}
-            ${item.LeadStyle?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">👑 PHONG CÁCH LÃNH ĐẠO</div><div style="font-size:12px;font-weight:600;color:#e6edf3">${LEAD[item.LeadStyle]||'—'}</div></div>`:''}
-            ${item.StressBehavior?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:6px">⚠️ DƯỚI ÁP LỰC</div><div style="font-size:12px;font-weight:600;color:#e6edf3">${STRESS[item.StressBehavior]||'—'}</div></div>`:''}
-          </div>`;
-        })()}
-
-        <!-- Footer -->
-        <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:10px;color:#6e7681">DHI CO LTD · Insights Discovery Report · ${new Date().toLocaleDateString('vi-VN')}</div>
-          <div style="font-size:10px;color:#6e7681">${item.Title||''} · ${p.emoji} ${p.label} · ${s.emoji} ${s.label}</div>
-        </div>
-
-      </div>
+function renderAIPane(profile){
+  let ai;
+  try{ai=typeof profile==='string'?JSON.parse(profile):profile;}catch(e){
+    document.getElementById('mAIContent').innerHTML=`<div class="ai-narrative-block"><div class="ai-narrative-title">🤖 AI Profile</div><p class="p-prose">${profile}</p></div>`;return;
+  }
+  const li=(arr)=>`<ul class="ai-list">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  const paras=(t)=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
+  document.getElementById('mAIContent').innerHTML=`
+    <div class="ai-narrative-block">
+      <div class="ai-narrative-title">🤖 Phong Cách Cá Nhân (AI)</div>
+      <div class="p-prose">${paras(ai.personalStyle)}</div>
+    </div>
+    <div class="m-label">Điểm Mạnh & Phát Triển (AI)</div>
+    <div class="p2col" style="margin-bottom:14px">
+      <div class="p-box"><h4>💪 Điểm Mạnh</h4>${li(ai.strengths)}</div>
+      <div class="p-box"><h4>🔧 Cần Phát Triển</h4>${li(ai.weaknesses)}</div>
+    </div>
+    <div class="m-label">Giao Tiếp (AI)</div>
+    <div class="p2col" style="margin-bottom:14px">
+      <div class="p-box"><h4>✅ Hiệu quả</h4>${li(ai.effectiveCommunication)}</div>
+      <div class="p-box"><h4>🚫 Rào cản</h4>${li(ai.communicationBarriers)}</div>
+    </div>
+    ${ai.blindSpots?`<div class="m-label">Điểm Mù (AI)</div><div class="p-box" style="margin-bottom:14px"><div class="p-prose">${paras(ai.blindSpots)}</div></div>`:''}
+    <div class="p2col">
+      <div class="p-box"><h4>🌱 Phát triển</h4>${li(ai.development)}</div>
+      <div class="p-box"><h4>💡 Quản lý</h4>${li(ai.managingTips)}</div>
     </div>`;
+}
 
-  printDiv.style.display = 'block';
+function mTab(id){
+  document.querySelectorAll('.m-tab').forEach((t,i)=>t.classList.toggle('active',['scores','profile','ai'][i]===id));
+  document.querySelectorAll('.m-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('mp-'+id).classList.add('active');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');currentItem=null;}
+function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
-  try {
+async function exportPDF(){
+  if(!currentItem)return;
+  const item=currentItem,p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
+  const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
+  const pct=v=>Math.round(v/24*100);
+  const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
+  const printDiv=document.getElementById('printArea');
+  printDiv.innerHTML=`<div style="font-family:'DM Sans',sans-serif;background:#fff;width:760px;padding:0;margin:0;color:#1a1a2e">
+    <div style="background:${p.c};padding:36px 40px 28px;color:#fff">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:.75;margin-bottom:10px">DHI CO LTD · INSIGHTS DISCOVERY REPORT · ${date}</div>
+      <div style="font-size:30px;font-weight:700;margin-bottom:6px">${p.e} ${p.l.toUpperCase()}</div>
+      <div style="font-size:16px;font-weight:400;opacity:.9;margin-bottom:14px">${p.tag}</div>
+      <div style="font-size:13px;opacity:.85">${item.Title} · ${item.EmployeeRole||''} ${item.Department?'· '+item.Department:''}</div>
+      ${item.Archetype?`<div style="margin-top:8px;font-size:12px;opacity:.8">🎭 ${item.Archetype}</div>`:''}
+    </div>
+    <div style="padding:32px 40px;background:#0d1117;color:#e6edf3">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8b949e;margin-bottom:12px">PHÂN BỔ NĂNG LƯỢNG (0–24)</div>
+      ${[['Red',r,'#E8392A'],['Yellow',y,'#F5A623'],['Green',g,'#3CB371'],['Blue',b,'#2B6CB0']].map(([lbl,sc,clr])=>`
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px"><span style="color:${clr}">${lbl}</span><span style="color:#8b949e">${sc}/24 (${pct(sc)}%)</span></div>
+          <div style="background:#21262d;border-radius:99px;height:8px;overflow:hidden"><div style="width:${pct(sc)}%;height:100%;background:${clr};border-radius:99px"></div></div>
+        </div>`).join('')}
+      <div style="background:#161b22;border-radius:10px;padding:12px 16px;margin:16px 0;border:1px solid rgba(255,255,255,.08)">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#8b949e">MÀU PHỤ: </span>
+        <span style="color:${s.c};font-weight:700">${s.e} ${s.l}</span>
+        <span style="color:#8b949e"> — ${s.tag}</span>
+      </div>
+      ${item.IEType||item.LeadStyle||item.StressBehavior?`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+        ${item.IEType?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">ĐỊNH HƯỚNG</div><div style="font-size:13px;font-weight:600;color:${item.IEType==='Extrovert'?'#F5A623':'#2B6CB0'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}</div></div>`:''}
+        ${item.LeadStyle?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">LÃNH ĐẠO</div><div style="font-size:12px;font-weight:600">${LL[item.LeadStyle]||'—'}</div></div>`:''}
+        ${item.StressBehavior?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">STRESS</div><div style="font-size:12px;font-weight:600">${SL[item.StressBehavior]||'—'}</div></div>`:''}
+      </div>`:''} 
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+        ${[['💪 ĐIỂM MẠNH',p.s],['🔧 CẦN PHÁT TRIỂN',p.b],['🤝 CÁCH LÀM VIỆC HIỆU QUẢ',p.t]].slice(0,2).map(([title,items])=>`
+          <div style="background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">${title}</div>
+            ${items.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${i}</div>`).join('')}
+          </div>`).join('')}
+      </div>
+      <div style="background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08);margin-top:14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">🤝 CÁCH LÀM VIỆC HIỆU QUẢ VỚI ${(item.Title||'').split(' ').pop().toUpperCase()}</div>
+        ${p.t.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${i}</div>`).join('')}
+      </div>
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between">
+        <div style="font-size:10px;color:#6e7681">DHI CO LTD · Insights Discovery Report · ${new Date().toLocaleDateString('vi-VN')}</div>
+        <div style="font-size:10px;color:#6e7681">${item.Title} · ${p.e} ${p.l} · ${s.e} ${s.l}</div>
+      </div>
+    </div></div>`;
+  printDiv.style.display='block';
+  try{
     toast('⏳ Đang tạo PDF…');
-    const canvas = await html2canvas(printDiv.firstElementChild, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#0d1117',
-      logging: false
-    });
-    printDiv.style.display = 'none';
-
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: 'px', format: [canvas.width/2, canvas.height/2] });
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width/2, canvas.height/2);
-    pdf.save(`Insights_${(item.Title||'report').replace(/\s+/g,'_')}_Profile.pdf`);
-    toast('✅ Đã xuất PDF thành công!');
-  } catch(err) {
-    printDiv.style.display = 'none';
-    console.error(err);
-    toast('❌ Lỗi xuất PDF: ' + err.message, true);
+    const canvas=await html2canvas(printDiv.firstElementChild,{scale:2,useCORS:true,backgroundColor:'#0d1117',logging:false});
+    printDiv.style.display='none';
+    const imgData=canvas.toDataURL('image/png');
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:'px',format:[canvas.width/2,canvas.height/2]});
+    pdf.addImage(imgData,'PNG',0,0,canvas.width/2,canvas.height/2);
+    pdf.save(`Insights_${(item.Title||'profile').replace(/\s+/g,'_')}.pdf`);
+    toast('✅ Đã xuất PDF!');
+  }catch(err){
+    printDiv.style.display='none';
+    toast('❌ Lỗi PDF: '+err.message,true);
   }
 }
 
-// ════════════════════════════════════════
-// TOAST
-// ════════════════════════════════════════
-function toast(msg,isErr=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.style.background=isErr?'#7f1d1d':'#1e293b';
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadData();
-});
+document.addEventListener('DOMContentLoaded',loadData);
 </script>
-<div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
 </body>
 </html>
