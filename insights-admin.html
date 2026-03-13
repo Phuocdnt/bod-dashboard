@@ -436,70 +436,181 @@ function mTab(id){
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open');currentItem=null;}
 function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
-async function exportPDF(){
+function exportPDF(){
   if(!currentItem)return;
-  const item=currentItem,p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
-  const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
-  const pct=v=>Math.round(v/24*100);
+  const item=currentItem;
+  const p=CI[item.PrimaryColor]||CI.blue, s=CI[item.SecondaryColor]||CI.green;
+  const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
+  const pctV=v=>Math.round(v/24*100);
+  const pctMap={r:pctV(rs),y:pctV(ys),g:pctV(gs),b:pctV(bs)};
+  const pct=k=>pctMap[k]||0;
   const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
-  const printDiv=document.getElementById('printArea');
-  printDiv.innerHTML=`<div style="font-family:'DM Sans',sans-serif;background:#fff;width:760px;padding:0;margin:0;color:#1a1a2e">
-    <div style="background:${p.c};padding:36px 40px 28px;color:#fff">
-      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:.75;margin-bottom:10px">DHI CO LTD · INSIGHTS DISCOVERY REPORT · ${date}</div>
-      <div style="font-size:30px;font-weight:700;margin-bottom:6px">${p.e} ${p.l.toUpperCase()}</div>
-      <div style="font-size:16px;font-weight:400;opacity:.9;margin-bottom:14px">${p.tag}</div>
-      <div style="font-size:13px;opacity:.85">${item.Title} · ${item.EmployeeRole||''} ${item.Department?'· '+item.Department:''}</div>
-      ${item.Archetype?`<div style="margin-top:8px;font-size:12px;opacity:.8">🎭 ${item.Archetype}</div>`:''}
-    </div>
-    <div style="padding:32px 40px;background:#0d1117;color:#e6edf3">
-      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8b949e;margin-bottom:12px">PHÂN BỔ NĂNG LƯỢNG (0–24)</div>
-      ${[['Red',r,'#E8392A'],['Yellow',y,'#F5A623'],['Green',g,'#3CB371'],['Blue',b,'#2B6CB0']].map(([lbl,sc,clr])=>`
-        <div style="margin-bottom:10px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px"><span style="color:${clr}">${lbl}</span><span style="color:#8b949e">${sc}/24 (${pct(sc)}%)</span></div>
-          <div style="background:#21262d;border-radius:99px;height:8px;overflow:hidden"><div style="width:${pct(sc)}%;height:100%;background:${clr};border-radius:99px"></div></div>
-        </div>`).join('')}
-      <div style="background:#161b22;border-radius:10px;padding:12px 16px;margin:16px 0;border:1px solid rgba(255,255,255,.08)">
-        <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#8b949e">MÀU PHỤ: </span>
-        <span style="color:${s.c};font-weight:700">${s.e} ${s.l}</span>
-        <span style="color:#8b949e"> — ${s.tag}</span>
-      </div>
-      ${item.IEType||item.LeadStyle||item.StressBehavior?`
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
-        ${item.IEType?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">ĐỊNH HƯỚNG</div><div style="font-size:13px;font-weight:600;color:${item.IEType==='Extrovert'?'#F5A623':'#2B6CB0'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}</div></div>`:''}
-        ${item.LeadStyle?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">LÃNH ĐẠO</div><div style="font-size:12px;font-weight:600">${LL[item.LeadStyle]||'—'}</div></div>`:''}
-        ${item.StressBehavior?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">STRESS</div><div style="font-size:12px;font-weight:600">${SL[item.StressBehavior]||'—'}</div></div>`:''}
-      </div>`:''} 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
-        ${[['💪 ĐIỂM MẠNH',p.s],['🔧 CẦN PHÁT TRIỂN',p.b],['🤝 CÁCH LÀM VIỆC HIỆU QUẢ',p.t]].slice(0,2).map(([title,items])=>`
-          <div style="background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08)">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">${title}</div>
-            ${items.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${i}</div>`).join('')}
-          </div>`).join('')}
-      </div>
-      <div style="background:#161b22;border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,.08);margin-top:14px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">🤝 CÁCH LÀM VIỆC HIỆU QUẢ VỚI ${(item.Title||'').split(' ').pop().toUpperCase()}</div>
-        ${p.t.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:5px">· ${i}</div>`).join('')}
-      </div>
-      <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between">
-        <div style="font-size:10px;color:#6e7681">DHI CO LTD · Insights Discovery Report · ${new Date().toLocaleDateString('vi-VN')}</div>
-        <div style="font-size:10px;color:#6e7681">${item.Title} · ${p.e} ${p.l} · ${s.e} ${s.l}</div>
-      </div>
-    </div></div>`;
-  printDiv.style.display='block';
-  try{
-    toast('⏳ Đang tạo PDF…');
-    const canvas=await html2canvas(printDiv.firstElementChild,{scale:2,useCORS:true,backgroundColor:'#0d1117',logging:false});
-    printDiv.style.display='none';
-    const imgData=canvas.toDataURL('image/png');
-    const{jsPDF}=window.jspdf;
-    const pdf=new jsPDF({unit:'px',format:[canvas.width/2,canvas.height/2]});
-    pdf.addImage(imgData,'PNG',0,0,canvas.width/2,canvas.height/2);
-    pdf.save(`Insights_${(item.Title||'profile').replace(/\s+/g,'_')}.pdf`);
-    toast('✅ Đã xuất PDF!');
-  }catch(err){
-    printDiv.style.display='none';
-    toast('❌ Lỗi PDF: '+err.message,true);
+  const name=item.Title||'', role=item.EmployeeRole||'', dept=item.Department||'';
+  const ieType=item.IEType||'', ieE=item.IEScoreE||0, ieI=item.IEScoreI||0;
+  const ieTotal=ieE+ieI||1, ieExtPct=Math.round(ieE/ieTotal*100);
+  const leadStyle=item.LeadStyle||'', stress=item.StressBehavior||'';
+  const arch=item.Archetype||`${p.l}`;
+
+  // Build Insights Wheel SVG
+  const cx=160,cy=160,R=150,r2=62;
+  const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
+  const SL_W=['Director','Motivator','Inspirer','Insp.Helper','Supporter','Coordinator','Observer','Reformer'];
+  const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
+  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
+  const hl=PM[`${kmap[item.PrimaryColor]}-${kmap[item.SecondaryColor]}`]??0;
+  const toR=d=>d*Math.PI/180;
+  const pol=(rd,deg)=>[cx+rd*Math.cos(toR(deg)),cy+rd*Math.sin(toR(deg))];
+  let svgPaths='';
+  for(let i=0;i<8;i++){
+    const isHL=i===hl,st=i*45-90-22.5,en=st+45;
+    const [x1,y1]=pol(r2,st);const [x2,y2]=pol(R,st);const [x3,y3]=pol(R,en);const [x4,y4]=pol(r2,en);
+    svgPaths+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r2} ${r2} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.4}" stroke="${isHL?'rgba(255,255,255,.7)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2.5:1}"/>`;
+    const [lx,ly]=pol((r2+R)/2,i*45-90);
+    svgPaths+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?9:7.5}" font-family="DM Sans,sans-serif" font-weight="${isHL?700:400}" opacity="${isHL?1:.6}">${SL_W[i]}</text>`;
   }
+  svgPaths+=`<circle cx="${cx}" cy="${cy}" r="${r2-2}" fill="#1a1a2e" stroke="rgba(255,255,255,.1)" stroke-width="1"/>`;
+  svgPaths+=`<text x="${cx}" y="${cy-16}" text-anchor="middle" fill="${p.c}" font-size="20">●</text>`;
+  svgPaths+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans" font-weight="600">${p.l.split(' ')[0]}</text>`;
+  svgPaths+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" fill="${p.c}" font-size="13" font-family="DM Sans" font-weight="700">${pct(item.PrimaryColor)}%</text>`;
+  svgPaths+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${s.c}" font-size="10" font-family="DM Sans" opacity=".85">+${s.l.split(' ')[0]} ${pct(item.SecondaryColor)}%</text>`;
+  const wheelSVG=`<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" width="240" height="240">${svgPaths}</svg>`;
+
+  // Parse AI narrative if available
+  let ai=null;
+  if(item.AIProfile){
+    try{ai=typeof item.AIProfile==='string'?JSON.parse(item.AIProfile):item.AIProfile;}catch(e){ai=null;}
+  }
+  const li=(arr,clr='#c9d1d9')=>(arr||[]).map(i=>`<li style="font-size:12.5px;line-height:1.7;color:${clr};margin-bottom:4px">${i}</li>`).join('');
+  const paras=(t)=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p style="font-size:13px;line-height:1.8;color:#c9d1d9;margin-bottom:8px">${p}</p>`).join('')||'';
+  const sec=(icon,title,body)=>`
+    <div style="background:#161b22;border-radius:10px;padding:16px 18px;border:1px solid rgba(255,255,255,.08);margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b949e;margin-bottom:10px">${icon} ${title}</div>
+      ${body}
+    </div>`;
+  const col2=(a,b)=>`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">${a}${b}</div>`;
+
+  // AI sections or fallback to color-based data
+  const aiPersonal  = ai ? paras(ai.personalStyle) : paras(p.p||'');
+  const aiStrengths = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.strengths)}</ul>` : p.s.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#c9d1d9;margin-bottom:4px">· ${i}</div>`).join('');
+  const aiWeakness  = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.weaknesses,'#ff7b72')}</ul>` : p.b.map(i=>`<div style="font-size:12.5px;line-height:1.6;color:#ff7b72;margin-bottom:4px">· ${i}</div>`).join('');
+  const aiCommGood  = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.effectiveCommunication)}</ul>` : `<ul style="padding-left:16px;margin:0">${li(p.t)}</ul>`;
+  const aiCommBad   = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.communicationBarriers,'#ff7b72')}</ul>` : '';
+  const aiBlind     = ai ? paras(ai.blindSpots) : '';
+  const aiDev       = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.development)}</ul>` : '';
+  const aiManage    = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.managingTips)}</ul>` : '';
+  const aiEnv       = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.idealEnvironment)}</ul>` : '';
+  const aiValue     = ai ? `<ul style="padding-left:16px;margin:0">${li(ai.valueToTeam)}</ul>` : '';
+
+  const printDiv=document.getElementById('printArea');
+  printDiv.innerHTML=`
+  <div id="printDoc" style="font-family:'DM Sans',sans-serif;background:#0d1117;color:#e6edf3;width:800px;margin:0 auto">
+
+    <!-- HEADER -->
+    <div style="background:${p.c};padding:36px 44px 28px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:.75;margin-bottom:10px">DHI CO LTD · INSIGHTS DISCOVERY PROFILE · ${date}</div>
+      <div style="font-size:28px;font-weight:700;margin-bottom:4px">${p.e} ${arch}</div>
+      <div style="font-size:15px;opacity:.9;margin-bottom:12px">${p.tag}</div>
+      <div style="font-size:14px;opacity:.85;font-weight:600">${name}</div>
+      <div style="font-size:12px;opacity:.75;margin-top:4px">${role}${dept?' · '+dept:''}</div>
+    </div>
+
+    <!-- WHEEL + SCORES -->
+    <div style="padding:32px 44px;background:#0d1117">
+      <div style="display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;margin-bottom:24px">
+        <div style="text-align:center">
+          ${wheelSVG}
+          <div style="font-size:13px;font-weight:600;margin-top:8px">${p.e} ${p.l} + ${s.e} ${s.l}</div>
+          <div style="font-size:10px;color:#8b949e;letter-spacing:2px;text-transform:uppercase;margin-top:4px">${arch}</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8b949e;margin-bottom:14px">PHÂN BỔ NĂNG LƯỢNG (0–24)</div>
+          ${[['r','Fiery Red','#E8392A',rs],['y','Sunshine Yellow','#F5A623',ys],['g','Earth Green','#3CB371',gs],['b','Cool Blue','#2B6CB0',bs]].map(([k,lbl,clr,sc])=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px">
+                <span style="color:${clr}">${lbl}</span>
+                <span style="color:#8b949e">${sc}/24 &nbsp;(${pctV(sc)}%)</span>
+              </div>
+              <div style="background:#21262d;border-radius:99px;height:10px;overflow:hidden">
+                <div style="width:${pctV(sc)}%;height:100%;background:${clr};border-radius:99px"></div>
+              </div>
+            </div>`).join('')}
+          <div style="background:#161b22;border-radius:10px;padding:10px 14px;margin-top:8px;border:1px solid rgba(255,255,255,.08)">
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#8b949e">MÀU PHỤ: </span>
+            <span style="color:${s.c};font-weight:700">${s.e} ${s.l}</span>
+            <span style="color:#8b949e"> — ${s.tag}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 DIMENSIONS -->
+      ${ieType||leadStyle||stress?`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
+        ${ieType?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+          <div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🔋 ĐỊNH HƯỚNG NĂNG LƯỢNG</div>
+          <div style="font-size:13px;font-weight:600;color:${ieType==='Extrovert'?'#F5A623':'#2B6CB0'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}</div>
+          <div style="font-size:10px;color:#8b949e;margin-top:4px">${ieExtPct}% E · ${100-ieExtPct}% I</div>
+        </div>`:''}
+        ${leadStyle?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+          <div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">👑 PHONG CÁCH LÃNH ĐẠO</div>
+          <div style="font-size:12px;font-weight:600">${LL[leadStyle]||leadStyle}</div>
+        </div>`:''}
+        ${stress?`<div style="background:#161b22;border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08)">
+          <div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">⚠️ HÀNH VI DƯỚI ÁP LỰC</div>
+          <div style="font-size:12px;font-weight:600">${SL[stress]||stress}</div>
+        </div>`:''}
+      </div>`:''}
+
+      <!-- AI NARRATIVE PAGE BREAK -->
+      <div style="page-break-before:always"></div>
+
+      <!-- PERSONAL STYLE -->
+      ${sec('👤','TỔNG QUAN PHONG CÁCH CÁ NHÂN', aiPersonal||paras(p.p||`${name} có phong cách làm việc đặc trưng với màu chủ đạo ${p.l}.`))}
+
+      <!-- STRENGTHS & WEAKNESSES -->
+      ${col2(
+        sec('💪','ĐIỂM MẠNH NỔI BẬT', aiStrengths),
+        sec('🔧','ĐIỂM CẦN PHÁT TRIỂN', aiWeakness)
+      )}
+
+      <!-- COMMUNICATION -->
+      ${col2(
+        sec('✅','GIAO TIẾP HIỆU QUẢ', aiCommGood),
+        aiCommBad ? sec('🚫','RÀO CẢN GIAO TIẾP', aiCommBad) : sec('🤝','ĐÓNG GÓP CHO NHÓM', aiValue||aiCommGood)
+      )}
+
+      ${aiBlind||aiDev||aiManage||aiEnv ? `
+      <!-- BLIND SPOTS & DEVELOPMENT -->
+      ${aiBlind ? sec('🔍','ĐIỂM MÙ TIỀM ẨN', aiBlind) : ''}
+      ${aiDev||aiManage ? col2(
+        aiDev ? sec('🌱','GỢI Ý PHÁT TRIỂN', aiDev) : '',
+        aiManage ? sec('💡','CÁCH QUẢN LÝ & TẠO ĐỘNG LỰC', aiManage) : ''
+      ) : ''}
+      ${aiEnv ? sec('🏡','MÔI TRƯỜNG LÀM VIỆC LÝ TƯỞNG', aiEnv) : ''}
+      ` : ''}
+
+      <!-- FOOTER -->
+      <div style="margin-top:24px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between">
+        <div style="font-size:10px;color:#6e7681">DHI CO LTD · Insights Discovery Report · ${new Date().toLocaleDateString('vi-VN')}</div>
+        <div style="font-size:10px;color:#6e7681">${name} · ${p.e} ${p.l} · ${s.e} ${s.l}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Use window.print() for full fidelity — same as employee
+  printDiv.style.cssText='display:block;position:fixed;left:0;top:0;width:100%;z-index:99999;background:#0d1117;overflow:auto';
+  const style=document.createElement('style');
+  style.id='print-override';
+  style.textContent=`@media print{
+    body > *:not(#printArea){display:none!important}
+    #printArea{position:static!important;z-index:auto!important}
+    @page{margin:0;size:A4}
+  }`;
+  document.head.appendChild(style);
+  setTimeout(()=>{
+    window.print();
+    printDiv.style.cssText='display:none;position:fixed;left:-9999px;top:0;z-index:-1';
+    document.getElementById('print-override')?.remove();
+  },300);
 }
 
 document.addEventListener('DOMContentLoaded',loadData);
