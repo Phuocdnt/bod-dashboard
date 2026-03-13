@@ -456,6 +456,57 @@ function resetForm(){
   document.getElementById('profileContainer').innerHTML='';
   show(0);
 }
+
+// ── Admin popup mode: load profile directly from URL param ──
+(function initFromURL(){
+  const params=new URLSearchParams(location.search);
+  const raw=params.get('data');
+  const autoPrint=params.get('print')==='1';
+  if(!raw)return;
+  try{
+    const item=JSON.parse(atob(raw));
+    const name=item.Title||item.name||'';
+    const role=item.EmployeeRole||item.role||'';
+    const dept=item.Department||item.department||'';
+    const kmap={red:'r',yellow:'y',green:'g',blue:'b'};
+    const pr=kmap[item.PrimaryColor]||'y';
+    const sec=kmap[item.SecondaryColor]||'g';
+    const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
+    const total=rs+ys+gs+bs||1;
+    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/24*100);
+    const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
+    const ieTotal=ieE+ieI||1;
+    const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
+    const ieExtPct=Math.round(ieE/ieTotal*100);
+    const lkmap={red:'r',yellow:'y',green:'g',blue:'b'};
+    const leadStyle=lkmap[item.LeadStyle]||item.LeadStyle||pr;
+    const stressBehavior=lkmap[item.StressBehavior]||item.StressBehavior||sec;
+    const arch=item.Archetype||`${CI[pr]?.l||''} + ${CI[sec]?.l||''}`;
+    const d={sc:{r:rs,y:ys,g:gs,b:bs},pr,sec,pPr:item.PrimaryColor,pSec:item.SecondaryColor,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch,ie:{E:ieE,I:ieI}};
+
+    // Parse AI narrative
+    let narrative=null;
+    if(item.AIProfile){
+      try{narrative=typeof item.AIProfile==='string'?JSON.parse(item.AIProfile):item.AIProfile;}catch(e){}
+    }
+
+    // Show profile screen directly, hide survey UI
+    document.addEventListener('DOMContentLoaded',()=>{
+      show(2);
+      if(narrative){
+        renderProfile(name,role,dept,d,narrative);
+      } else {
+        // Show loading then generate fresh AI
+        document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
+        genAIProfile(name,role,dept,d).then(n=>renderProfile(name,role,dept,d,n));
+      }
+      if(autoPrint){
+        // Auto-trigger print after render
+        setTimeout(()=>window.print(),narrative?800:8000);
+      }
+    });
+  }catch(e){console.error('Admin popup init error:',e);}
+})();
 </script>
 </body>
 </html>
