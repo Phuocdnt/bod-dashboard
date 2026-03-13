@@ -196,7 +196,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
   <div class="step" id="s2">
     <div id="profileContainer"></div>
     <div class="btn-row no-print" id="profileActions" style="display:none">
-      <button class="btn" style="background:linear-gradient(135deg,#1a5c2a,#3CB371);color:#fff" onclick="window.print()">&#128424; Xuất PDF Profile</button>
+      <!-- PDF export removed: only admin can export profiles -->
       <button class="btn btn-sec" onclick="resetForm()">Làm lại từ đầu</button>
     </div>
     <div class="print-footer card" style="margin-top:0">
@@ -444,7 +444,7 @@ function renderProfile(name,role,dept,d,n){
     </div>`;
   document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
   document.getElementById('profileActions').style.display='grid';
-  toast('✅ Profile AI đã được tạo thành công!');
+  toast('✅ Profile của bạn đã được tạo thành công!');
 }
 function resetForm(){
   ANS={};BATCH_IDX=0;
