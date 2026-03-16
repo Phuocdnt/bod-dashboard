@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.22 - COMPLETE - Enterprise Edition</title>
+    <title>BOD Dashboard v5.25 - SOP-001 Survey Compliance</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1345,6 +1345,119 @@
             display: block;
         }
 
+        /* v5.25 SOP-001 Survey Compliance Panel */
+        .sop-panel {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            color: white;
+        }
+        .sop-panel h4 {
+            margin: 0 0 14px 0;
+            font-size: 0.95em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #e8eaf6;
+        }
+        .sop-type-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .sop-type-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sop-type-btn:hover { background: rgba(255,255,255,0.2); }
+        .sop-type-btn.active-lite {
+            background: #43a047;
+            border-color: #66bb6a;
+            box-shadow: 0 2px 8px rgba(67,160,71,0.5);
+        }
+        .sop-type-btn.active-full {
+            background: #e65100;
+            border-color: #ff7043;
+            box-shadow: 0 2px 8px rgba(230,81,0,0.5);
+        }
+        .sop-decision-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .sop-decision-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 9px 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-weight: 700;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .sop-decision-btn:hover { background: rgba(255,255,255,0.2); }
+        .sop-decision-btn.active-go {
+            background: #2e7d32;
+            border-color: #66bb6a;
+        }
+        .sop-decision-btn.active-conditional {
+            background: #e65100;
+            border-color: #ff7043;
+        }
+        .sop-decision-btn.active-nogo {
+            background: #b71c1c;
+            border-color: #ef5350;
+        }
+        .sop-deadline-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.9em;
+        }
+        .sop-deadline-row.overdue {
+            background: rgba(183,28,28,0.4);
+            border: 1px solid rgba(239,83,80,0.6);
+        }
+        .sop-deadline-value {
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        /* SOP badge on project card */
+        .sop-card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 10px;
+            font-size: 0.78em;
+            font-weight: 700;
+            margin: 2px 3px 0 0;
+        }
+        .sop-badge-lite { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .sop-badge-full { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .sop-badge-go { background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784; }
+        .sop-badge-conditional { background: #fff3e0; color: #bf360c; border: 1px solid #ffb74d; }
+        .sop-badge-nogo { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+        .sop-badge-overdue { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:0.65} }
+
         /* Filter Bar */
         .filter-bar {
             background: #f8f9fa;
@@ -2069,7 +2182,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.22 - STAT CARDS FIXED</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.25 - SOP-001 SURVEY</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" 
@@ -2531,6 +2644,48 @@
                 <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin: 20px 0;">
                     <h3 style="color: #2d3748; margin-bottom: 15px;">📋 Survey (3 Vòng Khảo Sát)</h3>
                     
+                    <!-- v5.25 SOP-001 COMPLIANCE PANEL -->
+                    <div class="sop-panel">
+                        <h4>📌 SOP-001: Tuân Thủ Quy Trình Khảo Sát</h4>
+                        <!-- Row 1: Survey Type -->
+                        <div style="font-size:0.82em;color:#c5cae9;margin-bottom:6px;font-weight:600;">LOAI KHAO SAT</div>
+                        <div class="sop-type-toggle">
+                            <button type="button" class="sop-type-btn" id="sop-lite-btn"
+                                onclick="setSopType('LITE')"
+                                title="Du an &lt; 1 ty VND, don gian, 1 lan tham hien truong">
+                                &#x1F7E2; LITE &lt;1 ty
+                            </button>
+                            <button type="button" class="sop-type-btn" id="sop-full-btn"
+                                onclick="setSopType('FULL')"
+                                title="Du an &gt;= 1 ty VND, phuc tap, nhieu lan tham hien truong">
+                                &#x1F7E0; FULL &gt;=1 ty
+                            </button>
+                        </div>
+                        <!-- Row 2: Decision -->
+                        <div style="font-size:0.82em;color:#c5cae9;margin-bottom:6px;font-weight:600;">QUYET DINH SAU KHAO SAT</div>
+                        <div class="sop-decision-row">
+                            <button type="button" class="sop-decision-btn" id="sop-go-btn"
+                                onclick="setSopDecision('GO')">
+                                &#x2705; GO
+                            </button>
+                            <button type="button" class="sop-decision-btn" id="sop-conditional-btn"
+                                onclick="setSopDecision('CONDITIONAL_GO')">
+                                &#x26A0;&#xFE0F; CONDITIONAL
+                            </button>
+                            <button type="button" class="sop-decision-btn" id="sop-nogo-btn"
+                                onclick="setSopDecision('NO_GO')">
+                                &#x274C; NO-GO
+                            </button>
+                        </div>
+                        <!-- Row 3: Report Deadline (auto-calc) -->
+                        <div id="sop-deadline-row" class="sop-deadline-row" style="display:none;">
+                            <span>&#x23F0; Report Deadline</span>
+                            <span style="font-size:0.8em;color:#c5cae9;">(LITE: +48h / FULL: +72h sau ngay khao sat)</span>
+                            <span class="sop-deadline-value" id="sop-deadline-value">--</span>
+                        </div>
+                    </div>
+                    <!-- /SOP-001 PANEL -->
+
                     <div class="survey-tabs">
                         <button type="button" class="survey-tab active" onclick="switchSurveyTab(1)">Survey 1</button>
                         <button type="button" class="survey-tab" onclick="switchSurveyTab(2)">Survey 2</button>
@@ -2736,7 +2891,7 @@
                     </div>
                 </div>
 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary" id="save-project-btn">
                         <span>💾</span>
                         Lưu Dự Án
@@ -2780,7 +2935,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeTeamModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeTeamModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         <span>💾</span>
                         Lưu
@@ -3008,7 +3163,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closePasswordResetModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closePasswordResetModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         💾 Reset Password
                     </button>
@@ -3049,7 +3204,7 @@
                     <span class="icon">📞</span>
                     <div>
                         <strong>Điện thoại</strong>
-                        <p>Nội bộ: 1234 | Mobile: 0xxx-xxx-xxx</p>
+                        <p>Ná»™i bá»™: 1234 | Mobile: 0xxx-xxx-xxx</p>
                     </div>
                 </div>
             </div>
@@ -3095,7 +3250,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeChangePasswordModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeChangePasswordModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
                         💾 Đổi Mật Khẩu
                     </button>
@@ -4675,26 +4830,6 @@ function initializeDashboard() {
                         teamMembers: blobData.teamMembers?.length || 0,
                         lastSave: blobData.lastSave
                     });
-                    // v5.24 SAFETY: Never overwrite good localStorage with empty Azure data
-                    const _blobProjects = blobData.projects?.length || 0;
-                    const _blobMembers  = blobData.teamMembers?.length || 0;
-                    if (_blobProjects === 0 && _blobMembers === 0) {
-                        const _stored = localStorage.getItem(STORAGE_KEY);
-                        if (_stored) {
-                            try {
-                                const _local = JSON.parse(_stored);
-                                if ((_local.projects?.length || 0) > 0) {
-                                    console.warn('[v5.24 SAFETY] Azure empty but localStorage has ' + _local.projects.length + ' projects - keeping local data!');
-                                    projects = _local.projects || [];
-                                    teamMembers = _local.teamMembers || [];
-                                    window.projects = projects;
-                                    window.teamMembers = teamMembers;
-                                    window.showToast('⚠️ Azure trả về rỗng - giữ data local', 'warning');
-                                    return;
-                                }
-                            } catch(e) {}
-                        }
-                    }
                     projects = blobData.projects || [];
                     teamMembers = blobData.teamMembers || [];
                     window.projects = projects; // Sync to global
@@ -5355,6 +5490,45 @@ window.projects = projects;
                                     return `<span style="display: inline-block; background: ${config.bg}; color: ${config.color}; 
                                                    padding: 4px 12px; border-radius: 12px; font-size: 0.85em; 
                                                    font-weight: 600; margin-top: 8px;">${config.label}</span>`;
+
+                                ${(() => {
+                                    // v5.25 SOP-001: Show SOP badge when project has survey data
+                                    let badges = '';
+                                    if (project.sopSurveyType) {
+                                        const typeClass = project.sopSurveyType === 'FULL' ? 'sop-badge-full' : 'sop-badge-lite';
+                                        const typeIcon = project.sopSurveyType === 'FULL' ? '&#x1F7E0;' : '&#x1F7E2;';
+                                        badges += `<span class="sop-card-badge ${typeClass}">${typeIcon} ${project.sopSurveyType}</span>`;
+                                    }
+                                    if (project.sopDecision) {
+                                        const decMap = {
+                                            'GO': ['sop-badge-go', '&#x2705; GO'],
+                                            'CONDITIONAL_GO': ['sop-badge-conditional', '&#x26A0;&#xFE0F; CONDITIONAL'],
+                                            'NO_GO': ['sop-badge-nogo', '&#x274C; NO-GO']
+                                        };
+                                        const [cls, lbl] = decMap[project.sopDecision] || [];
+                                        if (cls) badges += `<span class="sop-card-badge ${cls}">${lbl}</span>`;
+                                    }
+                                    // Check overdue report deadline
+                                    if (project.sopSurveyType && !project.sopDecision) {
+                                        const rounds = Object.values(project.surveyRounds || {});
+                                        let latestSurveyDate = null;
+                                        rounds.forEach(r => {
+                                            const d = r.completeDate || r.startDate;
+                                            if (d) {
+                                                const dt = new Date(d);
+                                                if (!latestSurveyDate || dt > latestSurveyDate) latestSurveyDate = dt;
+                                            }
+                                        });
+                                        if (latestSurveyDate) {
+                                            const hrs = project.sopSurveyType === 'FULL' ? 72 : 48;
+                                            const deadline = new Date(latestSurveyDate.getTime() + hrs * 3600000);
+                                            if (new Date() > deadline) {
+                                                badges += `<span class="sop-card-badge sop-badge-overdue">&#x23F0; Report Overdue!</span>`;
+                                            }
+                                        }
+                                    }
+                                    return badges ? `<div style="margin-top:6px;">${badges}</div>` : '';
+                                })()}
                                 })()}
                             </div>
                         </div>
@@ -7049,6 +7223,12 @@ ${conflict.workload.map(w => `
                     document.getElementById(`${survey}-start`).value = currentEditingProject?.surveyRounds?.[survey]?.startDate || '';
                     document.getElementById(`${survey}-complete`).value = currentEditingProject?.surveyRounds?.[survey]?.completeDate || '';
                     document.getElementById(`${survey}-notes`).value = currentEditingProject?.surveyRounds?.[survey]?.notes || '';
+                    // v5.25 SOP-001: Update deadline display when survey complete date changes
+                    const surveyCompleteEl = document.getElementById(`${survey}-complete`);
+                    if (surveyCompleteEl) {
+                        surveyCompleteEl.addEventListener('change', updateSopDeadline);
+                    }
+
                     
                     // v5.11: Load existing team members
                     const displayDiv = document.getElementById(`${survey}-members-display`);
@@ -7087,6 +7267,29 @@ ${conflict.workload.map(w => `
                 // v5.11: Team section removed
                 // renderMembersDropdown();
                 // updateSelectedMembersDisplay();
+                // v5.25 SOP-001: Load SOP fields
+                {
+                    const sopType = currentEditingProject?.sopSurveyType || '';
+                    const sopDecision = currentEditingProject?.sopDecision || '';
+                    window._sopType = sopType;
+                    window._sopDecision = sopDecision;
+                    ['sop-lite-btn','sop-full-btn','sop-go-btn','sop-conditional-btn','sop-nogo-btn'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.className = 'sop-type-btn' + (id.includes('decision') || id.includes('go') || id.includes('conditional') || id.includes('nogo') ? '' : '');
+                    });
+                    const liteBtn = document.getElementById('sop-lite-btn');
+                    const fullBtn = document.getElementById('sop-full-btn');
+                    const goBtn = document.getElementById('sop-go-btn');
+                    const condBtn = document.getElementById('sop-conditional-btn');
+                    const nogoBtn = document.getElementById('sop-nogo-btn');
+                    if (liteBtn) liteBtn.className = 'sop-type-btn' + (sopType === 'LITE' ? ' active-lite' : '');
+                    if (fullBtn) fullBtn.className = 'sop-type-btn' + (sopType === 'FULL' ? ' active-full' : '');
+                    if (goBtn) goBtn.className = 'sop-decision-btn' + (sopDecision === 'GO' ? ' active-go' : '');
+                    if (condBtn) condBtn.className = 'sop-decision-btn' + (sopDecision === 'CONDITIONAL_GO' ? ' active-conditional' : '');
+                    if (nogoBtn) nogoBtn.className = 'sop-decision-btn' + (sopDecision === 'NO_GO' ? ' active-nogo' : '');
+                    updateSopDeadline();
+                }
+                
                 renderMilestoneForm();
                 
                 // v5.11: Render Installation Phases
@@ -7547,6 +7750,59 @@ ${conflict.workload.map(w => `
             };
 
             // v5.11: Survey Team Management Functions
+            // v5.25 SOP-001 Functions
+            window.setSopType = function(type) {
+                window._sopType = type;
+                const liteBtn = document.getElementById('sop-lite-btn');
+                const fullBtn = document.getElementById('sop-full-btn');
+                if (liteBtn) liteBtn.className = 'sop-type-btn' + (type === 'LITE' ? ' active-lite' : '');
+                if (fullBtn) fullBtn.className = 'sop-type-btn' + (type === 'FULL' ? ' active-full' : '');
+                window.updateSopDeadline();
+            };
+
+            window.setSopDecision = function(decision) {
+                window._sopDecision = decision;
+                const goBtn = document.getElementById('sop-go-btn');
+                const condBtn = document.getElementById('sop-conditional-btn');
+                const nogoBtn = document.getElementById('sop-nogo-btn');
+                if (goBtn) goBtn.className = 'sop-decision-btn' + (decision === 'GO' ? ' active-go' : '');
+                if (condBtn) condBtn.className = 'sop-decision-btn' + (decision === 'CONDITIONAL_GO' ? ' active-conditional' : '');
+                if (nogoBtn) nogoBtn.className = 'sop-decision-btn' + (decision === 'NO_GO' ? ' active-nogo' : '');
+            };
+
+            window.updateSopDeadline = function() {
+                const deadlineRow = document.getElementById('sop-deadline-row');
+                const deadlineVal = document.getElementById('sop-deadline-value');
+                if (!deadlineRow || !deadlineVal) return;
+                let surveyDate = null;
+                ['survey1','survey2','survey3'].forEach(function(s) {
+                    const completeEl = document.getElementById(s + '-complete');
+                    if (completeEl && completeEl.value) {
+                        const d = new Date(completeEl.value);
+                        if (!surveyDate || d < surveyDate) surveyDate = d;
+                    }
+                });
+                if (!surveyDate) {
+                    ['survey1','survey2','survey3'].forEach(function(s) {
+                        const startEl = document.getElementById(s + '-start');
+                        if (startEl && startEl.value) {
+                            const d = new Date(startEl.value);
+                            if (!surveyDate || d < surveyDate) surveyDate = d;
+                        }
+                    });
+                }
+                const sopType = window._sopType || '';
+                if (!surveyDate || !sopType) { deadlineRow.style.display = 'none'; return; }
+                const hoursToAdd = sopType === 'FULL' ? 72 : 48;
+                const deadline = new Date(surveyDate.getTime() + hoursToAdd * 3600000);
+                const now = new Date();
+                const isOverdue = now > deadline;
+                deadlineRow.style.display = 'flex';
+                deadlineRow.className = 'sop-deadline-row' + (isOverdue ? ' overdue' : '');
+                const opts = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                deadlineVal.textContent = deadline.toLocaleString('vi-VN', opts) + (isOverdue ? ' \u26a0\ufe0f QUA HAN' : '');
+            };
+
             window.addSurveyTeamMember = function(surveyId) {
                 const selectId = `${surveyId}-member-select`;
                 const select = document.getElementById(selectId);
@@ -8293,6 +8549,10 @@ ${conflict.workload.map(w => `
                     }
                 });
 
+                // v5.25 SOP-001: Collect SOP fields
+                const sopSurveyType = window._sopType || '';
+                const sopDecision = window._sopDecision || '';
+
                 // v5.11: Collect Installation Phases
                 const installationPhases = [];
                 document.querySelectorAll('.installation-person').forEach(select => {
@@ -8370,6 +8630,8 @@ ${conflict.workload.map(w => `
                     currentEditingProject.surveyRounds = surveyRounds;
                     currentEditingProject.milestones = milestones;
                     currentEditingProject.installationPhases = installationPhases; // v5.11
+                    currentEditingProject.sopSurveyType = sopSurveyType;
+                    currentEditingProject.sopDecision = sopDecision;
                     
                     // Compare and track changes
                     const changes = compareProjects(oldProject, currentEditingProject);
@@ -8401,6 +8663,8 @@ ${conflict.workload.map(w => `
                         surveyRounds: surveyRounds,
                         milestones: milestones,
                         installationPhases: installationPhases, // v5.11
+                        sopSurveyType: sopSurveyType,
+                        sopDecision: sopDecision,
                         createdDate: new Date().toISOString().split('T')[0],
                         createdBy: currentUser ? currentUser.id : null,
                         issues: [], // Feature #2: Issues array
@@ -9326,7 +9590,7 @@ ${conflict.workload.map(w => `
                 if (!team) return;
                 
                 currentEditingTeam = team;
-                document.getElementById('team-modal-title').textContent = 'Sửa Team';
+                document.getElementById('team-modal-title').textContent = 'Sá»­a Team';
                 document.getElementById('team-name').value = team.name;
                 
                 // Populate and check members
@@ -9563,7 +9827,7 @@ ${conflict.workload.map(w => `
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">💾 Lưu Team</button>
-                    <button type="button" class="btn" onclick="closeTeamManagementModal()">Hủy</button>
+                    <button type="button" class="btn" onclick="closeTeamManagementModal()">Há»§y</button>
                 </div>
             </form>
         </div>
@@ -10246,7 +10510,7 @@ ${conflict.workload.map(w => `
         <span class="version-badge-icon">ℹ️</span>
         <span>v5.22</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.22</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.25</div>
             <div class="version-info-item"><strong>Version:</strong> v5.15 - VERSION INDICATOR + ALL FIXES</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2025-12-22</div>
             <div class="version-info-item"><strong>Fixed Issues:</strong>
