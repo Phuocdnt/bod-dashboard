@@ -464,7 +464,7 @@ function resetForm(){
   const autoPrint=params.get('print')==='1';
   if(!raw)return;
   try{
-    const item=JSON.parse(atob(raw));
+    const item=JSON.parse(decodeURIComponent(escape(atob(raw))));
     const name=item.Title||item.name||'';
     const role=item.EmployeeRole||item.role||'';
     const dept=item.Department||item.department||'';
