@@ -377,12 +377,12 @@ YÊU CẦU BẮT BUỘC:
 Trả về JSON thuần (không markdown):
 {"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     const txt=data.content.map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
     return JSON.parse(txt);
-  }catch(e){console.error('AI:',e);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
+  }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
 function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
   const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Fiery Red chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
@@ -405,18 +405,18 @@ Về phong cách lãnh đạo, ${name} có xu hướng ${LL_FB[leadStyle]||LL_FB
 
 ${tensionNote}. Điều này phân biệt ${name} với những người chỉ có màu chính tương tự.`,
     strengths:f.s,
-    weaknesses:[SL_FB[stressBehavior]||'Cần quản lý stress tốt hơn',tensionNote,'Đôi khi cần linh hoạt hơn trong cách tiếp cận','Cần chú ý đến góc nhìn đa dạng','Cân bằng giữa tốc độ và chất lượng','Học cách ủy quyền hiệu quả hơn'],
+    weaknesses:[(SL_FB[stressBehavior]||'Cần quản lý stress tốt hơn').replace(/^./,c=>c.toUpperCase()),tensionNote,'Đôi khi cần linh hoạt hơn trong cách tiếp cận','Cần chú ý đến góc nhìn đa dạng','Cân bằng giữa tốc độ và chất lượng','Học cách ủy quyền hiệu quả hơn'],
     valueToTeam:[`Đảm bảo chất lượng theo chuẩn ${arch||'chuyên môn cao'}`,`Kết hợp ${F[pr]?.s[0]||'phân tích'} và ${secInfo.s[0]||'hành động'} hiệu quả`,'Đưa ra góc nhìn đa chiều khi nhóm cần quyết định','Duy trì tiêu chuẩn làm việc ổn định','Hỗ trợ đồng nghiệp với chuyên môn sâu','Là người đáng tin cậy trong các tình huống phức tạp'],
     effectiveCommunication:ieType==='Extrovert'?['Cho phép chia sẻ ý kiến ngay trong cuộc họp','Phản hồi nhanh và trực tiếp','Tạo cơ hội thảo luận nhóm','Công nhận đóng góp công khai','Chia sẻ thông tin sớm','Tương tác thường xuyên']:['Cho thời gian chuẩn bị trước cuộc họp','Chia sẻ agenda trước','Không ép trả lời ngay tức thì','Tạo không gian trao đổi 1-1','Giao tiếp qua văn bản khi cần suy nghĩ','Tôn trọng thời gian làm việc tập trung'],
-    communicationBarriers:[SL_FB[stressBehavior]||'Tránh tạo áp lực quá mức','Không vi quản lý hoặc kiểm tra chi tiết từng bước','Tránh thay đổi ưu tiên đột ngột','Không bỏ qua cảm xúc và nhu cầu cá nhân','Tránh ra quyết định thiếu căn cứ'],
-    blindSpots:`${name} có thể chưa nhận ra rằng ${SL_FB[stressBehavior]||'hành vi dưới áp lực'} đang ảnh hưởng đến người xung quanh nhiều hơn bản thân nhận thức.
+    communicationBarriers:[(SL_FB[stressBehavior]||'Tránh tạo áp lực quá mức').replace(/^./,c=>c.toUpperCase()),'Không vi quản lý hoặc kiểm tra chi tiết từng bước','Tránh thay đổi ưu tiên đột ngột','Không bỏ qua cảm xúc và nhu cầu cá nhân','Tránh ra quyết định thiếu căn cứ'],
+    blindSpots:`${name} có thể chưa nhận ra rằng ${(SL_FB[stressBehavior]||'hành vi dưới áp lực').replace(/^./,c=>c.toUpperCase())} đang ảnh hưởng đến người xung quanh nhiều hơn bản thân nhận thức.
 
 ${tensionNote} — đây vừa là điểm mạnh vừa là điểm mù cần được khai thác có ý thức.
 
 Việc phát triển nhận thức về điểm mù này sẽ giúp ${name} trở thành một cộng tác viên và nhà lãnh đạo hiệu quả hơn đáng kể.`,
-    development:[`Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và kiên nhẫn':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm'}`,`Học cách nhận biết và quản lý ${SL_FB[stressBehavior]?.split(' ')[0]||'stress'} sớm hơn`,'Xây dựng kỹ năng coaching và phát triển người khác','Cân bằng giữa hoàn hảo chủ nghĩa và tốc độ thực thi','Phát triển tư duy chiến lược dài hạn','Học cách ủy quyền hiệu quả và tin tưởng đội nhóm'],
+    development:[`Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và kiên nhẫn':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm'}`,`Học cách nhận biết và kiểm soát hành vi dưới áp lực sớm hơn: ${SL_FB[stressBehavior]||'quản lý stress'}`,'Xây dựng kỹ năng coaching và phát triển người khác','Cân bằng giữa hoàn hảo chủ nghĩa và tốc độ thực thi','Phát triển tư duy chiến lược dài hạn','Học cách ủy quyền hiệu quả và tin tưởng đội nhóm'],
     idealEnvironment:[`Môi trường ${ieType==='Extrovert'?'năng động với nhiều tương tác và trao đổi':'có không gian tập trung và ít bị ngắt quãng'}`,`Được giao việc rõ ràng với ${leadStyle==='r'?'quyền tự chủ cao':'mục tiêu và kỳ vọng cụ thể'}`,'Văn hóa trân trọng chất lượng và sự cẩn thận','Ít xung đột không cần thiết và được hỗ trợ khi cần','Cơ hội phát triển chuyên môn liên tục'],
-    managingTips:[`Giao việc với kết quả rõ ràng, ${leadStyle==='r'?'tránh vi quản lý':'cho đủ thời gian chuẩn bị'}`,`Khi ${name} stress, nhận ra dấu hiệu sớm: ${SL_FB[stressBehavior]||'thay đổi hành vi bất thường'}`,'Công nhận đóng góp cụ thể và kịp thời','Tạo môi trường an toàn để chia sẻ lo ngại','Phản hồi thường xuyên, xây dựng và có căn cứ rõ ràng']
+    managingTips:[`Giao việc với kết quả rõ ràng, ${leadStyle==='r'?'tránh vi quản lý':'cho đủ thời gian chuẩn bị'}`,`Khi ${name} stress, nhận ra dấu hiệu sớm: ${(SL_FB[stressBehavior]||'thay đổi hành vi bất thường'}`,'Công nhận đóng góp cụ thể và kịp thời','Tạo môi trường an toàn để chia sẻ lo ngại','Phản hồi thường xuyên, xây dựng và có căn cứ rõ ràng']
   };
 }
 function buildWheel(pr,sec,pct){
