@@ -345,19 +345,39 @@ async function submitResults(){
   renderProfile(name,role,dept,d,narrative);
 }
 async function genAIProfile(name,role,dept,d){
-  const LL={r:'Lãnh đạo Kết quả',y:'Truyền cảm hứng',g:'Lãnh đạo Phục vụ',b:'Lãnh đạo Chiến lược'};
-  const SL={r:'Kiểm soát tăng cao',y:'Phân tán, hời hợt',g:'Thu mình, im lặng',b:'Phân tích quá mức'};
-  const prompt=`Bạn là chuyên gia Insights Discovery. Tạo hồ sơ cho:
-Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
-Kết quả: Red ${d.pct('r')}% | Yellow ${d.pct('y')}% | Green ${d.pct('g')}% | Blue ${d.pct('b')}%
-Màu chính: ${CI[d.pr].l} | Màu phụ: ${CI[d.sec].l} | Loại: ${d.arch}
-Định hướng: ${d.ieType==='Extrovert'?'Hướng ngoại':'Hướng nội'} (${d.ieExtPct}% E)
-Lãnh đạo: ${LL[d.leadStyle]} | Hành vi stress: ${SL[d.stressBehavior]}
+  const LL={r:'Lãnh đạo Kết quả (ra quyết định nhanh, thúc đẩy kết quả)',y:'Lãnh đạo Truyền cảm hứng (tạo hứng khởi, kéo người theo tầm nhìn)',g:'Lãnh đạo Phụng sự (đặt con người lên trên, xây dựng tin tưởng)',b:'Lãnh đạo Chiến lược (phân tích sâu, xây dựng hệ thống bền vững)'};
+  const SL={r:'Kiểm soát tăng cao — trở nên áp đặt, nóng nảy, vi quản lý',y:'Phân tán, hời hợt — mất tập trung, nói nhiều, thiếu follow-through',g:'Thu mình, im lặng — né tránh xung đột, gánh chịu một mình',b:'Phân tích quá mức — tê liệt vì hoàn hảo chủ nghĩa, không thể ra quyết định'};
+  const IE_DESC=d.ieType==='Extrovert'
+    ? `Hướng ngoại rõ rệt (${d.ieExtPct}% E) — nạp năng lượng từ tương tác xã hội, suy nghĩ bằng cách nói ra, cần được nghe và phản hồi ngay`
+    : `Hướng nội (${100-d.ieExtPct}% I) — nạp năng lượng từ thời gian một mình, suy nghĩ trước khi nói, cần không gian để xử lý thông tin sâu`;
+  const dominant=(d.pct(d.pr)>60)?'Thiên về màu chính rõ rệt (>60%)':'Cân bằng tương đối giữa các màu';
+  const tension=(()=>{
+    if((d.pr==='r'&&d.sec==='b')||(d.pr==='b'&&d.sec==='r')) return 'Căng thẳng nội tâm giữa hành động nhanh (Red) và phân tích kỹ (Blue)';
+    if((d.pr==='r'&&d.sec==='g')||(d.pr==='g'&&d.sec==='r')) return 'Mâu thuẫn giữa quyết đoán (Red) và hài hòa (Green)';
+    if((d.pr==='y'&&d.sec==='b')||(d.pr==='b'&&d.sec==='y')) return 'Mâu thuẫn giữa sáng tạo bốc đồng (Yellow) và cẩn thận chi tiết (Blue)';
+    return 'Hai màu chính hỗ trợ lẫn nhau, ít căng thẳng nội tâm';
+  })();
+  const prompt=`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery cấp cao. Tạo hồ sơ CÁ NHÂN HÓA SÂU — KHÔNG dùng mô tả chung chung của màu sắc.
 
-Trả về JSON thuần (không markdown), cấu trúc chính xác:
-{"personalStyle":"3-4 đoạn mô tả phong cách. Cụ thể, cá nhân hóa theo tên ${name}. Các đoạn cách nhau bằng \\n","strengths":["8 điểm mạnh cụ thể"],"weaknesses":["6 điểm cần cải thiện"],"valueToTeam":["6 đóng góp cho nhóm"],"effectiveCommunication":["6 cách giao tiếp hiệu quả với người này"],"communicationBarriers":["5 điều tránh làm"],"blindSpots":"2-3 đoạn về điểm mù, cách nhau bằng \\n","development":["6 gợi ý phát triển"],"idealEnvironment":["5 môi trường lý tưởng"],"managingTips":["5 cách quản lý và tạo động lực"]}`;
+DỮ LIỆU: Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
+Điểm số: Red ${d.pct('r')}% / Yellow ${d.pct('y')}% / Green ${d.pct('g')}% / Blue ${d.pct('b')}%
+Màu chính: ${CI[d.pr].l} (${d.pct(d.pr)}%) | Màu phụ: ${CI[d.sec].l} (${d.pct(d.sec)}%) | ${dominant}
+Archetype: ${d.arch} | Nội tâm: ${tension}
+Định hướng: ${IE_DESC}
+Lãnh đạo: ${LL[d.leadStyle]}
+Stress: ${SL[d.stressBehavior]}
+
+YÊU CẦU BẮT BUỘC:
+1. Gọi tên "${name}" trực tiếp trong mỗi mục, không dùng "người này"
+2. Mỗi điểm mạnh/yếu phải gắn rõ: do màu nào + IE type + hoặc stress behavior tạo ra
+3. Nêu tình huống làm việc cụ thể (họp nhóm, deadline, feedback, xung đột...)
+4. Đoạn 4 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
+5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
+
+Trả về JSON thuần (không markdown):
+{"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     const txt=data.content.map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
