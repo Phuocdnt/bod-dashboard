@@ -466,7 +466,7 @@ function resetForm(){
   if(!raw)return;
   try{
     // FIX 1: Decode UTF-8 tiếng Việt đúng cách
-    const item=JSON.parse(decodeURIComponent(escape(atob(raw))));
+    const item=JSON.parse(decodeURIComponent(atob(raw).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     const name=item.Title||item.name||'';
     const role=item.EmployeeRole||item.role||'';
     const dept=item.Department||item.department||'';
@@ -512,7 +512,19 @@ function resetForm(){
       doInit();
     }
 
-  }catch(e){console.error('Admin popup init error:',e);}
+  }catch(e){
+    console.error('Admin popup init error:',e);
+    function showErr(){
+      show(2);
+      document.getElementById('profileContainer').innerHTML=
+        `<div class="card" style="text-align:center;padding:40px">
+          <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
+          <p style="color:var(--red);font-weight:600;margin-bottom:8px">Lỗi tải profile</p>
+          <p style="color:var(--muted);font-size:13px">${e.message}</p>
+        </div>`;
+    }
+    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',showErr);}else{showErr();}
+  }
 })();
 </script>
 </body>
