@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -464,6 +465,7 @@ function resetForm(){
   const autoPrint=params.get('print')==='1';
   if(!raw)return;
   try{
+    // FIX 1: Decode UTF-8 tiếng Việt đúng cách
     const item=JSON.parse(decodeURIComponent(escape(atob(raw))));
     const name=item.Title||item.name||'';
     const role=item.EmployeeRole||item.role||'';
@@ -490,21 +492,26 @@ function resetForm(){
       try{narrative=typeof item.AIProfile==='string'?JSON.parse(item.AIProfile):item.AIProfile;}catch(e){}
     }
 
-    // Show profile screen directly, hide survey UI
-    document.addEventListener('DOMContentLoaded',()=>{
+    // FIX 2: Kiểm tra readyState thay vì dùng DOMContentLoaded
+    // Tránh timing bug khi popup load xong DOM trước khi script đăng ký listener
+    function doInit(){
       show(2);
       if(narrative){
         renderProfile(name,role,dept,d,narrative);
       } else {
-        // Show loading then generate fresh AI
         document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
         genAIProfile(name,role,dept,d).then(n=>renderProfile(name,role,dept,d,n));
       }
       if(autoPrint){
-        // Auto-trigger print after render
         setTimeout(()=>window.print(),narrative?800:8000);
       }
-    });
+    }
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded',doInit);
+    } else {
+      doInit();
+    }
+
   }catch(e){console.error('Admin popup init error:',e);}
 })();
 </script>
