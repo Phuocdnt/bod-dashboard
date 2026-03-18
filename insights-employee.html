@@ -466,7 +466,8 @@ function resetForm(){
   if(!raw)return;
   try{
     // FIX 1: Decode UTF-8 tiếng Việt đúng cách
-    const item=JSON.parse(decodeURIComponent(atob(raw).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+    const b64=raw.replace(/ /g,'+');
+    const item=JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     const name=item.Title||item.name||'';
     const role=item.EmployeeRole||item.role||'';
     const dept=item.Department||item.department||'';
