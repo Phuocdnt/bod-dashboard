@@ -382,15 +382,42 @@ Trả về JSON thuần (không markdown):
     const data=await res.json();
     const txt=data.content.map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
     return JSON.parse(txt);
-  }catch(e){console.error('AI:',e);return fallback(name,d.pr);}
+  }catch(e){console.error('AI:',e);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
-function fallback(name,pr){
+function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
   const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Fiery Red chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
   y:{s:['Truyền cảm hứng và tạo động lực','Sáng tạo và luôn có ý tưởng mới','Giao tiếp tự nhiên, xây dựng quan hệ tốt','Linh hoạt và thích nghi nhanh','Nhìn thấy tiềm năng trong mọi người','Tạo không khí tích cực','Nhiệt tình và đam mê','Tư duy rộng'],p:`${name} mang năng lượng Sunshine Yellow đặc trưng — nhiệt tình, sáng tạo và truyền cảm hứng tự nhiên cho mọi người xung quanh.\n\nPhong cách làm việc của ${name} linh hoạt, cởi mở và luôn hướng đến sự đổi mới và kết nối con người.`},
   g:{s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn và ổn định','Đảm bảo hòa hợp nhóm','Hỗ trợ đồng nghiệp chân thành','Trung thành và đáng tin cậy','Trung gian hòa giải hiệu quả','Quan tâm sự phát triển của người khác'],p:`${name} là trái tim kết nối của đội nhóm. Với màu Earth Green chiếm ưu thế, ${name} mang đến sự đồng cảm, ổn định và luôn sẵn sàng hỗ trợ mọi người.\n\nPhong cách làm việc của ${name} hướng đến sự hài hòa, tin tưởng lẫn nhau và đảm bảo mọi người đều được lắng nghe.`},
   b:{s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và chất lượng','Cẩn thận và chính xác','Duy trì tiêu chuẩn cao','Lập kế hoạch tỉ mỉ','Tư duy phản biện tốt','Đáng tin cậy về chuyên môn','Kiên định với nguyên tắc'],p:`${name} là chuyên gia phân tích và chất lượng của nhóm. Với Cool Blue chiếm ưu thế, ${name} đảm bảo mọi việc được thực hiện đúng và có căn cứ rõ ràng.\n\nPhong cách làm việc của ${name} có hệ thống, cẩn thận và luôn đặt chất lượng lên hàng đầu.`}};
   const f=F[pr]||F.y;
-  return {personalStyle:f.p,strengths:f.s,weaknesses:['Đôi khi cần linh hoạt hơn','Cần chú ý đến góc nhìn đa dạng','Phát triển kỹ năng giao tiếp cảm xúc','Cân bằng giữa tốc độ và chất lượng','Học cách ủy quyền hiệu quả hơn','Quản lý stress tốt hơn'],valueToTeam:['Đóng góp năng lượng và góc nhìn đặc trưng','Hỗ trợ đồng nghiệp khi cần','Đưa ra góc nhìn đa dạng','Thúc đẩy hiệu quả nhóm','Xây dựng không khí làm việc tốt','Giải quyết vấn đề hiệu quả'],effectiveCommunication:['Giao tiếp rõ ràng và tôn trọng','Lắng nghe trước khi phản hồi','Chia sẻ thông tin cụ thể','Công nhận đóng góp','Phản hồi kịp thời','Dùng kênh giao tiếp phù hợp'],communicationBarriers:['Tránh phê bình cá nhân trước đám đông','Không áp đặt ý kiến','Tránh cứng nhắc quá mức','Không bỏ qua cảm xúc của họ','Tránh ngắt lời khi đang nói'],blindSpots:`${name} có thể chưa nhận ra một số hành vi ảnh hưởng đến người khác trong môi trường làm việc.\n\nViệc nhận thức và điều chỉnh những điểm mù này sẽ giúp ${name} hiệu quả hơn trong giao tiếp và lãnh đạo.`,development:['Phát triển kỹ năng lắng nghe sâu','Học cách quản lý xung đột','Xây dựng tư duy chiến lược','Cân bằng công việc và cuộc sống','Phát triển kỹ năng coaching','Tăng cường khả năng lập kế hoạch'],idealEnvironment:['Môi trường cởi mở và hỗ trợ','Được công nhận đóng góp','Cơ hội phát triển và học hỏi','Làm việc với người tích cực','Ít xung đột không cần thiết'],managingTips:['Đặt kỳ vọng rõ ràng','Phản hồi thường xuyên và xây dựng','Tạo cơ hội phát triển','Công nhận thành tích kịp thời','Tạo môi trường an toàn để chia sẻ']};
+  const secInfo=F[sec]||F.b;
+  const ieDesc=ieType==='Extrovert'?'hướng ngoại, nạp năng lượng từ tương tác và thích suy nghĩ bằng cách nói ra':'hướng nội, cần thời gian riêng để nạp lại năng lượng và suy nghĩ chín chắn trước khi chia sẻ';
+  const LL_FB={r:'định hướng kết quả rõ ràng',y:'truyền cảm hứng và kéo người theo tầm nhìn',g:'đặt con người lên trên và xây dựng tin tưởng',b:'phân tích sâu và xây dựng hệ thống bền vững'};
+  const SL_FB={r:'có xu hướng kiểm soát và vi quản lý khi áp lực tăng',y:'dễ phân tán và mất tập trung khi quá tải',g:'thường thu mình và im lặng thay vì nói lên khó khăn',b:'có thể bị tê liệt bởi hoàn hảo chủ nghĩa khi stress'};
+  const secWeakness={'r-b':'Căng thẳng nội tâm giữa hành động nhanh và phân tích kỹ đôi khi gây do dự','b-r':'Sức kéo giữa Blue và Red khiến khó cân bằng tốc độ và chất lượng','r-g':'Mâu thuẫn giữa quyết đoán và mong muốn hài hòa đôi khi làm chậm quyết định','y-b':'Sáng tạo bốc đồng và cẩn thận chi tiết tạo nên nội tâm phức tạp'};
+  const tensionNote=secWeakness[pr+'-'+sec]||`Sự kết hợp ${f.s[0]?.split(' ')[0]||'đặc trưng'} của ${name} tạo ra phong cách làm việc độc đáo`;
+  return {
+    personalStyle:`${name} là ${arch||f.s[0]} — sự kết hợp của ${F[pr]?.s[0]||'năng lực phân tích'} và ${secInfo.s[0]||'khả năng hành động'}. Đây là một trong những archetype hiếm gặp và có giá trị cao trong môi trường làm việc đòi hỏi cả chất lượng lẫn kết quả.
+
+Về định hướng năng lượng, ${name} là người ${ieDesc}. Điều này ảnh hưởng trực tiếp đến cách ${name} đóng góp trong các cuộc họp và xử lý thông tin phức tạp.
+
+Về phong cách lãnh đạo, ${name} có xu hướng ${LL_FB[leadStyle]||LL_FB.b}. Đây là điểm mạnh quan trọng giúp ${name} tạo ra tác động bền vững trong nhóm.
+
+${tensionNote}. Điều này phân biệt ${name} với những người chỉ có màu chính tương tự.`,
+    strengths:f.s,
+    weaknesses:[SL_FB[stressBehavior]||'Cần quản lý stress tốt hơn',tensionNote,'Đôi khi cần linh hoạt hơn trong cách tiếp cận','Cần chú ý đến góc nhìn đa dạng','Cân bằng giữa tốc độ và chất lượng','Học cách ủy quyền hiệu quả hơn'],
+    valueToTeam:[`Đảm bảo chất lượng theo chuẩn ${arch||'chuyên môn cao'}`,`Kết hợp ${F[pr]?.s[0]||'phân tích'} và ${secInfo.s[0]||'hành động'} hiệu quả`,'Đưa ra góc nhìn đa chiều khi nhóm cần quyết định','Duy trì tiêu chuẩn làm việc ổn định','Hỗ trợ đồng nghiệp với chuyên môn sâu','Là người đáng tin cậy trong các tình huống phức tạp'],
+    effectiveCommunication:ieType==='Extrovert'?['Cho phép chia sẻ ý kiến ngay trong cuộc họp','Phản hồi nhanh và trực tiếp','Tạo cơ hội thảo luận nhóm','Công nhận đóng góp công khai','Chia sẻ thông tin sớm','Tương tác thường xuyên']:['Cho thời gian chuẩn bị trước cuộc họp','Chia sẻ agenda trước','Không ép trả lời ngay tức thì','Tạo không gian trao đổi 1-1','Giao tiếp qua văn bản khi cần suy nghĩ','Tôn trọng thời gian làm việc tập trung'],
+    communicationBarriers:[SL_FB[stressBehavior]||'Tránh tạo áp lực quá mức','Không vi quản lý hoặc kiểm tra chi tiết từng bước','Tránh thay đổi ưu tiên đột ngột','Không bỏ qua cảm xúc và nhu cầu cá nhân','Tránh ra quyết định thiếu căn cứ'],
+    blindSpots:`${name} có thể chưa nhận ra rằng ${SL_FB[stressBehavior]||'hành vi dưới áp lực'} đang ảnh hưởng đến người xung quanh nhiều hơn bản thân nhận thức.
+
+${tensionNote} — đây vừa là điểm mạnh vừa là điểm mù cần được khai thác có ý thức.
+
+Việc phát triển nhận thức về điểm mù này sẽ giúp ${name} trở thành một cộng tác viên và nhà lãnh đạo hiệu quả hơn đáng kể.`,
+    development:[`Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và kiên nhẫn':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm'}`,`Học cách nhận biết và quản lý ${SL_FB[stressBehavior]?.split(' ')[0]||'stress'} sớm hơn`,'Xây dựng kỹ năng coaching và phát triển người khác','Cân bằng giữa hoàn hảo chủ nghĩa và tốc độ thực thi','Phát triển tư duy chiến lược dài hạn','Học cách ủy quyền hiệu quả và tin tưởng đội nhóm'],
+    idealEnvironment:[`Môi trường ${ieType==='Extrovert'?'năng động với nhiều tương tác và trao đổi':'có không gian tập trung và ít bị ngắt quãng'}`,`Được giao việc rõ ràng với ${leadStyle==='r'?'quyền tự chủ cao':'mục tiêu và kỳ vọng cụ thể'}`,'Văn hóa trân trọng chất lượng và sự cẩn thận','Ít xung đột không cần thiết và được hỗ trợ khi cần','Cơ hội phát triển chuyên môn liên tục'],
+    managingTips:[`Giao việc với kết quả rõ ràng, ${leadStyle==='r'?'tránh vi quản lý':'cho đủ thời gian chuẩn bị'}`,`Khi ${name} stress, nhận ra dấu hiệu sớm: ${SL_FB[stressBehavior]||'thay đổi hành vi bất thường'}`,'Công nhận đóng góp cụ thể và kịp thời','Tạo môi trường an toàn để chia sẻ lo ngại','Phản hồi thường xuyên, xây dựng và có căn cứ rõ ràng']
+  };
 }
 function buildWheel(pr,sec,pct){
   const cx=160,cy=160,R=150,r2=62;
@@ -440,7 +467,7 @@ function renderProfile(name,role,dept,d,n){
       <div class="wheel-caption"><div class="pos-main">${kc.e} ${kc.l} + ${ks.e} ${ks.l}</div><div class="pos-sub">${arch}</div></div>
       <div class="color-bars">${bars}</div>
       <div class="dims-grid">
-        <div class="dim-card"><div class="dim-title">🔋 Định hướng năng lượng</div><div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}<br><span style="font-size:11px;font-weight:400;color:var(--muted)">${ieExtPct}% E · ${100-ieExtPct}% I</span></div></div>
+        <div class="dim-card"><div class="dim-title">🔋 Định hướng năng lượng</div><div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}${(ieExtPct>0||d.ie.E>0||d.ie.I>0)?`<br><span style="font-size:11px;font-weight:400;color:var(--muted)">${ieExtPct}% E · ${100-ieExtPct}% I</span>`:''}</div></div>
         <div class="dim-card"><div class="dim-title">👑 Phong cách lãnh đạo</div><div class="dim-val">${LL[leadStyle]||LL[leadStyle[0]]||'—'}</div></div>
         <div class="dim-card"><div class="dim-title">⚠️ Hành vi dưới áp lực</div><div class="dim-val">${SL[stressBehavior]||SL[stressBehavior[0]]||'—'}</div></div>
       </div>
