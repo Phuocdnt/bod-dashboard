@@ -208,7 +208,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 <div id="toast"></div>
 <script>
 const CONFIG = {
-  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488"
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
+  claudeApiKey: "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"
 };
 </script>
 <script>
@@ -377,7 +378,7 @@ YÊU CẦU BẮT BUỘC:
 Trả về JSON thuần (không markdown):
 {"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':CONFIG.claudeApiKey},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     const txt=data.content.map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
