@@ -209,7 +209,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 <script>
 const CONFIG = {
   flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-  claudeApiKey: "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"
+  // ⚠️ Dán URL Power Automate Claude Proxy Flow vào đây sau khi tạo
+  claudeFlowUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/56fd5378397449688d70d65ad23bc083/triggers/manual/paths/invoke?api-version=1"
 };
 </script>
 <script>
@@ -378,10 +379,17 @@ YÊU CẦU BẮT BUỘC:
 Trả về JSON thuần (không markdown):
 {"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':CONFIG.claudeApiKey},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok)throw new Error('API '+res.status);
+    // Gọi qua Power Automate proxy — API key lưu an toàn trong PA, không lộ trong HTML
+  if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
+  // Gửi full Claude API payload — PA chỉ cần forward thẳng đến api.anthropic.com
+  const claudePayload={model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]};
+  const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
+    if(!res.ok)throw new Error('PA Flow '+res.status);
     const data=await res.json();
-    const txt=data.content.map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
+    // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
+    // PA trả về Claude API response nguyên vẹn
+    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
+    if(!txt)throw new Error('Empty response from PA');
     return JSON.parse(txt);
   }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
