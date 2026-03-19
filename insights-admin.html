@@ -1,12 +1,13 @@
+
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0060)https://phuocdnt.github.io/bod-dashboard/insights-admin.html -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Insights Discovery – Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<link href="./Insights-Admin_Git_files/css2" rel="stylesheet">
+<script src="./Insights-Admin_Git_files/jspdf.umd.min.js.download"></script>
+<script src="./Insights-Admin_Git_files/html2canvas.min.js.download"></script>
 <script>
 const CONFIG = {
   flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
@@ -143,20 +144,18 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <span class="sb-lbl">Tổng Quan</span>
     <div class="sb-sec">
       <div class="stat-grid">
-        <div class="stat-box"><div class="sv" id="statTotal">–</div><div class="sl">Phản hồi</div></div>
-        <div class="stat-box"><div class="sv" id="statDepts">–</div><div class="sl">Phòng ban</div></div>
-        <div class="stat-box"><div class="sv" id="statTop">–</div><div class="sl">Màu chủ đạo</div></div>
-        <div class="stat-box"><div class="sv" id="statAvgDays">–</div><div class="sl">Avg/ngày</div></div>
+        <div class="stat-box"><div class="sv" id="statTotal">4</div><div class="sl">Phản hồi</div></div>
+        <div class="stat-box"><div class="sv" id="statDepts">3</div><div class="sl">Phòng ban</div></div>
+        <div class="stat-box"><div class="sv" id="statTop">🔵</div><div class="sl">Màu chủ đạo</div></div>
+        <div class="stat-box"><div class="sv" id="statAvgDays">2.0</div><div class="sl">Avg/ngày</div></div>
       </div>
     </div>
     <span class="sb-lbl">Phân Bổ Màu</span>
-    <div class="color-dist" id="colorDist" style="padding:0 16px 16px">
-      <div style="text-align:center;color:var(--muted);font-size:12px;padding:12px 0">Đang tải…</div>
-    </div>
-    <span class="sb-lbl">Lọc & Tìm Kiếm</span>
+    <div class="color-dist" id="colorDist" style="padding:0 16px 16px"><div class="cd-row"><span style="font-size:12px;width:20px">🔴</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#E8392A" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟡</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#F5A623" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟢</span><div class="cd-bg"><div class="cd-fill" style="width:25%;background:#3CB371" data-w="25%"></div></div><span class="cd-val">1</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🔵</span><div class="cd-bg"><div class="cd-fill" style="width:75%;background:#2B6CB0" data-w="75%"></div></div><span class="cd-val">3</span></div></div>
+    <span class="sb-lbl">Lọc &amp; Tìm Kiếm</span>
     <div class="filter-wrap">
-      <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()"/>
-      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option></select>
+      <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()">
+      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option><option value="Ban Giám Đốc">Ban Giám Đốc</option><option value="Kỹ Thuật">Kỹ Thuật</option><option value="Sản Xuất">Sản Xuất</option></select>
       <select id="fColor" onchange="applyFilter()">
         <option value="">Tất cả màu chính</option>
         <option value="red">🔴 Fiery Red</option>
@@ -169,10 +168,62 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
   <div class="content">
     <div class="tbl-wrap">
       <div class="tbl-hdr">
-        <h2 id="tableTitle">Tất cả phản hồi</h2>
+        <h2 id="tableTitle">Tất cả phản hồi (4)</h2>
         <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
       </div>
-      <div id="tableBody"><div class="spinner-row"><div class="spinner"></div></div></div>
+      <div id="tableBody"><table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody><tr onclick="openModal(6)">
+      <td><div class="name-cell"><span class="nm">Nguyễn Lê Thành Lạc</span><span class="rl">QA Manager</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Ban Giám Đốc</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2916666666666667" title="Red:7"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:6"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.4166666666666667" title="Blue:10"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
+      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
+    </tr><tr onclick="openModal(7)">
+      <td><div class="name-cell"><span class="nm">Hồ Việt Khánh</span><span class="rl">Nhân viên</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.25" title="Red:6"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.25" title="Yellow:6"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.2" title="Green:1"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.4583333333333333" title="Blue:11"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
+      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
+    </tr><tr onclick="openModal(8)">
+      <td><div class="name-cell"><span class="nm">BÙI HÀ ĐỨC AN</span><span class="rl">WORKSHOP MANAGER</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#3CB37118;color:#3CB371">🟢 Earth Green</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:3"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.20833333333333334" title="Green:5"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.625" title="Blue:15"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Quan Sát (Observer)</td>
+      <td style="color:var(--muted);font-size:12px">18/3/2026</td>
+    </tr><tr onclick="openModal(9)">
+      <td><div class="name-cell"><span class="nm">Tung Nguyen Hoang Thanh</span><span class="rl">OMS</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Sản Xuất</td>
+      <td><span class="pill" style="background:#3CB37122;color:#3CB371">🟢 Earth Green</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:0"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:0"></div>
+        <div class="score-seg" style="background:var(--green);opacity:1" title="Green:24"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.2" title="Blue:0"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Hỗ Trợ Kiên Định</td>
+      <td style="color:var(--muted);font-size:12px">19/3/2026</td>
+    </tr></tbody></table></div>
     </div>
   </div>
 </div>
@@ -187,9 +238,9 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
       <div class="m-sub" id="mSub"></div>
     </div>
     <div class="modal-tabs">
-      <button class="m-tab active" onclick="mTab('scores')">📊 Kết quả</button>
-      <button class="m-tab" onclick="mTab('profile')">👤 Profile</button>
-      <button class="m-tab" id="mTabAI" onclick="mTab('ai')" style="display:none">🤖 AI Narrative</button>
+      <button class="m-tab active" onclick="mTab(&#39;scores&#39;)">📊 Kết quả</button>
+      <button class="m-tab" onclick="mTab(&#39;profile&#39;)">👤 Profile</button>
+      <button class="m-tab" id="mTabAI" onclick="mTab(&#39;ai&#39;)" style="display:none">🤖 AI Narrative</button>
     </div>
     <!-- PANE: Scores -->
     <div class="m-pane active" id="mp-scores">
@@ -213,7 +264,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
   </div>
 </div>
 <div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
-<div id="toast"></div>
+<div id="toast" class="" style="background: rgb(30, 41, 59);">✅ Đã tải 4 phản hồi</div>
 
 <script>
 const CI={red:{l:'Fiery Red',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
@@ -438,9 +489,11 @@ function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))c
 
 function exportPDF(){
   if(!currentItem)return;
-  // Encode item data as base64 JSON → open employee page in popup
-  // Employee page will render full profile with all CSS + AI narrative, then print
-  const data=btoa(unescape(encodeURIComponent(JSON.stringify(currentItem))));
+  // Strip AIProfile trước khi encode → tránh URL >8000 ký tự bị cắt
+  // Employee popup sẽ tự gen AI rồi lưu ngược về SharePoint
+  const exportItem={...currentItem};
+  delete exportItem.AIProfile;
+  const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
   const baseUrl=location.origin+location.pathname.replace('insights-admin.html','insights-employee.html');
   const url=`${baseUrl}?data=${data}&print=1`;
   const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
@@ -450,5 +503,6 @@ function exportPDF(){
 
 document.addEventListener('DOMContentLoaded',loadData);
 </script>
-</body>
-</html>
+
+
+</body></html>
