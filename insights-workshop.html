@@ -987,7 +987,7 @@ Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
   document.getElementById('workshopAgenda').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang tạo agenda…</div>';
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     const text=data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
