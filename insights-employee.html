@@ -502,6 +502,12 @@ function renderProfile(name,role,dept,d,n){
   document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
   document.getElementById('profileActions').style.display='grid';
   toast('✅ Profile của bạn đã được tạo thành công!');
+  // Nếu đang ở chế độ print (admin popup) → trigger print sau khi render xong
+  const _params=new URLSearchParams(location.search);
+  if(_params.get('print')==='1' && !window._printTriggered){
+    window._printTriggered=true;
+    setTimeout(()=>window.print(),1200);
+  }
 }
 function resetForm(){
   ANS={};BATCH_IDX=0;
@@ -560,7 +566,9 @@ function resetForm(){
         genAIProfile(name,role,dept,d).then(n=>renderProfile(name,role,dept,d,n));
       }
       if(autoPrint){
-        setTimeout(()=>window.print(),narrative?800:8000);
+        // Nếu có narrative sẵn → print sau 1.5s
+        // Nếu cần gen AI → renderProfile sẽ trigger print
+        if(narrative) setTimeout(()=>window.print(),1500);
       }
     }
     if(document.readyState==='loading'){
