@@ -506,7 +506,7 @@ function renderProfile(name,role,dept,d,n){
   const _params=new URLSearchParams(location.search);
   if(_params.get('print')==='1' && !window._printTriggered){
     window._printTriggered=true;
-    setTimeout(()=>window.print(),1200);
+    setTimeout(()=>window.print(),3000);
   }
 }
 function resetForm(){
@@ -568,7 +568,7 @@ function resetForm(){
       if(autoPrint){
         // Nếu có narrative sẵn → print sau 1.5s
         // Nếu cần gen AI → renderProfile sẽ trigger print
-        if(narrative) setTimeout(()=>window.print(),1500);
+        if(narrative) setTimeout(()=>window.print(),3000);
       }
     }
     if(document.readyState==='loading'){
