@@ -471,8 +471,12 @@ Trả về JSON thuần (không markdown):
     }
     const data=await res.json();
     // Worker forward nguyên vẹn Claude API response
-    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\n?/,'').replace(/\n?```$/,'').trim();
-    if(!txt)throw new Error('Worker trả về response rỗng');
+    const raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+    if(!raw)throw new Error('Worker trả về response rỗng');
+    // Trích xuất JSON bằng cách tìm { đầu và } cuối — chống markdown fences
+    const j0=raw.indexOf('{'),j1=raw.lastIndexOf('}');
+    if(j0<0||j1<=j0)throw new Error('Không tìm thấy JSON trong response');
+    const txt=raw.slice(j0,j1+1);
     return JSON.parse(txt);
   }catch(e){
     console.error('AI Error:',e?.message||e);
