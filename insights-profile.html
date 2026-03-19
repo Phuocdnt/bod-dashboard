@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insights Discovery – Deep Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--sur:#0F141D;--sur2:#161E2C;--sur3:#1C2535;
+  --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.14);
+  --txt:#E8EDF5;--muted:#64748B;--muted2:#8B949E;
+  --ff:'DM Sans',sans-serif;--fd:'Playfair Display',serif;
+  --accent:#F5A623;
+  /* color vars set dynamically by JS */
+  --primary:#2B6CB0;--primary-s:rgba(43,108,176,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.6}
+
+/* ── LOADING STATE ── */
+#loadingScreen{
+  position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:1000;gap:20px;
+  transition:opacity .5s ease;
+}
+#loadingScreen.fade-out{opacity:0;pointer-events:none}
+.load-wheel{
+  width:64px;height:64px;border-radius:50%;
+  background:conic-gradient(#E8392A 0 90deg,#F5A623 90deg 180deg,#3CB371 180deg 270deg,#2B6CB0 270deg 360deg);
+  animation:spin 2s linear infinite;filter:drop-shadow(0 0 20px rgba(245,166,35,.4));
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.load-steps{display:flex;flex-direction:column;gap:8px;margin-top:8px;min-height:80px}
+.load-step{font-size:13px;color:var(--muted2);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(6px);transition:all .4s ease}
+.load-step.active{opacity:1;transform:translateY(0);color:var(--accent)}
+.load-step.done{opacity:.5;color:var(--muted)}
+.load-step::before{content:'○';flex-shrink:0}
+.load-step.active::before{content:'◉';color:var(--accent)}
+.load-step.done::before{content:'●';color:var(--muted)}
+
+/* ── LAYOUT ── */
+.page{max-width:900px;margin:0 auto;padding:40px 24px 80px;opacity:0;transition:opacity .6s ease}
+.page.visible{opacity:1}
+@media(max-width:600px){.page{padding:24px 16px 60px}}
+
+/* ── HERO HEADER ── */
+.hero{
+  border-radius:20px;overflow:hidden;margin-bottom:32px;
+  position:relative;
+}
+.hero-bg{
+  padding:48px 40px 40px;position:relative;
+  background:var(--hero-grad, linear-gradient(135deg,#0a1628,#1e3a5f,#1d4ed8));
+}
+.hero-noise{
+  position:absolute;inset:0;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;pointer-events:none;
+}
+.hero-wheel-deco{
+  position:absolute;right:-60px;top:-60px;width:320px;height:320px;
+  border-radius:50%;
+  background:conic-gradient(rgba(232,57,42,.15) 0 90deg,rgba(245,166,35,.15) 90deg 180deg,rgba(60,179,113,.15) 180deg 270deg,rgba(43,108,176,.15) 270deg 360deg);
+  filter:blur(40px);pointer-events:none;
+}
+.hero-label{
+  font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.55);margin-bottom:12px;
+}
+.hero-name{
+  font-family:var(--fd);font-size:clamp(2rem,5vw,3rem);font-weight:600;
+  line-height:1.15;margin-bottom:6px;color:#fff;
+}
+.hero-role{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:20px}
+.hero-colors{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hero-primary{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(0,0,0,.25);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:30px;padding:8px 16px;
+}
+.hero-primary-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.hero-primary-label{font-size:13px;font-weight:600;color:#fff}
+.hero-primary-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.hero-secondary{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.2);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:30px;padding:6px 12px;
+}
+.hero-secondary-dot{width:9px;height:9px;border-radius:50%}
+.hero-secondary-label{font-size:12px;color:rgba(255,255,255,.75)}
+
+/* Energy bars in hero */
+.hero-bars{
+  background:rgba(0,0,0,.3);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,255,255,.1);
+  padding:20px 40px;display:flex;gap:20px;flex-wrap:wrap;
+}
+@media(max-width:600px){.hero-bars{padding:16px 20px;gap:12px}}
+.energy-item{flex:1;min-width:120px}
+.ei-label{font-size:11px;font-weight:600;letter-spacing:.5px;margin-bottom:6px;display:flex;justify-content:space-between}
+.ei-bar{height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.ei-fill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.ei-score{font-size:10px;color:rgba(255,255,255,.5)}
+
+/* ── SECTION ── */
+.section{margin-bottom:28px}
+.section-head{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--bdr2);
+}
+.section-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  background:var(--primary-s);
+}
+.section-title{font-family:var(--fd);font-size:1.25rem;font-weight:600;color:var(--txt)}
+.section-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── CARD TYPES ── */
+.card{
+  background:var(--sur);border:1px solid var(--bdr);
+  border-radius:14px;padding:22px;margin-bottom:12px;
+}
+.card-title{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.card-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+/* Prose paragraphs */
+.prose{font-size:14px;line-height:1.85;color:rgba(232,237,245,.82)}
+.prose p{margin-bottom:12px}
+.prose p:last-child{margin-bottom:0}
+
+/* Bullet lists */
+.blist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.blist li{
+  font-size:13.5px;line-height:1.6;color:rgba(232,237,245,.8);
+  display:flex;gap:10px;padding:8px 12px;
+  background:var(--sur2);border-radius:8px;border:1px solid var(--bdr);
+}
+.blist li .dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  margin-top:7px;background:var(--primary);
+}
+.blist.do li .dot{background:#3CB371}
+.blist.dont li .dot{background:#E8392A}
+.blist.dev li .dot{background:var(--accent)}
+
+/* 2-col grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+
+/* 3-col grid */
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:700px){.grid3{grid-template-columns:1fr}}
+
+/* Tag pills */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{
+  font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;
+  border:1px solid;display:inline-block;
+}
+
+/* Conflict badge */
+.conflict-badge{
+  border-radius:12px;padding:16px;border:1px solid var(--bdr);
+  background:var(--sur2);
+}
+.cb-mode{font-size:16px;font-weight:700;margin-bottom:4px}
+.cb-desc{font-size:12px;color:var(--muted2);line-height:1.6}
+
+/* Score bar for profile dimensions */
+.dim-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.dim-row:last-child{border-bottom:none}
+.dim-label{width:180px;font-size:12px;font-weight:600;flex-shrink:0;color:var(--muted2)}
+.dim-bar{flex:1;height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.dim-fill{height:100%;border-radius:99px;transition:width 1s ease}
+.dim-val{width:40px;text-align:right;font-size:12px;font-weight:700;flex-shrink:0}
+
+/* Highlight quote */
+.highlight-quote{
+  background:linear-gradient(135deg,var(--primary-s),rgba(245,166,35,.05));
+  border-left:3px solid var(--primary);
+  border-radius:0 12px 12px 0;
+  padding:16px 20px;margin:16px 0;
+  font-family:var(--fd);font-size:1.05rem;font-style:italic;
+  color:rgba(232,237,245,.9);line-height:1.7;
+}
+
+/* IE badge */
+.ie-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:10px;border:1px solid var(--bdr);
+  background:var(--sur2);font-size:13px;font-weight:600;
+}
+
+/* Development item */
+.dev-item{
+  display:flex;gap:12px;padding:12px;
+  background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);
+  margin-bottom:8px;
+}
+.dev-num{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(245,166,35,.2);color:var(--accent);
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.dev-text{font-size:13px;line-height:1.6;color:rgba(232,237,245,.8)}
+
+/* Print / Export button */
+.export-bar{
+  position:fixed;bottom:24px;right:24px;
+  display:flex;gap:10px;z-index:100;
+}
+.btn-export{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 20px;border-radius:12px;border:none;cursor:pointer;
+  font-family:var(--ff);font-size:13px;font-weight:600;
+  transition:all .2s;
+}
+.btn-print{background:var(--sur2);color:var(--txt);border:1px solid var(--bdr2)}
+.btn-print:hover{background:var(--sur3)}
+.btn-close-prof{background:linear-gradient(135deg,var(--primary),#1E40AF);color:#fff}
+.btn-close-prof:hover{transform:translateY(-1px)}
+
+/* Section nav (sticky) */
+.sticky-nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(8,12,18,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 24px;overflow-x:auto;white-space:nowrap;
+  display:flex;gap:0;
+  margin:0 -24px 32px;
+}
+.nav-item{
+  padding:14px 16px;font-size:12px;font-weight:600;color:var(--muted);
+  cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;
+  text-decoration:none;display:inline-block;
+}
+.nav-item:hover{color:var(--txt)}
+.nav-item.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Error state */
+.error-state{
+  text-align:center;padding:80px 20px;
+}
+.error-state h2{font-family:var(--fd);font-size:1.8rem;margin-bottom:12px;color:var(--muted2)}
+.error-state p{color:var(--muted);font-size:14px;line-height:1.7}
+
+@media print{
+  .export-bar,.sticky-nav{display:none}
+  .page{padding:0}
+  .hero-bars{break-inside:avoid}
+  .section{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="load-wheel"></div>
+  <div class="load-text">Đang tạo profile cá nhân</div>
+  <div class="load-steps">
+    <div class="load-step" id="step1">Đọc dữ liệu khảo sát</div>
+    <div class="load-step" id="step2">Phân tích màu năng lượng</div>
+    <div class="load-step" id="step3">AI đang sinh nội dung profile</div>
+    <div class="load-step" id="step4">Hoàn thiện & trình bày</div>
+  </div>
+</div>
+
+<!-- MAIN PAGE (hidden until AI done) -->
+<div class="page" id="mainPage">
+
+  <!-- HERO -->
+  <div class="hero" id="heroSection">
+    <div class="hero-bg" id="heroBg">
+      <div class="hero-noise"></div>
+      <div class="hero-wheel-deco"></div>
+      <div class="hero-label" id="heroLabel">DHI CO LTD · INSIGHTS DISCOVERY PERSONAL PROFILE</div>
+      <div class="hero-name" id="heroName">–</div>
+      <div class="hero-role" id="heroRole">–</div>
+      <div class="hero-colors" id="heroColors"></div>
+    </div>
+    <div class="hero-bars" id="heroBars"></div>
+  </div>
+
+  <!-- STICKY NAV -->
+  <nav class="sticky-nav">
+    <a href="#overview" class="nav-item active">🧠 Tổng quan</a>
+    <a href="#strengths" class="nav-item">💪 Điểm mạnh</a>
+    <a href="#communication" class="nav-item">💬 Giao tiếp</a>
+    <a href="#blindspots" class="nav-item">🔍 Điểm mù</a>
+    <a href="#opposite" class="nav-item">⚡ Đối lập</a>
+    <a href="#leadership" class="nav-item">👑 Lãnh đạo</a>
+    <a href="#management" class="nav-item">🤝 Quản lý</a>
+    <a href="#development" class="nav-item">🚀 Phát triển</a>
+  </nav>
+
+  <!-- SECTIONS will be injected here by renderProfile() -->
+  <div id="profileContent"></div>
+
+</div>
+
+<!-- EXPORT BAR -->
+<div class="export-bar">
+  <button class="btn-export btn-print" onclick="window.print()">🖨️ In</button>
+  <button class="btn-export btn-close-prof" onclick="window.close()">✕ Đóng</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
+const CI = {
+  red:   {l:'Fiery Red',    e:'🔴',c:'#E8392A', grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d,#c0291c)', s:'rgba(232,57,42,.12)'},
+  yellow:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623', grad:'linear-gradient(135deg,#3d2000,#78350f,#b45309)', s:'rgba(245,166,35,.12)'},
+  green: {l:'Earth Green',  e:'🟢',c:'#3CB371', grad:'linear-gradient(135deg,#052e16,#14532d,#166534)', s:'rgba(60,179,113,.12)'},
+  blue:  {l:'Cool Blue',    e:'🔵',c:'#2B6CB0', grad:'linear-gradient(135deg,#0a1628,#1e3a5f,#1d4ed8)', s:'rgba(43,108,176,.12)'}
+};
+
+const ROLE8_MAP = {
+  'red-yellow':'Motivator','red-blue':'Reformer','red-green':'Director','red-red':'Director',
+  'yellow-red':'Inspirer','yellow-green':'Inspiring Helper','yellow-blue':'Inspirer','yellow-yellow':'Inspirer',
+  'green-yellow':'Inspiring Helper','green-blue':'Supporter','green-red':'Supporter','green-green':'Supporter',
+  'blue-green':'Coordinator','blue-yellow':'Observer','blue-red':'Observer','blue-blue':'Observer'
+};
+
+const OPPOSITE = {red:'green',yellow:'blue',green:'red',blue:'yellow'};
+
+// ════════════════════════════════════════════════════════════
+// PARSE URL PARAMS
+// ════════════════════════════════════════════════════════════
+function getParams(){
+  const p = new URLSearchParams(window.location.search);
+  return {
+    name:       p.get('name')      || 'Nhân Viên',
+    role:       p.get('role')      || '',
+    dept:       p.get('dept')      || '',
+    primary:    p.get('primary')   || 'blue',
+    secondary:  p.get('secondary') || 'green',
+    redScore:   parseInt(p.get('r')||'0'),
+    yellowScore:parseInt(p.get('y')||'0'),
+    greenScore: parseInt(p.get('g')||'0'),
+    blueScore:  parseInt(p.get('b')||'0'),
+    ieType:     p.get('ie')        || '',
+    leadStyle:  p.get('lead')      || '',
+    stress:     p.get('stress')    || '',
+    archetype:  p.get('arch')      || '',
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// LOADING STEPS
+// ════════════════════════════════════════════════════════════
+function setStep(n){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('step'+i);
+    if(i<n) {el.classList.remove('active');el.classList.add('done');}
+    else if(i===n){el.classList.add('active');el.classList.remove('done');}
+    else {el.classList.remove('active','done');}
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// BUILD HERO
+// ════════════════════════════════════════════════════════════
+function buildHero(params){
+  const pc = CI[params.primary] || CI.blue;
+  const sc = CI[params.secondary] || CI.green;
+  const total = (params.redScore+params.yellowScore+params.greenScore+params.blueScore)||24;
+  const pct = v => Math.round(v/total*100);
+
+  // Set CSS vars
+  document.documentElement.style.setProperty('--primary', pc.c);
+  document.documentElement.style.setProperty('--primary-s', pc.s);
+  document.getElementById('heroBg').style.background = pc.grad;
+
+  document.getElementById('heroName').textContent = params.name;
+  document.getElementById('heroRole').textContent =
+    [params.role, params.dept].filter(Boolean).join(' · ') || 'DHI CO LTD';
+
+  // Colors row
+  const roleWheel = ROLE8_MAP[`${params.primary}-${params.secondary}`] || '';
+  document.getElementById('heroColors').innerHTML = `
+    <div class="hero-primary">
+      <div class="hero-primary-dot" style="background:${pc.c};box-shadow:0 0 8px ${pc.c}88"></div>
+      <div>
+        <div class="hero-primary-label">${pc.e} ${pc.l}</div>
+        <div class="hero-primary-sub">${roleWheel ? 'Vai trò: '+roleWheel : 'Màu chủ đạo'}</div>
+      </div>
+    </div>
+    <div class="hero-secondary">
+      <div class="hero-secondary-dot" style="background:${sc.c}"></div>
+      <span class="hero-secondary-label">${sc.e} ${sc.l}</span>
+    </div>
+    ${params.ieType ? `<div class="hero-secondary"><span class="hero-secondary-label">${params.ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}</span></div>` : ''}
+  `;
+
+  // Energy bars
+  const bars = [
+    ['red',params.redScore],['yellow',params.yellowScore],
+    ['green',params.greenScore],['blue',params.blueScore]
+  ];
+  document.getElementById('heroBars').innerHTML = bars.map(([c,sc2])=>`
+    <div class="energy-item">
+      <div class="ei-label">
+        <span style="color:${CI[c].c}">${CI[c].e} ${CI[c].l.split(' ')[0]}</span>
+        <span class="ei-score">${pct(sc2)}%</span>
+      </div>
+      <div class="ei-bar">
+        <div class="ei-fill" id="bar-${c}" style="width:0%;background:${CI[c].c}"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // Animate bars after short delay
+  setTimeout(()=>{
+    bars.forEach(([c,sc2])=>{
+      const el=document.getElementById('bar-'+c);
+      if(el) el.style.width=pct(sc2)+'%';
+    });
+  },200);
+}
+
+// ════════════════════════════════════════════════════════════
+// AI PROMPT — Vietnamese, maximum depth
+// ════════════════════════════════════════════════════════════
+function buildPrompt(params){
+  const pc = CI[params.primary]||CI.blue;
+  const sc = CI[params.secondary]||CI.green;
+  const total = (params.redScore+params.yellowScore+params.greenScore+params.blueScore)||24;
+  const pct = v => Math.round(v/total*100);
+  const oppColor = OPPOSITE[params.primary]||'yellow';
+  const oppCI = CI[oppColor];
+  const roleWheel = ROLE8_MAP[`${params.primary}-${params.secondary}`]||'';
+
+  const CONFLICT_MAP = {
+    red:'Competing (Cạnh tranh) — quyết đoán, ít nhượng bộ',
+    yellow:'Collaborating (Hợp tác) — tìm win-win, mở rộng giải pháp',
+    green:'Accommodating/Avoiding — ưu tiên hòa khí, tránh đối đầu',
+    blue:'Compromising/Avoiding — phân tích kỹ, tìm điểm trung hòa'
+  };
+  const LEAD_MAP = {
+    red:'Lãnh đạo Kết quả — giao mục tiêu, đòi hỏi trách nhiệm',
+    yellow:'Lãnh đạo Truyền cảm hứng — tạo động lực và văn hóa tích cực',
+    green:'Lãnh đạo Phục vụ — đặt con người trước kết quả',
+    blue:'Lãnh đạo Chiến lược — xây hệ thống, đảm bảo chất lượng'
+  };
+  const STRESS_MAP = {
+    red:'Kiểm soát tăng cao — độc đoán, thiếu kiên nhẫn',
+    yellow:'Phân tán, hời hợt — mất tập trung, dễ xúc động',
+    green:'Thu mình, im lặng — tránh né, cảm xúc bị kìm nén',
+    blue:'Phân tích quá mức — tê liệt, không thể quyết định'
+  };
+
+  return `Bạn là chuyên gia Insights Discovery được đào tạo chuyên sâu bởi Insights Learning & Development (Dundee, Scotland). Bạn viết profile tâm lý cá nhân theo phong cách của Insights Discovery Personal Profile — giàu ngữ nghĩa, tinh tế, cá nhân hóa sâu sắc và thực tế.
+
+DỮ LIỆU NGƯỜI DÙNG:
+- Tên: ${params.name}
+- Chức danh: ${params.role||'chưa cung cấp'}
+- Phòng ban: ${params.dept||'chưa cung cấp'}
+- Màu chủ đạo: ${pc.l} (${pct(params.redScore>0?params.redScore:0)}% nếu Red, thực ra primary=${params.primary})
+- Màu phụ: ${sc.l}
+- Điểm số: Red=${params.redScore} (${pct(params.redScore)}%), Yellow=${params.yellowScore} (${pct(params.yellowScore)}%), Green=${params.greenScore} (${pct(params.greenScore)}%), Blue=${params.blueScore} (${pct(params.blueScore)}%)
+- Vai trò trên Insights Wheel: ${roleWheel}
+- Hướng năng lượng: ${params.ieType||'chưa xác định'}
+- Phong cách lãnh đạo: ${LEAD_MAP[params.leadStyle||params.primary]}
+- Hành vi dưới áp lực: ${STRESS_MAP[params.stress||params.primary]}
+- Kiểu đối lập: ${oppCI.l}
+- Phong cách xung đột: ${CONFLICT_MAP[params.primary]}
+
+QUAN TRỌNG: Profile PHẢI phản ánh chính xác sự kết hợp màu chủ đạo-phụ (${params.primary}-${params.secondary}), không phải chỉ màu chủ đạo. Điểm số cụ thể ảnh hưởng đến cường độ mô tả. Giọng văn ấm áp, tôn trọng, dùng đại từ "bạn" (không dùng "họ" hay tên thật).
+
+Trả về CHÍNH XÁC JSON sau (không markdown, không text ngoài JSON, không comment):
+{
+  "tagline": "Một câu mô tả bản sắc cốt lõi theo kiểu Insights — dưới 12 từ, súc tích và đặc trưng",
+  "overview": {
+    "personalStyle": "3 đoạn văn (mỗi đoạn 4-5 câu) mô tả phong cách cá nhân, cách tiếp cận công việc và cuộc sống. Phải phản ánh sự kết hợp ${params.primary}+${params.secondary} một cách tinh tế. Dùng ngôn ngữ giàu hình ảnh như profile Insights gốc.",
+    "interactingWithOthers": "2 đoạn văn mô tả cách người này tương tác, xây dựng quan hệ và ứng xử xã hội. Phản ánh ${params.ieType||'đặc trưng màu'} và ${params.secondary}.",
+    "decisionMaking": "2 đoạn văn về cách ra quyết định — quy trình suy nghĩ, mức độ chấp nhận rủi ro, ảnh hưởng của cảm xúc vs logic. Phản ánh điểm số thực tế."
+  },
+  "strengths": ["10 điểm mạnh cụ thể, mỗi item là 1 câu ngắn, bắt đầu bằng động từ hoặc tính từ, cá nhân hóa theo ${params.primary}-${params.secondary}"],
+  "weaknesses": ["8 điểm cần chú ý — dùng ngôn ngữ nhẹ nhàng như 'Đôi khi...', 'Có xu hướng...', không phán xét. Cụ thể và thực tế."],
+  "valueToTeam": ["8 giá trị cụ thể bạn mang lại cho nhóm, bắt đầu bằng động từ hành động"],
+  "communication": {
+    "effective": ["10 chiến lược giao tiếp hiệu quả với người này — cụ thể, thực tiễn, dùng 'Hãy...', 'Nên...', 'Đảm bảo...'"],
+    "barriers": ["8 điều KHÔNG nên làm khi giao tiếp — dùng 'Tránh...', 'Không nên...', 'Đừng...'"],
+    "commStyleParagraph": "1 đoạn văn mô tả phong cách giao tiếp đặc trưng của người này — kênh ưa thích, tốc độ, nội dung, không khí. Cá nhân hóa cao."
+  },
+  "blindSpots": "2 đoạn văn mô tả những hành vi vô thức mà bản thân không nhận ra nhưng người khác thấy rõ. Phải thực sự tinh tế và sâu sắc, không phải lặp lại weaknesses.",
+  "oppositeType": {
+    "description": "2 đoạn văn mô tả kiểu đối lập ${oppCI.l} — người này có thể thấy gì ở họ, và tại sao đôi khi khó hợp tác",
+    "howToWork": ["6 cách làm việc hiệu quả với kiểu đối lập — cụ thể và thực tiễn"],
+    "thingsToAvoid": ["5 điều tránh khi làm việc với kiểu đối lập"]
+  },
+  "conflictStyle": {
+    "mode": "${CONFLICT_MAP[params.primary]}",
+    "description": "2 đoạn văn mô tả sâu hơn cách người này phản ứng với xung đột — dấu hiệu leo thang, cách xuống thang, điều gì trigger họ",
+    "tips": ["5 lời khuyên để làm việc với người này khi có xung đột"]
+  },
+  "leadership": {
+    "style": "${LEAD_MAP[params.leadStyle||params.primary]}",
+    "description": "2 đoạn mô tả phong cách lãnh đạo đặc trưng — điểm mạnh và rủi ro khi lãnh đạo",
+    "strengths": ["5 điểm mạnh lãnh đạo"],
+    "developmentAreas": ["4 lĩnh vực cần phát triển trong vai trò lãnh đạo"]
+  },
+  "stressBehavior": {
+    "mode": "${STRESS_MAP[params.stress||params.primary]}",
+    "earlyWarnings": ["5 dấu hiệu sớm cho thấy người này đang bị stress — quan sát được từ bên ngoài"],
+    "triggers": ["4 tác nhân kích hoạt stress đặc trưng của màu ${params.primary}"],
+    "copingStrategies": ["5 chiến lược phục hồi và xử lý stress hiệu quả"]
+  },
+  "management": {
+    "idealEnvironment": ["6 điều kiện môi trường làm việc lý tưởng — cụ thể, không chung chung"],
+    "managingThis": ["8 lời khuyên cho người quản lý của người này — dùng 'Hãy...', 'Cần...', 'Quan trọng là...'"],
+    "motivating": ["6 yếu tố tạo động lực mạnh nhất — nội tâm và ngoại tại, cụ thể"],
+    "managementStyleOfThis": "1 đoạn văn về phong cách quản lý của chính người này — họ sẽ lãnh đạo đội nhóm như thế nào"
+  },
+  "development": {
+    "suggestions": ["8 gợi ý phát triển cụ thể và có thể hành động ngay — kết hợp cả technical và interpersonal"],
+    "strenghtToLeverage": "1 câu tóm tắt điểm mạnh cốt lõi cần phát huy",
+    "watchOut": "1 câu tóm tắt rủi ro lớn nhất cần chú ý"
+  }
+}`;
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER PROFILE FROM AI DATA
+// ════════════════════════════════════════════════════════════
+function li(arr, cls=''){
+  if(!arr||!arr.length) return '';
+  return arr.map(t=>`<li class=""><div class="dot"></div><span>${t}</span></li>`).join('');
+}
+
+function renderProfile(data, params){
+  const pc = CI[params.primary]||CI.blue;
+  const sc = CI[params.secondary]||CI.green;
+  const oppColor = OPPOSITE[params.primary]||'yellow';
+  const oppCI = CI[oppColor];
+  const STRESS_COLOR = {red:'#E8392A',yellow:'#F5A623',green:'#3CB371',blue:'#2B6CB0'};
+  const stressClr = STRESS_COLOR[params.stress||params.primary]||pc.c;
+
+  const html = `
+
+    <!-- 1. OVERVIEW -->
+    <div class="section" id="overview">
+      <div class="section-head">
+        <div class="section-icon" style="background:${pc.s}">🧠</div>
+        <div>
+          <div class="section-title">Tổng quan cá nhân</div>
+          <div class="section-sub">Personal Style · Tương tác · Ra quyết định</div>
+        </div>
+      </div>
+
+      ${data.tagline ? `<div class="highlight-quote">"${data.tagline}"</div>` : ''}
+
+      <div class="card">
+        <div class="card-title">Phong cách cá nhân</div>
+        <div class="prose">${(data.overview?.personalStyle||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Tương tác với người khác</div>
+          <div class="prose">${(data.overview?.interactingWithOthers||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Cách ra quyết định</div>
+          <div class="prose">${(data.overview?.decisionMaking||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. STRENGTHS / WEAKNESSES / VALUE -->
+    <div class="section" id="strengths">
+      <div class="section-head">
+        <div class="section-icon" style="background:rgba(60,179,113,.12)">💪</div>
+        <div>
+          <div class="section-title">Điểm mạnh & Giá trị</div>
+          <div class="section-sub">Strengths · Weaknesses · Value to Team</div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">💪 Điểm mạnh chính</div>
+          <ul class="blist" style="--primary:#3CB371">${li(data.strengths)}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🔍 Điểm cần chú ý</div>
+          <ul class="blist" style="--primary:${pc.c}">${li(data.weaknesses)}</ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌟 Giá trị bạn mang lại cho nhóm</div>
+        <ul class="blist" style="--primary:${pc.c}">${li(data.valueToTeam)}</ul>
+      </div>
+    </div>
+
+    <!-- 3. COMMUNICATION -->
+    <div class="section" id="communication">
+      <div class="section-head">
+        <div class="section-icon" style="background:rgba(43,108,176,.12)">💬</div>
+        <div>
+          <div class="section-title">Giao tiếp hiệu quả</div>
+          <div class="section-sub">Communication Do / Don't · Phong cách giao tiếp</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Phong cách giao tiếp đặc trưng</div>
+        <div class="prose"><p>${data.communication?.commStyleParagraph||''}</p></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title" style="color:#3CB371">✅ Nên làm khi giao tiếp</div>
+          <ul class="blist do">${li(data.communication?.effective)}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#E8392A">❌ Tránh khi giao tiếp</div>
+          <ul class="blist dont">${li(data.communication?.barriers)}</ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BLIND SPOTS -->
+    <div class="section" id="blindspots">
+      <div class="section-head">
+        <div class="section-icon" style="background:rgba(245,166,35,.12)">🔍</div>
+        <div>
+          <div class="section-title">Điểm mù (Blind Spots)</div>
+          <div class="section-sub">Những hành vi vô thức người khác nhận ra nhưng bản thân chưa thấy</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="prose">${(data.blindSpots||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+      </div>
+    </div>
+
+    <!-- 5. OPPOSITE TYPE & CONFLICT -->
+    <div class="section" id="opposite">
+      <div class="section-head">
+        <div class="section-icon" style="background:${oppCI.s}">⚡</div>
+        <div>
+          <div class="section-title">Kiểu đối lập & Xung đột</div>
+          <div class="section-sub">Opposite Type: ${oppCI.e} ${oppCI.l} · Thomas-Kilmann Conflict Mode</div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:3px solid ${oppCI.c}">
+        <div class="card-title" style="color:${oppCI.c}">${oppCI.e} Kiểu đối lập — ${oppCI.l}</div>
+        <div class="prose">${(data.oppositeType?.description||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+        <div class="grid2" style="margin-top:16px">
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3CB371;margin-bottom:8px">✅ Làm việc hiệu quả — nên</div>
+            <ul class="blist do" style="--primary:#3CB371">${li(data.oppositeType?.howToWork)}</ul>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#E8392A;margin-bottom:8px">❌ Tránh</div>
+            <ul class="blist dont">${li(data.oppositeType?.thingsToAvoid)}</ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:3px solid ${pc.c}">
+        <div class="card-title">⚔️ Phong cách xử lý xung đột (Thomas-Kilmann)</div>
+        <div class="conflict-badge" style="border-color:${pc.c}44;background:${pc.s};margin-bottom:14px">
+          <div class="cb-mode" style="color:${pc.c}">${pc.e} ${data.conflictStyle?.mode||''}</div>
+        </div>
+        <div class="prose">${(data.conflictStyle?.description||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+        <div style="margin-top:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px">💡 Tips khi có xung đột</div>
+          <ul class="blist dev">${li(data.conflictStyle?.tips)}</ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. LEADERSHIP & STRESS -->
+    <div class="section" id="leadership">
+      <div class="section-head">
+        <div class="section-icon" style="background:${pc.s}">👑</div>
+        <div>
+          <div class="section-title">Lãnh đạo & Hành vi dưới áp lực</div>
+          <div class="section-sub">Leadership Style · Stress Behavior</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title" style="color:${pc.c}">👑 Phong cách lãnh đạo</div>
+          <div style="background:${pc.s};border:1px solid ${pc.c}44;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+            <div style="font-size:13px;font-weight:600;color:${pc.c}">${data.leadership?.style||''}</div>
+          </div>
+          <div class="prose" style="margin-bottom:14px">${(data.leadership?.description||'').split('\n').filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3CB371;margin-bottom:8px">Điểm mạnh lãnh đạo</div>
+          <ul class="blist do">${li(data.leadership?.strengths)}</ul>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin:12px 0 8px">Cần phát triển</div>
+          <ul class="blist dev">${li(data.leadership?.developmentAreas)}</ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color:${stressClr}">⚠️ Hành vi dưới áp lực</div>
+          <div style="background:${stressClr}18;border:1px solid ${stressClr}44;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+            <div style="font-size:13px;font-weight:600;color:${stressClr}">${data.stressBehavior?.mode||''}</div>
+          </div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px">🚨 Dấu hiệu sớm</div>
+          <ul class="blist" style="--primary:${stressClr}">${li(data.stressBehavior?.earlyWarnings)}</ul>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin:12px 0 8px">⚡ Tác nhân kích hoạt</div>
+          <ul class="blist" style="--primary:${stressClr}">${li(data.stressBehavior?.triggers)}</ul>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3CB371;margin:12px 0 8px">💚 Chiến lược phục hồi</div>
+          <ul class="blist do">${li(data.stressBehavior?.copingStrategies)}</ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. MANAGEMENT -->
+    <div class="section" id="management">
+      <div class="section-head">
+        <div class="section-icon" style="background:rgba(60,179,113,.12)">🤝</div>
+        <div>
+          <div class="section-title">Quản lý & Tạo động lực</div>
+          <div class="section-sub">Ideal Environment · Managing · Motivating</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏢 Môi trường làm việc lý tưởng</div>
+        <ul class="blist" style="--primary:${pc.c}">${li(data.management?.idealEnvironment)}</ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Phong cách quản lý của bạn</div>
+        <div class="prose"><p>${data.management?.managementStyleOfThis||''}</p></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">📋 Cách quản lý người này hiệu quả</div>
+          <ul class="blist" style="--primary:${pc.c}">${li(data.management?.managingThis)}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🔥 Yếu tố tạo động lực</div>
+          <ul class="blist" style="--primary:${pc.c}">${li(data.management?.motivating)}</ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. DEVELOPMENT -->
+    <div class="section" id="development">
+      <div class="section-head">
+        <div class="section-icon" style="background:rgba(245,166,35,.12)">🚀</div>
+        <div>
+          <div class="section-title">Gợi ý phát triển</div>
+          <div class="section-sub">Development Suggestions · Action Plan</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="card" style="border-color:rgba(60,179,113,.3);background:rgba(60,179,113,.05)">
+          <div class="card-title" style="color:#3CB371">💡 Điểm mạnh cần phát huy</div>
+          <div style="font-size:14px;line-height:1.7;color:rgba(232,237,245,.9);font-family:var(--fd);font-style:italic">${data.development?.strenghtToLeverage||''}</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)">
+          <div class="card-title" style="color:var(--accent)">⚠️ Rủi ro cần chú ý</div>
+          <div style="font-size:14px;line-height:1.7;color:rgba(232,237,245,.9);font-family:var(--fd);font-style:italic">${data.development?.watchOut||''}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Gợi ý hành động cụ thể</div>
+        <div>
+          ${(data.development?.suggestions||[]).map((s,i)=>`
+            <div class="dev-item">
+              <div class="dev-num">${i+1}</div>
+              <div class="dev-text">${s}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="margin-top:24px;text-align:center;padding:20px;border:1px dashed var(--bdr2);border-radius:14px">
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">DHI CO LTD · Insights Discovery Personal Profile</div>
+        <div style="font-size:12px;color:var(--muted)">Profile được tạo tự động dựa trên kết quả khảo sát ${new Date().toLocaleDateString('vi-VN')} · Mô hình Insights® của Andrew Lothian, Insights Learning & Development</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('profileContent').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+// STICKY NAV ACTIVE STATE
+// ════════════════════════════════════════════════════════════
+function initStickyNav(){
+  const sections = ['overview','strengths','communication','blindspots','opposite','leadership','management','development'];
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+        if(active) active.classList.add('active');
+      }
+    });
+  },{threshold:0.3,rootMargin:'-80px 0px -60% 0px'});
+  sections.forEach(id=>{ const el=document.getElementById(id); if(el) observer.observe(el); });
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN FLOW
+// ════════════════════════════════════════════════════════════
+async function main(){
+  const params = getParams();
+
+  setStep(1);
+  await new Promise(r=>setTimeout(r,400));
+
+  setStep(2);
+  buildHero(params);
+  await new Promise(r=>setTimeout(r,500));
+
+  setStep(3);
+  let profileData;
+  try{
+    const prompt = buildPrompt(params);
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:4000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!res.ok) throw new Error('API '+res.status);
+    const apiData = await res.json();
+    const text = apiData.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    profileData = JSON.parse(text);
+  }catch(err){
+    console.error('AI error:',err);
+    document.getElementById('profileContent').innerHTML=`
+      <div class="error-state">
+        <h2>Không thể tạo profile</h2>
+        <p>Lỗi kết nối AI: ${err.message}<br>Vui lòng thử lại hoặc kiểm tra kết nối mạng.</p>
+      </div>`;
+    setStep(4);
+    document.getElementById('loadingScreen').classList.add('fade-out');
+    document.getElementById('mainPage').classList.add('visible');
+    return;
+  }
+
+  setStep(4);
+  renderProfile(profileData, params);
+  await new Promise(r=>setTimeout(r,300));
+
+  document.getElementById('loadingScreen').classList.add('fade-out');
+  document.getElementById('mainPage').classList.add('visible');
+  setTimeout(initStickyNav, 600);
+}
+
+main();
+</script>
+</body>
+</html>
