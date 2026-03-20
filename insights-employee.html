@@ -498,20 +498,44 @@ Trả về JSON thuần (không markdown):
 
     console.log('[AI] raw length:', raw.length, '| first 100:', raw.slice(0,100));
 
-    // Hàm repair JSON: escape newline thật trong string values
-    // Claude đôi khi viết newline thật thay vì \n → JSON.parse fail
+    // Hàm repair JSON hoàn chỉnh:
+    // - Escape literal newline/tab trong string values
+    // - Xử lý backslash đứng trước newline (\\n thật) → \\n escaped
+    // - Bỏ qua escape sequences hợp lệ
     function repairJSON(s){
-      // Escape literal newlines/tabs bên trong cặp dấu nháy kép
-      let inStr=false, esc=false, result='';
-      for(let i=0;i<s.length;i++){
+      let inStr=false, i=0, result='';
+      while(i<s.length){
         const c=s[i];
-        if(esc){result+=c;esc=false;continue;}
-        if(c==='\\'&&inStr){result+=c;esc=true;continue;}
-        if(c==='"'){inStr=!inStr;result+=c;continue;}
-        if(inStr&&c==='\n'){result+='\\n';continue;}
-        if(inStr&&c==='\r'){result+='\\r';continue;}
-        if(inStr&&c==='\t'){result+='\\t';continue;}
-        result+=c;
+        if(!inStr){
+          if(c==='"') inStr=true;
+          result+=c; i++; continue;
+        }
+        // Trong string
+        if(c==='\\'){
+          const nx=s[i+1];
+          if(nx==='\n'||nx==='\r'){
+            // Backslash trước newline thật → đổi thành \n
+            result+='\\n';
+            i+=2;
+            if(nx==='\r'&&s[i]==='\n') i++; // skip \r\n
+          } else if('\"\\\/bfnrtu'.indexOf(nx)>=0){
+            // Escape sequence hợp lệ → giữ nguyên
+            result+=c+nx; i+=2;
+          } else {
+            // Backslash đứng lẻ (invalid) → escape thành \\
+            result+='\\\\'; i++;
+          }
+        } else if(c==='"'){
+          inStr=false; result+=c; i++;
+        } else if(c==='\n'){
+          result+='\\n'; i++;
+        } else if(c==='\r'){
+          result+='\\r'; i++;
+        } else if(c==='\t'){
+          result+='\\t'; i++;
+        } else {
+          result+=c; i++;
+        }
       }
       return result;
     }
