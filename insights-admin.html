@@ -348,10 +348,10 @@ function renderTable(){
       <td><span class="pill" style="background:${p.c}22;color:${p.c}">${p.e} ${p.l}</span></td>
       <td><span class="pill" style="background:${s.c}18;color:${s.c}">${s.e} ${s.l}</span></td>
       <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/24)}" title="Red:${r}"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/24)}" title="Yellow:${y}"></div>
-        <div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/24)}" title="Green:${g}"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/24)}" title="Blue:${b}"></div>
+        <div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/28)}" title="Red:${r}"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/28)}" title="Yellow:${y}"></div>
+        <div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/28)}" title="Green:${g}"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/28)}" title="Blue:${b}"></div>
       </div></td>
       <td style="font-size:12px;color:var(--muted)">${item.Archetype||'–'}</td>
       <td style="color:var(--muted);font-size:12px">${date}</td>
@@ -408,7 +408,7 @@ function openModal(id){
   const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
   const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
   const total=r+y+g+b||96;
-  const pct=v=>Math.round(v/24*100);
+  const pct=v=>Math.round(v/28*100); // max 28: 24 core + 8 IE×0.5
   const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
   // Hero
   document.getElementById('mHero').style.background=p.grad;
@@ -417,7 +417,7 @@ function openModal(id){
   document.getElementById('mSub').textContent=[item.EmployeeRole,item.Department,date].filter(Boolean).join(' · ');
   // Scores pane
   document.getElementById('mEnergyRow').innerHTML=[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
-    <div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/24 (${pct(sc)}%)</span></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/28 (${pct(sc)}%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width:0%;background:${CI[c].c}" data-w="${pct(sc)}%"></div></div></div>`).join('');
   document.getElementById('mDims').innerHTML=`
     <div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:${item.IEType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':item.IEType==='Introvert'?'🌙 Hướng nội':'—'}</div></div>
