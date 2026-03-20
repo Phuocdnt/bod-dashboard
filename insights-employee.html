@@ -496,28 +496,37 @@ Trả về JSON thuần (không markdown):
     }
     if(!raw)throw new Error('Worker trả về response rỗng');
 
-    // Thử parse 4 lần theo thứ tự từ đơn giản → phức tạp
-    // 1. Parse thẳng (trường hợp không có fence)
-    try{ return JSON.parse(raw); }catch(e1){}
+    // Log để debug nếu cần
+    console.log('[AI] raw length:', raw.length, '| first 100:', raw.slice(0,100));
 
-    // 2. Strip markdown fence bằng indexOf — chống mọi loại backtick/encoding
-    const fenceEnd=raw.indexOf('{');
-    const fenceClose=raw.lastIndexOf('}');
-    if(fenceEnd>=0&&fenceClose>fenceEnd){
-      try{ return JSON.parse(raw.slice(fenceEnd,fenceClose+1)); }catch(e2){}
+    // Cách đáng tin cậy nhất: tìm { đầu tiên và } cuối cùng
+    // Hoạt động với mọi dạng: thuần JSON, ```json...```, có text thừa trước/sau
+    const i0 = raw.indexOf('{');
+    const i1 = raw.lastIndexOf('}');
+    if(i0 >= 0 && i1 > i0){
+      const candidate = raw.slice(i0, i1 + 1);
+      try{
+        const parsed = JSON.parse(candidate);
+        // Kiểm tra có đủ key cần thiết không
+        if(parsed.personalStyle || parsed.strengths){
+          return parsed;
+        }
+      }catch(e2){
+        console.warn('[AI] JSON candidate parse failed:', e2.message, '| candidate[:200]:', candidate.slice(0,200));
+      }
     }
 
-    // 3. Strip dòng đầu/cuối nếu là fence, rồi parse
-    const lines=raw.split('\n');
-    const bodyLines=lines.filter(l=>!l.trim().startsWith('`'));
-    try{ return JSON.parse(bodyLines.join('\n')); }catch(e3){}
+    // Fallback: thử từng JSON object trong raw nếu có nhiều
+    const matches = raw.match(/\{[\s\S]+\}/g) || [];
+    for(const m of matches){
+      try{
+        const p = JSON.parse(m);
+        if(p.personalStyle || p.strengths) return p;
+      }catch(e3){}
+    }
 
-    // 4. Tìm { } trong từng line ghép lại
-    const jsonBody=bodyLines.join('\n');
-    const a=jsonBody.indexOf('{'),b2=jsonBody.lastIndexOf('}');
-    if(a>=0&&b2>a){ try{ return JSON.parse(jsonBody.slice(a,b2+1)); }catch(e4){} }
-
-    throw new Error('Không parse được JSON từ AI response. Kiểm tra Worker log.');
+    console.error('[AI] All parse attempts failed. raw[:500]:', raw.slice(0,500));
+    throw new Error('Không parse được JSON. raw[:200]: ' + raw.slice(0,200));
   }catch(e){
     console.error('AI Error:',e?.message||e);
     if(e instanceof TypeError&&String(e.message).toLowerCase().includes('fetch')){
