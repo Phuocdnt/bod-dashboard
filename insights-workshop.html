@@ -1,14 +1,15 @@
 
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0063)https://phuocdnt.github.io/bod-dashboard/insights-workshop.html -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Insights Workshop – Team Dashboard v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="./insights-workshop_Github_files/css2" rel="stylesheet">
 <script>
 const CONFIG = {
-  flowReadUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8"
+  flowReadUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8",
+  workerUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev"
 };
 </script>
 <style>
@@ -163,10 +164,72 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .app-tip-icon{font-size:22px;margin-bottom:8px}
 .app-tip-title{font-size:13px;font-weight:600;margin-bottom:6px}
 .app-tip-body{font-size:12px;color:var(--muted);line-height:1.6}
+/* ── MEMBER SELECTOR MODAL ── */
+.ms-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:900;display:none;align-items:center;justify-content:center}
+.ms-overlay.open{display:flex}
+.ms-modal{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;width:560px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.ms-header{padding:20px 24px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.ms-header h3{font-size:17px;font-weight:700;margin-bottom:3px}
+.ms-header p{font-size:12px;color:var(--muted)}
+.ms-search-row{padding:12px 24px;border-bottom:1px solid var(--bdr);display:flex;gap:8px;flex-shrink:0}
+.ms-search-row input{flex:1;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;color:var(--txt);font-size:13px;outline:none}
+.ms-search-row input:focus{border-color:rgba(255,255,255,.2)}
+.ms-toolbar{padding:8px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
+.ms-toolbar button{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--bdr);background:none;color:var(--muted);cursor:pointer;transition:all .15s}
+.ms-toolbar button:hover{color:var(--txt);border-color:rgba(255,255,255,.25)}
+.ms-sel-count{margin-left:auto;font-size:12px;font-weight:600;color:#60a5fa}
+.ms-body{overflow-y:auto;flex:1;padding:8px 12px 4px}
+.ms-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .12s;user-select:none}
+.ms-item:hover{background:rgba(255,255,255,.04)}
+.ms-item.sel{background:rgba(43,108,176,.12)}
+.ms-cb{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ms-item.sel .ms-cb{background:#2B6CB0;border-color:#2B6CB0}
+.ms-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.ms-info{flex:1;min-width:0}
+.ms-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-role-txt{font-size:11px;color:var(--muted)}
+.ms-cbadge{font-size:10px;padding:2px 8px;border-radius:99px;border:1px solid;flex-shrink:0;font-weight:600}
+.ms-footer{padding:14px 24px;border-top:1px solid var(--bdr);display:flex;gap:10px;flex-shrink:0}
+.ms-apply{flex:1;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:8px;padding:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.ms-apply:hover{opacity:.9}
+.ms-apply:disabled{opacity:.45;cursor:not-allowed}
+.ms-cancel{background:none;border:1px solid var(--bdr);border-radius:8px;padding:11px 16px;color:var(--muted);font-size:13px;cursor:pointer}
+.ms-cancel:hover{color:var(--txt)}
+.btn-manage-members{width:100%;margin-top:10px;background:rgba(43,108,176,.12);border:1px dashed rgba(43,108,176,.4);border-radius:8px;padding:8px 10px;color:#60a5fa;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+.btn-manage-members:hover{background:rgba(43,108,176,.2);border-style:solid}
+.sb-sel-info{font-size:11px;color:var(--muted);margin-top:6px;text-align:center}
+.sb-sel-info span{color:#60a5fa;font-weight:700}
 </style>
 </head>
 <body>
 <div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<!-- ════ MEMBER SELECTOR MODAL ════ -->
+<div class="ms-overlay" id="msOverlay" onclick="msOverlayClick(event)">
+  <div class="ms-modal" id="msModal">
+    <div class="ms-header">
+      <h3>⚙️ Chọn thành viên cho Workshop</h3>
+      <p id="msHeaderSub">Tick những người tham gia workshop này — chỉ những người được chọn mới được phân tích</p>
+    </div>
+    <div class="ms-search-row">
+      <input type="text" id="msSearch" placeholder="🔍 Tìm tên, vai trò, phòng ban…" oninput="renderMsItems()">
+    </div>
+    <div class="ms-toolbar">
+      <button onclick="msSelectAll()">✓ Chọn tất cả</button>
+      <button onclick="msDeselectAll()">✗ Bỏ chọn tất cả</button>
+      <button onclick="msSelectByColor('red')" style="color:#E8392A;border-color:rgba(232,57,42,.3)">🔴</button>
+      <button onclick="msSelectByColor('yellow')" style="color:#F5A623;border-color:rgba(245,166,35,.3)">🟡</button>
+      <button onclick="msSelectByColor('green')" style="color:#3CB371;border-color:rgba(60,179,113,.3)">🟢</button>
+      <button onclick="msSelectByColor('blue')" style="color:#2B6CB0;border-color:rgba(43,108,176,.3)">🔵</button>
+      <span class="ms-sel-count" id="msSelCount">0 được chọn</span>
+    </div>
+    <div class="ms-body" id="msBody"></div>
+    <div class="ms-footer">
+      <button class="ms-cancel" onclick="closeMemberSelector()">Hủy</button>
+      <button class="ms-apply" id="msApply" onclick="applyMemberSelection()">Áp dụng</button>
+    </div>
+  </div>
+</div>
 
 <div class="layout">
   <!-- SIDEBAR -->
@@ -178,15 +241,19 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="sb-section">
       <div class="sb-title">Thống kê</div>
       <div class="sb-stats">
-        <div class="sb-stat"><div class="sb-stat-n" id="statTotal">—</div><div class="sb-stat-l">Thành viên</div></div>
-        <div class="sb-stat"><div class="sb-stat-n" id="statDept">—</div><div class="sb-stat-l">Phòng ban</div></div>
+        <div class="sb-stat"><div class="sb-stat-n" id="statTotal">4</div><div class="sb-stat-l">Thành viên</div></div>
+        <div class="sb-stat"><div class="sb-stat-n" id="statDept">3</div><div class="sb-stat-l">Phòng ban</div></div>
       </div>
     </div>
     <div class="sb-section">
-      <div class="sb-title">Thành viên</div>
-      <div id="memberList"></div>
+      <div class="sb-title" style="display:flex;align-items:center;justify-content:space-between">
+        Thành viên
+        <span id="sbSelBadge" style="font-size:11px;color:#60a5fa;font-weight:700;background:rgba(43,108,176,.2);border-radius:99px;padding:1px 7px"></span>
+      </div>
+      <div id="memberList"><button class="sb-member" onclick="focusMember(&#39;Nguyễn Lê Thành Lạc&#39;)"><div class="sb-avatar" style="background:#2B6CB0">TL</div><div><div class="sb-mname">Thành Lạc</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;Hồ Việt Khánh&#39;)"><div class="sb-avatar" style="background:#2B6CB0">VK</div><div><div class="sb-mname">Việt Khánh</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;BÙI HÀ ĐỨC AN&#39;)"><div class="sb-avatar" style="background:#2B6CB0">ĐA</div><div><div class="sb-mname">ĐỨC AN</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;Tung Nguyen Hoang Thanh&#39;)"><div class="sb-avatar" style="background:#3CB371">HT</div><div><div class="sb-mname">Hoang Thanh</div><div class="sb-mcolor">🟢 Earth Green</div></div></button></div>
     </div>
-    <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="loadTeamData()">&#8635; Làm mới dữ liệu</button>
+    <button class="btn-manage-members" onclick="openMemberSelector()">⚙️ Chọn thành viên Workshop…</button>
+    <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="loadTeamData()">↻ Làm mới dữ liệu</button>
   </aside>
 
   <!-- MAIN -->
@@ -194,47 +261,103 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="top-bar">
       <div>
         <div class="top-title">Team <em>Insights</em><br>Workshop Dashboard</div>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px" id="lastUpdate">Chưa tải dữ liệu</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px" id="lastUpdate">Cập nhật: 15:40:41 20/3/2026</p>
       </div>
       <div class="top-actions">
-        <button class="btn btn-sec" onclick="generateAIInsights()">&#129302; AI Phân tích nhóm</button>
-        <button class="btn btn-pri" id="loadBtn" onclick="loadTeamData()">&#128196; Tải dữ liệu</button>
+        <button class="btn btn-sec" onclick="generateAIInsights()">🤖 AI Phân tích nhóm</button>
+        <button class="btn btn-pri" id="loadBtn" onclick="loadTeamData()">📄 Tải dữ liệu</button>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('overview')">📊 Tổng quan</button>
-      <button class="tab" onclick="switchTab('members')">👥 Thành viên</button>
-      <button class="tab" onclick="switchTab('dynamics')">🔗 Dynamics</button>
-      <button class="tab" onclick="switchTab('communication')">💬 Giao tiếp</button>
-      <button class="tab" onclick="switchTab('said')">📝 SAID Feedback</button>
-      <button class="tab" onclick="switchTab('workshop')">🎯 Workshop</button>
+      <button class="tab" onclick="switchTab(&#39;overview&#39;)">📊 Tổng quan</button>
+      <button class="tab" onclick="switchTab(&#39;members&#39;)">👥 Thành viên</button>
+      <button class="tab" onclick="switchTab(&#39;dynamics&#39;)">🔗 Dynamics</button>
+      <button class="tab" onclick="switchTab(&#39;communication&#39;)">💬 Giao tiếp</button>
+      <button class="tab" onclick="switchTab(&#39;said&#39;)">📝 SAID Feedback</button>
+      <button class="tab active" onclick="switchTab(&#39;workshop&#39;)">🎯 Workshop</button>
     </div>
 
     <!-- OVERVIEW TAB -->
-    <div class="tab-content active" id="tab-overview">
+    <div class="tab-content" id="tab-overview">
       <div class="grid2">
         <div class="card">
           <div class="card-title">🎨 Phân bổ màu năng lượng</div>
-          <div class="chart-wrap" id="donutChart"><div style="text-align:center;color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+          <div class="chart-wrap" id="donutChart"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+    <div class="donut-wrap"><svg viewBox="0 0 180 180" style="width:160px;height:160px"><path d="M90 10A80 80 0 0 1 170 90L140 90A50 50 0 0 0 90 40Z" fill="#3CB371" opacity=".9"></path><path d="M170 90A80 80 0 1 1 89.99999999999999 10L89.99999999999999 40A50 50 0 1 0 140 90Z" fill="#2B6CB0" opacity=".9"></path><circle cx="90" cy="90" r="48" fill="var(--sur)"></circle><text x="90" y="84" text-anchor="middle" fill="#2B6CB0" font-size="24">●</text><text x="90" y="100" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans">75%</text></svg></div>
+    <div class="legend"><div class="legend-item"><div class="legend-dot" style="background:#3CB371"></div>Earth Green<span class="legend-pct">1 người · 25%</span></div><div class="legend-item"><div class="legend-dot" style="background:#2B6CB0"></div>Cool Blue<span class="legend-pct">3 người · 75%</span></div></div></div></div>
         </div>
         <div class="card">
           <div class="card-title">📍 Team Insights Wheel</div>
-          <div class="team-wheel-wrap" id="teamWheel"><div style="text-align:center;color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+          <div class="team-wheel-wrap" id="teamWheel"><svg viewBox="0 0 320 320" style="width:100%;max-width:320px;filter:drop-shadow(0 8px 24px rgba(0,0,0,.5))"><path d="M137.0389940580946 104.5672280493228L102.59748514523653 21.41807012330699A150 150 0 0 1 217.40251485476347 21.41807012330699L182.9610059419054 104.5672280493228A60 60 0 0 0 137.0389940580946 104.5672280493228Z" fill="#E8392A" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="160" y="55" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Director</text><path d="M182.9610059419054 104.5672280493228L217.40251485476347 21.41807012330699A150 150 0 0 1 298.58192987669304 102.59748514523653L215.4327719506772 137.0389940580946A60 60 0 0 0 182.9610059419054 104.5672280493228Z" fill="#E8823B" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="234.2462120245875" y="85.75378797541252" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Motivator</text><path d="M215.4327719506772 137.0389940580946L298.58192987669304 102.59748514523653A150 150 0 0 1 298.58192987669304 217.40251485476347L215.4327719506772 182.9610059419054A60 60 0 0 0 215.4327719506772 137.0389940580946Z" fill="#F5A623" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="265" y="160" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Inspirer</text><path d="M215.4327719506772 182.9610059419054L298.58192987669304 217.40251485476347A150 150 0 0 1 217.40251485476347 298.58192987669304L182.9610059419054 215.4327719506772A60 60 0 0 0 215.4327719506772 182.9610059419054Z" fill="#7DB85E" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="234.2462120245875" y="234.24621202458746" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Insp.Helper</text><path d="M182.9610059419054 215.4327719506772L217.40251485476347 298.58192987669304A150 150 0 0 1 102.59748514523653 298.58192987669304L137.0389940580946 215.4327719506772A60 60 0 0 0 182.9610059419054 215.4327719506772Z" fill="#3CB371" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="160" y="265" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Supporter</text><text x="160" y="279" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><path d="M137.0389940580946 215.4327719506772L102.59748514523653 298.58192987669304A150 150 0 0 1 21.41807012330699 217.40251485476347L104.5672280493228 182.9610059419054A60 60 0 0 0 137.0389940580946 215.4327719506772Z" fill="#2B96A0" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="85.75378797541252" y="234.2462120245875" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Coordinator</text><text x="85.75378797541252" y="248.2462120245875" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><path d="M104.5672280493228 182.9610059419054L21.41807012330699 217.40251485476347A150 150 0 0 1 21.41807012330696 102.59748514523662L104.56722804932278 137.03899405809466A60 60 0 0 0 104.5672280493228 182.9610059419054Z" fill="#2B6CB0" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="55" y="160" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Observer</text><path d="M104.56722804932278 137.03899405809466L21.41807012330696 102.59748514523662A150 150 0 0 1 102.59748514523658 21.41807012330696L137.03899405809463 104.56722804932278A60 60 0 0 0 104.56722804932278 137.03899405809466Z" fill="#9B4CB0" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="85.7537879754125" y="85.75378797541252" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Reformer</text><text x="85.7537879754125" y="99.75378797541252" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><circle cx="146.01310335351343" cy="60.478059091472176" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="146.01310335351343" y="60.478059091472176" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">L</text><circle cx="79.38982694473357" cy="79.38982694473358" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="79.38982694473357" y="79.38982694473358" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">K</text><circle cx="79.73713124024707" cy="220.48240982678084" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="79.73713124024707" y="220.48240982678084" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">A</text><circle cx="175.8657335094475" cy="272.890559836539" r="11" fill="#3CB371" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="175.8657335094475" y="272.890559836539" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">T</text><circle cx="160" cy="160" r="58" fill="var(--sur)" stroke="rgba(255,255,255,.1)" stroke-width="1"></circle><text x="160" y="154" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="DM Sans">TEAM</text><text x="160" y="168" text-anchor="middle" fill="var(--txt)" font-size="14" font-family="DM Sans" font-weight="600">4</text></svg></div>
         </div>
       </div>
-      <div class="grid3" id="colorSummary"></div>
+      <div class="grid3" id="colorSummary">
+    <div class="card-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:600;color:#E8392A">🔴 Fiery Red</span>
+        <span style="font-size:1.4rem;font-weight:700;color:#E8392A">0</span>
+      </div>
+      <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:0%;background:#E8392A;border-radius:99px;transition:width .8s ease"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">0% nhóm · 0/4 người</div>
+    </div>
+    <div class="card-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:600;color:#F5A623">🟡 Sunshine Yellow</span>
+        <span style="font-size:1.4rem;font-weight:700;color:#F5A623">0</span>
+      </div>
+      <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:0%;background:#F5A623;border-radius:99px;transition:width .8s ease"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">0% nhóm · 0/4 người</div>
+    </div>
+    <div class="card-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:600;color:#3CB371">🟢 Earth Green</span>
+        <span style="font-size:1.4rem;font-weight:700;color:#3CB371">1</span>
+      </div>
+      <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:25%;background:#3CB371;border-radius:99px;transition:width .8s ease"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">25% nhóm · 1/4 người</div>
+    </div>
+    <div class="card-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:600;color:#2B6CB0">🔵 Cool Blue</span>
+        <span style="font-size:1.4rem;font-weight:700;color:#2B6CB0">3</span>
+      </div>
+      <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:75%;background:#2B6CB0;border-radius:99px;transition:width .8s ease"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">75% nhóm · 3/4 người</div>
+    </div></div>
       <div class="card">
         <div class="card-title">🤖 AI Nhận xét về nhóm</div>
-        <div id="aiOverview"><p style="color:var(--muted);font-size:13px">Nhấn "AI Phân tích nhóm" để nhận insights từ AI</p></div>
+        <div id="aiOverview"><p style="color:var(--muted)">Không thể tạo AI insights: Failed to fetch</p></div>
       </div>
     </div>
 
     <!-- MEMBERS TAB -->
     <div class="tab-content" id="tab-members">
-      <div class="member-grid" id="membersGrid">
-        <div class="empty-state"><h3>Chưa có dữ liệu</h3><p>Nhấn "Tải dữ liệu" để xem thông tin thành viên</p></div>
-      </div>
+      <div class="member-grid" id="membersGrid"><div class="member-card" onclick="focusMember(&#39;Nguyễn Lê Thành Lạc&#39;)">
+      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">TL</div>
+      <div><div class="mc-name">Nguyễn Lê Thành Lạc<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Cải Cách (Reformer)</span></div>
+      <div class="mc-role"> · Ban Giám Đốc </div></div></div>
+      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#E8392A"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#F5A623"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#3CB371"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#2B6CB0"></div></div><span class="mc-bar-pct">0%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;Hồ Việt Khánh&#39;)">
+      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">VK</div>
+      <div><div class="mc-name">Hồ Việt Khánh<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Cải Cách (Reformer)</span></div>
+      <div class="mc-role"> · Kỹ Thuật <span style="font-size:9px;color:var(--muted)">🌟 Extrovert</span></div></div></div>
+      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:8%;background:#E8392A"></div></div><span class="mc-bar-pct">8%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:7%;background:#F5A623"></div></div><span class="mc-bar-pct">7%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:2%;background:#3CB371"></div></div><span class="mc-bar-pct">2%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:12%;background:#2B6CB0"></div></div><span class="mc-bar-pct">12%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;BÙI HÀ ĐỨC AN&#39;)">
+      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">ĐA</div>
+      <div><div class="mc-name">BÙI HÀ ĐỨC AN<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Quan Sát (Observer)</span></div>
+      <div class="mc-role"> · Kỹ Thuật <span style="font-size:9px;color:var(--muted)">🌙 Introvert</span></div></div></div>
+      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:4%;background:#E8392A"></div></div><span class="mc-bar-pct">4%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:2%;background:#F5A623"></div></div><span class="mc-bar-pct">2%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:7%;background:#3CB371"></div></div><span class="mc-bar-pct">7%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:17%;background:#2B6CB0"></div></div><span class="mc-bar-pct">17%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;Tung Nguyen Hoang Thanh&#39;)">
+      <div class="mc-top"><div class="mc-avatar" style="background:#3CB371">HT</div>
+      <div><div class="mc-name">Tung Nguyen Hoang Thanh<span style="font-size:9px;background:#3CB37122;color:#3CB371;border-radius:10px;padding:2px 6px;margin-left:4px">Người Hỗ Trợ Kiên Định</span></div>
+      <div class="mc-role"> · Sản Xuất <span style="font-size:9px;color:var(--muted)">🌙 Introvert</span></div></div></div>
+      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#E8392A"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#F5A623"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:24%;background:#3CB371"></div></div><span class="mc-bar-pct">24%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#2B6CB0"></div></div><span class="mc-bar-pct">0%</span></div></div></div></div>
     </div>
 
     <!-- DYNAMICS TAB -->
@@ -242,7 +365,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       <div class="card">
         <div class="card-title">⚡ Ma trận tương thích màu sắc</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Các cặp màu trong nhóm và mức độ cần chú ý khi hợp tác</p>
-        <div id="compatMatrix"><div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+        <div id="compatMatrix"><table style="width:100%;border-collapse:collapse;font-size:12px"><tbody><tr><td style="padding:8px;color:var(--muted)"></td><td style="padding:8px;text-align:center;color:#E8392A;font-weight:600">🔴</td><td style="padding:8px;text-align:center;color:#F5A623;font-weight:600">🟡</td><td style="padding:8px;text-align:center;color:#3CB371;font-weight:600">🟢</td><td style="padding:8px;text-align:center;color:#2B6CB0;font-weight:600">🔵</td></tr><tr><td style="padding:8px;color:#E8392A;font-weight:600">🔴 Fiery Red</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Cùng năng lượng cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần chú ý</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td></tr><tr><td style="padding:8px;color:#F5A623;font-weight:600">🟡 Sunshine Yellow</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Sáng tạo cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Hài hòa tốt</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td></tr><tr><td style="padding:8px;color:#3CB371;font-weight:600">🟢 Earth Green</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần chú ý</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Hài hòa tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Ổn định cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td></tr><tr><td style="padding:8px;color:#2B6CB0;font-weight:600">🔵 Cool Blue</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Cẩn thận chi tiết</td></tr></tbody></table></div>
       </div>
       <div class="card">
         <div class="card-title">⚔️ Phong cách xử lý xung đột (Thomas-Kilmann)</div>
@@ -273,15 +396,87 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <div style="margin-top:10px;font-size:11px;color:rgba(43,108,176,.8);font-weight:600">→ Tip: Đặt deadline rõ ràng và cung cấp đủ dữ liệu để họ tự tin quyết định</div>
           </div>
         </div>
-        <div id="conflictTeamDist"><div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem phân bổ xung đột trong nhóm</div></div>
+        <div id="conflictTeamDist"><div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Phân bổ phong cách xử lý xung đột</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px"><div style="background:#E8392A18;border:1px solid #E8392A44;border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:600;color:#E8392A;margin-bottom:4px">🔴 Competing</div>
+      <div style="font-size:1.6rem;font-weight:800;color:#E8392A">0<span style="font-size:12px;font-weight:500;opacity:.7"> người</span></div>
+      <div style="margin-top:6px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden"><div style="height:100%;width:0%;background:#E8392A;border-radius:99px"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">0% nhóm</div></div><div style="background:#F5A62318;border:1px solid #F5A62344;border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:600;color:#F5A623;margin-bottom:4px">🟡 Collaborating</div>
+      <div style="font-size:1.6rem;font-weight:800;color:#F5A623">0<span style="font-size:12px;font-weight:500;opacity:.7"> người</span></div>
+      <div style="margin-top:6px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden"><div style="height:100%;width:0%;background:#F5A623;border-radius:99px"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">0% nhóm</div></div><div style="background:#3CB37118;border:1px solid #3CB37144;border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:600;color:#3CB371;margin-bottom:4px">🟢 Accommodating</div>
+      <div style="font-size:1.6rem;font-weight:800;color:#3CB371">1<span style="font-size:12px;font-weight:500;opacity:.7"> người</span></div>
+      <div style="margin-top:6px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden"><div style="height:100%;width:25%;background:#3CB371;border-radius:99px"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">25% nhóm</div></div><div style="background:#2B6CB018;border:1px solid #2B6CB044;border-radius:10px;padding:12px">
+      <div style="font-size:12px;font-weight:600;color:#2B6CB0;margin-bottom:4px">🔵 Compromising</div>
+      <div style="font-size:1.6rem;font-weight:800;color:#2B6CB0">3<span style="font-size:12px;font-weight:500;opacity:.7"> người</span></div>
+      <div style="margin-top:6px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden"><div style="height:100%;width:75%;background:#2B6CB0;border-radius:99px"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">75% nhóm</div></div></div><div style="margin-top:14px;background:var(--sur2);border-radius:10px;padding:14px;border:1px solid var(--bdr);font-size:13px;line-height:1.7;color:rgba(232,237,243,.8)">⚠️ <strong>Nhóm nhiều Blue</strong> — phân tích kỹ nhưng có thể trì hoãn quyết định quá lâu. Cần deadline rõ ràng, quyết định theo data và người Red để thúc đẩy execution.</div></div>
       </div>
       <div class="card">
         <div class="card-title">🎯 Phong cách lãnh đạo trong nhóm</div>
-        <div id="leadershipChart"><div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+        <div id="leadershipChart">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Lãnh đạo Kết quả</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:0%;background:#E8392A;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">0 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Truyền cảm hứng</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:0%;background:#F5A623;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">0 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Lãnh đạo Phục vụ</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:100%;background:#3CB371;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">3 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Lãnh đạo Chiến lược</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:0%;background:#2B6CB0;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">0 người</span>
+      </div>
+    </div></div>
       </div>
       <div class="card">
         <div class="card-title">⚠️ Hành vi dưới áp lực</div>
-        <div id="stressChart"><div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+        <div id="stressChart">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Kiểm soát tăng cao</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:0%;background:#E8392A;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">0 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Phân tán, hời hợt</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:100%;background:#F5A623;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">2 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Thu mình, im lặng</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:50%;background:#3CB371;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">1 người</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:160px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0">Phân tích quá mức</div>
+      <div style="flex:1;height:24px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative">
+        <div style="height:100%;width:0%;background:#2B6CB0;border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:white">0 người</span>
+      </div>
+    </div></div>
       </div>
       <div class="card">
         <div class="card-title">🏆 T.E.A.M. Model — Nền tảng nhóm hiệu quả</div>
@@ -289,20 +484,20 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <div class="team-model-grid">
           <div class="team-pillar" style="border-color:rgba(43,108,176,.3);background:rgba(43,108,176,.05)">
             <div class="team-pillar-title" style="color:#2B6CB0">🤝 TRUST — Niềm tin</div>
-            <div class="team-pillar-item">Cởi mở & Thành thật (Openness & Candor)</div>
+            <div class="team-pillar-item">Cởi mở &amp; Thành thật (Openness &amp; Candor)</div>
             <div class="team-pillar-item">Đáng tin cậy (Reliability)</div>
             <div class="team-pillar-item">Hỗ trợ lẫn nhau (Support)</div>
-            <div class="team-pillar-item">Tôn trọng & Ghi nhận (Mutual Respect)</div>
-            <div class="team-pillar-item">Kết nối & Bao gồm (Connection & Inclusion)</div>
+            <div class="team-pillar-item">Tôn trọng &amp; Ghi nhận (Mutual Respect)</div>
+            <div class="team-pillar-item">Kết nối &amp; Bao gồm (Connection &amp; Inclusion)</div>
             <div class="team-pillar-item">Xung đột mang tính xây dựng</div>
           </div>
           <div class="team-pillar" style="border-color:rgba(232,57,42,.3);background:rgba(232,57,42,.05)">
             <div class="team-pillar-title" style="color:#E8392A">⚙️ METHODS — Phương pháp</div>
             <div class="team-pillar-item">Rõ ràng vai trò (Clarity of Roles)</div>
             <div class="team-pillar-item">Ra quyết định (Decision Making)</div>
-            <div class="team-pillar-item">Quy trình & Cấu trúc</div>
+            <div class="team-pillar-item">Quy trình &amp; Cấu trúc</div>
             <div class="team-pillar-item">Quản lý nguồn lực</div>
-            <div class="team-pillar-item">Đo lường hiệu suất cá nhân & nhóm</div>
+            <div class="team-pillar-item">Đo lường hiệu suất cá nhân &amp; nhóm</div>
             <div class="team-pillar-item">Đồng thuận ưu tiên</div>
           </div>
           <div class="team-pillar" style="border-color:rgba(60,179,113,.3);background:rgba(60,179,113,.05)">
@@ -322,7 +517,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       </div>
       <div class="card">
         <div class="card-title">🤖 AI Phân tích dynamics nhóm</div>
-        <div id="aiDynamics"><p style="color:var(--muted);font-size:13px">Nhấn "AI Phân tích nhóm" để nhận insights chuyên sâu</p></div>
+        <div id="aiDynamics"><p style="color:var(--muted)">Không thể tạo AI insights</p></div>
       </div>
     </div>
 
@@ -335,12 +530,12 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div class="comm-card" style="border-color:rgba(43,108,176,.3);background:rgba(43,108,176,.05)">
             <div class="comm-card-title" style="color:#2B6CB0">🔵 Cool Blue — Cần được cung cấp</div>
             <div>
-              <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">📊 Dữ liệu & thống kê</span>
+              <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">📊 Dữ liệu &amp; thống kê</span>
               <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">📄 Handout/tài liệu</span>
               <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">✅ Bằng chứng cụ thể</span>
               <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">🎯 Bám sát chủ đề</span>
             </div>
-            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Gửi tài liệu trước để họ chuẩn bị · Đưa kết luận sau khi có đủ dữ liệu · Dùng số liệu & biểu đồ · Cho thời gian suy nghĩ</div></div>
+            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Gửi tài liệu trước để họ chuẩn bị · Đưa kết luận sau khi có đủ dữ liệu · Dùng số liệu &amp; biểu đồ · Cho thời gian suy nghĩ</div></div>
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Vội vàng kết luận thiếu dữ liệu · Đổi chủ đề đột ngột · Áp lực ra quyết định ngay</div></div>
           </div>
           <div class="comm-card" style="border-color:rgba(60,179,113,.3);background:rgba(60,179,113,.05)">
@@ -348,7 +543,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <div>
               <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">🛡️ Không gian an toàn</span>
               <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">🤝 Lợi ích quan hệ</span>
-              <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">💚 Trấn an & Hỗ trợ</span>
+              <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">💚 Trấn an &amp; Hỗ trợ</span>
               <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">📖 Kể chuyện/ví dụ</span>
             </div>
             <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Xây dựng tin tưởng trước · Đề cập tác động đến con người · Lắng nghe thực sự · Cho thời gian xử lý</div></div>
@@ -357,22 +552,22 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div class="comm-card" style="border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)">
             <div class="comm-card-title" style="color:#F5A623">🟡 Sunshine Yellow — Cần được cung cấp</div>
             <div>
-              <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">🎭 Tương tác & giao lưu</span>
-              <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">⚡ Ngắn gọn & sinh động</span>
+              <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">🎭 Tương tác &amp; giao lưu</span>
+              <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">⚡ Ngắn gọn &amp; sinh động</span>
               <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">🚀 Hướng tới tương lai</span>
               <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">📖 Storytelling</span>
             </div>
-            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Nhiệt tình và sáng tạo · Kết nối ý tưởng big picture · Cho phép đóng góp ý kiến tự do · Nhấn mạnh tương lai & khả năng</div></div>
+            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Nhiệt tình và sáng tạo · Kết nối ý tưởng big picture · Cho phép đóng góp ý kiến tự do · Nhấn mạnh tương lai &amp; khả năng</div></div>
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Quá nhiều chi tiết khô khan · Không cho không gian sáng tạo · Tập trung quá mức vào quá khứ/vấn đề</div></div>
           </div>
           <div class="comm-card" style="border-color:rgba(232,57,42,.3);background:rgba(232,57,42,.05)">
             <div class="comm-card-title" style="color:#E8392A">🔴 Fiery Red — Cần được cung cấp</div>
             <div>
-              <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">⚡ Thẳng thắn & trực tiếp</span>
+              <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">⚡ Thẳng thắn &amp; trực tiếp</span>
               <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">🏆 Tập trung kết quả</span>
               <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">🎯 Bottom-line first</span>
             </div>
-            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Bắt đầu bằng kết luận & hành động · Trình bày ngắn gọn · Nêu rõ lợi ích & tác động</div></div>
+            <div class="comm-section"><div class="comm-section-lbl">✅ Nên làm</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Bắt đầu bằng kết luận &amp; hành động · Trình bày ngắn gọn · Nêu rõ lợi ích &amp; tác động</div></div>
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Dài dòng lòng vòng · Thiếu kết luận rõ ràng · Không quyết đoán hoặc do dự quá mức</div></div>
           </div>
         </div>
@@ -393,14 +588,25 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <tr><td style="padding:10px;background:rgba(232,57,42,.08);border:1px solid var(--bdr);font-weight:600;color:#E8392A">🔴 Red</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Hãy lắng nghe thật sự · Tránh tranh giành quyền kiểm soát · Đồng ý trên mục tiêu chung</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Tôn trọng nhiệt huyết của họ · Cho phép chia sẻ ý tưởng · Kiên nhẫn với sự lạc đề</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Hạ giọng điệu · Đừng áp đặt · Hỏi thay vì tuyên bố · Cho thời gian</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chuẩn bị dữ liệu · Đừng nóng vội · Cho họ thời gian phân tích</td></tr>
             <tr><td style="padding:10px;background:rgba(245,166,35,.08);border:1px solid var(--bdr);font-weight:600;color:#F5A623">🟡 Yellow</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Đi thẳng vào vấn đề · Nêu kết quả mong muốn · Tóm gọn ý tưởng của bạn</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Tạo không gian vui · Brainstorm cùng nhau · Kết nối cảm xúc với ý tưởng</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Lắng nghe trước · Nhấn mạnh tác động tích cực đến mọi người · Không vội vàng</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Gửi tài liệu trước · Backup ý tưởng bằng số liệu · Cho thời gian xử lý</td></tr>
             <tr><td style="padding:10px;background:rgba(60,179,113,.08);border:1px solid var(--bdr);font-weight:600;color:#3CB371">🟢 Green</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Nói trực tiếp và rõ ràng · Tập trung kết quả · Đừng lòng vòng quanh vấn đề</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Tham gia vào không khí vui · Kết nối ý tưởng của họ với con người · Lạc quan hơn</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chia sẻ cởi mở · Xây dựng tin tưởng dần · Cùng nhau tìm giải pháp</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Nêu tác động con người đến dữ liệu · Tôn trọng sự chính xác · Không áp lực</td></tr>
-            <tr><td style="padding:10px;background:rgba(43,108,176,.08);border:1px solid var(--bdr);font-weight:600;color:#2B6CB0">🔵 Blue</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Tóm tắt phân tích thành điểm hành động · Đặt deadline · Không đưa quá nhiều lựa chọn</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Trình bày dữ liệu bằng visual hấp dẫn · Tóm gọn · Liên kết với big picture</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chia sẻ lý do & cảm xúc · Không chỉ đưa data · Hỏi thăm cảm nhận của họ</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chia sẻ method · Trao đổi data cùng nhau · Tôn trọng cẩn thận của nhau</td></tr>
+            <tr><td style="padding:10px;background:rgba(43,108,176,.08);border:1px solid var(--bdr);font-weight:600;color:#2B6CB0">🔵 Blue</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Tóm tắt phân tích thành điểm hành động · Đặt deadline · Không đưa quá nhiều lựa chọn</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Trình bày dữ liệu bằng visual hấp dẫn · Tóm gọn · Liên kết với big picture</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chia sẻ lý do &amp; cảm xúc · Không chỉ đưa data · Hỏi thăm cảm nhận của họ</td><td style="padding:10px;border:1px solid var(--bdr);color:rgba(232,237,243,.75);line-height:1.6">Chia sẻ method · Trao đổi data cùng nhau · Tôn trọng cẩn thận của nhau</td></tr>
           </tbody>
         </table>
         </div>
       </div>
       <div class="card">
         <div class="card-title">📍 Phân bổ nhu cầu giao tiếp trong nhóm</div>
-        <div id="commTeamNeeds"><div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem</div></div>
+        <div id="commTeamNeeds"><div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
+      <div style="width:80px;font-size:12px;font-weight:600;color:#2B6CB0;flex-shrink:0">🔵 Cool</div>
+      <div style="flex:1;height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="height:100%;width:75%;background:#2B6CB0;border-radius:99px"></div></div>
+      <div style="width:28px;text-align:right;font-size:12px;font-weight:700;color:#2B6CB0">3</div>
+      <div style="font-size:11px;color:var(--muted);flex:2">Gửi tài liệu trước, cung cấp đầy đủ data và thời gian</div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
+      <div style="width:80px;font-size:12px;font-weight:600;color:#3CB371;flex-shrink:0">🟢 Earth</div>
+      <div style="flex:1;height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="height:100%;width:25%;background:#3CB371;border-radius:99px"></div></div>
+      <div style="width:28px;text-align:right;font-size:12px;font-weight:700;color:#3CB371">1</div>
+      <div style="font-size:11px;color:var(--muted);flex:2">Xây dựng tin tưởng trước, đề cập tác động con người</div></div></div><div style="background:linear-gradient(135deg,rgba(43,108,176,.15),rgba(60,179,113,.1));border:1px solid rgba(43,108,176,.3);border-radius:12px;padding:16px;font-size:13px;line-height:1.7;color:rgba(232,237,243,.85)">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">💡 Chiến lược giao tiếp cho nhóm bạn</div>
+    Nhóm chủ đạo <strong>Blue</strong> — Cung cấp tài liệu đầy đủ trước. Agenda rõ ràng, protocol chặt chẽ. Cho thời gian phân tích, không áp lực quyết định ngay. Visual aids giúp trình bày data hiệu quả hơn.
+  </div></div>
       </div>
     </div>
 
@@ -413,14 +619,12 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div>
             <div style="background:var(--sur2);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--bdr)">
               <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Người nhận feedback</div>
-              <select class="person-select" id="saidReceiver" onchange="updateSaidTip()">
-                <option value="">-- Chọn từ danh sách nhóm --</option>
-              </select>
+              <select class="person-select" id="saidReceiver" onchange="updateSaidTip()"><option value="">-- Chọn từ danh sách nhóm --</option><option value="Nguyễn Lê Thành Lạc" data-color="blue">Nguyễn Lê Thành Lạc (🔵 Cool Blue)</option><option value="Hồ Việt Khánh" data-color="blue">Hồ Việt Khánh (🔵 Cool Blue)</option><option value="BÙI HÀ ĐỨC AN" data-color="blue">BÙI HÀ ĐỨC AN (🔵 Cool Blue)</option><option value="Tung Nguyen Hoang Thanh" data-color="green">Tung Nguyen Hoang Thanh (🟢 Earth Green)</option></select>
               <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Loại feedback</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:rgba(60,179,113,.2);color:#3CB371;border:1px solid rgba(60,179,113,.4)" onclick="setFBType('positive',this)">👍 Tích cực</button>
-                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:var(--sur);color:var(--muted);border:1px solid var(--bdr)" onclick="setFBType('developmental',this)">📈 Phát triển</button>
-                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:var(--sur);color:var(--muted);border:1px solid var(--bdr)" onclick="setFBType('corrective',this)">🔧 Điều chỉnh</button>
+                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:rgba(60,179,113,.2);color:#3CB371;border:1px solid rgba(60,179,113,.4)" onclick="setFBType(&#39;positive&#39;,this)">👍 Tích cực</button>
+                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:var(--sur);color:var(--muted);border:1px solid var(--bdr)" onclick="setFBType(&#39;developmental&#39;,this)">📈 Phát triển</button>
+                <button class="btn" style="flex:1;padding:8px;font-size:12px;background:var(--sur);color:var(--muted);border:1px solid var(--bdr)" onclick="setFBType(&#39;corrective&#39;,this)">🔧 Điều chỉnh</button>
               </div>
             </div>
             <div class="said-step"><div class="said-step-head"><div class="said-step-badge" style="background:rgba(245,166,35,.2);color:#F5A623;border-color:#F5A623">S</div><div><div class="said-step-title">SITUATION — Tình huống cụ thể</div><div class="said-step-hint">Xác định thời gian, địa điểm, bối cảnh cụ thể. Điều này neo feedback vào thực tế.</div></div></div><textarea class="said-input" id="saidSText" placeholder="VD: Trong buổi họp dự án thứ 3 hôm qua, khi cả nhóm đang thảo luận về tiến độ…" oninput="updateSaidPreview()"></textarea></div>
@@ -450,7 +654,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     </div>
 
     <!-- WORKSHOP TAB -->
-    <div class="tab-content" id="tab-workshop">
+    <div class="tab-content active" id="tab-workshop">
       <div class="card">
         <div class="card-title">⭐ 8 Vai trò chính trong nhóm — Key Attributes</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Theo mô hình Insights Wheel — mỗi vị trí mang bộ kỹ năng đặc trưng. Nhóm hiệu suất cao cần đủ 8 vai trò này.</p>
@@ -464,10 +668,31 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div class="ka-cell" style="border-color:rgba(43,108,176,.4);background:rgba(43,108,176,.07)"><div class="ka-role" style="color:#2B6CB0">🔵 Observer</div><div class="ka-attrs">Analysis · Product Knowledge · Sets Standards · Planning · Organisation · Monitoring</div></div>
           <div class="ka-cell" style="border-color:rgba(155,76,176,.4);background:rgba(155,76,176,.07)"><div class="ka-role" style="color:#9B4CB0">🟣 Reformer</div><div class="ka-attrs">Discipline · Sets Standards · Monitoring Performance · Analysis · Results Focus · Decisiveness</div></div>
         </div>
-        <div id="teamRoleMap" style="background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:16px">
-          <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">📍 Mapping thành viên → vai trò</div>
-          <div style="color:var(--muted);font-size:13px">Tải dữ liệu để xem ai đang đảm nhận vai trò nào trong nhóm</div>
-        </div>
+        <div id="teamRoleMap" style="background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:16px"><div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">📍 Mapping thành viên → vai trò <span style="color:#F5A623;margin-left:8px">4/8 vai trò được cover</span></div><div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#E8392A;flex-shrink:0">Director</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#E8823B;flex-shrink:0">Motivator</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#F5A623;flex-shrink:0">Inspirer</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#7DB85E;flex-shrink:0">Inspiring Helper</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#3CB37118;border:1px solid #3CB37144">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#3CB371;flex-shrink:0">Supporter</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="background:#3CB37133;border:1px solid #3CB37166;color:#3CB371;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Thanh</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#2B96A018;border:1px solid #2B96A044">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#2B96A0;flex-shrink:0">Coordinator</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="background:#2B96A033;border:1px solid #2B96A066;color:#2B96A0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">AN</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#2B6CB018;border:1px solid #2B6CB044">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#2B6CB0;flex-shrink:0">Observer</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="background:#2B6CB033;border:1px solid #2B6CB066;color:#2B6CB0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Lạc</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#9B4CB018;border:1px solid #9B4CB044">
+      <div style="width:140px;font-size:11px;font-weight:700;color:#9B4CB0;flex-shrink:0">Reformer</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+        <span style="background:#9B4CB033;border:1px solid #9B4CB066;color:#9B4CB0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Khánh</span></div></div></div><div style="margin-top:12px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.8)">⚠️ <strong>Khoảng trống vai trò:</strong> Director, Motivator, Inspirer, Inspiring Helper</div></div>
       </div>
       <div class="card">
         <div class="card-title">💡 Application Tips — Cách áp dụng Insights vào thực tế</div>
@@ -477,7 +702,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div class="app-tip"><div class="app-tip-icon">🗓️</div><div class="app-tip-title">Trong các cuộc họp</div><div class="app-tip-body">Thiết kế các loại họp khác nhau — họp brainstorm (Yellow/Green), họp ra quyết định (Red/Blue), họp kiểm tra tiến độ (Blue/Red).</div></div>
           <div class="app-tip"><div class="app-tip-icon">👥</div><div class="app-tip-title">Xây dựng nhóm</div><div class="app-tip-body">Hiểu phong cách từng thành viên để phân công đúng người đúng việc. Khuyến khích sự đa dạng màu sắc — không có màu nào "tốt hơn".</div></div>
           <div class="app-tip"><div class="app-tip-icon">📈</div><div class="app-tip-title">Phát triển lãnh đạo</div><div class="app-tip-body">Lãnh đạo hiệu quả biết "stretch" ra ngoài màu chính của mình khi cần. Nhận ra điểm mù và bổ sung bằng cách hợp tác với màu đối lập.</div></div>
-          <div class="app-tip"><div class="app-tip-icon">🎯</div><div class="app-tip-title">Phản hồi & Coaching</div><div class="app-tip-body">Điều chỉnh cách đưa feedback theo màu người nhận. Dùng mô hình SAID để cấu trúc. Red cần thẳng thắn, Green cần nhẹ nhàng, Blue cần dữ liệu.</div></div>
+          <div class="app-tip"><div class="app-tip-icon">🎯</div><div class="app-tip-title">Phản hồi &amp; Coaching</div><div class="app-tip-body">Điều chỉnh cách đưa feedback theo màu người nhận. Dùng mô hình SAID để cấu trúc. Red cần thẳng thắn, Green cần nhẹ nhàng, Blue cần dữ liệu.</div></div>
         </div>
       </div>
       <div class="card">
@@ -488,7 +713,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div class="wa-card"><div class="wa-icon">💬</div><div class="wa-title">Cross-Color Communication</div><div class="wa-desc">Roleplay: Cặp Red-Green, Yellow-Blue thực hành giao tiếp và nhận ra rào cản.</div><div class="wa-time">⏱ 45 phút · Skills</div></div>
           <div class="wa-card"><div class="wa-icon">⚔️</div><div class="wa-title">Conflict Simulation</div><div class="wa-desc">Tình huống xung đột thực tế. Thực hành Thomas-Kilmann để tìm hướng Collaborating.</div><div class="wa-time">⏱ 40 phút · Practice</div></div>
           <div class="wa-card"><div class="wa-icon">📝</div><div class="wa-title">SAID Feedback Practice</div><div class="wa-desc">Từng cặp thực hành đưa và nhận feedback theo mô hình SAID.</div><div class="wa-time">⏱ 50 phút · Application</div></div>
-          <div class="wa-card"><div class="wa-icon">🏆</div><div class="wa-title">Strengths & Roles Map</div><div class="wa-desc">Nhóm vẽ bản đồ 8 vai trò Key Attributes. Ai đang giỏi gì? Khoảng trống nào?</div><div class="wa-time">⏱ 35 phút · Strategy</div></div>
+          <div class="wa-card"><div class="wa-icon">🏆</div><div class="wa-title">Strengths &amp; Roles Map</div><div class="wa-desc">Nhóm vẽ bản đồ 8 vai trò Key Attributes. Ai đang giỏi gì? Khoảng trống nào?</div><div class="wa-time">⏱ 35 phút · Strategy</div></div>
           <div class="wa-card"><div class="wa-icon">🤝</div><div class="wa-title">Team Contract</div><div class="wa-desc">Nhóm cùng viết "Working Agreement" — cam kết tôn trọng sự khác biệt màu sắc.</div><div class="wa-time">⏱ 30 phút · Commitment</div></div>
           <div class="wa-card"><div class="wa-icon">🚀</div><div class="wa-title">Personal Action Plan</div><div class="wa-desc">Mỗi người viết 3 hành động cụ thể sẽ thay đổi sau workshop.</div><div class="wa-time">⏱ 20 phút · Closure</div></div>
         </div>
@@ -499,7 +724,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <select id="agendaDuration" style="background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 12px;font-family:var(--ff);font-size:13px;outline:none">
             <option value="3">3 tiếng (half-day)</option>
             <option value="4">4 tiếng</option>
-            <option value="6" selected>6 tiếng (full-day)</option>
+            <option value="6" selected="">6 tiếng (full-day)</option>
             <option value="8">8 tiếng (intensive)</option>
           </select>
           <select id="agendaFocus" style="background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 12px;font-family:var(--ff);font-size:13px;outline:none">
@@ -507,17 +732,17 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <option value="communication">Tập trung Giao tiếp</option>
             <option value="conflict">Tập trung Xung đột</option>
             <option value="leadership">Tập trung Lãnh đạo</option>
-            <option value="teambuilding">Team Building & Trust</option>
+            <option value="teambuilding">Team Building &amp; Trust</option>
           </select>
           <button class="btn btn-gold" onclick="generateAIInsights()">🤖 Tạo Agenda với AI</button>
         </div>
-        <div id="workshopAgenda"><div style="color:var(--muted);font-size:13px">Tải dữ liệu nhóm, chọn thời lượng và focus, rồi nhấn "Tạo Agenda với AI"</div></div>
+        <div id="workshopAgenda"><p style="color:var(--muted)">Không thể tạo agenda</p></div>
       </div>
     </div>
   </main>
 </div>
 
-<div id="toast"></div>
+<div id="toast" class="" style="background: rgb(30, 41, 59);">✅ Đã tải 4 thành viên</div>
 
 <script>
 const CI = {
@@ -539,7 +764,10 @@ const COMPAT_CLASS = {
 };
 const TAB_IDS = ['overview','members','dynamics','communication','said','workshop'];
 
-let teamData = [];
+let allData = [];       // toàn bộ dữ liệu từ SharePoint
+let teamData = [];      // thành viên được chọn cho workshop hiện tại
+let selectedTitles = new Set();  // set of Title strings
+let msTempSelected = new Set();  // trạng thái tạm trong modal
 
 // ════════════════════════════════════════
 // FIX 1: NORMALIZE SharePoint PascalCase → camelCase
@@ -592,12 +820,17 @@ async function loadTeamData(){
     const data=await res.json();
     const raw=Array.isArray(data)?data:(data.value||data.items||[]);
     // Apply normalization to every record
-    teamData = raw.map(normalizeItem);
+    allData = raw.map(normalizeItem);
+    // Default: chọn tất cả
+    selectedTitles = new Set(allData.map(m => m.Title));
+    teamData = [...allData];
     renderAll();
-    toast(`✅ Đã tải ${teamData.length} thành viên`);
+    toast(`✅ Đã tải ${allData.length} người — chọn thành viên WS nếu cần lọc`);
   }catch(e){
     console.error(e);
-    teamData=generateDemoData();
+    allData=generateDemoData();
+    selectedTitles = new Set(allData.map(m => m.Title));
+    teamData = [...allData];
     renderAll();
     toast('ℹ️ Dùng dữ liệu demo – '+e.message,true);
   }
@@ -636,13 +869,151 @@ function renderSidebar(){
   document.getElementById('statTotal').textContent=teamData.length;
   const depts=new Set(teamData.map(m=>m.department).filter(Boolean));
   document.getElementById('statDept').textContent=depts.size;
+  // Badge: X/Y nếu có lọc
+  const badge=document.getElementById('sbSelBadge');
+  if(badge){
+    if(allData.length>0&&teamData.length<allData.length){
+      badge.textContent=teamData.length+'/'+allData.length;
+      badge.style.display='inline';
+    } else {
+      badge.textContent=allData.length>0?teamData.length+'':'' ;
+      badge.style.display=allData.length>0?'inline':'none';
+    }
+  }
   const list=document.getElementById('memberList');
   list.innerHTML=teamData.map(m=>{
     const pr=m.primaryColor||'blue';
     const ci=CI[pr]||CI.blue;
     const initials=(m.Title||'?').split(' ').map(w=>w[0]).slice(-2).join('').toUpperCase();
-    return `<button class="sb-member" onclick="focusMember('${m.Title}')"><div class="sb-avatar" style="background:${ci.c}">${initials}</div><div><div class="sb-mname">${(m.Title||'—').split(' ').slice(-2).join(' ')}</div><div class="sb-mcolor">${ci.e} ${ci.l}</div></div></button>`;
+    return `<div style="display:flex;align-items:center;gap:0">
+      <button class="sb-member" style="flex:1" onclick="focusMember('${m.Title}')">
+        <div class="sb-avatar" style="background:${ci.c}">${initials}</div>
+        <div><div class="sb-mname">${(m.Title||'—').split(' ').slice(-2).join(' ')}</div>
+        <div class="sb-mcolor">${ci.e} ${ci.l}</div></div>
+      </button>
+      <button title="Bỏ khỏi WS" onclick="removeMemberFromWS('${m.Title}')" style="background:none;border:none;color:rgba(255,255,255,.2);cursor:pointer;padding:4px 6px;font-size:14px;flex-shrink:0;line-height:1;border-radius:6px" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='rgba(255,255,255,.2)'">×</button>
+    </div>`;
   }).join('');
+}
+
+function removeMemberFromWS(title){
+  selectedTitles.delete(title);
+  teamData=allData.filter(m=>selectedTitles.has(m.Title));
+  renderAll();
+  toast('Đã bỏ '+title.split(' ').slice(-1)[0]+' khỏi workshop');
+}
+
+// ═══════════════════════════════════════
+// MEMBER SELECTOR MODAL
+// ═══════════════════════════════════════
+function openMemberSelector(){
+  if(!allData.length){toast('Tải dữ liệu trước',true);return;}
+  // Clone current selection vào temp
+  msTempSelected=new Set(selectedTitles);
+  const total=allData.length;
+  document.getElementById('msHeaderSub').textContent=
+    `${total} người trong hệ thống — tick để đưa vào workshop này`;
+  renderMsItems();
+  document.getElementById('msOverlay').classList.add('open');
+}
+
+function closeMemberSelector(){
+  document.getElementById('msOverlay').classList.remove('open');
+}
+
+function msOverlayClick(e){
+  if(e.target===document.getElementById('msOverlay'))closeMemberSelector();
+}
+
+function renderMsItems(){
+  const q=(document.getElementById('msSearch').value||'').toLowerCase().trim();
+  const filtered=allData.filter(m=>{
+    if(!q)return true;
+    return (m.Title||'').toLowerCase().includes(q)||
+           (m.role||'').toLowerCase().includes(q)||
+           (m.department||'').toLowerCase().includes(q);
+  });
+  const CI_COLOR={red:'#E8392A',yellow:'#F5A623',green:'#3CB371',blue:'#2B6CB0'};
+  const CI_E={red:'🔴',yellow:'🟡',green:'🟢',blue:'🔵'};
+  const CI_LBL={red:'Fiery Red',yellow:'Sunshine Yellow',green:'Earth Green',blue:'Cool Blue'};
+  document.getElementById('msBody').innerHTML=filtered.length===0
+    ?'<div style="text-align:center;color:var(--muted);padding:32px;font-size:13px">Không tìm thấy</div>'
+    :filtered.map(m=>{
+      const pr=m.primaryColor||'blue';
+      const col=CI_COLOR[pr]||'#2B6CB0';
+      const lbl=CI_LBL[pr]||pr;
+      const e=CI_E[pr]||'●';
+      const ini=(m.Title||'?').split(' ').map(w=>w[0]).slice(-2).join('').toUpperCase();
+      const sel=msTempSelected.has(m.Title);
+      return `<div class="ms-item${sel?' sel':''}" onclick="msToogleItem('${m.Title.replace(/'/g,"\'")}',this)">
+        <div class="ms-cb">${sel?'<svg width="11" height="9" viewBox="0 0 11 9"><polyline points="1,5 4,8 10,1" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
+        <div class="ms-av" style="background:${col}">${ini}</div>
+        <div class="ms-info">
+          <div class="ms-name">${m.Title||'—'}</div>
+          <div class="ms-role-txt">${[m.role,m.department].filter(Boolean).join(' · ')||'—'}</div>
+        </div>
+        <div class="ms-cbadge" style="color:${col};border-color:${col}33">${e} ${lbl}</div>
+      </div>`;
+    }).join('');
+  updateMsCount();
+}
+
+function msToogleItem(title, el){
+  if(msTempSelected.has(title)){
+    msTempSelected.delete(title);
+    el.classList.remove('sel');
+    el.querySelector('.ms-cb').innerHTML='';
+  } else {
+    msTempSelected.add(title);
+    el.classList.add('sel');
+    el.querySelector('.ms-cb').innerHTML='<svg width="11" height="9" viewBox="0 0 11 9"><polyline points="1,5 4,8 10,1" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  updateMsCount();
+}
+
+function updateMsCount(){
+  const n=msTempSelected.size;
+  document.getElementById('msSelCount').textContent=n+' được chọn';
+  const btn=document.getElementById('msApply');
+  btn.textContent=n>0?`Áp dụng (${n} người)`:'Chọn ít nhất 1 người';
+  btn.disabled=n===0;
+}
+
+function msSelectAll(){
+  const q=(document.getElementById('msSearch').value||'').toLowerCase().trim();
+  allData.filter(m=>{
+    if(!q)return true;
+    return (m.Title||'').toLowerCase().includes(q)||
+           (m.role||'').toLowerCase().includes(q)||
+           (m.department||'').toLowerCase().includes(q);
+  }).forEach(m=>msTempSelected.add(m.Title));
+  renderMsItems();
+}
+
+function msDeselectAll(){
+  const q=(document.getElementById('msSearch').value||'').toLowerCase().trim();
+  allData.filter(m=>{
+    if(!q)return true;
+    return (m.Title||'').toLowerCase().includes(q)||
+           (m.role||'').toLowerCase().includes(q)||
+           (m.department||'').toLowerCase().includes(q);
+  }).forEach(m=>msTempSelected.delete(m.Title));
+  renderMsItems();
+}
+
+function msSelectByColor(color){
+  allData.filter(m=>(m.primaryColor||'blue')===color)
+         .forEach(m=>msTempSelected.add(m.Title));
+  renderMsItems();
+}
+
+function applyMemberSelection(){
+  if(msTempSelected.size===0){toast('Chọn ít nhất 1 người',true);return;}
+  selectedTitles=new Set(msTempSelected);
+  teamData=allData.filter(m=>selectedTitles.has(m.Title));
+  closeMemberSelector();
+  renderAll();
+  toast(`✅ Workshop: ${teamData.length}/${allData.length} thành viên`);
 }
 
 function renderColorSummary(){
@@ -987,7 +1358,8 @@ Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
   document.getElementById('workshopAgenda').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang tạo agenda…</div>';
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:prompt}]})});
+    if(!CONFIG.workerUrl||CONFIG.workerUrl.includes('PASTE_'))throw new Error('Chưa cấu hình workerUrl trong CONFIG');
+    const res=await fetch(CONFIG.workerUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     const text=data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
@@ -1055,5 +1427,6 @@ function renderAIInsights(ai){
     </div>`;
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
