@@ -62,6 +62,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .tbl-hdr h2{font-size:15px;font-weight:600}
 .btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:12px;transition:all .2s}
 .btn-refresh:hover{color:var(--txt);border-color:var(--bdr2)}
+.btn-recalc{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);color:var(--yellow);cursor:pointer;font-family:var(--ff);font-size:12px;transition:all .2s}
+.btn-recalc:hover{background:rgba(245,166,35,.2);border-color:rgba(245,166,35,.5)}
+.btn-recalc:disabled{opacity:.5;cursor:not-allowed}
 table.tbl{width:100%;border-collapse:collapse}
 table.tbl th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);background:var(--sur2);border-bottom:1px solid var(--bdr)}
 table.tbl td{padding:12px 16px;border-bottom:1px solid var(--bdr);font-size:13.5px;vertical-align:middle}
@@ -170,6 +173,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
       <div class="tbl-hdr">
         <h2 id="tableTitle">Tất cả phản hồi (4)</h2>
         <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
+        <button class="btn-recalc" id="btnRecalc" onclick="recalcAll()" title="Tính lại điểm màu theo weighted IE (×0.5) từ Answers gốc">⚖️ Recalculate All</button>
       </div>
       <div id="tableBody"><table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody><tr onclick="openModal(6)">
       <td><div class="name-cell"><span class="nm">Nguyễn Lê Thành Lạc</span><span class="rl">QA Manager</span></div></td>
@@ -502,6 +506,86 @@ function exportPDF(){
 }
 
 document.addEventListener('DOMContentLoaded',loadData);
+
+// ═══════════════════════════════════════
+// RECALCULATE — Tính lại điểm từ Answers
+// Weighted IE (×0.5) theo lý thuyết Jung
+// ═══════════════════════════════════════
+const DIM_MAP={
+  // 0–23: Core (×1.0), 24–31: IE (×0.5), 32–39: Lead, 40–47: Stress
+  ie: new Set([24,25,26,27,28,29,30,31]),
+  lead: new Set([32,33,34,35,36,37,38,39]),
+  stress: new Set([40,41,42,43,44,45,46,47])
+};
+const CORE_N_NEW=28; // 24×1 + 8×0.5
+
+function recalcFromAnswers(answersJson){
+  let ans;
+  try{ ans=JSON.parse(answersJson); }catch(e){ return null; }
+  const sc={r:0,y:0,g:0,b:0};
+  const ie={E:0,I:0};
+  const ld={r:0,y:0,g:0,b:0};
+  const st={r:0,y:0,g:0,b:0};
+  for(let i=0;i<48;i++){
+    const a=ans[i]||ans[String(i)];
+    if(!a)continue;
+    if(DIM_MAP.ie.has(i)){
+      sc[a]=(sc[a]||0)+0.5;
+      if(a==='r'||a==='y')ie.E++;else ie.I++;
+    } else if(DIM_MAP.lead.has(i)){
+      ld[a]=(ld[a]||0)+1;
+    } else if(DIM_MAP.stress.has(i)){
+      st[a]=(st[a]||0)+1;
+    } else {
+      sc[a]=(sc[a]||0)+1; // core
+    }
+  }
+  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const pr=sorted[0][0],sec=sorted[1][0];
+  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
+  const pct=k=>Math.round((sc[k]||0)/CORE_N_NEW*100);
+  const ieType=ie.E>=ie.I?'Extrovert':'Introvert';
+  const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
+  const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
+  return {
+    primaryColor:kmap[pr], secondaryColor:kmap[sec],
+    redScore:Math.round(sc.r||0), yellowScore:Math.round(sc.y||0),
+    greenScore:Math.round(sc.g||0), blueScore:Math.round(sc.b||0),
+    ieType, leadStyle:kmap[ls], stressBehavior:kmap[sb],
+    pct
+  };
+}
+
+async function recalcAll(){
+  const btn=document.getElementById('btnRecalc');
+  const items=allData.filter(i=>i.Answers);
+  if(!items.length){ toast('⚠️ Không có item nào có Answers để tính lại',true);return; }
+  if(!confirm(`Tính lại điểm cho ${items.length} người từ Answers gốc?\n\nThay đổi:\n- RedScore/YellowScore/GreenScore/BlueScore được tính lại\n- Câu IE giờ đóng góp ×0.5 vào điểm màu\n- PrimaryColor & SecondaryColor có thể thay đổi\n\nTiếp tục?`))return;
+
+  btn.disabled=true;
+  let done=0,failed=0;
+  for(const item of items){
+    const result=recalcFromAnswers(item.Answers);
+    if(!result){failed++;continue;}
+    // Update SharePoint via Write Flow
+    try{
+      await fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          updateMode:true, id:item.ID,
+          redScore:result.redScore, yellowScore:result.yellowScore,
+          greenScore:result.greenScore, blueScore:result.blueScore,
+          primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
+          ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior
+        })
+      });
+      done++;
+      toast(`⏳ Đang cập nhật… ${done}/${items.length}`);
+    }catch(e){ failed++; }
+  }
+  btn.disabled=false;
+  toast(failed?`✅ Xong ${done}/${items.length} (${failed} lỗi)`:`✅ Đã recalculate ${done} người thành công!`);
+  setTimeout(loadData,1500); // refresh table
+}
 </script>
 
 
