@@ -356,7 +356,7 @@ const CIMAP={red:CI.r,yellow:CI.y,green:CI.g,blue:CI.b};
 const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)','red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)','yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'};
 let ANS={},BATCH_IDX=0;
 const BSIZE=6;
-const CORE_N=24;
+const CORE_N=28; // 24 câu core + 8 câu IE × 0.5 trọng số (IE là phần của type theo Jung)
 function show(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 function startQuiz(){
@@ -393,7 +393,22 @@ async function nextBatch(){
 }
 function calcScores(){
   const sc={r:0,y:0,g:0,b:0},ie={E:0,I:0},ld={r:0,y:0,g:0,b:0},st={r:0,y:0,g:0,b:0};
-  QS.forEach((q,i)=>{const a=ANS[i];if(!a)return;if(!q.d)sc[a]++;else if(q.d==='ie'){if(a==='r'||a==='y')ie.E++;else ie.I++;}else if(q.d==='lead')ld[a]++;else if(q.d==='stress')st[a]++;});
+  // IE (trọng số 0.5): vừa đóng góp vào điểm màu (vì IE là phần của type theo Jung)
+  // vừa track riêng để hiển thị % E/I độc lập
+  // Lead & Stress: chỉ track riêng, KHÔNG cộng vào màu (đo hành vi học được, không đo type)
+  QS.forEach((q,i)=>{
+    const a=ANS[i];if(!a)return;
+    if(!q.d){
+      sc[a]++;                          // Core: trọng số 1.0
+    } else if(q.d==='ie'){
+      sc[a]+=0.5;                       // IE: trọng số 0.5 → tính vào màu
+      if(a==='r'||a==='y')ie.E++;else ie.I++;  // đồng thời track E/I
+    } else if(q.d==='lead'){
+      ld[a]++;                          // Lead: chỉ track, không tính vào màu
+    } else if(q.d==='stress'){
+      st[a]++;                          // Stress: chỉ track, không tính vào màu
+    }
+  });
   const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
   const pr=sorted[0][0],sec=sorted[1][0];
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
@@ -470,29 +485,39 @@ Trả về JSON thuần (không markdown):
       throw new Error('Worker HTTP '+res.status+(errTxt?' — '+errTxt.slice(0,120):'')+'. Kiểm tra CORS headers trong Worker.');
     }
     const data=await res.json();
-    // Worker forward nguyên vẹn Claude API response
-    console.log('[AI Debug] Raw response keys:', Object.keys(data));
-    console.log('[AI Debug] data.content:', JSON.stringify(data.content||[]).slice(0,200));
-    // Claude API trả về {content:[{type:'text',text:'...'}]} hoặc Worker có thể wrap khác
+    // Worker trả về Claude API response chuẩn: {content:[{type:'text',text:'...'}]}
     let raw='';
     if(data.content&&Array.isArray(data.content)){
-      // Claude API response chuẩn
-      raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+      raw=data.content.map(b=>b.text||'').join('').trim();
     } else if(typeof data.text==='string'){
-      // Một số proxy wrap thành {text:'...'}
       raw=data.text.trim();
     } else if(typeof data==='string'){
       raw=data.trim();
-    } else {
-      raw=JSON.stringify(data);
     }
-    console.log('[AI Debug] raw text (first 300):', raw.slice(0,300));
     if(!raw)throw new Error('Worker trả về response rỗng');
-    // Trích xuất JSON bằng cách tìm { đầu và } cuối — chống markdown fences
-    const j0=raw.indexOf('{'),j1=raw.lastIndexOf('}');
-    if(j0<0||j1<=j0)throw new Error('Không tìm thấy JSON — raw: '+raw.slice(0,200));
-    const txt=raw.slice(j0,j1+1);
-    return JSON.parse(txt);
+
+    // Thử parse 4 lần theo thứ tự từ đơn giản → phức tạp
+    // 1. Parse thẳng (trường hợp không có fence)
+    try{ return JSON.parse(raw); }catch(e1){}
+
+    // 2. Strip markdown fence bằng indexOf — chống mọi loại backtick/encoding
+    const fenceEnd=raw.indexOf('{');
+    const fenceClose=raw.lastIndexOf('}');
+    if(fenceEnd>=0&&fenceClose>fenceEnd){
+      try{ return JSON.parse(raw.slice(fenceEnd,fenceClose+1)); }catch(e2){}
+    }
+
+    // 3. Strip dòng đầu/cuối nếu là fence, rồi parse
+    const lines=raw.split('\n');
+    const bodyLines=lines.filter(l=>!l.trim().startsWith('`'));
+    try{ return JSON.parse(bodyLines.join('\n')); }catch(e3){}
+
+    // 4. Tìm { } trong từng line ghép lại
+    const jsonBody=bodyLines.join('\n');
+    const a=jsonBody.indexOf('{'),b2=jsonBody.lastIndexOf('}');
+    if(a>=0&&b2>a){ try{ return JSON.parse(jsonBody.slice(a,b2+1)); }catch(e4){} }
+
+    throw new Error('Không parse được JSON từ AI response. Kiểm tra Worker log.');
   }catch(e){
     console.error('AI Error:',e?.message||e);
     if(e instanceof TypeError&&String(e.message).toLowerCase().includes('fetch')){
@@ -649,7 +674,7 @@ function resetForm(){
     const pr=kmap[item.PrimaryColor]||'y';
     const sec=kmap[item.SecondaryColor]||'g';
     const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
-    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/24*100);
+    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/28*100); // max 28: 24 core + 8 IE×0.5
     const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
     const ieTotal=ieE+ieI||1;
     const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
