@@ -478,7 +478,12 @@ Trả về JSON thuần (không markdown):
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
     if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    const claudePayload={model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:prompt}]};
+    const claudePayload={
+      model:'claude-sonnet-4-5',
+      max_tokens:2500,
+      system:'You are a JSON API. Output ONLY a single valid JSON object. Rules: (1) No markdown, no ```json fence. (2) All string values must use \\n for newlines, never literal newlines. (3) No trailing commas. (4) Output starts with { and ends with }. Nothing before or after.',
+      messages:[{role:'user',content:prompt}]
+    };
     const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok){
       const errTxt=await res.text().catch(()=>'');
