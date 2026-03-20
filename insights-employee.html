@@ -473,12 +473,12 @@ YÊU CẦU BẮT BUỘC:
 4. Đoạn 4 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
 
-Trả về JSON thuần (không markdown):\n{"personalStyle":"4 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n (backslash-n): (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn (KHÔNG dùng newline thật, ngăn cách bằng \\\\n), mô tả điểm mù đặc thù của sự kết hợp màu+archetype+IE này","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}'
+Trả về JSON thuần (không markdown):\n{"personalStyle":"3 đoạn ngắn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n: (1) tổng quan màu+archetype, (2) phong cách IE và lãnh đạo, (3) điểm khác biệt so với người cùng màu chính","strengths":["6 điểm — nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["4 điểm — gắn với stress behavior"],"valueToTeam":["4 đóng góp cụ thể cho role"],"effectiveCommunication":["4 cách dựa trên IE và màu chính"],"communicationBarriers":["3 điều tránh — gắn với stress"],"blindSpots":"1 đoạn ngắn (KHÔNG dùng newline thật), điểm mù đặc thù của combo này","development":["4 gợi ý phát triển chiều còn yếu"],"idealEnvironment":["3 môi trường phù hợp"],"managingTips":["3 cách quản lý ${name} — actionable"]}'
 `;
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
     if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    const claudePayload={model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:prompt}]};
+    const claudePayload={model:'claude-sonnet-4-5',max_tokens:8000,messages:[{role:'user',content:prompt}]};
     const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok){
       const errTxt=await res.text().catch(()=>'');
