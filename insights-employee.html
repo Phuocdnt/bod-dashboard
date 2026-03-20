@@ -471,11 +471,26 @@ Trả về JSON thuần (không markdown):
     }
     const data=await res.json();
     // Worker forward nguyên vẹn Claude API response
-    const raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+    console.log('[AI Debug] Raw response keys:', Object.keys(data));
+    console.log('[AI Debug] data.content:', JSON.stringify(data.content||[]).slice(0,200));
+    // Claude API trả về {content:[{type:'text',text:'...'}]} hoặc Worker có thể wrap khác
+    let raw='';
+    if(data.content&&Array.isArray(data.content)){
+      // Claude API response chuẩn
+      raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+    } else if(typeof data.text==='string'){
+      // Một số proxy wrap thành {text:'...'}
+      raw=data.text.trim();
+    } else if(typeof data==='string'){
+      raw=data.trim();
+    } else {
+      raw=JSON.stringify(data);
+    }
+    console.log('[AI Debug] raw text (first 300):', raw.slice(0,300));
     if(!raw)throw new Error('Worker trả về response rỗng');
     // Trích xuất JSON bằng cách tìm { đầu và } cuối — chống markdown fences
     const j0=raw.indexOf('{'),j1=raw.lastIndexOf('}');
-    if(j0<0||j1<=j0)throw new Error('Không tìm thấy JSON trong response');
+    if(j0<0||j1<=j0)throw new Error('Không tìm thấy JSON — raw: '+raw.slice(0,200));
     const txt=raw.slice(j0,j1+1);
     return JSON.parse(txt);
   }catch(e){
