@@ -575,7 +575,8 @@ async function recalcAll(){
           redScore:result.redScore, yellowScore:result.yellowScore,
           greenScore:result.greenScore, blueScore:result.blueScore,
           primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
-          ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior
+          ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior,
+          aiProfile:'' // Xóa AIProfile cũ → bắt buộc gen lại AI với điểm mới
         })
       });
       done++;
