@@ -474,7 +474,7 @@ YÊU CẦU BẮT BUỘC:
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
 
 Trả về JSON thuần (không markdown):
-{"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
+{"personalStyle":"4 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\n (backslash-n): (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
     if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
@@ -496,33 +496,42 @@ Trả về JSON thuần (không markdown):
     }
     if(!raw)throw new Error('Worker trả về response rỗng');
 
-    // Log để debug nếu cần
     console.log('[AI] raw length:', raw.length, '| first 100:', raw.slice(0,100));
 
-    // Cách đáng tin cậy nhất: tìm { đầu tiên và } cuối cùng
-    // Hoạt động với mọi dạng: thuần JSON, ```json...```, có text thừa trước/sau
-    const i0 = raw.indexOf('{');
-    const i1 = raw.lastIndexOf('}');
-    if(i0 >= 0 && i1 > i0){
-      const candidate = raw.slice(i0, i1 + 1);
-      try{
-        const parsed = JSON.parse(candidate);
-        // Kiểm tra có đủ key cần thiết không
-        if(parsed.personalStyle || parsed.strengths){
-          return parsed;
-        }
-      }catch(e2){
-        console.warn('[AI] JSON candidate parse failed:', e2.message, '| candidate[:200]:', candidate.slice(0,200));
+    // Hàm repair JSON: escape newline thật trong string values
+    // Claude đôi khi viết newline thật thay vì \n → JSON.parse fail
+    function repairJSON(s){
+      // Escape literal newlines/tabs bên trong cặp dấu nháy kép
+      let inStr=false, esc=false, result='';
+      for(let i=0;i<s.length;i++){
+        const c=s[i];
+        if(esc){result+=c;esc=false;continue;}
+        if(c==='\\'&&inStr){result+=c;esc=true;continue;}
+        if(c==='"'){inStr=!inStr;result+=c;continue;}
+        if(inStr&&c==='\n'){result+='\\n';continue;}
+        if(inStr&&c==='\r'){result+='\\r';continue;}
+        if(inStr&&c==='\t'){result+='\\t';continue;}
+        result+=c;
       }
+      return result;
     }
 
-    // Fallback: thử từng JSON object trong raw nếu có nhiều
-    const matches = raw.match(/\{[\s\S]+\}/g) || [];
-    for(const m of matches){
+    // Tìm JSON object từ raw (bỏ markdown fence nếu có)
+    const i0=raw.indexOf('{'), i1=raw.lastIndexOf('}');
+    if(i0>=0&&i1>i0){
+      const candidate=raw.slice(i0,i1+1);
+      // Thử 1: parse thẳng
       try{
-        const p = JSON.parse(m);
-        if(p.personalStyle || p.strengths) return p;
-      }catch(e3){}
+        const p=JSON.parse(candidate);
+        if(p.personalStyle||p.strengths) return p;
+      }catch(e2){}
+      // Thử 2: repair rồi parse (xử lý newline thật trong strings)
+      try{
+        const p=JSON.parse(repairJSON(candidate));
+        if(p.personalStyle||p.strengths) return p;
+      }catch(e3){
+        console.warn('[AI] repairJSON failed:', e3.message, '| sample:', candidate.slice(0,300));
+      }
     }
 
     console.error('[AI] All parse attempts failed. raw[:500]:', raw.slice(0,500));
