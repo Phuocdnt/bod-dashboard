@@ -478,16 +478,7 @@ Trả về JSON thuần (không markdown):
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
     if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    // Dùng assistant prefill: thêm message {"role":"assistant","content":"{"} 
-    // Claude sẽ tiếp tục từ { → KHÔNG BAO GIỜ viết markdown fence
-    const claudePayload={
-      model:'claude-sonnet-4-5',
-      max_tokens:2500,
-      messages:[
-        {role:'user',content:prompt},
-        {role:'assistant',content:'{'}
-      ]
-    };
+    const claudePayload={model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:prompt}]};
     const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok){
       const errTxt=await res.text().catch(()=>'');
@@ -505,8 +496,6 @@ Trả về JSON thuần (không markdown):
     }
     if(!raw)throw new Error('Worker trả về response rỗng');
 
-    // Khi dùng prefill {, Claude trả về phần tiếp theo → prepend { lại
-    if(raw&&!raw.trimStart().startsWith('{')) raw='{'+raw;
     console.log('[AI] raw length:', raw.length, '| first 100:', raw.slice(0,100));
 
     // Hàm repair JSON hoàn chỉnh:
