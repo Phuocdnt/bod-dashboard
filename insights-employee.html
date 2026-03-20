@@ -477,7 +477,7 @@ Trả về JSON thuần (không markdown):\n{"personalStyle":"2 đoạn ngắn, 
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
     if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    const claudePayload={model:'claude-sonnet-4-6',max_tokens:6000,messages:[{role:'user',content:prompt}]};
+    const claudePayload={model:'claude-sonnet-4-6',max_tokens:8000,messages:[{role:'user',content:prompt}]};
     const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok){
       const errTxt=await res.text().catch(()=>'');
