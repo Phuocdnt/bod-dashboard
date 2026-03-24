@@ -1,21 +1,12 @@
 
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0041)https://phuocdnt.github.io/bod-dashboard/ -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOD Dashboard v5.25 - SOP-001 Survey Compliance</title>
     <!-- SheetJS for Excel Export -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/xlsx.full.min.js.download"></script>
     <style>
         * {
             margin: 0;
@@ -2160,19 +2151,18 @@
             <!-- API Key input -->
             <div class="api-key-input-group">
                 <label>🔑 Nhập API Key</label>
-                <input type="password" id="api-key-setup-input" 
-                       placeholder="Nhập API Key từ Admin...">
+                <input type="password" id="api-key-setup-input" placeholder="Nhập API Key từ Admin...">
             </div>
             
             <!-- Help text -->
             <div class="api-key-help-text">
                 <strong>💡 Lần đầu sử dụng?</strong>
                 API Key được Admin cung cấp khi setup lần đầu.<br>
-                Liên hệ <strong>Technical Director</strong> (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdbda5b8a2aee3a9a3b98da9a5a4e3aea2a0e3bba3">[email&#160;protected]</a>) để nhận API Key.
+                Liên hệ <strong>Technical Director</strong> (<a href="https://phuocdnt.github.io/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdbda5b8a2aee3a9a3b98da9a5a4e3aea2a0e3bba3">[email&nbsp;protected]</a>) để nhận API Key.
             </div>
             
             <button onclick="saveApiKeyAndContinue()" class="btn-api-key-save">
-                ✅ Lưu & Tiếp tục
+                ✅ Lưu &amp; Tiếp tục
             </button>
         </div>
     </div>
@@ -2185,28 +2175,25 @@
                 <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.25 - SOP-001 SURVEY</span>
             </h1>
             <div class="header-actions">
-                <button onclick="window.forceSyncNow()" 
-                        style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;"
-                        onmouseover="this.style.background='#f44336'"
-                        onmouseout="this.style.background='#ff5722'">
+                <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
                     🚨 FORCE SYNC
                 </button>
-                <div class="sync-status" id="sync-status">
+                <div class="sync-status connected" id="sync-status">
                     <span>🔄</span>
-                    <span id="sync-text">Đang tải...</span>
+                    <span id="sync-text">✅ Đồng bộ 5p trước</span>
                 </div>
                 
                 <!-- v5.4 User Profile Menu -->
                 <div class="user-selector">
                     <div class="user-dropdown-trigger" id="user-trigger" onclick="toggleUserMenu()">
                         <span>👤</span>
-                        <span id="current-user-display">User</span>
+                        <span id="current-user-display">Admin 🔑</span>
                         <span>â–¼</span>
                     </div>
                     <div class="user-dropdown-menu" id="user-menu">
                         <div class="user-info-display" id="user-info-display">
-                            <div id="user-menu-name">User Name</div>
-                            <div class="user-info-role" id="user-menu-role">Role</div>
+                            <div id="user-menu-name">Admin 🔑</div>
+                            <div class="user-info-role" id="user-menu-role">Administrator</div>
                         </div>
                         <div class="user-menu-action change-password" onclick="openChangePasswordModal(); toggleUserMenu();">
                             <span>🔑</span>
@@ -2220,7 +2207,7 @@
                     </div>
                 </div>
                 
-                <button class="btn btn-warning" onclick="document.getElementById('import-file-header').click()">
+                <button class="btn btn-warning" onclick="document.getElementById(&#39;import-file-header&#39;).click()">
                     <span>📤</span>
                     Nhập Dữ Liệu
                 </button>
@@ -2238,16 +2225,69 @@
             <button class="nav-tab" data-tab="calendar">📅 Lịch Làm Việc</button>
             <button class="nav-tab" data-tab="team">👥 Nhân Sự</button>
             <button class="nav-tab" data-tab="teams-management">🏢 Teams</button>
-            <button class="nav-tab" data-tab="issues-summary" id="issues-tab" style="display: none;">🚨 Issues</button>
-            <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: none;">📊 BOD Summary</button>
-            <button class="nav-tab" data-tab="settings"⚙️ Cài Đặt</button>
-        </div>
+            <button class="nav-tab" data-tab="issues-summary" id="issues-tab" style="display: block;">🚨 Issues</button>
+            <button class="nav-tab" data-tab="bod-summary" id="bod-summary-tab" style="display: block;">📊 BOD Summary</button>
+            <button class="nav-tab" data-tab="settings" ⚙️="" cài="" Đặt<="" button="">
+        </button></div>
 
         <!-- Tổng Quan Tab -->
         <div id="overview" class="tab-content active">
-            <div class="stats-grid" id="stats-grid"></div>
+            <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <h3>📁 Tổng Số Dự Án</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>
+                    </div>
+                    <div class="stat-card" style="cursor: default;">
+                        <h3>📁 Tổng Số Dự Án</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>
+                    </div>
+                    <div class="stat-card green" style="cursor: pointer; transform: scale(1);" onclick="showProjectsByStatus(&#39;In Progress&#39;, &#39;Đang Thực Hiện&#39;, &#39;#56ab2f&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>▶️ Đang Thực Hiện</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card blue" style="cursor: pointer; transform: scale(1);" onclick="showProjectsByStatus(&#39;Planning&#39;, &#39;Planning&#39;, &#39;#2193b0&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>📋 Planning</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card purple" style="cursor: pointer; transform: scale(1.05);" onclick="showProjectsByStatus(&#39;Completed&#39;, &#39;Hoàn Thành&#39;, &#39;#667eea&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>✅ Hoàn Thành</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card gray" style="cursor: pointer;" onclick="showProjectsByStatus(&#39;On Hold&#39;, &#39;On Hold&#39;, &#39;#95a5a6&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>⏸️ On Hold</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card dark-gray" style="cursor: pointer; transform: scale(1);" onclick="showProjectsByStatus(&#39;Cancelled&#39;, &#39;Cancelled&#39;, &#39;#636e72&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>🚫 Cancelled</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card red" style="cursor: pointer; transform: scale(1);" onclick="showDelayedProjects()" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>⚠️ Trễ Tiến Độ</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card orange" style="cursor: pointer; transform: scale(1);" onclick="console.log(&#39;👆 [USER CLICK] Conflict badge clicked&#39;); window.showConflicts()" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>⚡ Xung Đột Lịch</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card orange" style="cursor: pointer; transform: scale(1);" onclick="navigateToTeamTab()" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
+                        <h3>👥 Tổng Nhân Sự</h3>
+                        <div class="value">0</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+
+
+                </div>
             <h2 style="color: #2d3748; margin: 30px 0 20px;">📋 Dự Án Đang Thực Hiện</h2>
-            <div id="overview-projects"></div>
+            <div id="overview-projects"><p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p></div>
         </div>
 
         <!-- Dự Án Tab -->
@@ -2260,15 +2300,11 @@
                 </div>
                 <div class="filter-group">
                     <label>👤 Leader</label>
-                    <select id="filter-leader">
-                        <option value="">Tất cả</option>
-                    </select>
+                    <select id="filter-leader"><option value="">Tất cả</option></select>
                 </div>
                 <div class="filter-group">
                     <label>👥 Member</label>
-                    <select id="filter-member">
-                        <option value="">Tất cả</option>
-                    </select>
+                    <select id="filter-member"><option value="">Tất cả</option></select>
                 </div>
                 <div class="filter-group">
                     <label>🏢 Khách hàng</label>
@@ -2276,9 +2312,7 @@
                 </div>
                 <div class="filter-group">
                     <label>💼 Sale</label>
-                    <select id="filter-sale">
-                        <option value="">Tất cả</option>
-                    </select>
+                    <select id="filter-sale"><option value="">Tất cả</option></select>
                 </div>
                 <div class="filter-group">
                     <label>📊 Trạng thái</label>
@@ -2311,7 +2345,7 @@
                     </button>
                 </div>
             </div>
-            <div id="projects-list"></div>
+            <div id="projects-list"><p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có dự án nào</p></div>
         </div>
 
         <!-- Lịch Làm Việc Tab -->
@@ -2319,16 +2353,854 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <button class="btn" onclick="previousMonth()">â—€</button>
-                    <div style="font-size: 1.5em; font-weight: 600; color: #2d3748; min-width: 200px; text-align: center;" id="calendar-month"></div>
+                    <div style="font-size: 1.5em; font-weight: 600; color: #2d3748; min-width: 200px; text-align: center;" id="calendar-month">Tháng 3/2026</div>
                     <button class="btn" onclick="nextMonth()">â–¶</button>
                     <button class="btn" onclick="todayMonth()">Hôm Nay</button>
                 </div>
-                <select id="calendar-filter-person" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;">
-                    <option value="">Tất cả nhân sự</option>
-                </select>
+                <select id="calendar-filter-person" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;"><option value="">Tất cả nhân sự</option></select>
             </div>
             <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, minmax(200px, 1fr)); gap: 10px; min-width: 1400px;"></div>
+                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, minmax(200px, 1fr)); gap: 10px; min-width: 1400px;"><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">CN</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T2</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T3</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T4</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T5</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T6</div><div style="text-align: center; font-weight: 600; padding: 10px; background: #f8f9fa; border-radius: 8px;">T7</div>
+                        <div class="calendar-day-cell " data-date="2026-03-01" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">1</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-02" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">2</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-03" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">3</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-04" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">4</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-05" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">5</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-06" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">6</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-07" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">7</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-08" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">8</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-09" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">9</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-10" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">10</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-11" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">11</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-12" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">12</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-13" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">13</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-14" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">14</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-15" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">15</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-16" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">16</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-17" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">17</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-18" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">18</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-19" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">19</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-20" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">20</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-21" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">21</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-22" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">22</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-23" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">23</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-24" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            border-color: #667eea; border-width: 3px; background: rgba(102, 126, 234, 0.05);
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; color: #667eea;">24</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-25" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">25</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-26" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">26</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-27" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">27</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-28" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">28</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-29" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">29</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-30" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">30</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-03-31" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: white;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">31</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-01" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">1</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-02" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">2</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-03" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">3</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-04" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">4</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-05" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">5</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-06" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">6</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-07" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">7</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-08" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">8</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-09" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">9</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-10" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">10</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    
+                        <div class="calendar-day-cell " data-date="2026-04-11" style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                            background: #f8f9fa; opacity: 0.5;
+                            
+                            
+                            transition: all 0.3s ease;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: 600; ">11</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="day-events-container" style="display: flex; flex-direction: column; gap: 3px; max-height: 85px; overflow-y: auto; transition: max-height 0.3s ease;">
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
             </div>
         </div>
 
@@ -2341,7 +3213,7 @@
                     Thêm Nhân Sự
                 </button>
             </div>
-            <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+            <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"><p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có nhân sự nào</p></div>
         </div>
 
         <!-- v5.6 Teams Management Tab -->
@@ -2408,7 +3280,7 @@
         <div id="bod-summary" class="tab-content">
             <div style="margin-bottom: 30px;">
                 <h2 style="color: #2d3748; margin-bottom: 10px;">📊 BOD Summary Dashboard</h2>
-                <p style="color: #718096;">Tổng quan dự án, KPI, rủi ro và tài chính - Dành cho BOD & Admin</p>
+                <p style="color: #718096;">Tổng quan dự án, KPI, rủi ro và tài chính - Dành cho BOD &amp; Admin</p>
             </div>
 
             <!-- KPI Cards -->
@@ -2483,8 +3355,7 @@
                 
                 <div class="form-group">
                     <label style="display: block; margin-bottom: 8px; font-weight: 500;">Nhập API Key:</label>
-                    <input type="password" id="api-key-input" placeholder="Nhập API Key của bạn..." 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace;">
+                    <input type="password" id="api-key-input" placeholder="Nhập API Key của bạn..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace;">
                     <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
                         Liên hệ Admin để lấy API Key nếu bạn chưa có.
                     </div>
@@ -2514,7 +3385,7 @@
                         <span>📥</span>
                         Xuất JSON
                     </button>
-                    <button class="btn btn-warning" onclick="document.getElementById('import-file').click()">
+                    <button class="btn btn-warning" onclick="document.getElementById(&#39;import-file&#39;).click()">
                         <span>📤</span>
                         Import từ File
                     </button>
@@ -2554,13 +3425,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Thêm Dự Án Mới</h2>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <button class="close-modal" onclick="closeModal()">×</button>
             </div>
             <form id="project-form" onsubmit="saveProject(event)">
                 <!-- BASIC INFO -->
                 <div class="form-group">
                     <label>Tên Dự Án (IQR Code) *</label>
-                    <input type="text" id="project-name" required placeholder="VD: IQR25101908 - Tên dự án...">
+                    <input type="text" id="project-name" required="" placeholder="VD: IQR25101908 - Tên dự án...">
                     <div id="iqr-error" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-group">
@@ -2646,40 +3517,33 @@
                     
                     <!-- v5.25 SOP-001 COMPLIANCE PANEL -->
                     <div class="sop-panel">
-                        <h4>&#x1F4CB; SOP-001: Tuan Thu Quy Trinh Khao Sat</h4>
+                        <h4>📋 SOP-001: Tuan Thu Quy Trinh Khao Sat</h4>
                         <!-- Row 1: Survey Type -->
                         <div style="font-size:0.82em;color:#c5cae9;margin-bottom:6px;font-weight:600;">LOAI KHAO SAT</div>
                         <div class="sop-type-toggle">
-                            <button type="button" class="sop-type-btn" id="sop-lite-btn"
-                                onclick="setSopType('LITE')"
-                                title="Du an &lt; 1 ty VND, don gian, 1 lan tham hien truong">
-                                &#x1F7E2; LITE &lt;1 ty
+                            <button type="button" class="sop-type-btn" id="sop-lite-btn" onclick="setSopType(&#39;LITE&#39;)" title="Du an &lt; 1 ty VND, don gian, 1 lan tham hien truong">
+                                🟢 LITE &lt;1 ty
                             </button>
-                            <button type="button" class="sop-type-btn" id="sop-full-btn"
-                                onclick="setSopType('FULL')"
-                                title="Du an &gt;= 1 ty VND, phuc tap, nhieu lan tham hien truong">
-                                &#x1F7E0; FULL &gt;=1 ty
+                            <button type="button" class="sop-type-btn" id="sop-full-btn" onclick="setSopType(&#39;FULL&#39;)" title="Du an &gt;= 1 ty VND, phuc tap, nhieu lan tham hien truong">
+                                🟠 FULL &gt;=1 ty
                             </button>
                         </div>
                         <!-- Row 2: Decision -->
                         <div style="font-size:0.82em;color:#c5cae9;margin-bottom:6px;font-weight:600;">QUYET DINH SAU KHAO SAT</div>
                         <div class="sop-decision-row">
-                            <button type="button" class="sop-decision-btn" id="sop-go-btn"
-                                onclick="setSopDecision('GO')">
-                                &#x2705; GO
+                            <button type="button" class="sop-decision-btn" id="sop-go-btn" onclick="setSopDecision(&#39;GO&#39;)">
+                                ✅ GO
                             </button>
-                            <button type="button" class="sop-decision-btn" id="sop-conditional-btn"
-                                onclick="setSopDecision('CONDITIONAL_GO')">
-                                &#x26A0;&#xFE0F; CONDITIONAL
+                            <button type="button" class="sop-decision-btn" id="sop-conditional-btn" onclick="setSopDecision(&#39;CONDITIONAL_GO&#39;)">
+                                ⚠️ CONDITIONAL
                             </button>
-                            <button type="button" class="sop-decision-btn" id="sop-nogo-btn"
-                                onclick="setSopDecision('NO_GO')">
-                                &#x274C; NO-GO
+                            <button type="button" class="sop-decision-btn" id="sop-nogo-btn" onclick="setSopDecision(&#39;NO_GO&#39;)">
+                                ❌ NO-GO
                             </button>
                         </div>
                         <!-- Row 3: Report Deadline (auto-calc) -->
                         <div id="sop-deadline-row" class="sop-deadline-row" style="display:none;">
-                            <span>&#x23F0; Report Deadline</span>
+                            <span>⏰ Report Deadline</span>
                             <span style="font-size:0.8em;color:#c5cae9;">(LITE: +48h / FULL: +72h sau ngay khao sat)</span>
                             <span class="sop-deadline-value" id="sop-deadline-value">--</span>
                         </div>
@@ -2715,14 +3579,11 @@
                                 <select id="survey1-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <option value="">Chọn member...</option>
                                 </select>
-                                <button type="button" 
-                                        onclick="addSurveyTeamMember('survey1')"
-                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                <button type="button" onclick="addSurveyTeamMember(&#39;survey1&#39;)" style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                                     âž• Add
                                 </button>
                             </div>
-                            <div id="survey1-members-display" 
-                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                            <div id="survey1-members-display" style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
                                 <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
                                     Chưa có member nào. Click "Add" để thêm.
                                 </div>
@@ -2730,9 +3591,7 @@
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
                             <label>📝 Ghi Chú</label>
-                            <textarea id="survey1-notes" rows="3" 
-                                      placeholder="Nhập ghi chú về khảo sát lần 1..."
-                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                            <textarea id="survey1-notes" rows="3" placeholder="Nhập ghi chú về khảo sát lần 1..." style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
                                              border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
                         </div>
                     </div>
@@ -2760,14 +3619,11 @@
                                 <select id="survey2-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <option value="">Chọn member...</option>
                                 </select>
-                                <button type="button" 
-                                        onclick="addSurveyTeamMember('survey2')"
-                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                <button type="button" onclick="addSurveyTeamMember(&#39;survey2&#39;)" style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                                     âž• Add
                                 </button>
                             </div>
-                            <div id="survey2-members-display" 
-                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                            <div id="survey2-members-display" style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
                                 <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
                                     Chưa có member nào. Click "Add" để thêm.
                                 </div>
@@ -2775,9 +3631,7 @@
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
                             <label>📝 Ghi Chú</label>
-                            <textarea id="survey2-notes" rows="3" 
-                                      placeholder="Nhập ghi chú về khảo sát lần 2..."
-                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                            <textarea id="survey2-notes" rows="3" placeholder="Nhập ghi chú về khảo sát lần 2..." style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
                                              border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
                         </div>
                     </div>
@@ -2805,14 +3659,11 @@
                                 <select id="survey3-member-select" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <option value="">Chọn member...</option>
                                 </select>
-                                <button type="button" 
-                                        onclick="addSurveyTeamMember('survey3')"
-                                        style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                <button type="button" onclick="addSurveyTeamMember(&#39;survey3&#39;)" style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                                     âž• Add
                                 </button>
                             </div>
-                            <div id="survey3-members-display" 
-                                 style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                            <div id="survey3-members-display" style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa; margin-bottom: 15px;">
                                 <div class="empty-message" style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
                                     Chưa có member nào. Click "Add" để thêm.
                                 </div>
@@ -2820,9 +3671,7 @@
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
                             <label>📝 Ghi Chú</label>
-                            <textarea id="survey3-notes" rows="3" 
-                                      placeholder="Nhập ghi chú về khảo sát lần 3..."
-                                      style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
+                            <textarea id="survey3-notes" rows="3" placeholder="Nhập ghi chú về khảo sát lần 3..." style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; 
                                              border-radius: 8px; font-size: 0.95em; resize: vertical;"></textarea>
                         </div>
                     </div>
@@ -2836,9 +3685,7 @@
                 <div style="background: #fff3cd; padding: 20px; border-radius: 12px; margin: 20px 0; border: 2px solid #ffc107;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h3 style="color: #2d3748; margin: 0;">⚙️ Installation Phases</h3>
-                        <button type="button" 
-                                onclick="addInstallationPhase()"
-                                style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <button type="button" onclick="addInstallationPhase()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                             âž• Add Phase
                         </button>
                     </div>
@@ -2857,9 +3704,8 @@
                             📝 Lý Do Thay Đổi 
                             <span class="change-note-required">*</span>
                         </label>
-                        <textarea id="change-note" 
-                                  placeholder="Vui lòng nhập lý do thay đổi dự án (bắt buộc khi sửa)...&#10;VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự do điều động, etc."
-                                  rows="3"></textarea>
+                        <textarea id="change-note" placeholder="Vui lòng nhập lý do thay đổi dự án (bắt buộc khi sửa)...
+VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự do điều động, etc." rows="3"></textarea>
                         <div style="font-size: 0.85em; color: #e65100; margin-top: 8px;">
                             ⚠️ Bắt buộc nhập lý do để giữ lịch sử thay đổi
                         </div>
@@ -2872,7 +3718,7 @@
                 <div id="issues-section" style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e9ecef;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h3 style="margin: 0; font-size: 1.2em; color: #2d3748;">
-                            🚨 Issues & Problems
+                            🚨 Issues &amp; Problems
                             <span id="issues-count-badge" style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 8px;">0</span>
                         </h3>
                         <button type="button" class="btn btn-primary" onclick="window.showAddIssueModal()" style="padding: 8px 16px;">
@@ -2906,12 +3752,12 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h2>Thêm Nhân Sự</h2>
-                <button class="close-modal" onclick="closeTeamModal()">&times;</button>
+                <button class="close-modal" onclick="closeTeamModal()">×</button>
             </div>
             <form id="team-form" onsubmit="saveTeamMember(event)">
                 <div class="form-group">
                     <label>Họ và Tên *</label>
-                    <input type="text" id="member-name" required>
+                    <input type="text" id="member-name" required="">
                 </div>
                 <div class="form-group">
                     <label>Chức Vụ</label>
@@ -2950,7 +3796,7 @@
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
                 <h2>⚠️ Dự Án Trễ Tiến Độ</h2>
-                <button class="close-modal" onclick="closeDelayedModal()">&times;</button>
+                <button class="close-modal" onclick="closeDelayedModal()">×</button>
             </div>
             <div id="delayed-projects-list"></div>
         </div>
@@ -2961,20 +3807,20 @@
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
                 <h2>⚡ Xung Đột Lịch Trình</h2>
-                <button class="close-modal" onclick="closeConflictsModal()">&times;</button>
+                <button class="close-modal" onclick="closeConflictsModal()">×</button>
             </div>
             <div id="conflicts-list"></div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <span id="toast-icon"></span>
-        <span id="toast-message"></span>
+    <div id="toast" class="toast success">
+        <span id="toast-icon">✅</span>
+        <span id="toast-message">✅ Đã tải dữ liệu từ Azure Cloud</span>
     </div>
 
     <!-- v5.4 Login Screen -->
-    <div id="login-overlay" class="login-overlay">
+    <div id="login-overlay" class="login-overlay hidden">
         <div class="login-container">
             <div class="login-header">
                 <div class="login-logo">📊</div>
@@ -2989,7 +3835,7 @@
                     <label class="login-label">
                         👤 Chọn User
                     </label>
-                    <select id="login-user" class="login-input" required onchange="handleUserSelect(this)">
+                    <select id="login-user" class="login-input" required="" onchange="handleUserSelect(this)">
                         <option value="">Chọn user...</option>
                     </select>
                     <div id="login-hint" style="margin-top: 8px; padding: 10px; background: #e3f2fd; 
@@ -3002,8 +3848,7 @@
                     <label class="login-label">
                         <span id="password-label-text">🔑 Mật khẩu</span>
                     </label>
-                    <input type="password" id="login-password" class="login-input" 
-                           placeholder="Nhập mật khẩu của bạn..." required>
+                    <input type="password" id="login-password" class="login-input" placeholder="Nhập mật khẩu của bạn..." required="">
                 </div>
 
                 <div class="login-checkbox">
@@ -3019,8 +3864,7 @@
 
             <!-- v5.8: Forgot Password Link -->
             <div style="text-align: center; margin: 15px 0;">
-                <a href="#" onclick="showForgotPasswordModal(); return false;" 
-                   style="color: #3b82f6; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.3s;">
+                <a href="https://phuocdnt.github.io/bod-dashboard/#" onclick="showForgotPasswordModal(); return false;" style="color: #3b82f6; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.3s;">
                     <span>❓</span>
                     <span>Quên mật khẩu?</span>
                 </a>
@@ -3028,7 +3872,7 @@
 
             <div class="login-footer">
                 v5.6 - Complete Edition<br>
-                Aplus Engineering & Service Ltd
+                Aplus Engineering &amp; Service Ltd
             </div>
         </div>
     </div>
@@ -3067,8 +3911,7 @@
 
                 <div class="setup-field">
                     <label class="login-label">🔑 Mật khẩu Admin</label>
-                    <input type="password" id="setup-admin-password" class="login-input" 
-                           placeholder="Tối thiểu 8 ký tự..." >
+                    <input type="password" id="setup-admin-password" class="login-input" placeholder="Tối thiểu 8 ký tự...">
                     <div class="password-strength">
                         <div id="password-strength-bar" class="password-strength-bar"></div>
                     </div>
@@ -3077,8 +3920,7 @@
 
                 <div class="setup-field">
                     <label class="login-label">🔑 Xác nhận mật khẩu</label>
-                    <input type="password" id="setup-admin-password-confirm" class="login-input" 
-                           placeholder="Nhập lại mật khẩu...">
+                    <input type="password" id="setup-admin-password-confirm" class="login-input" placeholder="Nhập lại mật khẩu...">
                 </div>
 
                 <div class="setup-actions">
@@ -3127,9 +3969,8 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-success" onclick="completeSetup()" 
-                            style="width: 100%; padding: 15px; font-size: 1.1em;">
-                        🎉 Hoàn Tất & Đăng Nhập
+                    <button type="button" class="btn btn-success" onclick="completeSetup()" style="width: 100%; padding: 15px; font-size: 1.1em;">
+                        🎉 Hoàn Tất &amp; Đăng Nhập
                     </button>
                 </div>
             </div>
@@ -3141,25 +3982,23 @@
         <div class="password-reset-content">
             <div class="modal-header">
                 <h2>🔐 Reset Password User</h2>
-                <button class="close-modal" onclick="closePasswordResetModal()">&times;</button>
+                <button class="close-modal" onclick="closePasswordResetModal()">×</button>
             </div>
 
             <form id="password-reset-form" onsubmit="handlePasswordReset(event)">
                 <div class="form-group">
                     <label>User</label>
-                    <input type="text" id="reset-user-name" readonly style="background: #f5f5f5;">
+                    <input type="text" id="reset-user-name" readonly="" style="background: #f5f5f5;">
                 </div>
 
                 <div class="form-group">
                     <label>🔑 Mật khẩu mới</label>
-                    <input type="password" id="reset-new-password" required 
-                           placeholder="Tối thiểu 8 ký tự...">
+                    <input type="password" id="reset-new-password" required="" placeholder="Tối thiểu 8 ký tự...">
                 </div>
 
                 <div class="form-group">
                     <label>🔑 Xác nhận mật khẩu</label>
-                    <input type="password" id="reset-new-password-confirm" required 
-                           placeholder="Nhập lại mật khẩu...">
+                    <input type="password" id="reset-new-password-confirm" required="" placeholder="Nhập lại mật khẩu...">
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
@@ -3188,7 +4027,7 @@
                     <span class="icon">📧</span>
                     <div>
                         <strong>Email</strong>
-                        <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e999819c868ac78d879da98d8180c78a8684c79f87">[email&#160;protected]</a></p>
+                        <p><a href="https://phuocdnt.github.io/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e999819c868ac78d879da98d8180c78a8684c79f87">[email&nbsp;protected]</a></p>
                     </div>
                 </div>
                 
@@ -3227,26 +4066,23 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h2>🔑 Đổi Mật Khẩu</h2>
-                <button class="close-modal" onclick="closeChangePasswordModal()">&times;</button>
+                <button class="close-modal" onclick="closeChangePasswordModal()">×</button>
             </div>
 
             <form id="change-password-form" onsubmit="handleChangePassword(event)">
                 <div class="form-group">
                     <label>🔐 Mật khẩu hiện tại</label>
-                    <input type="password" id="current-password" required 
-                           placeholder="Nhập mật khẩu hiện tại...">
+                    <input type="password" id="current-password" required="" placeholder="Nhập mật khẩu hiện tại...">
                 </div>
 
                 <div class="form-group">
                     <label>🔑 Mật khẩu mới</label>
-                    <input type="password" id="new-password" required 
-                           placeholder="Tối thiểu 8 ký tự...">
+                    <input type="password" id="new-password" required="" placeholder="Tối thiểu 8 ký tự...">
                 </div>
 
                 <div class="form-group">
                     <label>🔑 Xác nhận mật khẩu mới</label>
-                    <input type="password" id="new-password-confirm" required 
-                           placeholder="Nhập lại mật khẩu mới...">
+                    <input type="password" id="new-password-confirm" required="" placeholder="Nhập lại mật khẩu mới...">
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
@@ -3271,7 +4107,7 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/email-decode.min.js.download"></script><script data-cfasync="false" src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/email-decode.min.js.download"></script><script>
         (function() {
             'use strict';
             
@@ -4825,18 +5661,51 @@ function initializeDashboard() {
                 const blobData = await loadFromBlob();
                 
                 if (blobData) {
-                    console.log('☁️ [LOAD] Loaded from Azure Blob:', {
-                        projects: blobData.projects?.length || 0,
-                        teamMembers: blobData.teamMembers?.length || 0,
-                        lastSave: blobData.lastSave
-                    });
-                    projects = blobData.projects || [];
-                    teamMembers = blobData.teamMembers || [];
-                    window.projects = projects; // Sync to global
-                    window.teamMembers = teamMembers; // Sync to global
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                    window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
-                    return;
+                    // ✅ v5.26 SAFETY: Reject corrupted Azure data (e.g. TV dashboard accidentally wrote garbage)
+                    // If Azure returns data without 'projects' array AND localStorage has good data → keep local
+                    if (!Array.isArray(blobData.projects)) {
+                        console.warn('⚠️ [LOAD] Azure returned non-project data (possible TV write corruption), ignoring:', blobData);
+                        window.showToast('⚠️ Azure data corrupted - using local cache', 'error');
+                        // Fall through to localStorage below
+                    } else if (blobData.projects.length === 0 && blobData.teamMembers?.length === 0) {
+                        // Azure returned 0 projects + 0 members — check if localStorage has better data
+                        const _localRaw = localStorage.getItem(STORAGE_KEY);
+                        if (_localRaw) {
+                            try {
+                                const _local = JSON.parse(_localRaw);
+                                if ((_local.projects || []).length > 0) {
+                                    console.warn('⚠️ [LOAD] Azure returned empty data but localStorage has '
+                                        + _local.projects.length + ' projects — keeping local data!');
+                                    projects = _local.projects || [];
+                                    teamMembers = _local.teamMembers || [];
+                                    window.projects = projects;
+                                    window.teamMembers = teamMembers;
+                                    window.showToast('⚠️ Azure empty - dùng dữ liệu local', 'error');
+                                    return;
+                                }
+                            } catch(e2) {}
+                        }
+                        // localStorage also empty → accept Azure empty data normally
+                        projects = [];
+                        teamMembers = [];
+                        window.projects = projects;
+                        window.teamMembers = teamMembers;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                        return;
+                    } else {
+                        console.log('☁️ [LOAD] Loaded from Azure Blob:', {
+                            projects: blobData.projects?.length || 0,
+                            teamMembers: blobData.teamMembers?.length || 0,
+                            lastSave: blobData.lastSave
+                        });
+                        projects = blobData.projects || [];
+                        teamMembers = blobData.teamMembers || [];
+                        window.projects = projects; // Sync to global
+                        window.teamMembers = teamMembers; // Sync to global
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                        window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                        return;
+                    }
                 }
                 
                 const stored = localStorage.getItem(STORAGE_KEY);
@@ -9809,12 +10678,12 @@ ${conflict.workload.map(w => `
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h2 id="team-modal-title">Tạo Team Mới</h2>
-                <button class="close-modal" onclick="closeTeamManagementModal()">&times;</button>
+                <button class="close-modal" onclick="closeTeamManagementModal()">×</button>
             </div>
             <form id="team-form" onsubmit="saveTeam(event)">
                 <div class="form-group">
                     <label>🏷️ Tên Team *</label>
-                    <input type="text" id="team-name" required placeholder="VD: Installation Team A">
+                    <input type="text" id="team-name" required="" placeholder="VD: Installation Team A">
                 </div>
                 
                 <div class="form-group">
@@ -10434,7 +11303,7 @@ ${conflict.workload.map(w => `
  <div class="modal-content" style="max-width: 600px;">
  <div class="modal-header">
  <h2 id="issue-modal-title">âž• Add Issue</h2>
- <button class="close-modal" onclick="window.closeIssueModal()">&times;</button>
+ <button class="close-modal" onclick="window.closeIssueModal()">×</button>
  </div>
  <form id="issue-form" onsubmit="return window.saveIssue(event)">
  <input type="hidden" id="issue-id">
@@ -10442,15 +11311,12 @@ ${conflict.workload.map(w => `
  
  <div class="form-group">
  <label>📝 Issue Description *</label>
- <textarea id="issue-description" 
- rows="3" 
- placeholder="Describe the issue/problem..."
- required></textarea>
+ <textarea id="issue-description" rows="3" placeholder="Describe the issue/problem..." required=""></textarea>
  </div>
  
  <div class="form-group">
  <label>⚠️ Priority *</label>
- <select id="issue-priority" required>
+ <select id="issue-priority" required="">
  <option value="">Select priority...</option>
  <option value="4">🔴 Critical (P0)</option>
  <option value="3">🟠 High (P1)</option>
@@ -10488,9 +11354,7 @@ ${conflict.workload.map(w => `
  
  <div class="form-group">
  <label>💬 Notes</label>
- <textarea id="issue-notes" 
- rows="2" 
- placeholder="Additional notes or comments..."></textarea>
+ <textarea id="issue-notes" rows="2" placeholder="Additional notes or comments..."></textarea>
  </div>
  
  <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
@@ -10504,21 +11368,21 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.25 -->
+    <!-- Version Badge v5.26 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.25</span>
+        <span>v5.26</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.25</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.25 - SOP-001 Survey Compliance</div>
-            <div class="version-info-item"><strong>Build Date:</strong> 2026-03-16</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.26</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.26 - TV Data Safety Fix</div>
+            <div class="version-info-item"><strong>Build Date:</strong> 2026-03-24</div>
             <div class="version-info-item"><strong>Fixed Issues:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>✅ TV dashboard không còn ghi đè data Azure (v5.26)</li>
+                    <li>✅ Safety check: reject Azure corrupt/empty data (v5.26)</li>
                     <li>✅ SOP-001 Survey Type LITE/FULL (v5.25)</li>
                     <li>✅ GO / CONDITIONAL GO / NO-GO decision (v5.25)</li>
                     <li>✅ Report deadline auto-calc (v5.25)</li>
-                    <li>✅ Overdue badge on project card (v5.25)</li>
-                    <li>✅ All features from v5.22</li>
                 </ul>
             </div>
             <div class="version-info-item"><strong>Total Projects:</strong> <span id="versionProjectCount">--</span></div>
@@ -10550,5 +11414,6 @@ ${conflict.workload.map(w => `
         });
     </script>
 
-</body>
-</html>
+
+
+</body></html>
