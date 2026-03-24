@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0048)https://phuocdnt.github.io/bod-dashboard/tv.html -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AES/DHI Vietnam – Realtime TV Dashboard v5</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./AES_DHI Vietnam – Realtime TV Dashboard v5_files/css2" rel="stylesheet">
 <style>
 :root{--bg:#040d1a;--panel:#071428;--panel2:#0a1c35;--border:#1a3a5c;--accent:#00d4ff;--accent2:#ff6b35;--accent3:#39ff14;--warning:#ffcc00;--danger:#ff4757;--muted:#4a6fa5;--text:#e8f4fd;--text2:#8baecf}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -100,18 +100,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <body>
 
 <!-- LOADING OVERLAY -->
-<div class="overlay" id="overlay">
-  <div class="ov-logo">AES/DHI VIETNAM</div>
-  <div class="ov-bar-wrap"><div class="ov-bar"></div></div>
-  <div class="ov-msg" id="ov-msg">Đang Tải Dữ Liệu...</div>
-</div>
+<div class="overlay" id="overlay" style="opacity: 0; display: none; transition: opacity 0.4s;"><div class="ov-logo">AES/DHI VIETNAM</div><div class="ov-bar-wrap"><div class="ov-bar"></div></div><div class="ov-msg" id="ov-msg">Đang kết nối Azure...</div></div>
 
 <!-- HEADER -->
 <div class="hdr">
-  <div class="hdr-logo">AES<b>/</b>DHI <b>&middot;</b> VIETNAM</div>
+  <div class="hdr-logo">AES<b>/</b>DHI <b>·</b> VIETNAM</div>
   <div class="hdr-mid">
-    <div class="hdr-title" id="hdr-title">DASHBOARD</div>
-    <div class="hdr-sub"   id="hdr-sub">LOADING...</div>
+    <div class="hdr-title" id="hdr-title">MILESTONE TUẦN NÀY &amp; TỚI</div>
+    <div class="hdr-sub" id="hdr-sub">MILESTONE SCHEDULE — WEEKLY VIEW</div>
   </div>
   <div class="hdr-right">
     <div class="live-badge">
@@ -119,54 +115,54 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <span id="live-lbl">LIVE</span>
     </div>
     <div>
-      <div class="clock" id="clock">--:--:--</div>
-      <div class="date-txt" id="date-txt">--</div>
+      <div class="clock" id="clock">09:00:20</div>
+      <div class="date-txt" id="date-txt">TH 3, 24/03/2026</div>
     </div>
   </div>
 </div>
 
 <!-- SLIDES -->
 <div class="slides">
-  <div class="slide active" id="s1">
+  <div class="slide" id="s1">
     <div class="sh">
-      <span class="sh-icon">&#128640;</span>
+      <span class="sh-icon">🚀</span>
       <span class="sh-title">Dự Án Đang Triển Khai</span>
-      <span class="sh-badge" id="proj-badge">-- dự án</span>
+      <span class="sh-badge" id="proj-badge">0 dự án</span>
     </div>
-    <div class="proj-grid" id="proj-grid"><div class="no-data">Đang tải...</div></div>
+    <div class="proj-grid" id="proj-grid"><div class="no-data">Không có dự án đang triển khai</div></div>
   </div>
-  <div class="slide" id="s2">
+  <div class="slide active" id="s2">
     <div class="sh">
-      <span class="sh-icon">&#128197;</span>
+      <span class="sh-icon">📅</span>
       <span class="sh-title">Milestone Tuần Này &amp; Tuần Tới</span>
     </div>
     <div class="wk-grid">
       <div class="wk-panel">
-        <div class="wk-head"><div class="wk-label">Tuần Này</div><div class="wk-range" id="this-range">--</div></div>
-        <div class="ms-list" id="ms-this"><div class="empty"><span>&#128461;</span>Đang tải...</div></div>
+        <div class="wk-head"><div class="wk-label">Tuần Này</div><div class="wk-range" id="this-range">23-03 – 29-03</div></div>
+        <div class="ms-list" id="ms-this"><div class="empty"><span>✨</span>Không có milestone tuần này</div></div>
       </div>
       <div class="wk-panel next">
-        <div class="wk-head"><div class="wk-label">Tuần Tới</div><div class="wk-range" id="next-range">--</div></div>
-        <div class="ms-list" id="ms-next"><div class="empty"><span>&#128461;</span>Đang tải...</div></div>
+        <div class="wk-head"><div class="wk-label">Tuần Tới</div><div class="wk-range" id="next-range">30-03 – 05-04</div></div>
+        <div class="ms-list" id="ms-next"><div class="empty"><span>✨</span>Không có milestone tuần này</div></div>
       </div>
     </div>
   </div>
   <div class="slide" id="s3">
     <div class="sh">
-      <span class="sh-icon">&#128101;</span>
+      <span class="sh-icon">👥</span>
       <span class="sh-title">Lịch Làm Việc Nhân Viên</span>
     </div>
-    <div class="sched-wrap" id="sched-wrap"><div class="no-data">Đang tải...</div></div>
+    <div class="sched-wrap" id="sched-wrap"><div class="wk-sec-title">📅 TUẦN NÀY <small>23-03 – 29-03</small></div><div class="no-data" style="padding:16px">Không có lịch làm việc tuần này</div><div class="wk-sec-title next" style="margin-top:14px">📆 TUẦN TỚI <small>30-03 – 05-04</small></div><div class="no-data" style="padding:16px">Không có lịch làm việc tuần này</div></div>
   </div>
 </div>
 
 <!-- NAV -->
 <div class="nav">
-  <button class="nav-btn active" onclick="goSlide(0)" id="nb0">&#128640; DỰ ÁN</button>
-  <button class="nav-btn"        onclick="goSlide(1)" id="nb1">&#128197; MILESTONE</button>
-  <button class="nav-btn"        onclick="goSlide(2)" id="nb2">&#128101; LịCH</button>
+  <button class="nav-btn" onclick="goSlide(0)" id="nb0">🚀 DỰ ÁN</button>
+  <button class="nav-btn active" onclick="goSlide(1)" id="nb1">📅 MILESTONE</button>
+  <button class="nav-btn" onclick="goSlide(2)" id="nb2">👥 LịCH</button>
 </div>
-<div class="prog-bar" id="prog"></div>
+<div class="prog-bar" id="prog" style="transition: width 20000ms linear; width: 100%;"></div>
 <script>
 // ============================================================
 // CONFIG
@@ -262,9 +258,8 @@ function loadFromAzure(callback) {
   var apiKey = localStorage.getItem(AZ_KEY_LS) || '';
   if(!apiKey) { callback(false, 'no-key'); return; }
   fetch(AZ_URL, {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+apiKey },
-    body: JSON.stringify({ action:'read', blobName:AZ_BLOB })
+    method: 'GET',
+    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+apiKey }
   }).then(function(r){
     if(!r.ok) throw new Error('HTTP '+r.status);
     return r.json();
@@ -716,5 +711,6 @@ document.addEventListener('keydown', function(e){
 
 tryInit();
 </script>
-</body>
-</html>
+
+
+</body></html>
