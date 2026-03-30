@@ -1,6 +1,6 @@
 
+
 <!DOCTYPE html>
-<!-- saved from url=(0060)https://phuocdnt.github.io/bod-dashboard/insights-admin.html -->
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,16 +26,13 @@ const CONFIG = {
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* Topbar */
 .topbar{height:52px;background:var(--sur);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;flex-shrink:0}
 .tb-logo{display:flex;align-items:center;gap:10px}
 .tb-wheel{width:24px;height:24px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);animation:spin 20s linear infinite;flex-shrink:0}
 .tb-logo span{font-weight:600;font-size:14px}
 .tb-logo em{font-style:normal;color:var(--muted);font-weight:400;font-size:13px}
 .tag-admin{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(37,99,235,.2);color:#60a5fa;padding:3px 10px;border-radius:99px;border:1px solid rgba(37,99,235,.3)}
-/* Layout */
 .main-layout{display:flex;flex:1;overflow:hidden}
-/* Sidebar */
 .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--sur);border-right:1px solid var(--bdr);padding:20px 0;overflow-y:auto;display:flex;flex-direction:column;gap:0}
 .sb-sec{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
 .sb-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:12px 16px 8px;display:block}
@@ -54,9 +51,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .filter-wrap input::placeholder{color:var(--muted)}
 .filter-wrap select option{background:var(--sur2)}
 @media(max-width:720px){.sidebar{display:none}}
-/* Content */
 .content{flex:1;overflow-y:auto;padding:24px}
-/* Table */
 .tbl-wrap{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
 .tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bdr)}
 .tbl-hdr h2{font-size:15px;font-weight:600}
@@ -76,13 +71,11 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 .name-cell{display:flex;flex-direction:column}
 .name-cell .nm{font-weight:600}
 .name-cell .rl{font-size:11px;color:var(--muted)}
-/* Empty/loading */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty .big{font-size:2.5rem;margin-bottom:12px}
 .spinner-row{display:flex;justify-content:center;padding:48px}
 .spinner{width:32px;height:32px;border:3px solid var(--bdr2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 .spin-sm{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
-/* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;width:100%;max-width:700px;overflow:hidden;transform:translateY(20px);transition:transform .25s;flex-shrink:0;margin:auto}
@@ -147,18 +140,18 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <span class="sb-lbl">Tổng Quan</span>
     <div class="sb-sec">
       <div class="stat-grid">
-        <div class="stat-box"><div class="sv" id="statTotal">4</div><div class="sl">Phản hồi</div></div>
-        <div class="stat-box"><div class="sv" id="statDepts">3</div><div class="sl">Phòng ban</div></div>
-        <div class="stat-box"><div class="sv" id="statTop">🔵</div><div class="sl">Màu chủ đạo</div></div>
-        <div class="stat-box"><div class="sv" id="statAvgDays">2.0</div><div class="sl">Avg/ngày</div></div>
+        <div class="stat-box"><div class="sv" id="statTotal">–</div><div class="sl">Phản hồi</div></div>
+        <div class="stat-box"><div class="sv" id="statDepts">–</div><div class="sl">Phòng ban</div></div>
+        <div class="stat-box"><div class="sv" id="statTop">–</div><div class="sl">Màu chủ đạo</div></div>
+        <div class="stat-box"><div class="sv" id="statAvgDays">–</div><div class="sl">Avg/ngày</div></div>
       </div>
     </div>
     <span class="sb-lbl">Phân Bổ Màu</span>
-    <div class="color-dist" id="colorDist" style="padding:0 16px 16px"><div class="cd-row"><span style="font-size:12px;width:20px">🔴</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#E8392A" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟡</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#F5A623" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟢</span><div class="cd-bg"><div class="cd-fill" style="width:25%;background:#3CB371" data-w="25%"></div></div><span class="cd-val">1</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🔵</span><div class="cd-bg"><div class="cd-fill" style="width:75%;background:#2B6CB0" data-w="75%"></div></div><span class="cd-val">3</span></div></div>
+    <div class="color-dist" id="colorDist" style="padding:0 16px 16px"></div>
     <span class="sb-lbl">Lọc &amp; Tìm Kiếm</span>
     <div class="filter-wrap">
       <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()">
-      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option><option value="Ban Giám Đốc">Ban Giám Đốc</option><option value="Kỹ Thuật">Kỹ Thuật</option><option value="Sản Xuất">Sản Xuất</option></select>
+      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option></select>
       <select id="fColor" onchange="applyFilter()">
         <option value="">Tất cả màu chính</option>
         <option value="red">🔴 Fiery Red</option>
@@ -171,63 +164,11 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
   <div class="content">
     <div class="tbl-wrap">
       <div class="tbl-hdr">
-        <h2 id="tableTitle">Tất cả phản hồi (4)</h2>
+        <h2 id="tableTitle">Tất cả phản hồi</h2>
         <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
         <button class="btn-recalc" id="btnRecalc" onclick="recalcAll()" title="Tính lại điểm màu theo weighted IE (×0.5) từ Answers gốc">⚖️ Recalculate All</button>
       </div>
-      <div id="tableBody"><table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody><tr onclick="openModal(6)">
-      <td><div class="name-cell"><span class="nm">Nguyễn Lê Thành Lạc</span><span class="rl">QA Manager</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Ban Giám Đốc</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2916666666666667" title="Red:7"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:6"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.4166666666666667" title="Blue:10"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
-      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
-    </tr><tr onclick="openModal(7)">
-      <td><div class="name-cell"><span class="nm">Hồ Việt Khánh</span><span class="rl">Nhân viên</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.25" title="Red:6"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.25" title="Yellow:6"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.2" title="Green:1"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.4583333333333333" title="Blue:11"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
-      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
-    </tr><tr onclick="openModal(8)">
-      <td><div class="name-cell"><span class="nm">BÙI HÀ ĐỨC AN</span><span class="rl">WORKSHOP MANAGER</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#3CB37118;color:#3CB371">🟢 Earth Green</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:3"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.20833333333333334" title="Green:5"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.625" title="Blue:15"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Quan Sát (Observer)</td>
-      <td style="color:var(--muted);font-size:12px">18/3/2026</td>
-    </tr><tr onclick="openModal(9)">
-      <td><div class="name-cell"><span class="nm">Tung Nguyen Hoang Thanh</span><span class="rl">OMS</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Sản Xuất</td>
-      <td><span class="pill" style="background:#3CB37122;color:#3CB371">🟢 Earth Green</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:0"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:0"></div>
-        <div class="score-seg" style="background:var(--green);opacity:1" title="Green:24"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.2" title="Blue:0"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Hỗ Trợ Kiên Định</td>
-      <td style="color:var(--muted);font-size:12px">19/3/2026</td>
-    </tr></tbody></table></div>
+      <div id="tableBody"><div class="spinner-row"><div class="spinner"></div></div></div>
     </div>
   </div>
 </div>
@@ -242,22 +183,19 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
       <div class="m-sub" id="mSub"></div>
     </div>
     <div class="modal-tabs">
-      <button class="m-tab active" onclick="mTab(&#39;scores&#39;)">📊 Kết quả</button>
-      <button class="m-tab" onclick="mTab(&#39;profile&#39;)">👤 Profile</button>
-      <button class="m-tab" id="mTabAI" onclick="mTab(&#39;ai&#39;)" style="display:none">🤖 AI Narrative</button>
+      <button class="m-tab active" onclick="mTab('scores')">📊 Kết quả</button>
+      <button class="m-tab" onclick="mTab('profile')">👤 Profile</button>
+      <button class="m-tab" id="mTabAI" onclick="mTab('ai')" style="display:none">🤖 AI Narrative</button>
     </div>
-    <!-- PANE: Scores -->
     <div class="m-pane active" id="mp-scores">
       <div class="m-label" style="margin-bottom:10px">Phân Bổ Năng Lượng</div>
       <div class="energy-row" id="mEnergyRow"></div>
       <div class="dims3" id="mDims"></div>
       <div id="mWheel" style="display:flex;justify-content:center;margin-bottom:14px"></div>
     </div>
-    <!-- PANE: Profile -->
     <div class="m-pane" id="mp-profile">
       <div id="mProfileContent"></div>
     </div>
-    <!-- PANE: AI Narrative -->
     <div class="m-pane" id="mp-ai">
       <div id="mAIContent"></div>
     </div>
@@ -268,7 +206,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
   </div>
 </div>
 <div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
-<div id="toast" class="" style="background: rgb(30, 41, 59);">✅ Đã tải 4 phản hồi</div>
+<div id="toast"></div>
 
 <script>
 const CI={red:{l:'Fiery Red',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
@@ -407,15 +345,12 @@ function openModal(id){
   currentItem=item;
   const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
   const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
-  const total=r+y+g+b||96;
-  const pct=v=>Math.round(v/28*100); // max 28: 24 core + 8 IE×0.5
+  const pct=v=>Math.round(v/28*100);
   const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
-  // Hero
   document.getElementById('mHero').style.background=p.grad;
   document.getElementById('mBadge').textContent=`${p.e} ${p.l}  ·  ${p.tag}`;
   document.getElementById('mName').textContent=item.Title;
   document.getElementById('mSub').textContent=[item.EmployeeRole,item.Department,date].filter(Boolean).join(' · ');
-  // Scores pane
   document.getElementById('mEnergyRow').innerHTML=[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
     <div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/28 (${pct(sc)}%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width:0%;background:${CI[c].c}" data-w="${pct(sc)}%"></div></div></div>`).join('');
@@ -424,7 +359,6 @@ function openModal(id){
     <div class="dim-card"><div class="dim-title">👑 Lãnh đạo</div><div class="dim-val">${LL[item.LeadStyle]||'—'}</div></div>
     <div class="dim-card"><div class="dim-title">⚠️ Stress</div><div class="dim-val">${SL[item.StressBehavior]||'—'}</div></div>`;
   document.getElementById('mWheel').innerHTML=buildMiniWheel(item.PrimaryColor,item.SecondaryColor);
-  // Profile pane
   document.getElementById('mProfileContent').innerHTML=`
     <div class="m-label">Màu Phụ & Archetype</div>
     <div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
@@ -440,15 +374,9 @@ function openModal(id){
     </div>
     <div class="m-label" style="margin-top:14px">Giao Tiếp & Quản Lý</div>
     <div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4><ul>${p.t.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
-  // AI tab
   const tabAI=document.getElementById('mTabAI');
-  if(item.AIProfile){
-    tabAI.style.display='';
-    renderAIPane(item.AIProfile);
-  } else {
-    tabAI.style.display='none';
-  }
-  // Reset to first tab
+  if(item.AIProfile){tabAI.style.display='';renderAIPane(item.AIProfile);}
+  else{tabAI.style.display='none';}
   mTab('scores');
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
@@ -493,8 +421,6 @@ function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))c
 
 function exportPDF(){
   if(!currentItem)return;
-  // Strip AIProfile trước khi encode → tránh URL >8000 ký tự bị cắt
-  // Employee popup sẽ tự gen AI rồi lưu ngược về SharePoint
   const exportItem={...currentItem};
   delete exportItem.AIProfile;
   const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
@@ -509,15 +435,13 @@ document.addEventListener('DOMContentLoaded',loadData);
 
 // ═══════════════════════════════════════
 // RECALCULATE — Tính lại điểm từ Answers
-// Weighted IE (×0.5) theo lý thuyết Jung
 // ═══════════════════════════════════════
 const DIM_MAP={
-  // 0–23: Core (×1.0), 24–31: IE (×0.5), 32–39: Lead, 40–47: Stress
   ie: new Set([24,25,26,27,28,29,30,31]),
   lead: new Set([32,33,34,35,36,37,38,39]),
   stress: new Set([40,41,42,43,44,45,46,47])
 };
-const CORE_N_NEW=28; // 24×1 + 8×0.5
+const CORE_N_NEW=28;
 
 function recalcFromAnswers(answersJson){
   let ans;
@@ -537,13 +461,12 @@ function recalcFromAnswers(answersJson){
     } else if(DIM_MAP.stress.has(i)){
       st[a]=(st[a]||0)+1;
     } else {
-      sc[a]=(sc[a]||0)+1; // core
+      sc[a]=(sc[a]||0)+1;
     }
   }
   const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
   const pr=sorted[0][0],sec=sorted[1][0];
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const pct=k=>Math.round((sc[k]||0)/CORE_N_NEW*100);
   const ieType=ie.E>=ie.I?'Extrovert':'Introvert';
   const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
   const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
@@ -551,8 +474,7 @@ function recalcFromAnswers(answersJson){
     primaryColor:kmap[pr], secondaryColor:kmap[sec],
     redScore:Math.round(sc.r||0), yellowScore:Math.round(sc.y||0),
     greenScore:Math.round(sc.g||0), blueScore:Math.round(sc.b||0),
-    ieType, leadStyle:kmap[ls], stressBehavior:kmap[sb],
-    pct
+    ieType, leadStyle:kmap[ls], stressBehavior:kmap[sb]
   };
 }
 
@@ -561,13 +483,11 @@ async function recalcAll(){
   const items=allData.filter(i=>i.Answers);
   if(!items.length){ toast('⚠️ Không có item nào có Answers để tính lại',true);return; }
   if(!confirm(`Tính lại điểm cho ${items.length} người từ Answers gốc?\n\nThay đổi:\n- RedScore/YellowScore/GreenScore/BlueScore được tính lại\n- Câu IE giờ đóng góp ×0.5 vào điểm màu\n- PrimaryColor & SecondaryColor có thể thay đổi\n\nTiếp tục?`))return;
-
   btn.disabled=true;
   let done=0,failed=0;
   for(const item of items){
     const result=recalcFromAnswers(item.Answers);
     if(!result){failed++;continue;}
-    // Update SharePoint via Write Flow
     try{
       await fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
@@ -576,7 +496,7 @@ async function recalcAll(){
           greenScore:result.greenScore, blueScore:result.blueScore,
           primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
           ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior,
-          aiProfile:'' // Xóa AIProfile cũ → bắt buộc gen lại AI với điểm mới
+          aiProfile:''
         })
       });
       done++;
@@ -585,9 +505,7 @@ async function recalcAll(){
   }
   btn.disabled=false;
   toast(failed?`✅ Xong ${done}/${items.length} (${failed} lỗi)`:`✅ Đã recalculate ${done} người thành công!`);
-  setTimeout(loadData,1500); // refresh table
+  setTimeout(loadData,1500);
 }
 </script>
-
-
 </body></html>
