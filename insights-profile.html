@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -827,18 +828,20 @@ async function main(){
   let profileData;
   try{
     const prompt = buildPrompt(params);
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
+    const res = await fetch('https://claude-proxy.donguyenthai-phuoc.workers.dev',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:4000,
+        model:'claude-sonnet-4-20250514',
+        max_tokens:8000,
+        system:'Bạn là chuyên gia HR phân tích tính cách theo Insights Discovery. Trả lời bằng tiếng Việt, chỉ JSON thuần túy không markdown.',
         messages:[{role:'user',content:prompt}]
       })
     });
     if(!res.ok) throw new Error('API '+res.status);
     const apiData = await res.json();
-    const text = apiData.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    const rawText = apiData.content.map(b=>b.text||'').join('').trim();
+    const text = rawText.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     profileData = JSON.parse(text);
   }catch(err){
     console.error('AI error:',err);
