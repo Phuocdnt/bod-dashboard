@@ -7497,7 +7497,18 @@ ${conflict.workload.map(w => `
                             };
                             
                             const status = project.status || 'planning';
-                            const statusInfo = statusConfig[status];
+                            // v5.28 fix: support both lowercase and Title Case status (legacy Azure data)
+                            const statusConfigAlt = {
+                                'Planning':    { label: 'Planning',    color: '#1565c0' },
+                                'In Progress': { label: 'In Progress', color: '#2e7d32' },
+                                'On Hold':     { label: 'On Hold',     color: '#e65100' },
+                                'Delayed':     { label: 'Delayed',     color: '#c62828' },
+                                'Completed':   { label: 'Completed',   color: '#00695c' },
+                                'Cancelled':   { label: 'Cancelled',   color: '#6a1b9a' }
+                            };
+                            const statusInfo = statusConfig[status]
+                                            || statusConfigAlt[status]
+                                            || { label: status || 'Unknown', color: '#718096' };
                             
                             return `
                                 <tr style="border-bottom: 1px solid #e9ecef;">
