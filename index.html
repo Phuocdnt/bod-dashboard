@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- saved from url=(0041)https://phuocdnt.github.io/bod-dashboard/ -->
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOD Dashboard v5.28 - Predictive Risk Intelligence</title>
     <!-- SheetJS for Excel Export -->
-    <script src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/xlsx.full.min.js.download"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -4235,7 +4234,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
         </div>
     </div>
 
-    <script data-cfasync="false" src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/email-decode.min.js.download"></script><script data-cfasync="false" src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/email-decode.min.js.download"></script><script>
+    <script>
         (function() {
             'use strict';
             
@@ -7662,6 +7661,496 @@ ${conflict.workload.map(w => `
             // end v5.28 PREDICTIVE RISK INTELLIGENCE LAYER
             // ============================================================
 
+            // ============================================================
+            // v5.27 OWNER WORKLOAD & ESCALATION LAYER
+            // ============================================================
+            window.computeOwnerWorkloads = function(projectList) {
+                const MS7D = 7 * 86400000;
+                const in7d = Date.now() + MS7D;
+                const ownerMap = {};
+                let totalActive = 0;
+
+                // Single O(n) pass
+                (projectList || window.projects || []).forEach(p => {
+                    if (p.status === 'completed' || p.status === 'cancelled') return;
+                    totalActive++;
+                    const id = p.leader;
+                    if (!id) return;
+                    if (!ownerMap[id]) {
+                        ownerMap[id] = { activeCount: 0, sumRisk: 0, deadline7d: 0, criticalCount: 0 };
+                    }
+                    const o = ownerMap[id];
+                    o.activeCount++;
+
+                    // Use cached snapshot if fresh (< 1 day old), else recompute
+                    let score = 0;
+                    try {
+                        const snap = p.riskSnapshot;
+                        const fresh = snap && snap.computedAt &&
+                            (Date.now() - new Date(snap.computedAt)) < 86400000;
+                        score = fresh ? snap.score : window.computeRiskScore(p).score;
+                    } catch(e) { score = 0; }
+
+                    o.sumRisk += score;
+                    if (score > 80) o.criticalCount++;
+
+                    // Deadline within 7 days?
+                    const hw = (p.milestones || []).find(m => m.id === 'handover');
+                    if (hw && hw.planCompleteDate) {
+                        if (new Date(hw.planCompleteDate).getTime() <= in7d) o.deadline7d++;
+                    }
+                });
+
+                // Score & classify each owner
+                const results = Object.entries(ownerMap).map(([ownerId, o]) => {
+                    const ws = Math.min(o.activeCount * 10, 40)
+                              + Math.min(o.sumRisk / 25, 40)
+                              + Math.min(o.deadline7d * 15, 20);
+
+                    const level = ws < 40 ? 'normal' : ws < 70 ? 'warning' : 'critical';
+
+                    const flags = [];
+                    if (o.criticalCount >= 2)              flags.push('multi_critical');
+                    if (ws >= 70)                          flags.push('overload');
+                    if (o.activeCount > totalActive * 0.25) flags.push('structural_risk');
+
+                    const member = (window.teamMembers || []).find(m => m.id === ownerId);
+                    return {
+                        ownerId,
+                        name: member ? member.name : ownerId,
+                        ws: Math.round(ws),
+                        level,
+                        flags,
+                        activeCount: o.activeCount,
+                        sumRisk: Math.round(o.sumRisk),
+                        avgRisk: o.activeCount ? Math.round(o.sumRisk / o.activeCount) : 0,
+                        deadline7d: o.deadline7d,
+                        criticalCount: o.criticalCount
+                    };
+                });
+
+                results.sort((a, b) => b.ws - a.ws);
+                return { results, totalActive };
+            };
+            // ============================================================
+            // end v5.27 OWNER WORKLOAD & ESCALATION LAYER
+            // ============================================================
+
+            // v5.26: BOD Risk Ranking Panel
+            function renderBODRiskRankingPanel(allProjects) {
+                const el = document.getElementById('bod-risk-ranking-panel');
+                if (!el) return;
+                
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                const ranked = activeProjects
+                    .map(p => ({ p, r: window.computeRiskScore(p) }))
+                    .sort((a, b) => b.r.score - a.r.score);
+
+                if (ranked.length === 0) {
+                    el.innerHTML = '<div style="text-align:center;color:#059669;padding:20px;">✅ Không có dự án active</div>';
+                    return;
+                }
+                
+                const LEVEL_COLORS = { ok:'#4caf50', at_risk:'#ffb300', high:'#ef6c00', critical:'#e53935' };
+                const LEVEL_LABELS = { ok:'On Track', at_risk:'Có Rủi Ro', high:'Rủi Ro Cao', critical:'KHẨN CẤP' };
+                
+                // Summary pills
+                const counts = { ok:0, at_risk:0, high:0, critical:0 };
+                ranked.forEach(({ r }) => { if (counts[r.level] !== undefined) counts[r.level]++; });
+                
+                let html = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">`;
+                Object.entries(counts).forEach(([lvl, cnt]) => {
+                    if (!cnt) return;
+                    const c = LEVEL_COLORS[lvl];
+                    const icons = { ok:'🟢', at_risk:'🟡', high:'🟠', critical:'🔴' };
+                    html += `<span style="background:${c}22;color:${c};border:1px solid ${c};padding:6px 14px;border-radius:20px;font-weight:700;font-size:0.9em;">${icons[lvl]} ${cnt} ${LEVEL_LABELS[lvl]}</span>`;
+                });
+                html += `</div>`;
+                
+                // Ranking rows
+                ranked.forEach(({ p, r }, idx) => {
+                    const leader = teamMembers.find(m => m.id === p.leader);
+                    const c = LEVEL_COLORS[r.level] || '#999';
+                    const openIssues = (p.issues||[]).filter(i => i.status !== 'resolved' && i.status !== 'closed').length;
+                    html += `
+                        <div class="risk-ranking-row" onclick="window.editProject('${p.id}')"
+                             style="border-left:4px solid ${c};">
+                            <span style="font-weight:700;color:${c};min-width:36px;font-size:1.1em;">${r.score}</span>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;color:#2d3748;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+                                <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}${openIssues > 0 ? ` · 🚨 ${openIssues} issue${openIssues>1?'s':''}` : ''}</div>
+                            </div>
+                            <div style="min-width:80px;">
+                                <div class="risk-bar-track" style="margin-bottom:3px;">
+                                    <div class="risk-bar-fill" style="width:${r.score}%;background:${c}"></div>
+                                </div>
+                                <div style="font-size:0.75em;font-weight:600;color:${c};text-align:right;">${r.label}</div>
+                            </div>
+                            <div style="font-size:0.75em;color:#718096;text-align:right;min-width:90px;">
+                                ${r.action.length > 25 ? r.action.slice(0,25)+'...' : r.action}
+                            </div>
+                        </div>`;
+                });
+                el.innerHTML = html;
+            }
+
+            window.closeConflictsModal = function() {
+                document.getElementById('conflicts-modal').classList.remove('active');
+            };
+
+            // ============= TEAM MODAL ============= //
+            window.openTeamModal = function(memberId = null) {
+                const member = memberId ? teamMembers.find(m => m.id === memberId) : null;
+                
+                document.getElementById('member-name').value = member?.name || '';
+                document.getElementById('member-role').value = member?.role || '';
+                document.getElementById('member-email').value = member?.email || '';
+                document.getElementById('member-is-bod').checked = member?.isBOD || false;
+
+                document.getElementById('team-modal').classList.add('active');
+                document.getElementById('team-modal').dataset.editId = memberId || '';
+            };
+
+            window.closeTeamModal = function() {
+                document.getElementById('team-modal').classList.remove('active');
+            };
+
+            window.saveTeamMember = function(event) {
+                event.preventDefault();
+
+                const name = document.getElementById('member-name').value.trim();
+                const role = document.getElementById('member-role').value.trim();
+                const email = document.getElementById('member-email').value.trim();
+                const isBOD = document.getElementById('member-is-bod').checked;
+                const editId = document.getElementById('team-modal').dataset.editId;
+
+                if (!name) {
+                    showToast('❌ Vui lòng nhập tên nhân sự!', 'error');
+                    return;
+                }
+
+                if (editId) {
+                    const member = teamMembers.find(m => m.id === editId);
+                    if (member) {
+                        member.name = name;
+                        member.role = role;
+                        member.email = email;
+                        member.isBOD = isBOD;
+                    }
+                } else {
+                    teamMembers.push({
+                        id: 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        name: name,
+                        role: role,
+                        email: email,
+                        isBOD: isBOD,
+                        isAdmin: false
+                    });
+                }
+
+                saveToStorage();
+                closeTeamModal();
+                renderAll();
+                const roleMsg = isBOD ? ' (BOD - Xem tất cả)' : '';
+                showToast(`✅ Đã lưu nhân sự${roleMsg}!`, 'success');
+            };
+
+            window.editTeamMember = function(memberId) {
+                openTeamModal(memberId);
+            };
+
+            window.deleteTeamMember = function(memberId) {
+                if (confirm('Bạn có chắc muốn xóa nhân sự này?')) {
+                    teamMembers = teamMembers.filter(m => m.id !== memberId);
+                    saveToStorage();
+                    renderAll();
+                    showToast('✅ Đã xóa nhân sự!', 'success');
+                }
+            };
+
+
+            // ==================== V5.6 TEAMS MANAGEMENT ====================
+            
+            function renderTeamsGrid() {
+                const element = document.getElementById('teams-grid');
+                if (!element) return; // Element not in DOM yet
+                
+                const html = teams.map(team => `
+                    <div class="project-card" style="cursor: pointer;" onclick="editTeam('${team.id}')">
+                        <div style="padding: 20px;">
+                            <h3 style="color: #667eea; margin-bottom: 10px;">
+                                👥 ${team.name}
+                            </h3>
+                            <div style="font-size: 0.9em; color: #718096;">
+                                <strong>${team.members.length}</strong> thành viên
+                            </div>
+                            ${team.members.length > 0 ? `
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                                    ${team.members.slice(0, 3).map(memberId => {
+                                        const member = teamMembers.find(m => m.id === memberId);
+                                        return member ? `
+                                            <span class="member-badge" style="margin: 3px;">${member.name}</span>
+                                        ` : '';
+                                    }).join('')}
+                                    ${team.members.length > 3 ? `
+                                        <span style="color: #718096; font-size: 0.85em;">+${team.members.length - 3} more</span>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <button class="btn btn-sm" onclick="event.stopPropagation(); editTeam('${team.id}')" style="flex: 1;">
+                                    ✏️ Sửa
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTeam('${team.id}')" style="flex: 1;">
+                                    🗑️ Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('teams-grid').innerHTML = html || '<p style="text-align: center; color: #6c757d; padding: 40px;">Chưa có team nào</p>';
+            }
+            
+            window.openTeamManagementModal = function() {
+                currentEditingTeam = null;
+                document.getElementById('team-modal-title').textContent = 'Tạo Team Mới';
+                document.getElementById('team-name').value = '';
+                
+                // Populate members selection
+                const membersHtml = teamMembers.map(member => `
+                    <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 6px; transition: background 0.2s;"
+                           onmouseover="this.style.background='#f8f9fa'" 
+                           onmouseout="this.style.background='white'">
+                        <input type="checkbox" value="${member.id}" style="margin-right: 10px;">
+                        <span>${member.name}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('team-members-selection').innerHTML = membersHtml;
+                document.getElementById('team-management-modal').classList.add('active');
+            };
+            
+            window.editTeam = function(teamId) {
+                const team = teams.find(t => t.id === teamId);
+                if (!team) return;
+                
+                currentEditingTeam = team;
+                document.getElementById('team-modal-title').textContent = 'Sá»­a Team';
+                document.getElementById('team-name').value = team.name;
+                
+                // Populate and check members
+                const membersHtml = teamMembers.map(member => `
+                    <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 6px; transition: background 0.2s;"
+                           onmouseover="this.style.background='#f8f9fa'" 
+                           onmouseout="this.style.background='white'">
+                        <input type="checkbox" value="${member.id}" 
+                               ${team.members.includes(member.id) ? 'checked' : ''} 
+                               style="margin-right: 10px;">
+                        <span>${member.name}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('team-members-selection').innerHTML = membersHtml;
+                document.getElementById('team-management-modal').classList.add('active');
+            };
+            
+            window.saveTeam = function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('team-name').value.trim();
+                const checkedBoxes = document.querySelectorAll('#team-members-selection input[type="checkbox"]:checked');
+                const members = Array.from(checkedBoxes).map(cb => cb.value);
+                
+                if (!name) {
+                    alert('Vui lòng nhập tên team!');
+                    return;
+                }
+                
+                if (currentEditingTeam) {
+                    // Update existing
+                    currentEditingTeam.name = name;
+                    currentEditingTeam.members = members;
+                    showToast('✅ Đã cập nhật team!', 'success');
+                } else {
+                    // Create new
+                    const newTeam = {
+                        id: 'team_' + Date.now(),
+                        name: name,
+                        members: members
+                    };
+                    teams.push(newTeam);
+                    showToast('✅ Đã tạo team mới!', 'success');
+                }
+                
+                saveToStorage();
+                closeTeamManagementModal();
+                renderTeamsGrid();
+            };
+            
+            window.deleteTeam = function(teamId) {
+                if (!confirm('Bạn có chắc muốn xóa team này?')) return;
+                
+                teams = teams.filter(t => t.id !== teamId);
+                saveToStorage();
+                renderTeamsGrid();
+                showToast('✅ Đã xóa team!', 'success');
+            };
+            
+            window.closeTeamManagementModal = function() {
+                document.getElementById('team-management-modal').classList.remove('active');
+                currentEditingTeam = null;
+            };
+
+
+            // ============= IMPORT/EXPORT ============= //
+            window.exportData = window.exportToJSON = function() {
+                // Admin exports all, regular users export only visible projects
+                const projectsToExport = currentUser?.isAdmin ? projects : getVisibleProjects();
+                
+                const data = {
+                    projects: projectsToExport,
+                    teamMembers: teamMembers,
+                    exportDate: new Date().toISOString(),
+                    version: DATA_VERSION,
+                    exportedBy: currentUser?.name || 'Unknown',
+                    isAdminExport: currentUser?.isAdmin || false
+                };
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `BOD-Dashboard-Export-v5.4-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                const exportCount = projectsToExport.length;
+                const msg = currentUser?.isAdmin 
+                    ? `✅ Đã xuất ${exportCount} dự án (Admin - Full Export)!` 
+                    : `✅ Đã xuất ${exportCount} dự án của bạn!`;
+                showToast(msg, 'success');
+            };
+
+            window.importData = window.importBackupData = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        projects = imported.projects || [];
+                        teamMembers = imported.teamMembers || [];
+                        saveToStorage();
+                        renderAll();
+                        showToast('✅ Đã nhập dữ liệu thành công!', 'success');
+                    } catch (error) {
+                        showToast('❌ Lỗi: File không đúng định dạng!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            };
+
+            window.clearAllData = function() {
+                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA TẤT CẢ DỮ LIỆU?\n\nHành động này không thể hoàn tác!')) {
+                    projects = [];
+                    teamMembers = [];
+                    localStorage.removeItem(STORAGE_KEY);
+                    const data = { projects: [], teamMembers: [], lastSave: new Date().toISOString(), version: DATA_VERSION };
+                    saveToBlob(data);
+                    renderAll();
+                    showToast('✅ Đã xóa tất cả dữ liệu!', 'success');
+                }
+            };
+
+            
+            // ============= API KEY MANAGEMENT ============= //
+            window.saveApiKey = function() {
+                const apiKeyInput = document.getElementById('api-key-input');
+                const apiKey = apiKeyInput.value.trim();
+                
+                if (!apiKey) {
+                    showToast('❌ Vui lòng nhập API Key!', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('bodDashboardApiKey', apiKey);
+                AZURE_CONFIG.apiKey = apiKey;
+                apiKeyInput.value = '';
+                updateApiKeyStatus();
+                showToast('✅ Đã lưu API Key thành công!', 'success');
+            };
+            
+            window.testApiConnection = async function() {
+                if (!AZURE_CONFIG.apiKey) {
+                    showToast('❌ Chưa có API Key! Vui lòng lưu API Key trước.', 'error');
+                    return;
+                }
+                
+                showToast('🔍 Đang kiểm tra kết nối...', 'info');
+                
+                try {
+                    const result = await loadFromBlob();
+                    
+                    if (result !== null) {
+                        showToast('✅ Kết nối thành công! API Key hợp lệ.', 'success');
+                        updateApiKeyStatus();
+                    } else {
+                        showToast('❌ Kết nối thất bại! API Key có thể không hợp lệ.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Connection test error:', error);
+                    showToast('❌ Lỗi kết nối: ' + error.message, 'error');
+                }
+            };
+            
+            window.clearApiKey = function() {
+                if (confirm('⚠️ BẠN CÓ CHẮC MUỐN XÓA API KEY?\n\nBạn sẽ cần nhập lại API Key để đồng bộ dữ liệu.')) {
+                    localStorage.removeItem('bodDashboardApiKey');
+                    AZURE_CONFIG.apiKey = '';
+                    document.getElementById('api-key-input').value = '';
+                    updateApiKeyStatus();
+                    showToast('✅ Đã xóa API Key!', 'success');
+                }
+            };
+            
+            function updateApiKeyStatus() {
+                const statusDiv = document.getElementById('api-key-status');
+                const hasApiKey = AZURE_CONFIG.apiKey && AZURE_CONFIG.apiKey.length > 0;
+                
+                if (hasApiKey) {
+                    statusDiv.style.background = '#dcfce7';
+                    statusDiv.style.color = '#16a34a';
+                    statusDiv.innerHTML = '✅ API Key đã được cấu hình (***' + AZURE_CONFIG.apiKey.slice(-4) + ')';
+                } else {
+                    statusDiv.style.background = '#fee2e2';
+                    statusDiv.style.color = '#dc2626';
+                    statusDiv.innerHTML = '❌ Chưa cấu hình API Key';
+                }
+            }
+            
+
+
+
+            // Toast Function
+            window.showToast = function(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                const icon = document.getElementById('toast-icon');
+                const msg = document.getElementById('toast-message');
+
+                icon.textContent = type === 'success' ? '✅' : '❌';
+                msg.textContent = message;
+                toast.className = `toast ${type} show`;
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        })();
+   
+
             // v5.27 Owner Risk Panel renderer
             function renderOwnerRiskPanel(allProjects) {
                 const el = document.getElementById('bod-owner-risk-panel');
@@ -7736,9 +8225,86 @@ ${conflict.workload.map(w => `
                 el.innerHTML = html;
             }
 
-            window.closeConflictsModal = function() {
-                document.getElementById('conflicts-modal').classList.remove('active');
-            };
+
+            // v5.28: Predictive Risk Intelligence panel renderer
+            function renderRiskTrendPanel(allProjects) {
+                const el = document.getElementById('bod-risk-trend-panel');
+                if (!el) return;
+
+                const rows = window.getAllRiskTrends(allProjects);
+
+                if (!rows.length) {
+                    el.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;">Không có dữ liệu</div>';
+                    return;
+                }
+
+                const CLASS_META = {
+                    improving:          { icon:'↗', label:'Improving',          cls:'prl-improving' },
+                    stable:             { icon:'→', label:'Stable',              cls:'prl-stable' },
+                    deteriorating:      { icon:'↘', label:'Deteriorating',       cls:'prl-deteriorating' },
+                    critical_escalating:{ icon:'⚠', label:'Critical Escalating', cls:'prl-critical_escalating' }
+                };
+
+                const counts = { improving:0, stable:0, deteriorating:0, critical_escalating:0 };
+                rows.forEach(({ trend: t }) => { if (counts[t.classification] !== undefined) counts[t.classification]++; });
+                const warnings = rows.filter(({ trend: t }) => t.earlyWarning).length;
+
+                function sparkline(scores) {
+                    if (!scores || scores.length < 2) return '';
+                    const mn = Math.min(...scores), mx = Math.max(...scores);
+                    const range = mx - mn || 1;
+                    return '<span class="prl-sparkline">' + scores.map(v => {
+                        const h = Math.max(3, Math.round(((v - mn) / range) * 18));
+                        const c = v > 70 ? '#e53935' : v > 40 ? '#ffb300' : '#4caf50';
+                        return '<span style="height:' + h + 'px;background:' + c + ';" title="' + v + '"></span>';
+                    }).join('') + '</span>';
+                }
+
+                let html = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:0.87em;">'
+                    + (counts.critical_escalating ? '<span style="background:#ffebee;color:#b71c1c;padding:5px 13px;border-radius:16px;font-weight:700;">⚠ ' + counts.critical_escalating + ' Critical Escalating</span>' : '')
+                    + (counts.deteriorating       ? '<span style="background:#fff3e0;color:#e65100;padding:5px 13px;border-radius:16px;font-weight:700;">↘ ' + counts.deteriorating + ' Deteriorating</span>' : '')
+                    + (counts.stable              ? '<span style="background:#e3f2fd;color:#1565c0;padding:5px 13px;border-radius:16px;">→ ' + counts.stable + ' Stable</span>' : '')
+                    + (counts.improving           ? '<span style="background:#e8f5e9;color:#2e7d32;padding:5px 13px;border-radius:16px;">↗ ' + counts.improving + ' Improving</span>' : '')
+                    + (warnings                   ? '<span style="background:#fff9c4;color:#f57f17;padding:5px 13px;border-radius:16px;font-weight:700;">🚩 ' + warnings + ' Early Warning</span>' : '')
+                    + '</div>'
+                    + '<div style="overflow-x:auto;"><table class="prl-table"><thead><tr>'
+                    + '<th>Project</th><th>Trend</th><th style="text-align:center;">History</th>'
+                    + '<th style="text-align:center;">Velocity</th><th style="text-align:center;">Δ5d</th>'
+                    + '<th style="text-align:center;">Proj +7d</th><th>Flags</th>'
+                    + '</tr></thead><tbody>';
+
+                rows.forEach(function(row) {
+                    var p = row.project, t = row.trend;
+                    var meta = CLASS_META[t.classification] || CLASS_META.stable;
+                    var velClass = t.velocity > 0 ? 'prl-vel-pos' : t.velocity < 0 ? 'prl-vel-neg' : 'prl-vel-zero';
+                    var velSign  = t.velocity > 0 ? '+' : '';
+                    var d5sign   = t.delta5d  > 0 ? '+' : '';
+                    var projDiff = t.proj7 - t.currentScore;
+                    var projSign = projDiff > 0 ? '+' : '';
+                    var projC    = projDiff > 10 ? '#c62828' : projDiff < -5 ? '#2e7d32' : '#718096';
+                    var leader   = (window.teamMembers||[]).find(function(m){ return m.id === p.leader; });
+                    var warnFlag = t.earlyWarning
+                        ? '<span class="prl-warn-badge">🚩 ' + (t.earlyWarningReason === 'rapid_rise' ? 'Rapid Rise' : 'Stagnation') + '</span>'
+                        : '';
+                    var pname = p.name.length > 28 ? p.name.slice(0,26) + '…' : p.name;
+
+                    html += '<tr>'
+                        + '<td><div style="font-weight:600;color:#2d3748;">' + pname + '</div>'
+                        + '<div style="font-size:0.78em;color:#718096;">👤 ' + (leader ? leader.name : 'N/A') + '</div></td>'
+                        + '<td><span class="prl-trend-badge ' + meta.cls + '">' + meta.icon + ' ' + meta.label + '</span></td>'
+                        + '<td style="text-align:center;">' + sparkline(t.scores) + '</td>'
+                        + '<td style="text-align:center;" class="' + velClass + '">' + velSign + t.velocity + '/d</td>'
+                        + '<td style="text-align:center;' + (Math.abs(t.delta5d)>=15?'font-weight:700;color:#c62828;':'') + '">' + d5sign + t.delta5d + '</td>'
+                        + '<td style="text-align:center;"><span class="prl-proj-badge" style="color:' + projC + ';">'
+                        + t.proj7 + ' <span style="font-size:0.85em;">(' + projSign + projDiff + ')</span></span></td>'
+                        + '<td>' + warnFlag + '</td>'
+                        + '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+                el.innerHTML = html;
+            }
+
             
             window.showCalendarTooltip = function(element, date, events) {
                 if (!events || events.length === 0) return;
@@ -10430,707 +10996,6 @@ ${conflict.workload.map(w => `
             */
             // END OF OLD showConflicts() - Use NEW version at line ~5040 instead
 
-            // ============= v5.6 BOD SUMMARY DASHBOARD ============= //
-            
-            function renderBODSummary() {
-                const allProjects = projects; // BOD/Admin see all
-                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
-                
-                // Calculate KPIs
-                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
-                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
-                const budgetVariance = totalActualValue - totalBudget;
-                const variancePercent = totalBudget > 0 ? ((budgetVariance / totalBudget) * 100).toFixed(1) : 0;
-                
-                const delayed = calculateDelayedProjects().length;
-                const onTime = activeProjects.length - delayed;
-                const onTimePercent = activeProjects.length > 0 ? ((onTime / activeProjects.length) * 100).toFixed(1) : 0;
-                
-                const conflicts = window.detectResourceConflicts().length;
-                
-                // Render KPI Cards
-                const kpiHtml = `
-                    <div class="stat-card">
-                        <h3>📁 Total Projects</h3>
-                        <div class="value">${allProjects.length}</div>
-                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
-                            ${activeProjects.length} active
-                        </p>
-                    </div>
-                    <div class="stat-card ${onTimePercent >= 70 ? 'green' : 'orange'}">
-                        <h3>✅ On-Time Rate</h3>
-                        <div class="value">${onTimePercent}%</div>
-                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
-                            ${onTime} on-time, ${delayed} delayed
-                        </p>
-                    </div>
-                    <div class="stat-card ${budgetVariance >= 0 ? 'green' : 'red'}">
-                        <h3>💰 Budget vs Actual</h3>
-                        <div class="value" style="font-size: 1.5em;">${variancePercent}%</div>
-                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
-                            ${budgetVariance >= 0 ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(budgetVariance)} VNĐ
-                        </p>
-                    </div>
-                    <div class="stat-card ${conflicts === 0 ? 'green' : 'red'}">
-                        <h3>âš¡ Conflicts</h3>
-                        <div class="value">${conflicts}</div>
-                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
-                            Resource conflicts
-                        </p>
-                    </div>
-                `;
-                const elem_bod_kpi_grid = document.getElementById('bod-kpi-grid');
-                if (elem_bod_kpi_grid) elem_bod_kpi_grid.innerHTML = kpiHtml;
-                
-                // Render Risk Indicators
-                renderBODRiskIndicators(allProjects);
-                
-                // Render Financial Summary
-                renderBODFinancialSummary(allProjects);
-                
-                // Render Resource Utilization
-                renderBODResourceUtilization(allProjects);
-                
-                // Render Milestone Progress
-                renderBODMilestoneProgress(allProjects);
-                
-                // Render Project Details Table
-                renderBODProjectsTable(allProjects);
-            }
-            
-            function renderBODRiskIndicators(allProjects) {
-                // v5.26: Use computeRiskScore for proper risk ranking
-                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
-                
-                // Compute & sort by risk score
-                const ranked = activeProjects
-                    .map(p => ({ ...p, _risk: window.computeRiskScore(p) }))
-                    .filter(p => p._risk.level !== 'ok')
-                    .sort((a, b) => b._risk.score - a._risk.score);
-
-                // Also collect legacy risks (budget variance, resource conflicts)
-                const legacyRisks = [];
-                allProjects.forEach(project => {
-                    if (project.budget && project.actualValue) {
-                        const variance = ((project.actualValue - project.budget) / project.budget) * 100;
-                        if (Math.abs(variance) > 20) {
-                            legacyRisks.push({
-                                project: project,
-                                detail: `Budget variance ${variance > 0 ? '+' : ''}${variance.toFixed(1)}%`,
-                                severity: Math.abs(variance) > 50 ? 'high' : 'medium'
-                            });
-                        }
-                    }
-                });
-                const conflicts = window.detectResourceConflicts();
-                if (conflicts.length > 0) {
-                    legacyRisks.push({ detail: `${conflicts.length} resource conflicts`, severity: 'medium', project: null });
-                }
-
-                let html = '';
-                
-                if (ranked.length === 0 && legacyRisks.length === 0) {
-                    html = '<div style="text-align:center;padding:30px;color:#059669;">✅ Không có rủi ro cao</div>';
-                } else {
-                    // Heading
-                    if (ranked.length > 0) {
-                        html += `<div style="font-weight:600;color:#2d3748;margin-bottom:12px;font-size:0.95em;">🎯 Risk Ranking (${ranked.length} dự án cần chú ý)</div>`;
-                        ranked.forEach((p, idx) => {
-                            const r = p._risk;
-                            const bgMap = { at_risk:'#fffde7', high:'#fff3e0', critical:'#ffebee' };
-                            const borderMap = { at_risk:'#f9a825', high:'#ef6c00', critical:'#c62828' };
-                            const bg = bgMap[r.level] || '#fff';
-                            const border = borderMap[r.level] || '#ccc';
-                            const leader = teamMembers.find(m => m.id === p.leader);
-                            const subBar = (sub, max) => {
-                                const pct = Math.round((sub / max) * 100);
-                                return `<div class="risk-bar-track"><div class="risk-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>`;
-                            };
-                            html += `
-                                <div style="background:${bg};border-left:4px solid ${border};border-radius:8px;padding:12px 14px;margin-bottom:10px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                                        <div>
-                                            <div style="font-weight:700;color:#2d3748;font-size:0.95em;">#${idx+1} ${p.name}</div>
-                                            <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}</div>
-                                        </div>
-                                        <div style="text-align:right;">
-                                            <div style="font-size:1.6em;font-weight:700;color:${r.color};line-height:1;">${r.score}</div>
-                                            <div style="font-size:0.75em;color:${r.color};font-weight:600;">${r.label}</div>
-                                        </div>
-                                    </div>
-                                    <div class="risk-score-bar">
-                                        <span style="font-size:0.75em;color:#718096;min-width:32px;">0</span>
-                                        <div class="risk-bar-track" style="flex:1;">
-                                            <div class="risk-bar-fill" style="width:${r.score}%;background:${r.color}"></div>
-                                        </div>
-                                        <span style="font-size:0.75em;color:#718096;min-width:32px;text-align:right;">100</span>
-                                    </div>
-                                    <div class="risk-sub-grid">
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">⏰ Delay</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.delay>5?'#c62828':'#2d3748'}">${(r.subScores.delay*2.5).toFixed(1)}pt</div>
-                                        </div>
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">📅 Deadline</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.pressure>7?'#c62828':'#2d3748'}">${(r.subScores.pressure*2).toFixed(1)}pt</div>
-                                        </div>
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">📊 Gap</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.completion>5?'#c62828':'#2d3748'}">${(r.subScores.completion*1.5).toFixed(1)}pt</div>
-                                        </div>
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">💼 Workload</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.ownerWorkload>7?'#c62828':'#2d3748'}">${(r.subScores.ownerWorkload*1.5).toFixed(1)}pt</div>
-                                        </div>
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">🔁 Pattern</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.repeatPattern>5?'#c62828':'#2d3748'}">${(r.subScores.repeatPattern*1.5).toFixed(1)}pt</div>
-                                        </div>
-                                        <div class="risk-sub-item">
-                                            <div class="risk-sub-label">🚨 Blocker</div>
-                                            <div class="risk-sub-val" style="color:${r.subScores.blockerSev>4?'#c62828':'#2d3748'}">${(r.subScores.blockerSev*1).toFixed(1)}pt</div>
-                                        </div>
-                                    </div>
-                                    <div style="font-size:0.8em;color:${border};margin-top:6px;font-weight:600;">
-                                        ➡️ ${r.action}${r.override === 'blocker' ? ' ⚠️ (Blocker override)' : ''}
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
-                    
-                    // Legacy risks (budget/conflicts) — compact
-                    if (legacyRisks.length > 0) {
-                        html += `<div style="font-weight:600;color:#2d3748;margin:14px 0 8px;font-size:0.9em;">📋 Rủi Ro Khác</div>`;
-                        html += legacyRisks.map(risk => {
-                            const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
-                            const borderColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
-                            return `<div style="background:${bgColor};padding:10px 12px;border-radius:6px;margin-bottom:8px;border-left:3px solid ${borderColor};">
-                                ${risk.project ? `<div style="font-weight:600;color:#2d3748;font-size:0.88em;">${risk.project.name}</div>` : ''}
-                                <div style="font-size:0.83em;color:#718096;">${risk.detail}</div>
-                            </div>`;
-                        }).join('');
-                    }
-                }
-                
-                const el = document.getElementById('bod-risk-indicators');
-                if (el) el.innerHTML = html;
-            function renderBODFinancialSummary(allProjects) {
-                const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
-                const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
-                
-                // Revenue by customer
-                const customerRevenue = {};
-                allProjects.forEach(p => {
-                    if (p.customer && p.actualValue) {
-                        if (!customerRevenue[p.customer]) {
-                            customerRevenue[p.customer] = 0;
-                        }
-                        customerRevenue[p.customer] += p.actualValue;
-                    }
-                });
-                
-                const topCustomers = Object.entries(customerRevenue)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 5);
-                
-                // Performance by Sale
-                const salePerformance = {};
-                allProjects.forEach(p => {
-                    if (p.sale) {
-                        const sale = teamMembers.find(m => m.id === p.sale);
-                        if (sale) {
-                            if (!salePerformance[sale.name]) {
-                                salePerformance[sale.name] = { count: 0, value: 0 };
-                            }
-                            salePerformance[sale.name].count++;
-                            salePerformance[sale.name].value += (p.actualValue || 0);
-                        }
-                    }
-                });
-                
-                const html = `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <span style="font-weight: 600;">Total Budget:</span>
-                            <span style="color: #667eea;">${new Intl.NumberFormat('vi-VN').format(totalBudget)} VNĐ</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <span style="font-weight: 600;">Total Actual Value:</span>
-                            <span style="color: #059669;">${new Intl.NumberFormat('vi-VN').format(totalActualValue)} VNĐ</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px solid #e9ecef;">
-                            <span style="font-weight: 600;">Variance:</span>
-                            <span style="color: ${totalActualValue >= totalBudget ? '#059669' : '#c62828'}; font-weight: 600;">
-                                ${totalActualValue >= totalBudget ? '+' : ''}${new Intl.NumberFormat('vi-VN').format(totalActualValue - totalBudget)} VNĐ
-                            </span>
-                        </div>
-                    </div>
-                    
-                    ${topCustomers.length > 0 ? `
-                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-                            <div style="font-weight: 600; margin-bottom: 10px;">Top Customers:</div>
-                            ${topCustomers.map(([customer, revenue]) => `
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em;">
-                                    <span style="color: #718096;">${customer}</span>
-                                    <span style="font-weight: 600;">${new Intl.NumberFormat('vi-VN').format(revenue)} VNĐ</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${Object.keys(salePerformance).length > 0 ? `
-                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-                            <div style="font-weight: 600; margin-bottom: 10px;">Performance by Sale:</div>
-                            ${Object.entries(salePerformance).map(([name, data]) => `
-                                <div style="margin-bottom: 12px; font-size: 0.9em;">
-                                    <div style="color: #2d3748; font-weight: 600;">${name}</div>
-                                    <div style="color: #718096;">${data.count} projects · ${new Intl.NumberFormat('vi-VN').format(data.value)} VNĐ</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                `;
-                
-                const elem_bod_financial_summary = document.getElementById('bod-financial-summary');
-                if (elem_bod_financial_summary) elem_bod_financial_summary.innerHTML = html;
-            }
-            
-            function renderBODResourceUtilization(allProjects) {
-                const memberWorkload = {};
-                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
-                
-                // Count active tasks per member
-                activeProjects.forEach(project => {
-                    // Leader
-                    if (project.leader) {
-                        if (!memberWorkload[project.leader]) {
-                            memberWorkload[project.leader] = { leader: 0, member: 0, team: 0 };
-                        }
-                        memberWorkload[project.leader].leader++;
-                    }
-                    
-                    // Members
-                    (project.members || []).forEach(memberId => {
-                        if (!memberWorkload[memberId]) {
-                            memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
-                        }
-                        memberWorkload[memberId].member++;
-                    });
-                    
-                    // Team assignments
-                    (project.milestones || []).forEach(milestone => {
-                        if (milestone.assignedMembers && milestone.assignedMembers.length > 0) {
-                            milestone.assignedMembers.forEach(memberId => {
-                                if (!memberWorkload[memberId]) {
-                                    memberWorkload[memberId] = { leader: 0, member: 0, team: 0 };
-                                }
-                                memberWorkload[memberId].team++;
-                            });
-                        }
-                    });
-                });
-                
-                const sortedWorkload = Object.entries(memberWorkload)
-                    .map(([id, workload]) => ({
-                        member: teamMembers.find(m => m.id === id),
-                        total: workload.leader + workload.member + workload.team,
-                        breakdown: workload
-                    }))
-                    .filter(w => w.member)
-                    .sort((a, b) => b.total - a.total);
-                
-                let html = '';
-                if (sortedWorkload.length === 0) {
-                    html = '<div style="text-align: center; padding: 30px; color: #718096;">No active resource assignments</div>';
-                } else {
-                    html = sortedWorkload.map(w => {
-                        const utilization = Math.min((w.total / 3) * 100, 100);
-                        const color = utilization > 80 ? '#c62828' : utilization > 50 ? '#f57c00' : '#059669';
-                        
-                        return `
-                            <div style="margin-bottom: 15px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                    <span style="font-weight: 600;">${w.member.name}</span>
-                                    <span style="color: ${color}; font-weight: 600;">${w.total} tasks</span>
-                                </div>
-                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
-                                    <div style="background: ${color}; width: ${utilization}%; height: 100%;"></div>
-                                </div>
-                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
-                                    ${w.breakdown.leader > 0 ? `👑 ${w.breakdown.leader} leader` : ''}
-                                    ${w.breakdown.member > 0 ? ` | 👥 ${w.breakdown.member} member` : ''}
-                                    ${w.breakdown.team > 0 ? ` | 🏢 ${w.breakdown.team} team` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-                
-                const elem_bod_resource_utilization = document.getElementById('bod-resource-utilization');
-                if (elem_bod_resource_utilization) elem_bod_resource_utilization.innerHTML = html;
-            }
-            
-            function renderBODMilestoneProgress(allProjects) {
-                const milestoneStats = {};
-                
-                STANDARD_MILESTONES.forEach(ms => {
-                    milestoneStats[ms.id] = {
-                        name: ms.name,
-                        icon: ms.icon,
-                        total: 0,
-                        completed: 0,
-                        inProgress: 0,
-                        notStarted: 0
-                    };
-                });
-                
-                allProjects.forEach(project => {
-                    (project.milestones || []).forEach(milestone => {
-                        const stat = milestoneStats[milestone.id];
-                        if (!stat) return;
-                        
-                        stat.total++;
-                        if (milestone.actualCompleteDate) {
-                            stat.completed++;
-                        } else if (milestone.actualStartDate || milestone.planStartDate) {
-                            stat.inProgress++;
-                        } else {
-                            stat.notStarted++;
-                        }
-                    });
-                });
-                
-                const html = Object.values(milestoneStats)
-                    .filter(s => s.total > 0)
-                    .map(stat => {
-                        const completePercent = stat.total > 0 ? ((stat.completed / stat.total) * 100).toFixed(0) : 0;
-                        
-                        return `
-                            <div style="margin-bottom: 15px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                    <span>${stat.icon} ${stat.name}</span>
-                                    <span style="font-weight: 600;">${stat.completed}/${stat.total}</span>
-                                </div>
-                                <div style="background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden;">
-                                    <div style="background: #059669; width: ${completePercent}%; height: 100%;"></div>
-                                </div>
-                                <div style="font-size: 0.8em; color: #718096; margin-top: 3px;">
-                                    ✅ ${stat.completed} complete | 🔄 ${stat.inProgress} in progress | ⏸️ ${stat.notStarted} not started
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                
-                const elem_bod_milestone_progress = document.getElementById('bod-milestone-progress');
-                if (elem_bod_milestone_progress) elem_bod_milestone_progress.innerHTML = html || '<div style="text-align: center; padding: 30px; color: #718096;">No milestone data</div>';
-            }
-            
-            function renderBODProjectsTable(allProjects) {
-                const html = `
-                    <thead style="background: #f8f9fa;">
-                        <tr>
-                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Project</th>
-                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Customer</th>
-                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Leader</th>
-                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef;">Sale</th>
-                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Budget</th>
-                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Actual Value</th>
-                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
-                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
-                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Risk Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${allProjects.map(project => {
-                            const leader = teamMembers.find(m => m.id === project.leader);
-                            const sale = teamMembers.find(m => m.id === project.sale);
-                            const current = getCurrentMilestone(project);
-                            const delayed = current && isDelayed(current);
-                            
-                            const statusConfig = {
-                                'planning': { label: 'Planning', color: '#1565c0' },
-                                'in-progress': { label: 'In Progress', color: '#2e7d32' },
-                                'on-hold': { label: 'On Hold', color: '#e65100' },
-                                'delayed': { label: 'Delayed', color: '#c62828' },
-                                'completed': { label: 'Completed', color: '#00695c' },
-                                'cancelled': { label: 'Cancelled', color: '#6a1b9a' }
-                            };
-                            
-                            const status = project.status || 'planning';
-                            const statusInfo = statusConfig[status];
-                            
-                            return `
-                                <tr style="border-bottom: 1px solid #e9ecef;">
-                                    <td style="padding: 12px;">
-                                        <div style="font-weight: 600; color: #2d3748;">${project.name}</div>
-                                        ${delayed ? '<span style="color: #c62828; font-size: 0.8em;">⚠️ Delayed</span>' : ''}
-                                    </td>
-                                    <td style="padding: 12px; color: #718096;">${project.customer || '-'}</td>
-                                    <td style="padding: 12px;">${leader ? leader.name : '-'}</td>
-                                    <td style="padding: 12px;">${sale ? sale.name : '-'}</td>
-                                    <td style="padding: 12px; text-align: right;">${project.budget ? new Intl.NumberFormat('vi-VN').format(project.budget) : '-'}</td>
-                                    <td style="padding: 12px; text-align: right; font-weight: 600;">${project.actualValue ? new Intl.NumberFormat('vi-VN').format(project.actualValue) : '-'}</td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        <span style="background: ${statusInfo.color}15; color: ${statusInfo.color}; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">
-                                            ${statusInfo.label}
-                                        </span>
-                                    </td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        ${current ? current.icon + ' ' + current.name : '-'}
-                                    </td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        ${(() => {
-                                            try {
-                                                const _r = window.computeRiskScore(project);
-                                                const _colors = {ok:'#4caf50',at_risk:'#ffb300',high:'#ef6c00',critical:'#e53935'};
-                                                const _c = _colors[_r.level]||'#999';
-                                                return `<span style="background:${_c}22;color:${_c};padding:4px 10px;border-radius:12px;font-weight:700;font-size:0.9em;">${_r.score}</span>`;
-                                            } catch(e){ return '-'; }
-                                        })()}
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                `;
-                
-                const elem_bod_projects_table = document.getElementById('bod-projects-table');
-                if (elem_bod_projects_table) elem_bod_projects_table.innerHTML = html;
-            }
-
-            
-
-            // ============================================================
-            // v5.27 OWNER WORKLOAD & ESCALATION LAYER
-            // ============================================================
-            window.computeOwnerWorkloads = function(projectList) {
-                const MS7D = 7 * 86400000;
-                const in7d = Date.now() + MS7D;
-                const ownerMap = {};
-                let totalActive = 0;
-
-                // Single O(n) pass
-                (projectList || window.projects || []).forEach(p => {
-                    if (p.status === 'completed' || p.status === 'cancelled') return;
-                    totalActive++;
-                    const id = p.leader;
-                    if (!id) return;
-                    if (!ownerMap[id]) {
-                        ownerMap[id] = { activeCount: 0, sumRisk: 0, deadline7d: 0, criticalCount: 0 };
-                    }
-                    const o = ownerMap[id];
-                    o.activeCount++;
-
-                    // Use cached snapshot if fresh (< 1 day old), else recompute
-                    let score = 0;
-                    try {
-                        const snap = p.riskSnapshot;
-                        const fresh = snap && snap.computedAt &&
-                            (Date.now() - new Date(snap.computedAt)) < 86400000;
-                        score = fresh ? snap.score : window.computeRiskScore(p).score;
-                    } catch(e) { score = 0; }
-
-                    o.sumRisk += score;
-                    if (score > 80) o.criticalCount++;
-
-                    // Deadline within 7 days?
-                    const hw = (p.milestones || []).find(m => m.id === 'handover');
-                    if (hw && hw.planCompleteDate) {
-                        if (new Date(hw.planCompleteDate).getTime() <= in7d) o.deadline7d++;
-                    }
-                });
-
-                // Score & classify each owner
-                const results = Object.entries(ownerMap).map(([ownerId, o]) => {
-                    const ws = Math.min(o.activeCount * 10, 40)
-                              + Math.min(o.sumRisk / 25, 40)
-                              + Math.min(o.deadline7d * 15, 20);
-
-                    const level = ws < 40 ? 'normal' : ws < 70 ? 'warning' : 'critical';
-
-                    const flags = [];
-                    if (o.criticalCount >= 2)              flags.push('multi_critical');
-                    if (ws >= 70)                          flags.push('overload');
-                    if (o.activeCount > totalActive * 0.25) flags.push('structural_risk');
-
-                    const member = (window.teamMembers || []).find(m => m.id === ownerId);
-                    return {
-                        ownerId,
-                        name: member ? member.name : ownerId,
-                        ws: Math.round(ws),
-                        level,
-                        flags,
-                        activeCount: o.activeCount,
-                        sumRisk: Math.round(o.sumRisk),
-                        avgRisk: o.activeCount ? Math.round(o.sumRisk / o.activeCount) : 0,
-                        deadline7d: o.deadline7d,
-                        criticalCount: o.criticalCount
-                    };
-                });
-
-                results.sort((a, b) => b.ws - a.ws);
-                return { results, totalActive };
-            };
-            // ============================================================
-            // end v5.27 OWNER WORKLOAD & ESCALATION LAYER
-            // ============================================================
-
-            // v5.26: BOD Risk Ranking Panel
-            function renderBODRiskRankingPanel(allProjects) {
-                const el = document.getElementById('bod-risk-ranking-panel');
-                if (!el) return;
-                
-                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
-                const ranked = activeProjects
-                    .map(p => ({ p, r: window.computeRiskScore(p) }))
-                    .sort((a, b) => b.r.score - a.r.score);
-
-                if (ranked.length === 0) {
-                    el.innerHTML = '<div style="text-align:center;color:#059669;padding:20px;">✅ Không có dự án active</div>';
-                    return;
-                }
-                
-                const LEVEL_COLORS = { ok:'#4caf50', at_risk:'#ffb300', high:'#ef6c00', critical:'#e53935' };
-                const LEVEL_LABELS = { ok:'On Track', at_risk:'Có Rủi Ro', high:'Rủi Ro Cao', critical:'KHẨN CẤP' };
-                
-                // Summary pills
-                const counts = { ok:0, at_risk:0, high:0, critical:0 };
-                ranked.forEach(({ r }) => { if (counts[r.level] !== undefined) counts[r.level]++; });
-                
-                let html = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">`;
-                Object.entries(counts).forEach(([lvl, cnt]) => {
-                    if (!cnt) return;
-                    const c = LEVEL_COLORS[lvl];
-                    const icons = { ok:'🟢', at_risk:'🟡', high:'🟠', critical:'🔴' };
-                    html += `<span style="background:${c}22;color:${c};border:1px solid ${c};padding:6px 14px;border-radius:20px;font-weight:700;font-size:0.9em;">${icons[lvl]} ${cnt} ${LEVEL_LABELS[lvl]}</span>`;
-                });
-                html += `</div>`;
-                
-                // Ranking rows
-                ranked.forEach(({ p, r }, idx) => {
-                    const leader = teamMembers.find(m => m.id === p.leader);
-                    const c = LEVEL_COLORS[r.level] || '#999';
-                    const openIssues = (p.issues||[]).filter(i => i.status !== 'resolved' && i.status !== 'closed').length;
-                    html += `
-                        <div class="risk-ranking-row" onclick="window.editProject('${p.id}')"
-                             style="border-left:4px solid ${c};">
-                            <span style="font-weight:700;color:${c};min-width:36px;font-size:1.1em;">${r.score}</span>
-                            <div style="flex:1;min-width:0;">
-                                <div style="font-weight:600;color:#2d3748;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
-                                <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}${openIssues > 0 ? ` · 🚨 ${openIssues} issue${openIssues>1?'s':''}` : ''}</div>
-                            </div>
-                            <div style="min-width:80px;">
-                                <div class="risk-bar-track" style="margin-bottom:3px;">
-                                    <div class="risk-bar-fill" style="width:${r.score}%;background:${c}"></div>
-                                </div>
-                                <div style="font-size:0.75em;font-weight:600;color:${c};text-align:right;">${r.label}</div>
-                            </div>
-                            <div style="font-size:0.75em;color:#718096;text-align:right;min-width:90px;">
-                                ${r.action.length > 25 ? r.action.slice(0,25)+'...' : r.action}
-                            </div>
-                        </div>`;
-                });
-                el.innerHTML = html;
-            }
-
-
-            // v5.28: Predictive Risk Intelligence panel renderer
-            function renderRiskTrendPanel(allProjects) {
-                const el = document.getElementById('bod-risk-trend-panel');
-                if (!el) return;
-
-                const rows = window.getAllRiskTrends(allProjects);
-
-                if (!rows.length) {
-                    el.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;">Không có dữ liệu</div>';
-                    return;
-                }
-
-                const CLASS_META = {
-                    improving:          { icon:'↗', label:'Improving',          cls:'prl-improving' },
-                    stable:             { icon:'→', label:'Stable',              cls:'prl-stable' },
-                    deteriorating:      { icon:'↘', label:'Deteriorating',       cls:'prl-deteriorating' },
-                    critical_escalating:{ icon:'⚠', label:'Critical Escalating', cls:'prl-critical_escalating' }
-                };
-
-                // Summary counts
-                const counts = { improving:0, stable:0, deteriorating:0, critical_escalating:0 };
-                rows.forEach(({ trend: t }) => { if (counts[t.classification] !== undefined) counts[t.classification]++; });
-                const warnings = rows.filter(({ trend: t }) => t.earlyWarning).length;
-
-                // Sparkline helper (normalise scores to bar heights)
-                function sparkline(scores) {
-                    if (!scores || scores.length < 2) return '';
-                    const mn = Math.min(...scores), mx = Math.max(...scores);
-                    const range = mx - mn || 1;
-                    return `<span class="prl-sparkline">${scores.map(v => {
-                        const h = Math.max(3, Math.round(((v - mn) / range) * 18));
-                        const c = v > 70 ? '#e53935' : v > 40 ? '#ffb300' : '#4caf50';
-                        return `<span style="height:${h}px;background:${c};" title="${v}"></span>`;
-                    }).join('')}</span>`;
-                }
-
-                let html = `
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:0.87em;">
-                        ${counts.critical_escalating ? `<span style="background:#ffebee;color:#b71c1c;padding:5px 13px;border-radius:16px;font-weight:700;">⚠ ${counts.critical_escalating} Critical Escalating</span>` : ''}
-                        ${counts.deteriorating       ? `<span style="background:#fff3e0;color:#e65100;padding:5px 13px;border-radius:16px;font-weight:700;">↘ ${counts.deteriorating} Deteriorating</span>` : ''}
-                        ${counts.stable              ? `<span style="background:#e3f2fd;color:#1565c0;padding:5px 13px;border-radius:16px;">→ ${counts.stable} Stable</span>` : ''}
-                        ${counts.improving           ? `<span style="background:#e8f5e9;color:#2e7d32;padding:5px 13px;border-radius:16px;">↗ ${counts.improving} Improving</span>` : ''}
-                        ${warnings                   ? `<span style="background:#fff9c4;color:#f57f17;padding:5px 13px;border-radius:16px;font-weight:700;">🚩 ${warnings} Early Warning</span>` : ''}
-                    </div>
-                    <div style="overflow-x:auto;">
-                    <table class="prl-table">
-                        <thead><tr>
-                            <th>Project</th>
-                            <th>Trend</th>
-                            <th style="text-align:center;">Score History</th>
-                            <th style="text-align:center;">Velocity</th>
-                            <th style="text-align:center;">Δ5d</th>
-                            <th style="text-align:center;">Proj +7d</th>
-                            <th>Flags</th>
-                        </tr></thead>
-                        <tbody>`;
-
-                rows.forEach(({ project: p, trend: t }) => {
-                    const meta = CLASS_META[t.classification] || CLASS_META.stable;
-                    const velClass = t.velocity > 0 ? 'prl-vel-pos'
-                                   : t.velocity < 0 ? 'prl-vel-neg' : 'prl-vel-zero';
-                    const velSign  = t.velocity > 0 ? '+' : '';
-                    const d5sign   = t.delta5d  > 0 ? '+' : '';
-                    const projDiff = t.proj7 - t.currentScore;
-                    const projSign = projDiff > 0 ? '+' : '';
-                    const projC    = projDiff > 10 ? '#c62828' : projDiff < -5 ? '#2e7d32' : '#718096';
-                    const leader   = (window.teamMembers||[]).find(m => m.id === p.leader);
-                    const warnFlag = t.earlyWarning
-                        ? `<span class="prl-warn-badge">🚩 ${t.earlyWarningReason === 'rapid_rise' ? 'Rapid Rise' : 'Stagnation'}</span>`
-                        : '';
-
-                    html += `<tr>
-                        <td>
-                            <div style="font-weight:600;color:#2d3748;">${p.name.length > 28 ? p.name.slice(0,26)+'…' : p.name}</div>
-                            <div style="font-size:0.78em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}</div>
-                        </td>
-                        <td><span class="prl-trend-badge ${meta.cls}">${meta.icon} ${meta.label}</span></td>
-                        <td style="text-align:center;">${sparkline(t.scores)}</td>
-                        <td style="text-align:center;" class="${velClass}">${velSign}${t.velocity}/d</td>
-                        <td style="text-align:center;${Math.abs(t.delta5d)>=15?'font-weight:700;color:#c62828;':''}">${d5sign}${t.delta5d}</td>
-                        <td style="text-align:center;">
-                            <span class="prl-proj-badge" style="color:${projC};">
-                                ${t.proj7} <span style="font-size:0.85em;">(${projSign}${projDiff})</span>
-                            </span>
-                        </td>
-                        <td>${warnFlag}</td>
-                    </tr>`;
-                });
-
-                html += '</tbody></table></div>';
-                el.innerHTML = html;
-            }
-
-            window.closeConflictsModal = function() {
-                document.getElementById('conflicts-modal').classList.remove('active');
-            };
 
             // ============= TEAM MODAL ============= //
             window.openTeamModal = function(memberId = null) {
