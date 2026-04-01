@@ -4,7 +4,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.25 - SOP-001 Survey Compliance</title>
+    <title>BOD Dashboard v5.28 - Predictive Risk Intelligence</title>
     <!-- SheetJS for Excel Export -->
     <script src="./BOD Dashboard v5.25 - SOP-001 Survey Compliance_files/xlsx.full.min.js.download"></script>
     <style>
@@ -2131,6 +2131,98 @@
             color: #667eea;
         }
 
+
+        /* ============= v5.26 EXECUTIVE RISK CONTROL SYSTEM - CSS ============= */
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.82em;
+            font-weight: 700;
+            margin: 3px 0;
+        }
+        .risk-ok        { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .risk-at_risk   { background: #fff9c4; color: #f57f17; border: 1px solid #fff176; }
+        .risk-high      { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .risk-critical  { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a;
+                          animation: pulse-red 1.5s infinite; }
+        .risk-score-bar { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+        .risk-bar-track { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+        .risk-bar-fill  { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+        .risk-sub-grid  { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 8px; }
+        .risk-sub-item  { background: #f8f9fa; border-radius: 6px; padding: 6px 8px; font-size: 0.78em; }
+        .risk-sub-label { color: #718096; margin-bottom: 2px; }
+        .risk-sub-val   { font-weight: 700; }
+        .risk-ranking-row {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            border-bottom: 1px solid #e9ecef; font-size: 0.9em;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .risk-ranking-row:hover { background: #f8f9fa; }
+        /* ============= end v5.26 risk CSS ============= */
+
+        /* ===== v5.27 OWNER WORKLOAD & ESCALATION LAYER ===== */
+        .owf-table { width:100%; border-collapse:collapse; font-size:0.88em; }
+        .owf-table th { padding:9px 12px; text-align:left; background:#f8f9fa;
+                        border-bottom:2px solid #e9ecef; font-weight:600; color:#4a5568; }
+        .owf-table td { padding:9px 12px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
+        .owf-table tr:last-child td { border-bottom:none; }
+        .owf-table tr:hover td { background:#fafbfc; }
+        .owf-ws-bar { display:inline-block; height:6px; border-radius:3px;
+                      vertical-align:middle; margin-left:6px; }
+        .owf-level-normal   { background:#e8f5e9; color:#2e7d32; padding:3px 9px;
+                               border-radius:10px; font-weight:700; font-size:0.82em; }
+        .owf-level-warning  { background:#fff9c4; color:#f57f17; padding:3px 9px;
+                               border-radius:10px; font-weight:700; font-size:0.82em; }
+        .owf-level-critical { background:#ffebee; color:#b71c1c; padding:3px 9px;
+                               border-radius:10px; font-weight:700; font-size:0.82em;
+                               animation:pulse-red 1.5s infinite; }
+        .owf-flag { display:inline-block; padding:2px 8px; border-radius:8px;
+                    font-size:0.75em; font-weight:700; margin:1px 2px; }
+        .owf-flag-multi_critical  { background:#ffcdd2; color:#b71c1c; }
+        .owf-flag-overload        { background:#ffe0b2; color:#e65100; }
+        .owf-flag-structural_risk { background:#e8eaf6; color:#3949ab; }
+        /* ===== end v5.27 ===== */
+
+        /* ===== v5.28 PREDICTIVE RISK INTELLIGENCE LAYER ===== */
+        .prl-trend-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 10px;
+            font-size: 0.78em; font-weight: 700; margin: 2px 3px 0 0;
+        }
+        .prl-stable        { background:#e3f2fd; color:#1565c0; }
+        .prl-improving     { background:#e8f5e9; color:#2e7d32; }
+        .prl-deteriorating { background:#fff3e0; color:#e65100; }
+        .prl-critical_escalating {
+            background:#ffebee; color:#b71c1c;
+            animation: pulse-red 1.2s infinite;
+        }
+        .prl-warn-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 7px; border-radius: 8px;
+            font-size: 0.75em; font-weight: 700;
+            background:#fff9c4; color:#f57f17; margin: 2px 2px 0 0;
+        }
+        .prl-proj-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 7px; border-radius: 8px;
+            font-size: 0.75em; font-weight: 700;
+            background:#f3e5f5; color:#6a1b9a; margin: 2px 2px 0 0;
+        }
+        .prl-table { width:100%; border-collapse:collapse; font-size:0.87em; }
+        .prl-table th { padding:8px 11px; background:#f8f9fa; border-bottom:2px solid #e9ecef;
+                        font-weight:600; color:#4a5568; text-align:left; }
+        .prl-table td { padding:8px 11px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
+        .prl-table tr:last-child td { border-bottom:none; }
+        .prl-table tr:hover td { background:#fafbfc; }
+        .prl-sparkline { display:inline-flex; align-items:flex-end; gap:2px; height:20px; }
+        .prl-sparkline span { display:inline-block; width:5px; border-radius:1px 1px 0 0; }
+        .prl-vel-pos  { color:#c62828; font-weight:700; }
+        .prl-vel-neg  { color:#2e7d32; font-weight:700; }
+        .prl-vel-zero { color:#718096; }
+        /* ===== end v5.28 ===== */
     </style>
 </head>
 <body>
@@ -2172,7 +2264,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.25 - SOP-001 SURVEY</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.28 - PREDICTIVE RISK</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -3326,6 +3418,42 @@
                 </div>
             </div>
 
+            <!-- Risk Ranking Panel -->
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h3 style="color: #2d3748; margin-bottom: 20px; display:flex;align-items:center;gap:10px;">
+                    <span>🏆</span> Risk Ranking — Dự Án Theo Mức Rủi Ro
+                </h3>
+                <div id="bod-risk-ranking-panel">
+                    <div style="text-align:center;color:#718096;padding:20px;">Đang tải...</div>
+                </div>
+            </div>
+
+            <!-- v5.27 Owner Risk Panel -->
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h3 style="color: #2d3748; margin-bottom: 6px; display:flex; align-items:center; gap:10px;">
+                    <span>👤</span> Owner Workload &amp; Escalation
+                </h3>
+                <p style="color:#718096; font-size:0.88em; margin-bottom:16px;">
+                    Phân tích tải công việc theo chủ dự án — phát hiện overload và rủi ro tập trung
+                </p>
+                <div id="bod-owner-risk-panel">
+                    <div style="text-align:center;color:#718096;padding:20px;">Đang tải...</div>
+                </div>
+            </div>
+
+            <!-- v5.28 Predictive Risk Intelligence Panel -->
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h3 style="color: #2d3748; margin-bottom: 6px; display:flex; align-items:center; gap:10px;">
+                    <span>📈</span> Predictive Risk Intelligence
+                </h3>
+                <p style="color:#718096; font-size:0.88em; margin-bottom:16px;">
+                    Xu hướng rủi ro · vận tốc · dự báo 7 ngày tới — dựa trên lịch sử riskSnapshot
+                </p>
+                <div id="bod-risk-trend-panel">
+                    <div style="text-align:center;color:#718096;padding:20px;">Đang tải...</div>
+                </div>
+            </div>
+
             <!-- Project Details Table -->
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
                 <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Project Details</h3>
@@ -3871,7 +3999,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
             </div>
 
             <div class="login-footer">
-                v5.6 - Complete Edition<br>
+                v5.28 - Predictive Risk Intelligence<br>
                 Aplus Engineering &amp; Service Ltd
             </div>
         </div>
@@ -5661,51 +5789,18 @@ function initializeDashboard() {
                 const blobData = await loadFromBlob();
                 
                 if (blobData) {
-                    // ✅ v5.26 SAFETY: Reject corrupted Azure data (e.g. TV dashboard accidentally wrote garbage)
-                    // If Azure returns data without 'projects' array AND localStorage has good data → keep local
-                    if (!Array.isArray(blobData.projects)) {
-                        console.warn('⚠️ [LOAD] Azure returned non-project data (possible TV write corruption), ignoring:', blobData);
-                        window.showToast('⚠️ Azure data corrupted - using local cache', 'error');
-                        // Fall through to localStorage below
-                    } else if (blobData.projects.length === 0 && blobData.teamMembers?.length === 0) {
-                        // Azure returned 0 projects + 0 members — check if localStorage has better data
-                        const _localRaw = localStorage.getItem(STORAGE_KEY);
-                        if (_localRaw) {
-                            try {
-                                const _local = JSON.parse(_localRaw);
-                                if ((_local.projects || []).length > 0) {
-                                    console.warn('⚠️ [LOAD] Azure returned empty data but localStorage has '
-                                        + _local.projects.length + ' projects — keeping local data!');
-                                    projects = _local.projects || [];
-                                    teamMembers = _local.teamMembers || [];
-                                    window.projects = projects;
-                                    window.teamMembers = teamMembers;
-                                    window.showToast('⚠️ Azure empty - dùng dữ liệu local', 'error');
-                                    return;
-                                }
-                            } catch(e2) {}
-                        }
-                        // localStorage also empty → accept Azure empty data normally
-                        projects = [];
-                        teamMembers = [];
-                        window.projects = projects;
-                        window.teamMembers = teamMembers;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                        return;
-                    } else {
-                        console.log('☁️ [LOAD] Loaded from Azure Blob:', {
-                            projects: blobData.projects?.length || 0,
-                            teamMembers: blobData.teamMembers?.length || 0,
-                            lastSave: blobData.lastSave
-                        });
-                        projects = blobData.projects || [];
-                        teamMembers = blobData.teamMembers || [];
-                        window.projects = projects; // Sync to global
-                        window.teamMembers = teamMembers; // Sync to global
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
-                        window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
-                        return;
-                    }
+                    console.log('☁️ [LOAD] Loaded from Azure Blob:', {
+                        projects: blobData.projects?.length || 0,
+                        teamMembers: blobData.teamMembers?.length || 0,
+                        lastSave: blobData.lastSave
+                    });
+                    projects = blobData.projects || [];
+                    teamMembers = blobData.teamMembers || [];
+                    window.projects = projects; // Sync to global
+                    window.teamMembers = teamMembers; // Sync to global
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(blobData));
+                    window.showToast('✅ Đã tải dữ liệu từ Azure Cloud', 'success');
+                    return;
                 }
                 
                 const stored = localStorage.getItem(STORAGE_KEY);
@@ -5924,6 +6019,124 @@ window.projects = projects;
                 return { level: 'high', label: '🔴 High', count: workloadCount, color: '#c62828', bg: '#ffebee' };
             }
 
+
+            // ============================================================
+            // BOD DASHBOARD v5.26 — EXECUTIVE RISK CONTROL SYSTEM
+            // ============================================================
+            const RISK_WEIGHTS = {
+                delay:    2.5,
+                pressure: 2.0,
+                comp:     1.5,
+                workload: 1.5,
+                pattern:  1.5,
+                blocker:  1.0
+            };
+
+            const RISK_LEVELS = [
+                { max: 35,  key: 'ok',       label: 'On Track',            color: '#4caf50', action: 'Không cần can thiệp' },
+                { max: 60,  key: 'at_risk',  label: 'Có Rủi Ro',           color: '#ffb300', action: 'PM cần lập kế hoạch phục hồi' },
+                { max: 80,  key: 'high',     label: 'Rủi Ro Cao',          color: '#ef6c00', action: 'TD phải can thiệp trong 48h' },
+                { max: 101, key: 'critical', label: 'Khẩn Cấp — Escalate', color: '#e53935', action: 'BOD escalation ngay lập tức' }
+            ];
+
+            window.computeRiskScore = function(project) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // S_delay
+                const activeMilestone = getCurrentMilestone(project);
+                let delayDays = 0;
+                if (activeMilestone && activeMilestone.planCompleteDate) {
+                    const plan = new Date(activeMilestone.planCompleteDate);
+                    plan.setHours(0, 0, 0, 0);
+                    if (!activeMilestone.actualCompleteDate && today > plan) {
+                        delayDays = Math.ceil((today - plan) / 86400000);
+                    }
+                }
+                const s_delay = Math.min(10, delayDays / 3);
+
+                // S_pressure
+                let s_pressure = 0;
+                const handoverMs = project.milestones ? project.milestones.find(m => m.id === 'handover') : null;
+                const handoverDate = handoverMs && handoverMs.planCompleteDate ? new Date(handoverMs.planCompleteDate) : null;
+                const startDate = project.createdAt ? new Date(project.createdAt) : null;
+                if (startDate && handoverDate) {
+                    const totalMs = Math.max(1, handoverDate - startDate);
+                    const elapsedMs = Math.max(0, today - startDate);
+                    s_pressure = Math.min(10, (elapsedMs / totalMs) * 10);
+                }
+
+                // S_completion
+                const allMs = (project.milestones || []).filter(m => m.id !== 'installation');
+                const totalMsCount = allMs.length || 1;
+                const completedMs = allMs.filter(m => m.actualCompleteDate).length;
+                const actualPct = (completedMs / totalMsCount) * 100;
+                const pressureRatio = s_pressure / 10;
+                const expectedPct = pressureRatio * 100;
+                const gap = Math.max(0, expectedPct - actualPct);
+                const s_comp = Math.min(10, gap / 10);
+
+                // S_workload
+                const ownerLoad = calculateWorkload(project.leader);
+                const ownerCount = typeof ownerLoad === 'object' ? ownerLoad.count : 0;
+                const s_workload = Math.min(10, ownerCount / 1.5);
+
+                // S_pattern
+                const lateMilestones = (project.milestones || []).filter(m => {
+                    if (!m.planCompleteDate || !m.actualCompleteDate) return false;
+                    return new Date(m.actualCompleteDate) > new Date(m.planCompleteDate);
+                }).length;
+                const s_pattern = Math.min(10, lateMilestones * 2.5);
+
+                // S_blocker
+                const issues = project.issues || [];
+                const criticalOpen = issues.filter(i => i.status !== 'resolved' && i.status !== 'closed' && i.priority === 4).length;
+                const highOpen     = issues.filter(i => i.status !== 'resolved' && i.status !== 'closed' && i.priority === 3).length;
+                const s_blocker    = Math.min(10, criticalOpen * 4 + highOpen * 2);
+
+                const score = Math.round(
+                    s_delay    * RISK_WEIGHTS.delay    +
+                    s_pressure * RISK_WEIGHTS.pressure +
+                    s_comp     * RISK_WEIGHTS.comp     +
+                    s_workload * RISK_WEIGHTS.workload +
+                    s_pattern  * RISK_WEIGHTS.pattern  +
+                    s_blocker  * RISK_WEIGHTS.blocker
+                );
+
+                const hasCriticalBlocker = criticalOpen > 0;
+                const effectiveScore = hasCriticalBlocker ? Math.max(score, 60) : score;
+                const level = RISK_LEVELS.find(l => effectiveScore < l.max) || RISK_LEVELS[3];
+
+                return {
+                    score: effectiveScore,
+                    rawScore: score,
+                    level: level.key,
+                    label: level.label,
+                    color: level.color,
+                    action: level.action,
+                    override: (hasCriticalBlocker && effectiveScore !== score) ? 'blocker' : null,
+                    subScores: {
+                        delay:         +s_delay.toFixed(2),
+                        pressure:      +s_pressure.toFixed(2),
+                        completion:    +s_comp.toFixed(2),
+                        ownerWorkload: +s_workload.toFixed(2),
+                        repeatPattern: +s_pattern.toFixed(2),
+                        blockerSev:    +s_blocker.toFixed(2)
+                    },
+                    computedAt: new Date().toISOString()
+                };
+            };
+
+            window.getRiskRankedProjects = function() {
+                return (window.projects || [])
+                    .filter(p => p.status !== 'completed' && p.status !== 'cancelled')
+                    .map(p => ({ ...p, _risk: window.computeRiskScore(p) }))
+                    .sort((a, b) => b._risk.score - a._risk.score);
+            };
+            // ============================================================
+            // end v5.26 EXECUTIVE RISK CONTROL SYSTEM
+            // ============================================================
+
             // ============= CONFLICT DETECTION ============= //
             // OLD VERSION - COMMENTED OUT - Replaced by window.detectResourceConflicts()
             /*
@@ -6113,6 +6326,21 @@ window.projects = projects;
                         <h3>⚠️ Trễ Tiến Độ</h3>
                         <div class="value">${delayed.filter(p => canViewProject(p)).length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer; background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);"
+                         onclick="window.switchTab('bod-summary')"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                        <h3>🔴 Rủi Ro Khẩn Cấp</h3>
+                        <div class="value">${(() => {
+                            try {
+                                return getVisibleProjects()
+                                    .filter(p => p.status !== 'completed' && p.status !== 'cancelled')
+                                    .filter(p => { try { return window.computeRiskScore(p).level === 'critical'; } catch(e){ return false; }})
+                                    .length;
+                            } catch(e){ return 0; }
+                        })()}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click → BOD Summary</p>
                     </div>
                     <div class="stat-card orange" style="cursor: pointer;" onclick="console.log('👆 [USER CLICK] Conflict badge clicked'); window.showConflicts()"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -6397,6 +6625,35 @@ window.projects = projects;
                                         }
                                     }
                                     return badges ? `<div style="margin-top:6px;">${badges}</div>` : '';
+                                })()}
+                                ${(() => {
+                                    // v5.26 Risk Score Badge (only non-ok)
+                                    try {
+                                        const _r = window.computeRiskScore(project);
+                                        if (_r.level === 'ok') return '';
+                                        const _icons = { at_risk:'🟡', high:'🟠', critical:'🔴' };
+                                        const _ic = _icons[_r.level] || '⚪';
+                                        return `<span class="risk-badge risk-${_r.level}" title="${_r.action}">${_ic} Risk ${_r.score} — ${_r.label}</span>`;
+                                    } catch(e) { return ''; }
+                                })()}
+                                ${(() => {
+                                    // v5.28: Trend badge on project card
+                                    try {
+                                        const _t = window.computeRiskTrend(project);
+                                        if (!_t) return '';
+                                        const _m = {
+                                            improving:          ['↗','prl-improving'],
+                                            stable:             ['→','prl-stable'],
+                                            deteriorating:      ['↘','prl-deteriorating'],
+                                            critical_escalating:['⚠','prl-critical_escalating']
+                                        };
+                                        const [_ic, _cls] = _m[_t.classification] || ['→','prl-stable'];
+                                        const _warn = _t.earlyWarning
+                                            ? `<span class="prl-warn-badge">🚩 ${_t.earlyWarningReason==='rapid_rise'?'Rapid Rise':'Stagnation'}</span>`
+                                            : '';
+                                        const _proj = `<span class="prl-proj-badge">📅 +7d: ${_t.proj7}</span>`;
+                                        return `<span class="prl-trend-badge ${_cls}">${_ic} ${_t.classification.replace('_',' ')}</span>${_warn}${_proj}`;
+                                    } catch(e) { return ''; }
                                 })()}
                             </div>
                         </div>
@@ -6870,80 +7127,132 @@ ${conflict.workload.map(w => `
                 
                 // Render Project Details Table
                 renderBODProjectsTable(allProjects);
+                
+                // v5.26: Render Risk Ranking panel
+                renderBODRiskRankingPanel(allProjects);
+                // v5.27: Render Owner Workload & Escalation panel
+                renderOwnerRiskPanel(allProjects);
+                // v5.28: Render Predictive Risk Intelligence panel
+                renderRiskTrendPanel(allProjects);
             }
             
             function renderBODRiskIndicators(allProjects) {
-                const risks = [];
-                const today = new Date().toISOString().split('T')[0];
+                // v5.26: Use computeRiskScore for proper risk ranking
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
                 
-                // High-risk projects (>7 days late)
-                allProjects.forEach(project => {
-                    const current = getCurrentMilestone(project);
-                    if (current && isDelayed(current)) {
-                        const deadline = current.actualCompleteDate || current.planCompleteDate;
-                        if (deadline) {
-                            const daysLate = Math.floor((new Date(today) - new Date(deadline)) / (1000 * 60 * 60 * 24));
-                            if (daysLate > 7) {
-                                risks.push({
-                                    type: 'high-delay',
-                                    project: project,
-                                    detail: `${daysLate} ngày trễ`,
-                                    severity: 'high'
-                                });
-                            }
-                        }
-                    }
-                });
-                
-                // Budget variance risks
+                // Compute & sort by risk score
+                const ranked = activeProjects
+                    .map(p => ({ ...p, _risk: window.computeRiskScore(p) }))
+                    .filter(p => p._risk.level !== 'ok')
+                    .sort((a, b) => b._risk.score - a._risk.score);
+
+                // Also collect legacy risks (budget variance, resource conflicts)
+                const legacyRisks = [];
                 allProjects.forEach(project => {
                     if (project.budget && project.actualValue) {
                         const variance = ((project.actualValue - project.budget) / project.budget) * 100;
                         if (Math.abs(variance) > 20) {
-                            risks.push({
-                                type: 'budget-variance',
+                            legacyRisks.push({
                                 project: project,
-                                detail: `${variance > 0 ? '+' : ''}${variance.toFixed(1)}% variance`,
+                                detail: `Budget variance ${variance > 0 ? '+' : ''}${variance.toFixed(1)}%`,
                                 severity: Math.abs(variance) > 50 ? 'high' : 'medium'
                             });
                         }
                     }
                 });
-                
-                // Resource conflicts
                 const conflicts = window.detectResourceConflicts();
                 if (conflicts.length > 0) {
-                    risks.push({
-                        type: 'resource-conflict',
-                        detail: `${conflicts.length} members with conflicts`,
-                        severity: 'medium'
-                    });
+                    legacyRisks.push({ detail: `${conflicts.length} resource conflicts`, severity: 'medium', project: null });
+                }
+
+                let html = '';
+                
+                if (ranked.length === 0 && legacyRisks.length === 0) {
+                    html = '<div style="text-align:center;padding:30px;color:#059669;">✅ Không có rủi ro cao</div>';
+                } else {
+                    // Heading
+                    if (ranked.length > 0) {
+                        html += `<div style="font-weight:600;color:#2d3748;margin-bottom:12px;font-size:0.95em;">🎯 Risk Ranking (${ranked.length} dự án cần chú ý)</div>`;
+                        ranked.forEach((p, idx) => {
+                            const r = p._risk;
+                            const bgMap = { at_risk:'#fffde7', high:'#fff3e0', critical:'#ffebee' };
+                            const borderMap = { at_risk:'#f9a825', high:'#ef6c00', critical:'#c62828' };
+                            const bg = bgMap[r.level] || '#fff';
+                            const border = borderMap[r.level] || '#ccc';
+                            const leader = teamMembers.find(m => m.id === p.leader);
+                            const subBar = (sub, max) => {
+                                const pct = Math.round((sub / max) * 100);
+                                return `<div class="risk-bar-track"><div class="risk-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>`;
+                            };
+                            html += `
+                                <div style="background:${bg};border-left:4px solid ${border};border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                        <div>
+                                            <div style="font-weight:700;color:#2d3748;font-size:0.95em;">#${idx+1} ${p.name}</div>
+                                            <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}</div>
+                                        </div>
+                                        <div style="text-align:right;">
+                                            <div style="font-size:1.6em;font-weight:700;color:${r.color};line-height:1;">${r.score}</div>
+                                            <div style="font-size:0.75em;color:${r.color};font-weight:600;">${r.label}</div>
+                                        </div>
+                                    </div>
+                                    <div class="risk-score-bar">
+                                        <span style="font-size:0.75em;color:#718096;min-width:32px;">0</span>
+                                        <div class="risk-bar-track" style="flex:1;">
+                                            <div class="risk-bar-fill" style="width:${r.score}%;background:${r.color}"></div>
+                                        </div>
+                                        <span style="font-size:0.75em;color:#718096;min-width:32px;text-align:right;">100</span>
+                                    </div>
+                                    <div class="risk-sub-grid">
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">⏰ Delay</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.delay>5?'#c62828':'#2d3748'}">${(r.subScores.delay*2.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">📅 Deadline</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.pressure>7?'#c62828':'#2d3748'}">${(r.subScores.pressure*2).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">📊 Gap</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.completion>5?'#c62828':'#2d3748'}">${(r.subScores.completion*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">💼 Workload</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.ownerWorkload>7?'#c62828':'#2d3748'}">${(r.subScores.ownerWorkload*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">🔁 Pattern</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.repeatPattern>5?'#c62828':'#2d3748'}">${(r.subScores.repeatPattern*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">🚨 Blocker</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.blockerSev>4?'#c62828':'#2d3748'}">${(r.subScores.blockerSev*1).toFixed(1)}pt</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size:0.8em;color:${border};margin-top:6px;font-weight:600;">
+                                        ➡️ ${r.action}${r.override === 'blocker' ? ' ⚠️ (Blocker override)' : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    // Legacy risks (budget/conflicts) — compact
+                    if (legacyRisks.length > 0) {
+                        html += `<div style="font-weight:600;color:#2d3748;margin:14px 0 8px;font-size:0.9em;">📋 Rủi Ro Khác</div>`;
+                        html += legacyRisks.map(risk => {
+                            const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
+                            const borderColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
+                            return `<div style="background:${bgColor};padding:10px 12px;border-radius:6px;margin-bottom:8px;border-left:3px solid ${borderColor};">
+                                ${risk.project ? `<div style="font-weight:600;color:#2d3748;font-size:0.88em;">${risk.project.name}</div>` : ''}
+                                <div style="font-size:0.83em;color:#718096;">${risk.detail}</div>
+                            </div>`;
+                        }).join('');
+                    }
                 }
                 
-                let html = '';
-                if (risks.length === 0) {
-                    html = '<div style="text-align: center; padding: 30px; color: #059669;">✅ No high-priority risks detected</div>';
-                } else {
-                    html = risks.map(risk => {
-                        const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
-                        const iconColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
-                        return `
-                            <div style="background: ${bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${iconColor};">
-                                <div style="display: flex; justify-content: between; align-items: start;">
-                                    <div style="flex: 1;">
-                                        ${risk.project ? `<div style="font-weight: 600; color: #2d3748; margin-bottom: 4px;">${risk.project.name}</div>` : ''}
-                                        <div style="font-size: 0.85em; color: #718096;">${risk.detail}</div>
-                                    </div>
-                                    <span style="font-size: 1.2em;">${risk.severity === 'high' ? '🔴' : '🟠'}</span>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-                const elem_bod_risk_indicators = document.getElementById('bod-risk-indicators');
-                if (elem_bod_risk_indicators) elem_bod_risk_indicators.innerHTML = html;
-            }
-            
+                const el = document.getElementById('bod-risk-indicators');
+                if (el) el.innerHTML = html;
             function renderBODFinancialSummary(allProjects) {
                 const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
                 const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
@@ -7167,6 +7476,7 @@ ${conflict.workload.map(w => `
                             <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Actual Value</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Risk Score</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -7207,6 +7517,16 @@ ${conflict.workload.map(w => `
                                     <td style="padding: 12px; text-align: center;">
                                         ${current ? current.icon + ' ' + current.name : '-'}
                                     </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        ${(() => {
+                                            try {
+                                                const _r = window.computeRiskScore(project);
+                                                const _colors = {ok:'#4caf50',at_risk:'#ffb300',high:'#ef6c00',critical:'#e53935'};
+                                                const _c = _colors[_r.level]||'#999';
+                                                return `<span style="background:${_c}22;color:${_c};padding:4px 10px;border-radius:12px;font-weight:700;font-size:0.9em;">${_r.score}</span>`;
+                                            } catch(e){ return '-'; }
+                                        })()}
+                                    </td>
                                 </tr>
                             `;
                         }).join('')}
@@ -7217,7 +7537,206 @@ ${conflict.workload.map(w => `
                 if (elem_bod_projects_table) elem_bod_projects_table.innerHTML = html;
             }
 
-                        window.closeConflictsModal = function() {
+            
+
+            // ============================================================
+            // v5.28 PREDICTIVE RISK INTELLIGENCE LAYER
+            // ============================================================
+
+            // Least-squares slope for an array of y values (x = 0,1,2,...n-1)
+            function _lsSlope(arr) {
+                const n = arr.length;
+                if (n < 2) return 0;
+                const xBar = (n - 1) / 2;
+                const yBar = arr.reduce((a, b) => a + b, 0) / n;
+                let num = 0, den = 0;
+                arr.forEach((y, i) => {
+                    num += (i - xBar) * (y - yBar);
+                    den += (i - xBar) * (i - xBar);
+                });
+                return den !== 0 ? num / den : 0;
+            }
+
+            window.computeRiskTrend = function(project) {
+                // ── Build score history ─────────────────────────────────
+                // Use riskHistory[] if available, else build from riskSnapshot
+                const hist = (project.riskHistory || [])
+                    .filter(h => h.score !== undefined && h.score !== null)
+                    .slice(-7);           // max last 7 days
+
+                // Also include current snapshot as final point
+                let currentScore = 0;
+                try {
+                    const snap = project.riskSnapshot;
+                    const fresh = snap && snap.computedAt &&
+                        (Date.now() - new Date(snap.computedAt)) < 86400000;
+                    currentScore = fresh ? snap.score : window.computeRiskScore(project).score;
+                } catch(e) { currentScore = 0; }
+
+                // Merge history + current into unified score array
+                const scores = hist.map(h => h.score);
+                if (!scores.length || scores[scores.length - 1] !== currentScore) {
+                    scores.push(currentScore);
+                }
+
+                if (scores.length < 3) {
+                    return {
+                        classification: 'stable', velocity: 0, acceleration: 0,
+                        proj7: currentScore, earlyWarning: false, earlyWarningReason: null,
+                        delta5d: 0, slope: 0, scores, currentScore
+                    };
+                }
+
+                // ── Velocity & Acceleration (last 3 points) ─────────────
+                const s = scores.slice(-3);           // [s0, s1, s2]
+                const velocity     = (s[2] - s[0]) / 2;
+                const acceleration = s[2] - 2 * s[1] + s[0];
+
+                // ── Early Warning (last 5 points) ───────────────────────
+                const tail5     = scores.slice(-5);
+                const delta5d   = tail5[tail5.length - 1] - tail5[0];
+
+                // Completion stagnation check
+                const ms = (project.milestones || []).filter(m => m.id !== 'installation');
+                const totalMs = ms.length || 1;
+                const completedMs = ms.filter(m => m.actualCompleteDate).length;
+                const completionPct = (completedMs / totalMs) * 100;
+
+                const hw = ms.find(m => m.id === 'handover');
+                let daysToHandover = 999;
+                if (hw && hw.planCompleteDate) {
+                    daysToHandover = Math.ceil(
+                        (new Date(hw.planCompleteDate) - new Date()) / 86400000
+                    );
+                }
+
+                const stagnating = completionPct < 80 && daysToHandover < 14;
+                const rapidRise  = delta5d >= 15;
+
+                const earlyWarning = rapidRise || stagnating;
+                const earlyWarningReason = rapidRise  ? 'rapid_rise'
+                                         : stagnating ? 'stagnation'
+                                         : null;
+
+                // ── 7-Day Linear Projection (least-squares, last 5) ─────
+                const pts5  = scores.slice(-5);
+                const slope = _lsSlope(pts5);
+                const proj7 = Math.round(Math.min(100, Math.max(0, currentScore + slope * 7)));
+
+                // ── Classification ──────────────────────────────────────
+                let classification;
+                if (velocity > 5 && acceleration > 0 && currentScore > 60) {
+                    classification = 'critical_escalating';
+                } else if (velocity > 2 || earlyWarning) {
+                    classification = 'deteriorating';
+                } else if (velocity <= -2) {
+                    classification = 'improving';
+                } else {
+                    classification = 'stable';
+                }
+
+                return {
+                    classification, velocity: +velocity.toFixed(2),
+                    acceleration:   +acceleration.toFixed(2),
+                    delta5d:        +delta5d.toFixed(1),
+                    earlyWarning, earlyWarningReason,
+                    slope:  +slope.toFixed(2),
+                    proj7,  scores, currentScore
+                };
+            };
+
+            // Batch compute for all projects — still O(n) total
+            window.getAllRiskTrends = function(projectList) {
+                const list = projectList || window.projects || [];
+                return list
+                    .filter(p => p.status !== 'completed' && p.status !== 'cancelled')
+                    .map(p => ({ project: p, trend: window.computeRiskTrend(p) }))
+                    .sort((a, b) => {
+                        const rank = { critical_escalating:0, deteriorating:1,
+                                       stable:2, improving:3 };
+                        return (rank[a.trend.classification] ?? 2) -
+                               (rank[b.trend.classification] ?? 2);
+                    });
+            };
+            // ============================================================
+            // end v5.28 PREDICTIVE RISK INTELLIGENCE LAYER
+            // ============================================================
+
+            // v5.27 Owner Risk Panel renderer
+            function renderOwnerRiskPanel(allProjects) {
+                const el = document.getElementById('bod-owner-risk-panel');
+                if (!el) return;
+
+                const { results, totalActive } = window.computeOwnerWorkloads(allProjects);
+
+                if (!results.length) {
+                    el.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;">Không có dữ liệu</div>';
+                    return;
+                }
+
+                const FLAG_LABELS = {
+                    multi_critical:  '🔴 Multi-Critical',
+                    overload:        '🟠 Overload',
+                    structural_risk: '🔵 Structural Risk'
+                };
+                const LEVEL_ICONS = { normal:'🟢', warning:'🟡', critical:'🔴' };
+
+                // Summary bar
+                const nCritical = results.filter(r => r.level === 'critical').length;
+                const nWarning  = results.filter(r => r.level === 'warning').length;
+                const escalated = results.filter(r => r.flags.length > 0).length;
+
+                let html = `
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-size:0.88em;">
+                        <span style="background:#f3f4f6;padding:5px 14px;border-radius:16px;">
+                            👤 ${results.length} owners · ${totalActive} active projects
+                        </span>
+                        ${nCritical ? `<span style="background:#ffebee;color:#b71c1c;padding:5px 14px;border-radius:16px;font-weight:700;">🔴 ${nCritical} Critical Workload</span>` : ''}
+                        ${nWarning  ? `<span style="background:#fff9c4;color:#f57f17;padding:5px 14px;border-radius:16px;font-weight:700;">🟡 ${nWarning} Warning</span>` : ''}
+                        ${escalated ? `<span style="background:#ffe0b2;color:#e65100;padding:5px 14px;border-radius:16px;font-weight:700;">⚡ ${escalated} Escalation Flags</span>` : ''}
+                    </div>
+                    <div style="overflow-x:auto;">
+                    <table class="owf-table">
+                        <thead><tr>
+                            <th>Owner</th>
+                            <th>Workload Score</th>
+                            <th style="text-align:center;">Active</th>
+                            <th style="text-align:center;">Avg Risk</th>
+                            <th style="text-align:center;">Due ≤7d</th>
+                            <th style="text-align:center;">Critical</th>
+                            <th>Level</th>
+                            <th>Escalation Flags</th>
+                        </tr></thead>
+                        <tbody>`;
+
+                results.forEach(r => {
+                    const barW = Math.round(r.ws);
+                    const barC = r.level === 'critical' ? '#e53935'
+                               : r.level === 'warning'  ? '#ffb300' : '#4caf50';
+                    const flags = r.flags.map(f =>
+                        `<span class="owf-flag owf-flag-${f}">${FLAG_LABELS[f] || f}</span>`
+                    ).join('') || '<span style="color:#a0aec0;font-size:0.8em;">—</span>';
+
+                    html += `<tr>
+                        <td style="font-weight:600;">${r.name}</td>
+                        <td>
+                            <span style="font-weight:700;color:${barC};">${r.ws}</span>
+                            <span class="owf-ws-bar" style="width:${barW}px;background:${barC};"></span>
+                        </td>
+                        <td style="text-align:center;">${r.activeCount}</td>
+                        <td style="text-align:center;font-weight:600;color:${r.avgRisk>60?'#c62828':r.avgRisk>35?'#f57c00':'#2e7d32'};">${r.avgRisk}</td>
+                        <td style="text-align:center;${r.deadline7d>0?'color:#e65100;font-weight:700;':'color:#718096;'}">${r.deadline7d}</td>
+                        <td style="text-align:center;${r.criticalCount>=2?'color:#c62828;font-weight:700;':'color:#718096;'}">${r.criticalCount}</td>
+                        <td><span class="owf-level-${r.level}">${LEVEL_ICONS[r.level]} ${r.level.charAt(0).toUpperCase()+r.level.slice(1)}</span></td>
+                        <td>${flags}</td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+                el.innerHTML = html;
+            }
+
+            window.closeConflictsModal = function() {
                 document.getElementById('conflicts-modal').classList.remove('active');
             };
             
@@ -9547,6 +10066,14 @@ ${conflict.workload.map(w => `
                     autoCreateProjectTeam(newProject);
                 }
 
+                // v5.26: Save risk snapshot to project
+                const _savedProject = currentEditingProject || projects[projects.length - 1];
+                if (_savedProject && window.computeRiskScore) {
+                    try {
+                        _savedProject.riskSnapshot = window.computeRiskScore(_savedProject);
+                        _savedProject.riskSnapshot.computedAt = new Date().toISOString();
+                    } catch(e) { console.warn('Risk snapshot failed:', e); }
+                }
                 saveToStorage();
                 closeModal();
                 renderAll();
@@ -9972,77 +10499,122 @@ ${conflict.workload.map(w => `
             }
             
             function renderBODRiskIndicators(allProjects) {
-                const risks = [];
-                const today = new Date().toISOString().split('T')[0];
+                // v5.26: Use computeRiskScore for proper risk ranking
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
                 
-                // High-risk projects (>7 days late)
-                allProjects.forEach(project => {
-                    const current = getCurrentMilestone(project);
-                    if (current && isDelayed(current)) {
-                        const deadline = current.actualCompleteDate || current.planCompleteDate;
-                        if (deadline) {
-                            const daysLate = Math.floor((new Date(today) - new Date(deadline)) / (1000 * 60 * 60 * 24));
-                            if (daysLate > 7) {
-                                risks.push({
-                                    type: 'high-delay',
-                                    project: project,
-                                    detail: `${daysLate} ngày trễ`,
-                                    severity: 'high'
-                                });
-                            }
-                        }
-                    }
-                });
-                
-                // Budget variance risks
+                // Compute & sort by risk score
+                const ranked = activeProjects
+                    .map(p => ({ ...p, _risk: window.computeRiskScore(p) }))
+                    .filter(p => p._risk.level !== 'ok')
+                    .sort((a, b) => b._risk.score - a._risk.score);
+
+                // Also collect legacy risks (budget variance, resource conflicts)
+                const legacyRisks = [];
                 allProjects.forEach(project => {
                     if (project.budget && project.actualValue) {
                         const variance = ((project.actualValue - project.budget) / project.budget) * 100;
                         if (Math.abs(variance) > 20) {
-                            risks.push({
-                                type: 'budget-variance',
+                            legacyRisks.push({
                                 project: project,
-                                detail: `${variance > 0 ? '+' : ''}${variance.toFixed(1)}% variance`,
+                                detail: `Budget variance ${variance > 0 ? '+' : ''}${variance.toFixed(1)}%`,
                                 severity: Math.abs(variance) > 50 ? 'high' : 'medium'
                             });
                         }
                     }
                 });
-                
-                // Resource conflicts
                 const conflicts = window.detectResourceConflicts();
                 if (conflicts.length > 0) {
-                    risks.push({
-                        type: 'resource-conflict',
-                        detail: `${conflicts.length} members with conflicts`,
-                        severity: 'medium'
-                    });
+                    legacyRisks.push({ detail: `${conflicts.length} resource conflicts`, severity: 'medium', project: null });
+                }
+
+                let html = '';
+                
+                if (ranked.length === 0 && legacyRisks.length === 0) {
+                    html = '<div style="text-align:center;padding:30px;color:#059669;">✅ Không có rủi ro cao</div>';
+                } else {
+                    // Heading
+                    if (ranked.length > 0) {
+                        html += `<div style="font-weight:600;color:#2d3748;margin-bottom:12px;font-size:0.95em;">🎯 Risk Ranking (${ranked.length} dự án cần chú ý)</div>`;
+                        ranked.forEach((p, idx) => {
+                            const r = p._risk;
+                            const bgMap = { at_risk:'#fffde7', high:'#fff3e0', critical:'#ffebee' };
+                            const borderMap = { at_risk:'#f9a825', high:'#ef6c00', critical:'#c62828' };
+                            const bg = bgMap[r.level] || '#fff';
+                            const border = borderMap[r.level] || '#ccc';
+                            const leader = teamMembers.find(m => m.id === p.leader);
+                            const subBar = (sub, max) => {
+                                const pct = Math.round((sub / max) * 100);
+                                return `<div class="risk-bar-track"><div class="risk-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>`;
+                            };
+                            html += `
+                                <div style="background:${bg};border-left:4px solid ${border};border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                        <div>
+                                            <div style="font-weight:700;color:#2d3748;font-size:0.95em;">#${idx+1} ${p.name}</div>
+                                            <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}</div>
+                                        </div>
+                                        <div style="text-align:right;">
+                                            <div style="font-size:1.6em;font-weight:700;color:${r.color};line-height:1;">${r.score}</div>
+                                            <div style="font-size:0.75em;color:${r.color};font-weight:600;">${r.label}</div>
+                                        </div>
+                                    </div>
+                                    <div class="risk-score-bar">
+                                        <span style="font-size:0.75em;color:#718096;min-width:32px;">0</span>
+                                        <div class="risk-bar-track" style="flex:1;">
+                                            <div class="risk-bar-fill" style="width:${r.score}%;background:${r.color}"></div>
+                                        </div>
+                                        <span style="font-size:0.75em;color:#718096;min-width:32px;text-align:right;">100</span>
+                                    </div>
+                                    <div class="risk-sub-grid">
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">⏰ Delay</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.delay>5?'#c62828':'#2d3748'}">${(r.subScores.delay*2.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">📅 Deadline</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.pressure>7?'#c62828':'#2d3748'}">${(r.subScores.pressure*2).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">📊 Gap</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.completion>5?'#c62828':'#2d3748'}">${(r.subScores.completion*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">💼 Workload</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.ownerWorkload>7?'#c62828':'#2d3748'}">${(r.subScores.ownerWorkload*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">🔁 Pattern</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.repeatPattern>5?'#c62828':'#2d3748'}">${(r.subScores.repeatPattern*1.5).toFixed(1)}pt</div>
+                                        </div>
+                                        <div class="risk-sub-item">
+                                            <div class="risk-sub-label">🚨 Blocker</div>
+                                            <div class="risk-sub-val" style="color:${r.subScores.blockerSev>4?'#c62828':'#2d3748'}">${(r.subScores.blockerSev*1).toFixed(1)}pt</div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size:0.8em;color:${border};margin-top:6px;font-weight:600;">
+                                        ➡️ ${r.action}${r.override === 'blocker' ? ' ⚠️ (Blocker override)' : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    // Legacy risks (budget/conflicts) — compact
+                    if (legacyRisks.length > 0) {
+                        html += `<div style="font-weight:600;color:#2d3748;margin:14px 0 8px;font-size:0.9em;">📋 Rủi Ro Khác</div>`;
+                        html += legacyRisks.map(risk => {
+                            const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
+                            const borderColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
+                            return `<div style="background:${bgColor};padding:10px 12px;border-radius:6px;margin-bottom:8px;border-left:3px solid ${borderColor};">
+                                ${risk.project ? `<div style="font-weight:600;color:#2d3748;font-size:0.88em;">${risk.project.name}</div>` : ''}
+                                <div style="font-size:0.83em;color:#718096;">${risk.detail}</div>
+                            </div>`;
+                        }).join('');
+                    }
                 }
                 
-                let html = '';
-                if (risks.length === 0) {
-                    html = '<div style="text-align: center; padding: 30px; color: #059669;">✅ No high-priority risks detected</div>';
-                } else {
-                    html = risks.map(risk => {
-                        const bgColor = risk.severity === 'high' ? '#ffebee' : '#fff3e0';
-                        const iconColor = risk.severity === 'high' ? '#c62828' : '#f57c00';
-                        return `
-                            <div style="background: ${bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${iconColor};">
-                                <div style="display: flex; justify-content: between; align-items: start;">
-                                    <div style="flex: 1;">
-                                        ${risk.project ? `<div style="font-weight: 600; color: #2d3748; margin-bottom: 4px;">${risk.project.name}</div>` : ''}
-                                        <div style="font-size: 0.85em; color: #718096;">${risk.detail}</div>
-                                    </div>
-                                    <span style="font-size: 1.2em;">${risk.severity === 'high' ? '🔴' : '🟠'}</span>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-                const elem_bod_risk_indicators = document.getElementById('bod-risk-indicators');
-                if (elem_bod_risk_indicators) elem_bod_risk_indicators.innerHTML = html;
-            }
-            
+                const el = document.getElementById('bod-risk-indicators');
+                if (el) el.innerHTML = html;
             function renderBODFinancialSummary(allProjects) {
                 const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
                 const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
@@ -10266,6 +10838,7 @@ ${conflict.workload.map(w => `
                             <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef;">Actual Value</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Risk Score</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -10306,6 +10879,16 @@ ${conflict.workload.map(w => `
                                     <td style="padding: 12px; text-align: center;">
                                         ${current ? current.icon + ' ' + current.name : '-'}
                                     </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        ${(() => {
+                                            try {
+                                                const _r = window.computeRiskScore(project);
+                                                const _colors = {ok:'#4caf50',at_risk:'#ffb300',high:'#ef6c00',critical:'#e53935'};
+                                                const _c = _colors[_r.level]||'#999';
+                                                return `<span style="background:${_c}22;color:${_c};padding:4px 10px;border-radius:12px;font-weight:700;font-size:0.9em;">${_r.score}</span>`;
+                                            } catch(e){ return '-'; }
+                                        })()}
+                                    </td>
                                 </tr>
                             `;
                         }).join('')}
@@ -10316,7 +10899,236 @@ ${conflict.workload.map(w => `
                 if (elem_bod_projects_table) elem_bod_projects_table.innerHTML = html;
             }
 
-                        window.closeConflictsModal = function() {
+            
+
+            // ============================================================
+            // v5.27 OWNER WORKLOAD & ESCALATION LAYER
+            // ============================================================
+            window.computeOwnerWorkloads = function(projectList) {
+                const MS7D = 7 * 86400000;
+                const in7d = Date.now() + MS7D;
+                const ownerMap = {};
+                let totalActive = 0;
+
+                // Single O(n) pass
+                (projectList || window.projects || []).forEach(p => {
+                    if (p.status === 'completed' || p.status === 'cancelled') return;
+                    totalActive++;
+                    const id = p.leader;
+                    if (!id) return;
+                    if (!ownerMap[id]) {
+                        ownerMap[id] = { activeCount: 0, sumRisk: 0, deadline7d: 0, criticalCount: 0 };
+                    }
+                    const o = ownerMap[id];
+                    o.activeCount++;
+
+                    // Use cached snapshot if fresh (< 1 day old), else recompute
+                    let score = 0;
+                    try {
+                        const snap = p.riskSnapshot;
+                        const fresh = snap && snap.computedAt &&
+                            (Date.now() - new Date(snap.computedAt)) < 86400000;
+                        score = fresh ? snap.score : window.computeRiskScore(p).score;
+                    } catch(e) { score = 0; }
+
+                    o.sumRisk += score;
+                    if (score > 80) o.criticalCount++;
+
+                    // Deadline within 7 days?
+                    const hw = (p.milestones || []).find(m => m.id === 'handover');
+                    if (hw && hw.planCompleteDate) {
+                        if (new Date(hw.planCompleteDate).getTime() <= in7d) o.deadline7d++;
+                    }
+                });
+
+                // Score & classify each owner
+                const results = Object.entries(ownerMap).map(([ownerId, o]) => {
+                    const ws = Math.min(o.activeCount * 10, 40)
+                              + Math.min(o.sumRisk / 25, 40)
+                              + Math.min(o.deadline7d * 15, 20);
+
+                    const level = ws < 40 ? 'normal' : ws < 70 ? 'warning' : 'critical';
+
+                    const flags = [];
+                    if (o.criticalCount >= 2)              flags.push('multi_critical');
+                    if (ws >= 70)                          flags.push('overload');
+                    if (o.activeCount > totalActive * 0.25) flags.push('structural_risk');
+
+                    const member = (window.teamMembers || []).find(m => m.id === ownerId);
+                    return {
+                        ownerId,
+                        name: member ? member.name : ownerId,
+                        ws: Math.round(ws),
+                        level,
+                        flags,
+                        activeCount: o.activeCount,
+                        sumRisk: Math.round(o.sumRisk),
+                        avgRisk: o.activeCount ? Math.round(o.sumRisk / o.activeCount) : 0,
+                        deadline7d: o.deadline7d,
+                        criticalCount: o.criticalCount
+                    };
+                });
+
+                results.sort((a, b) => b.ws - a.ws);
+                return { results, totalActive };
+            };
+            // ============================================================
+            // end v5.27 OWNER WORKLOAD & ESCALATION LAYER
+            // ============================================================
+
+            // v5.26: BOD Risk Ranking Panel
+            function renderBODRiskRankingPanel(allProjects) {
+                const el = document.getElementById('bod-risk-ranking-panel');
+                if (!el) return;
+                
+                const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+                const ranked = activeProjects
+                    .map(p => ({ p, r: window.computeRiskScore(p) }))
+                    .sort((a, b) => b.r.score - a.r.score);
+
+                if (ranked.length === 0) {
+                    el.innerHTML = '<div style="text-align:center;color:#059669;padding:20px;">✅ Không có dự án active</div>';
+                    return;
+                }
+                
+                const LEVEL_COLORS = { ok:'#4caf50', at_risk:'#ffb300', high:'#ef6c00', critical:'#e53935' };
+                const LEVEL_LABELS = { ok:'On Track', at_risk:'Có Rủi Ro', high:'Rủi Ro Cao', critical:'KHẨN CẤP' };
+                
+                // Summary pills
+                const counts = { ok:0, at_risk:0, high:0, critical:0 };
+                ranked.forEach(({ r }) => { if (counts[r.level] !== undefined) counts[r.level]++; });
+                
+                let html = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">`;
+                Object.entries(counts).forEach(([lvl, cnt]) => {
+                    if (!cnt) return;
+                    const c = LEVEL_COLORS[lvl];
+                    const icons = { ok:'🟢', at_risk:'🟡', high:'🟠', critical:'🔴' };
+                    html += `<span style="background:${c}22;color:${c};border:1px solid ${c};padding:6px 14px;border-radius:20px;font-weight:700;font-size:0.9em;">${icons[lvl]} ${cnt} ${LEVEL_LABELS[lvl]}</span>`;
+                });
+                html += `</div>`;
+                
+                // Ranking rows
+                ranked.forEach(({ p, r }, idx) => {
+                    const leader = teamMembers.find(m => m.id === p.leader);
+                    const c = LEVEL_COLORS[r.level] || '#999';
+                    const openIssues = (p.issues||[]).filter(i => i.status !== 'resolved' && i.status !== 'closed').length;
+                    html += `
+                        <div class="risk-ranking-row" onclick="window.editProject('${p.id}')"
+                             style="border-left:4px solid ${c};">
+                            <span style="font-weight:700;color:${c};min-width:36px;font-size:1.1em;">${r.score}</span>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;color:#2d3748;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+                                <div style="font-size:0.8em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}${openIssues > 0 ? ` · 🚨 ${openIssues} issue${openIssues>1?'s':''}` : ''}</div>
+                            </div>
+                            <div style="min-width:80px;">
+                                <div class="risk-bar-track" style="margin-bottom:3px;">
+                                    <div class="risk-bar-fill" style="width:${r.score}%;background:${c}"></div>
+                                </div>
+                                <div style="font-size:0.75em;font-weight:600;color:${c};text-align:right;">${r.label}</div>
+                            </div>
+                            <div style="font-size:0.75em;color:#718096;text-align:right;min-width:90px;">
+                                ${r.action.length > 25 ? r.action.slice(0,25)+'...' : r.action}
+                            </div>
+                        </div>`;
+                });
+                el.innerHTML = html;
+            }
+
+
+            // v5.28: Predictive Risk Intelligence panel renderer
+            function renderRiskTrendPanel(allProjects) {
+                const el = document.getElementById('bod-risk-trend-panel');
+                if (!el) return;
+
+                const rows = window.getAllRiskTrends(allProjects);
+
+                if (!rows.length) {
+                    el.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;">Không có dữ liệu</div>';
+                    return;
+                }
+
+                const CLASS_META = {
+                    improving:          { icon:'↗', label:'Improving',          cls:'prl-improving' },
+                    stable:             { icon:'→', label:'Stable',              cls:'prl-stable' },
+                    deteriorating:      { icon:'↘', label:'Deteriorating',       cls:'prl-deteriorating' },
+                    critical_escalating:{ icon:'⚠', label:'Critical Escalating', cls:'prl-critical_escalating' }
+                };
+
+                // Summary counts
+                const counts = { improving:0, stable:0, deteriorating:0, critical_escalating:0 };
+                rows.forEach(({ trend: t }) => { if (counts[t.classification] !== undefined) counts[t.classification]++; });
+                const warnings = rows.filter(({ trend: t }) => t.earlyWarning).length;
+
+                // Sparkline helper (normalise scores to bar heights)
+                function sparkline(scores) {
+                    if (!scores || scores.length < 2) return '';
+                    const mn = Math.min(...scores), mx = Math.max(...scores);
+                    const range = mx - mn || 1;
+                    return `<span class="prl-sparkline">${scores.map(v => {
+                        const h = Math.max(3, Math.round(((v - mn) / range) * 18));
+                        const c = v > 70 ? '#e53935' : v > 40 ? '#ffb300' : '#4caf50';
+                        return `<span style="height:${h}px;background:${c};" title="${v}"></span>`;
+                    }).join('')}</span>`;
+                }
+
+                let html = `
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:0.87em;">
+                        ${counts.critical_escalating ? `<span style="background:#ffebee;color:#b71c1c;padding:5px 13px;border-radius:16px;font-weight:700;">⚠ ${counts.critical_escalating} Critical Escalating</span>` : ''}
+                        ${counts.deteriorating       ? `<span style="background:#fff3e0;color:#e65100;padding:5px 13px;border-radius:16px;font-weight:700;">↘ ${counts.deteriorating} Deteriorating</span>` : ''}
+                        ${counts.stable              ? `<span style="background:#e3f2fd;color:#1565c0;padding:5px 13px;border-radius:16px;">→ ${counts.stable} Stable</span>` : ''}
+                        ${counts.improving           ? `<span style="background:#e8f5e9;color:#2e7d32;padding:5px 13px;border-radius:16px;">↗ ${counts.improving} Improving</span>` : ''}
+                        ${warnings                   ? `<span style="background:#fff9c4;color:#f57f17;padding:5px 13px;border-radius:16px;font-weight:700;">🚩 ${warnings} Early Warning</span>` : ''}
+                    </div>
+                    <div style="overflow-x:auto;">
+                    <table class="prl-table">
+                        <thead><tr>
+                            <th>Project</th>
+                            <th>Trend</th>
+                            <th style="text-align:center;">Score History</th>
+                            <th style="text-align:center;">Velocity</th>
+                            <th style="text-align:center;">Δ5d</th>
+                            <th style="text-align:center;">Proj +7d</th>
+                            <th>Flags</th>
+                        </tr></thead>
+                        <tbody>`;
+
+                rows.forEach(({ project: p, trend: t }) => {
+                    const meta = CLASS_META[t.classification] || CLASS_META.stable;
+                    const velClass = t.velocity > 0 ? 'prl-vel-pos'
+                                   : t.velocity < 0 ? 'prl-vel-neg' : 'prl-vel-zero';
+                    const velSign  = t.velocity > 0 ? '+' : '';
+                    const d5sign   = t.delta5d  > 0 ? '+' : '';
+                    const projDiff = t.proj7 - t.currentScore;
+                    const projSign = projDiff > 0 ? '+' : '';
+                    const projC    = projDiff > 10 ? '#c62828' : projDiff < -5 ? '#2e7d32' : '#718096';
+                    const leader   = (window.teamMembers||[]).find(m => m.id === p.leader);
+                    const warnFlag = t.earlyWarning
+                        ? `<span class="prl-warn-badge">🚩 ${t.earlyWarningReason === 'rapid_rise' ? 'Rapid Rise' : 'Stagnation'}</span>`
+                        : '';
+
+                    html += `<tr>
+                        <td>
+                            <div style="font-weight:600;color:#2d3748;">${p.name.length > 28 ? p.name.slice(0,26)+'…' : p.name}</div>
+                            <div style="font-size:0.78em;color:#718096;">👤 ${leader ? leader.name : 'N/A'}</div>
+                        </td>
+                        <td><span class="prl-trend-badge ${meta.cls}">${meta.icon} ${meta.label}</span></td>
+                        <td style="text-align:center;">${sparkline(t.scores)}</td>
+                        <td style="text-align:center;" class="${velClass}">${velSign}${t.velocity}/d</td>
+                        <td style="text-align:center;${Math.abs(t.delta5d)>=15?'font-weight:700;color:#c62828;':''}">${d5sign}${t.delta5d}</td>
+                        <td style="text-align:center;">
+                            <span class="prl-proj-badge" style="color:${projC};">
+                                ${t.proj7} <span style="font-size:0.85em;">(${projSign}${projDiff})</span>
+                            </span>
+                        </td>
+                        <td>${warnFlag}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                el.innerHTML = html;
+            }
+
+            window.closeConflictsModal = function() {
                 document.getElementById('conflicts-modal').classList.remove('active');
             };
 
@@ -11176,6 +11988,16 @@ ${conflict.workload.map(w => `
                                         <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
                                             📁 ${issue.projectName}
                                         </span>
+                                        ${(() => {
+                                            try {
+                                                const _ip = (window.projects||[]).find(p => p.id === issue.projectId);
+                                                if (!_ip) return '';
+                                                const _r = window.computeRiskScore(_ip);
+                                                if (_r.level === 'ok') return '';
+                                                const _ic = {at_risk:'🟡',high:'🟠',critical:'🔴'}[_r.level]||'';
+                                                return `<span class="risk-badge risk-${_r.level}">${_ic} Risk ${_r.score}</span>`;
+                                            } catch(e){ return ''; }
+                                        })()}
                                     </div>
                                     <div class="issue-description">${issue.description}</div>
                                     ${issue.notes ? `<div style="font-size: 0.9em; color: #666; font-style: italic;">💬 ${issue.notes}</div>` : ''}
@@ -11368,21 +12190,31 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.26 -->
+    <!-- Version Badge v5.25 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.26</span>
+        <span>v5.25</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.26</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.26 - TV Data Safety Fix</div>
-            <div class="version-info-item"><strong>Build Date:</strong> 2026-03-24</div>
-            <div class="version-info-item"><strong>Fixed Issues:</strong>
+            <div class="version-info-header">📋 BOD Dashboard v5.28 - Predictive Risk Intelligence</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.28 - Predictive Risk Intelligence Layer</div>
+            <div class="version-info-item"><strong>Build Date:</strong> 2026-04-01</div>
+            <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
-                    <li>✅ TV dashboard không còn ghi đè data Azure (v5.26)</li>
-                    <li>✅ Safety check: reject Azure corrupt/empty data (v5.26)</li>
+                    <li>🔴 Risk Score (6 factors, 0–100 composite)</li>
+                    <li>🟠 Risk badge on every project card</li>
+                    <li>📊 BOD Risk Ranking panel + table column</li>
+                    <li>🚨 Critical risk KPI in Overview dashboard</li>
+                    <li>💾 riskSnapshot auto-saved on project save</li>
+                    <li>✅ SOP-001 Survey Compliance (v5.25)</li>
+                </ul>
+            </div>
+            <div class="version-info-item" style="display:none;"><strong>Old Issues:</strong>
+                <ul style="margin: 5px 0; padding-left: 20px;">
                     <li>✅ SOP-001 Survey Type LITE/FULL (v5.25)</li>
                     <li>✅ GO / CONDITIONAL GO / NO-GO decision (v5.25)</li>
                     <li>✅ Report deadline auto-calc (v5.25)</li>
+                    <li>✅ Overdue badge on project card (v5.25)</li>
+                    <li>✅ All features from v5.22</li>
                 </ul>
             </div>
             <div class="version-info-item"><strong>Total Projects:</strong> <span id="versionProjectCount">--</span></div>
