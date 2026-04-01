@@ -7252,6 +7252,8 @@ ${conflict.workload.map(w => `
                 
                 const el = document.getElementById('bod-risk-indicators');
                 if (el) el.innerHTML = html;
+            }
+
             function renderBODFinancialSummary(allProjects) {
                 const totalBudget = allProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
                 const totalActualValue = allProjects.reduce((sum, p) => sum + (p.actualValue || 0), 0);
@@ -8148,8 +8150,6 @@ ${conflict.workload.map(w => `
                     toast.classList.remove('show');
                 }, 3000);
             }
-        })();
-   
 
             // v5.27 Owner Risk Panel renderer
             function renderOwnerRiskPanel(allProjects) {
