@@ -9045,25 +9045,25 @@ ${conflict.workload.map(w => `
                 console.log('[openProjectModal] currentEditingProject set to:', currentEditingProject ? currentEditingProject.name : 'null');
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
-                // v5.11: Initialize Installation 1 for new projects or projects without phases
-                if (!currentEditingProject || !currentEditingProject.installationPhases) {
-                    if (!currentEditingProject) {
-                        currentEditingProject = {};
-                    }
-                    if (!currentEditingProject.installationPhases || currentEditingProject.installationPhases.length === 0) {
-                        currentEditingProject.installationPhases = [{
-                            id: 'installation-1',
-                            name: 'Installation 1',
-                            number: 1,
-                            person: '',
-                            assignedMembers: [],
-                            planStartDate: '',
-                            planCompleteDate: '',
-                            actualStartDate: '',
-                            actualCompleteDate: ''
-                        }];
-                    }
+                // v5.11 / v5.28-fix: Initialize default installation phase
+                // IMPORTANT: do NOT set currentEditingProject = {} for new projects —
+                // that makes it truthy and saveProject takes the edit path, losing the new project.
+                if (currentEditingProject && (!currentEditingProject.installationPhases || currentEditingProject.installationPhases.length === 0)) {
+                    // Existing project without phases — add default phase to it
+                    currentEditingProject.installationPhases = [{
+                        id: 'installation-1', name: 'Installation 1', number: 1,
+                        person: '', assignedMembers: [],
+                        planStartDate: '', planCompleteDate: '',
+                        actualStartDate: '', actualCompleteDate: ''
+                    }];
                 }
+                // For NEW projects: store default phase in a temp variable; renderInstallationPhases reads it
+                window._newProjectDefaultPhases = !currentEditingProject ? [{
+                    id: 'installation-1', name: 'Installation 1', number: 1,
+                    person: '', assignedMembers: [],
+                    planStartDate: '', planCompleteDate: '',
+                    actualStartDate: '', actualCompleteDate: ''
+                }] : null;
                 
                 // Feature #2: Handle Issues section visibility
                 const issuesSection = document.getElementById('issues-section');
@@ -9821,8 +9821,23 @@ ${conflict.workload.map(w => `
             // ============================================================
             
             window.addInstallationPhase = function() {
+                // For new projects, work with _newProjectDefaultPhases instead
                 if (!currentEditingProject) {
-                    currentEditingProject = { milestones: [], installationPhases: [] };
+                    if (!window._newProjectDefaultPhases) {
+                        window._newProjectDefaultPhases = [];
+                    }
+                    const phaseNumber = window._newProjectDefaultPhases.length + 1;
+                    window._newProjectDefaultPhases.push({
+                        id: 'installation-' + phaseNumber,
+                        name: 'Installation ' + phaseNumber,
+                        number: phaseNumber,
+                        person: '', assignedMembers: [],
+                        planStartDate: '', planCompleteDate: '',
+                        actualStartDate: '', actualCompleteDate: ''
+                    });
+                    window.renderInstallationPhases();
+                    window.showToast('Added Installation ' + phaseNumber, 'success');
+                    return;
                 }
                 
                 if (!currentEditingProject.installationPhases) {
@@ -9848,7 +9863,20 @@ ${conflict.workload.map(w => `
             };
             
             window.removeInstallationPhase = function(phaseNumber) {
-                if (!currentEditingProject || !currentEditingProject.installationPhases) return;
+                // Handle new project temp phases
+                if (!currentEditingProject) {
+                    if (!window._newProjectDefaultPhases) return;
+                    const idx = window._newProjectDefaultPhases.findIndex(p => p.number === phaseNumber);
+                    if (idx === -1) return;
+                    if (window._newProjectDefaultPhases.length === 1) {
+                        window.showToast('Phải có ít nhất 1 Installation phase', 'error'); return;
+                    }
+                    window._newProjectDefaultPhases.splice(idx, 1);
+                    window._newProjectDefaultPhases.forEach((p, i) => { p.number=i+1; p.id='installation-'+(i+1); p.name='Installation '+(i+1); });
+                    window.renderInstallationPhases();
+                    return;
+                }
+                if (!currentEditingProject.installationPhases) return;
                 
                 const index = currentEditingProject.installationPhases.findIndex(p => p.number === phaseNumber);
                 if (index === -1) return;
@@ -9875,7 +9903,10 @@ ${conflict.workload.map(w => `
                 const container = document.getElementById('installation-phases-container');
                 if (!container) return;
                 
-                const phases = currentEditingProject?.installationPhases || [];
+                // For new projects currentEditingProject is null — use the temp default
+                const phases = (currentEditingProject && currentEditingProject.installationPhases)
+                    || window._newProjectDefaultPhases
+                    || [];
                 
                 if (phases.length === 0) {
                     container.innerHTML = '<p style="text-align: center; color: #a0aec0; padding: 20px;">Chưa có Installation phase. Click "Add Phase" để thêm.</p>';
@@ -9975,16 +10006,18 @@ ${conflict.workload.map(w => `
             };
             
             window.addTeamMemberToInstallation = function(phaseNumber) {
-                const selectId = `member-select-installation-${phaseNumber}`;
+                const selectId = 'member-select-installation-' + phaseNumber;
                 const select = document.getElementById(selectId);
-                const memberId = select.value;
+                const memberId = select ? select.value : '';
                 
                 if (!memberId) {
                     window.showToast('⚠️ Vui lòng chọn member', 'error');
                     return;
                 }
                 
-                const phase = currentEditingProject.installationPhases.find(p => p.number === phaseNumber);
+                const phases = (currentEditingProject && currentEditingProject.installationPhases)
+                    || window._newProjectDefaultPhases || [];
+                const phase = phases.find(p => p.number === phaseNumber);
                 if (!phase) return;
                 
                 if (!phase.assignedMembers) phase.assignedMembers = [];
@@ -10001,7 +10034,9 @@ ${conflict.workload.map(w => `
             };
             
             window.removeTeamMemberFromInstallation = function(phaseNumber, memberId) {
-                const phase = currentEditingProject.installationPhases.find(p => p.number === phaseNumber);
+                const phases = (currentEditingProject && currentEditingProject.installationPhases)
+                    || window._newProjectDefaultPhases || [];
+                const phase = phases.find(p => p.number === phaseNumber);
                 if (!phase || !phase.assignedMembers) return;
                 
                 const index = phase.assignedMembers.indexOf(memberId);
@@ -10106,6 +10141,7 @@ ${conflict.workload.map(w => `
                 document.getElementById('project-modal').classList.remove('active');
                 currentEditingProject = null;
                 window.currentEditingProject = null; // Sync to global
+                window._newProjectDefaultPhases = null; // v5.28-fix: clear temp phases
                 selectedMembers = [];
                 
                 // v5.11: Clear installation phases
