@@ -11125,10 +11125,11 @@ ${conflict.workload.map(w => `
                 // Show modal
                 const modal = document.createElement('div');
                 modal.className = 'modal';
+                modal.id = 'status-filter-modal';  // v5.29-fix: give ID so it can be closed
                 modal.style.display = 'flex';
                 modal.innerHTML = `
                     <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
-                        <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                        <span class="close" onclick="document.getElementById('status-filter-modal')?.remove()">&times;</span>
                         <h2 style="color: #2d3748; margin-bottom: 20px;">
                             ${title} (${filtered.length} dự án)
                         </h2>
@@ -11144,6 +11145,9 @@ ${conflict.workload.map(w => `
                 
                 // Close any open modals (hide them, do NOT remove from DOM)
                 document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+                // Remove the dynamic status filter modal (created by showProjectsByStatus)
+                const _sfm = document.getElementById('status-filter-modal');
+                if (_sfm) _sfm.remove();
                 
                 // Switch to Projects tab
                 window.switchTab('projects');
