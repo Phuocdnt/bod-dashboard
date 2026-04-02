@@ -10747,23 +10747,24 @@ ${conflict.workload.map(w => `
 
             function showIQRError(message) {
                 const errorDiv = document.getElementById('iqr-error');
+                if (!errorDiv) return;
                 errorDiv.textContent = message;
                 errorDiv.style.display = 'block';
                 
                 // Highlight the input field
                 const input = document.getElementById('project-name');
+                if (!input) return;
                 input.style.borderColor = '#f5c6cb';
                 input.style.background = '#fff5f5';
             }
 
             function hideIQRError() {
                 const errorDiv = document.getElementById('iqr-error');
-                errorDiv.style.display = 'none';
+                if (errorDiv) errorDiv.style.display = 'none';
                 
                 // Reset input field style
                 const input = document.getElementById('project-name');
-                input.style.borderColor = '#e2e8f0';
-                input.style.background = 'white';
+                if (input) { input.style.borderColor = '#e2e8f0'; input.style.background = 'white'; }
             }
 
             // ============= PROJECT SAVE FUNCTION ============= //
