@@ -9359,8 +9359,6 @@ ${conflict.workload.map(w => `
                 currentEditingProject = projectId ? projects.find(p => p.id === projectId) : null;
                 window.currentEditingProject = currentEditingProject; // Sync to global
                 console.log('[openProjectModal] currentEditingProject set to:', currentEditingProject ? currentEditingProject.name : 'null');
-                // v5.29-fix: Show modal FIRST so all form elements are accessible
-                document.getElementById('project-modal').classList.add('active');
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
                 // v5.11 / v5.28-fix: Initialize default installation phase
@@ -9648,7 +9646,10 @@ ${conflict.workload.map(w => `
                 
                 // Clear error when opening modal
                 hideIQRError();
-                // (modal already shown at top of function — no duplicate needed)
+                
+                // Show modal (with null guard for safety)
+                const _pm = document.getElementById('project-modal');
+                if (_pm) _pm.classList.add('active');
             };
 
             function renderMilestoneForm() {
