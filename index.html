@@ -2376,11 +2376,7 @@
                         <div class="value">0</div>
                         <p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>
                     </div>
-                    <div class="stat-card" style="cursor: default;">
-                        <h3>📁 Tổng Số Dự Án</h3>
-                        <div class="value">0</div>
-                        <p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>
-                    </div>
+
                     <div class="stat-card green" style="cursor: pointer; transform: scale(1);" onclick="showProjectsByStatus(&#39;In Progress&#39;, &#39;Đang Thực Hiện&#39;, &#39;#56ab2f&#39;)" onmouseover="this.style.transform=&#39;scale(1.05)&#39;" onmouseout="this.style.transform=&#39;scale(1)&#39;">
                         <h3>▶️ Đang Thực Hiện</h3>
                         <div class="value">0</div>
@@ -6332,13 +6328,6 @@ window.projects = projects;
                           currentUser?.isBOD ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả (BOD View)</p>' : 
                           '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
                     </div>
-                    <div class="stat-card" style="cursor: default;">
-                        <h3>📁 Tổng Số Dự Án</h3>
-                        <div class="value">${visibleProjects.length}</div>
-                        ${currentUser?.isAdmin ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả</p>' : 
-                          currentUser?.isBOD ? '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Tất cả (BOD View)</p>' : 
-                          '<p style="font-size: 0.7em; opacity: 0.7; margin-top: 5px;">Của bạn</p>'}
-                    </div>
                     <div class="stat-card green" style="cursor: pointer;" 
                          onclick="showProjectsByStatus('In Progress', 'Đang Thực Hiện', '#56ab2f')"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -9370,6 +9359,8 @@ ${conflict.workload.map(w => `
                 currentEditingProject = projectId ? projects.find(p => p.id === projectId) : null;
                 window.currentEditingProject = currentEditingProject; // Sync to global
                 console.log('[openProjectModal] currentEditingProject set to:', currentEditingProject ? currentEditingProject.name : 'null');
+                // v5.29-fix: Show modal FIRST so all form elements are accessible
+                document.getElementById('project-modal').classList.add('active');
                 selectedMembers = currentEditingProject ? (currentEditingProject.members || []) : [];
                 
                 // v5.11 / v5.28-fix: Initialize default installation phase
@@ -9416,24 +9407,26 @@ ${conflict.workload.map(w => `
                 if (isEditing && currentEditingProject) {
                     titleText += getPermissionBadge(currentEditingProject);
                 }
-                document.getElementById('modal-title').innerHTML = titleText;
+                const _mt = document.getElementById('modal-title'); if (_mt) _mt.innerHTML = titleText;
                 
                 // Show/hide change note section
                 const changeNoteContainer = document.getElementById('change-note-container');
                 const changeNoteTextarea = document.getElementById('change-note');
-                if (isEditing && hasPermission) {
-                    changeNoteContainer.style.display = 'block';
-                    changeNoteTextarea.value = '';
-                    changeNoteTextarea.required = true;
-                } else {
-                    changeNoteContainer.style.display = 'none';
-                    changeNoteTextarea.required = false;
+                if (changeNoteContainer && changeNoteTextarea) {
+                    if (isEditing && hasPermission) {
+                        changeNoteContainer.style.display = 'block';
+                        changeNoteTextarea.value = '';
+                        changeNoteTextarea.required = true;
+                    } else {
+                        changeNoteContainer.style.display = 'none';
+                        changeNoteTextarea.required = false;
+                    }
                 }
                 
                 // Populate form fields (v5.6: added budget, actualValue)
-                document.getElementById('project-name').value = currentEditingProject?.name || '';
-                document.getElementById('project-customer').value = currentEditingProject?.customer || '';
-                document.getElementById('project-description').value = currentEditingProject?.description || '';
+                const _f_project_name = document.getElementById('project-name'); if (_f_project_name) _f_project_name.value = currentEditingProject?.name || '';
+                const _f_project_customer = document.getElementById('project-customer'); if (_f_project_customer) _f_project_customer.value = currentEditingProject?.customer || '';
+                const _f_project_description = document.getElementById('project-description'); if (_f_project_description) _f_project_description.value = currentEditingProject?.description || '';
                 
                 // v5.11: Budget field - Admin can edit, BOD can view only
                 const budgetField = document.getElementById('budget-field');
@@ -9488,15 +9481,16 @@ ${conflict.workload.map(w => `
                 
                 // Populate sale dropdown
                 const saleSelect = document.getElementById('project-sale');
-                saleSelect.innerHTML = '<option value="">Chọn Sale...</option>' +
+                if (saleSelect) saleSelect.innerHTML = '<option value="">Chọn Sale...</option>' +
                     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.sale === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
                 
                 // Populate status
-                document.getElementById('project-status').value = currentEditingProject?.status || 'planning';
+                const _f_status = document.getElementById('project-status'); if (_f_status) _f_status.value = currentEditingProject?.status || 'planning';
                 
                 // Populate survey person and member selects
                 ['survey1', 'survey2', 'survey3'].forEach(survey => {
                     const select = document.getElementById(`${survey}-person`);
+                    if (!select) return;
                     select.innerHTML = '<option value="">Chọn người...</option>' +
                         teamMembers.map(m => {
                             const selected = currentEditingProject?.surveyRounds?.[survey]?.person === m.id;
@@ -9510,10 +9504,13 @@ ${conflict.workload.map(w => `
                             teamMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
                     }
                     
-                    // Set dates
-                    document.getElementById(`${survey}-start`).value = currentEditingProject?.surveyRounds?.[survey]?.startDate || '';
-                    document.getElementById(`${survey}-complete`).value = currentEditingProject?.surveyRounds?.[survey]?.completeDate || '';
-                    document.getElementById(`${survey}-notes`).value = currentEditingProject?.surveyRounds?.[survey]?.notes || '';
+                    // Set dates (with null guards)
+                    const _sd = document.getElementById(`${survey}-start`);
+                    const _sc = document.getElementById(`${survey}-complete`);
+                    const _sn = document.getElementById(`${survey}-notes`);
+                    if (_sd) _sd.value = currentEditingProject?.surveyRounds?.[survey]?.startDate || '';
+                    if (_sc) _sc.value = currentEditingProject?.surveyRounds?.[survey]?.completeDate || '';
+                    if (_sn) _sn.value = currentEditingProject?.surveyRounds?.[survey]?.notes || '';
                     // v5.25 SOP-001: Update deadline display when survey complete date changes
                     const surveyCompleteEl = document.getElementById(`${survey}-complete`);
                     if (surveyCompleteEl) {
@@ -9651,8 +9648,7 @@ ${conflict.workload.map(w => `
                 
                 // Clear error when opening modal
                 hideIQRError();
-                
-                document.getElementById('project-modal').classList.add('active');
+                // (modal already shown at top of function — no duplicate needed)
             };
 
             function renderMilestoneForm() {
@@ -9976,8 +9972,10 @@ ${conflict.workload.map(w => `
                     `;
                     }).join('');
 
-                document.getElementById('milestone-form-grid-part1').innerHTML = htmlPart1;
-                document.getElementById('milestone-form-grid-part2').innerHTML = htmlPart2;
+                const _mp1 = document.getElementById('milestone-form-grid-part1');
+                const _mp2 = document.getElementById('milestone-form-grid-part2');
+                if (_mp1) _mp1.innerHTML = htmlPart1;
+                if (_mp2) _mp2.innerHTML = htmlPart2;
             }
 
             // ============= MILESTONE TEAM MEMBER MANAGEMENT ============= //
