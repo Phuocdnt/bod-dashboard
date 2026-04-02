@@ -11142,9 +11142,8 @@ ${conflict.workload.map(w => `
             window.viewProjectFromFiltered = function(projectId) {
                 console.log('👁️ [VIEW] Opening project from filtered stat:', projectId);
                 
-                // Close modal
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(m => m.remove());
+                // Close any open modals (hide them, do NOT remove from DOM)
+                document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
                 
                 // Switch to Projects tab
                 window.switchTab('projects');
