@@ -9386,13 +9386,13 @@ ${conflict.workload.map(w => `
                 if (issuesSection) {
                     if (currentEditingProject && currentEditingProject.id) {
                         console.log('[openProjectModal] ✅ Issues section will be shown');
-                        issuesSection.style.display = 'block';
+                        if (issuesSection) issuesSection.style.display = 'block';
                         if (!currentEditingProject.issues) currentEditingProject.issues = [];
                         // Will render issues list after modal is fully loaded
                         setTimeout(() => renderIssuesList(currentEditingProject.id), 100);
                     } else {
                         console.log('[openProjectModal] ❌ Issues section hidden (new project)');
-                        issuesSection.style.display = 'none';
+                        if (issuesSection) issuesSection.style.display = 'none';
                     }
                 }
                 
@@ -9429,47 +9429,45 @@ ${conflict.workload.map(w => `
                 // v5.11: Budget field - Admin can edit, BOD can view only
                 const budgetField = document.getElementById('budget-field');
                 const budgetInput = document.getElementById('project-budget');
-                if (currentUser && currentUser.isAdmin) {
-                    // Admin: Can edit
-                    budgetField.style.display = 'block';
-                    budgetInput.value = currentEditingProject?.budget || '';
-                    budgetInput.readOnly = false;
-                    budgetInput.style.backgroundColor = '';
-                    budgetInput.style.cursor = '';
-                } else if (currentUser && currentUser.isBOD) {
-                    // BOD: Can view only (read-only)
-                    budgetField.style.display = 'block';
-                    budgetInput.value = currentEditingProject?.budget || '';
-                    budgetInput.readOnly = true;
-                    budgetInput.style.backgroundColor = '#f8f9fa';
-                    budgetInput.style.cursor = 'not-allowed';
-                } else {
-                    // Others: Hidden
-                    budgetField.style.display = 'none';
-                    budgetInput.value = '';
+                if (budgetField && budgetInput) {
+                    if (currentUser && currentUser.isAdmin) {
+                        budgetField.style.display = 'block';
+                        budgetInput.value = currentEditingProject?.budget || '';
+                        budgetInput.readOnly = false;
+                        budgetInput.style.backgroundColor = '';
+                        budgetInput.style.cursor = '';
+                    } else if (currentUser && currentUser.isBOD) {
+                        budgetField.style.display = 'block';
+                        budgetInput.value = currentEditingProject?.budget || '';
+                        budgetInput.readOnly = true;
+                        budgetInput.style.backgroundColor = '#f8f9fa';
+                        budgetInput.style.cursor = 'not-allowed';
+                    } else {
+                        budgetField.style.display = 'none';
+                        budgetInput.value = '';
+                    }
                 }
                 
                 // v5.11: Actual Value field - Admin can edit, BOD can view only
                 const actualValueField = document.getElementById('actual-value-field');
                 const actualValueInput = document.getElementById('project-actual-value');
-                if (currentUser && currentUser.isAdmin) {
-                    // Admin: Can edit
-                    actualValueField.style.display = 'block';
-                    actualValueInput.value = currentEditingProject?.actualValue || '';
-                    actualValueInput.readOnly = false;
-                    actualValueInput.style.backgroundColor = '';
-                    actualValueInput.style.cursor = '';
-                } else if (currentUser && currentUser.isBOD) {
-                    // BOD: Can view only (read-only)
-                    actualValueField.style.display = 'block';
-                    actualValueInput.value = currentEditingProject?.actualValue || '';
-                    actualValueInput.readOnly = true;
-                    actualValueInput.style.backgroundColor = '#f8f9fa';
-                    actualValueInput.style.cursor = 'not-allowed';
-                } else {
-                    // Others: Hidden
-                    actualValueField.style.display = 'none';
-                    actualValueInput.value = '';
+                if (actualValueField && actualValueInput) {
+                    if (currentUser && currentUser.isAdmin) {
+                        actualValueField.style.display = 'block';
+                        actualValueInput.value = currentEditingProject?.actualValue || '';
+                        actualValueInput.readOnly = false;
+                        actualValueInput.style.backgroundColor = '';
+                        actualValueInput.style.cursor = '';
+                    } else if (currentUser && currentUser.isBOD) {
+                        actualValueField.style.display = 'block';
+                        actualValueInput.value = currentEditingProject?.actualValue || '';
+                        actualValueInput.readOnly = true;
+                        actualValueInput.style.backgroundColor = '#f8f9fa';
+                        actualValueInput.style.cursor = 'not-allowed';
+                    } else {
+                        actualValueField.style.display = 'none';
+                        actualValueInput.value = '';
+                    }
                 }
                 
                 // v5.11: Team section removed
@@ -9588,12 +9586,14 @@ ${conflict.workload.map(w => `
                 // Disable form if no permission
                 const form = document.getElementById('project-form');
                 const saveBtn = document.getElementById('save-project-btn');
-                if (!hasPermission && isEditing) {
+                if (!hasPermission && isEditing && form && saveBtn) {
                     form.classList.add('readonly-overlay');
-                    saveBtn.disabled = true;
-                    saveBtn.textContent = '🔒 Không có quyền sửa';
-                    saveBtn.style.opacity = '0.5';
-                    saveBtn.style.cursor = 'not-allowed';
+                    if (saveBtn) {
+                        saveBtn.disabled = true;
+                        saveBtn.textContent = '🔒 Không có quyền sửa';
+                        saveBtn.style.opacity = '0.5';
+                        saveBtn.style.cursor = 'not-allowed';
+                    }
                     
                     // Disable all inputs
                     form.querySelectorAll('input, textarea, select, button[type="button"]').forEach(el => {
@@ -9601,12 +9601,14 @@ ${conflict.workload.map(w => `
                             el.disabled = true;
                         }
                     });
-                } else {
+                } else if (form) {
                     form.classList.remove('readonly-overlay');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<span>💾</span> Lưu Dự Án';
-                    saveBtn.style.opacity = '1';
-                    saveBtn.style.cursor = 'pointer';
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<span>💾</span> Lưu Dự Án';
+                        saveBtn.style.opacity = '1';
+                        saveBtn.style.cursor = 'pointer';
+                    }
                     
                     // Enable all inputs
                     form.querySelectorAll('input, textarea, select').forEach(el => {
@@ -9618,6 +9620,7 @@ ${conflict.workload.map(w => `
                 // ✅ SETUP REAL-TIME IQR VALIDATION
                 if (hasPermission || !isEditing) {
                     const projectNameInput = document.getElementById('project-name');
+                    if (!projectNameInput) return;  // safety guard
                     
                     // Remove old event listener if exists
                     const newInput = projectNameInput.cloneNode(true);
