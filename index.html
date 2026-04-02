@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.28 - Predictive Risk Intelligence</title>
+    <title>BOD Dashboard v5.29 - Executive Decision Engine</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2222,6 +2222,53 @@
         .prl-vel-neg  { color:#2e7d32; font-weight:700; }
         .prl-vel-zero { color:#718096; }
         /* ===== end v5.28 ===== */
+
+        /* ===== v5.29 EXECUTIVE DECISION ENGINE ===== */
+        .ede-psi-ring {
+            display: inline-flex; flex-direction: column; align-items: center;
+            justify-content: center; width: 100px; height: 100px;
+            border-radius: 50%; font-size: 2em; font-weight: 700;
+            border: 6px solid; margin: 0 auto 10px;
+        }
+        .ede-psi-label { font-size: 0.65em; font-weight: 600; margin-top: -4px; }
+        .ede-stable   { border-color:#4caf50; color:#2e7d32; background:#e8f5e9; }
+        .ede-moderate { border-color:#ffb300; color:#f57f17; background:#fff9c4; }
+        .ede-unstable { border-color:#ef6c00; color:#e65100; background:#fff3e0; }
+        .ede-critical { border-color:#e53935; color:#b71c1c; background:#ffebee;
+                        animation: pulse-red 1.5s infinite; }
+        .ede-card {
+            background: white; border: 1.5px solid #e9ecef;
+            border-radius: 10px; padding: 16px 18px; margin-bottom: 12px;
+        }
+        .ede-card-title {
+            font-weight: 700; font-size: 0.88em; color: #4a5568;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .ede-pareto-bar {
+            height: 8px; border-radius: 4px; background: #e9ecef;
+            overflow: hidden; margin: 6px 0;
+        }
+        .ede-pareto-fill { height: 100%; border-radius: 4px; background: #e53935; }
+        .ede-rec {
+            display: flex; gap: 10px; padding: 10px 12px; border-radius: 8px;
+            margin-bottom: 8px; font-size: 0.87em; align-items: flex-start;
+        }
+        .ede-rec-reassign  { background:#e3f2fd; border-left:3px solid #1976d2; }
+        .ede-rec-escalate  { background:#ffebee; border-left:3px solid #c62828; }
+        .ede-rec-bottleneck{ background:#fff3e0; border-left:3px solid #e65100; }
+        .ede-rec-icon { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+        .ede-rec-body strong { display: block; color: #2d3748; margin-bottom: 2px; }
+        .ede-rec-body span   { color: #718096; }
+        .ede-summary-box {
+            background: linear-gradient(135deg,#1a237e 0%,#283593 100%);
+            color: white; border-radius: 10px; padding: 16px 20px;
+            font-size: 0.9em; line-height: 1.7; margin-bottom: 16px;
+        }
+        .ede-summary-box strong { color: #c5cae9; font-size: 0.8em;
+            text-transform: uppercase; letter-spacing: 0.06em; display: block;
+            margin-bottom: 6px; }
+        /* ===== end v5.29 ===== */
     </style>
 </head>
 <body>
@@ -2263,7 +2310,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.28 - PREDICTIVE RISK</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.29 - DECISION ENGINE</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -3453,6 +3500,19 @@
                 </div>
             </div>
 
+            <!-- v5.29 Executive Decision Engine Panel -->
+            <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h3 style="color: #2d3748; margin-bottom: 6px; display:flex; align-items:center; gap:10px;">
+                    <span>🧠</span> Executive Decision Engine
+                </h3>
+                <p style="color:#718096; font-size:0.88em; margin-bottom:16px;">
+                    Portfolio Stability Index · Risk Concentration · Owner Bottleneck · Recommendations
+                </p>
+                <div id="bod-decision-panel">
+                    <div style="text-align:center;color:#718096;padding:20px;">Đang tải...</div>
+                </div>
+            </div>
+
             <!-- Project Details Table -->
             <div style="background: white; border: 2px solid #e9ecef; border-radius: 15px; padding: 25px; margin-top: 30px;">
                 <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Project Details</h3>
@@ -3998,7 +4058,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
             </div>
 
             <div class="login-footer">
-                v5.28 - Predictive Risk Intelligence<br>
+                v5.29 - Executive Decision Engine<br>
                 Aplus Engineering &amp; Service Ltd
             </div>
         </div>
@@ -7133,6 +7193,8 @@ ${conflict.workload.map(w => `
                 renderOwnerRiskPanel(allProjects);
                 // v5.28: Render Predictive Risk Intelligence panel
                 renderRiskTrendPanel(allProjects);
+                // v5.29: Render Executive Decision Engine panel
+                renderDecisionPanel(allProjects);
             }
             
             function renderBODRiskIndicators(allProjects) {
@@ -7675,6 +7737,180 @@ ${conflict.workload.map(w => `
             // ============================================================
 
             // ============================================================
+
+            // ============================================================
+            // v5.29 EXECUTIVE DECISION ENGINE
+            // ============================================================
+            window.computeDecisionEngine = function(projectList) {
+                const active = (projectList || window.projects || [])
+                    .filter(function(p){ return p.status !== 'completed' && p.status !== 'cancelled'; });
+
+                const n = active.length;
+                if (n === 0) return null;
+
+                // ── O(n) pass: scores + owner risk map ──────────────────
+                const ownerRiskMap  = {};   // ownerId → { name, sumRisk, projects:[] }
+                const ownerWlMap    = {};   // ownerId → workloadScore (from v5.27)
+                let   totalRisk     = 0;
+                let   deteriorCount = 0;
+
+                const enriched = active.map(function(p) {
+                    let score = 0;
+                    try {
+                        const snap = p.riskSnapshot;
+                        const fresh = snap && snap.computedAt &&
+                            (Date.now() - new Date(snap.computedAt)) < 86400000;
+                        score = fresh ? snap.score : window.computeRiskScore(p).score;
+                    } catch(e) {}
+
+                    let trendClass = 'stable';
+                    try { trendClass = window.computeRiskTrend(p).classification; } catch(e) {}
+
+                    const priority = p.priority || 3;   // default medium if not set
+
+                    totalRisk += score;
+                    if (trendClass === 'deteriorating' || trendClass === 'critical_escalating') {
+                        deteriorCount++;
+                    }
+
+                    const lid = p.leader;
+                    if (lid) {
+                        if (!ownerRiskMap[lid]) {
+                            const m = (window.teamMembers || []).find(function(m){ return m.id === lid; });
+                            ownerRiskMap[lid] = { name: m ? m.name : lid, sumRisk: 0, projects: [] };
+                        }
+                        ownerRiskMap[lid].sumRisk += score;
+                        ownerRiskMap[lid].projects.push({ p, score, priority, trendClass });
+                    }
+
+                    return { p, score, priority, trendClass };
+                });
+
+                const avgRisk = totalRisk / n;
+                const deterioratingRatio = deteriorCount / n;
+
+                // ── 1. Risk Concentration (Pareto 60%) ──────────────────
+                const sorted = enriched.slice().sort(function(a,b){ return b.score - a.score; });
+                const top20count = Math.ceil(n * 0.2);
+                let   cumulRisk  = 0;
+                const paretoSet  = [];
+                for (let i = 0; i < sorted.length; i++) {
+                    cumulRisk += sorted[i].score;
+                    paretoSet.push(sorted[i]);
+                    if (cumulRisk / totalRisk >= 0.60) break;
+                }
+                const concentrationRatio = totalRisk > 0 ? cumulRisk / totalRisk : 0;
+
+                // ── 2. Owner Bottleneck ──────────────────────────────────
+                let maxOwnerShare = 0, bottleneckOwnerId = null;
+                Object.keys(ownerRiskMap).forEach(function(lid) {
+                    const share = totalRisk > 0 ? ownerRiskMap[lid].sumRisk / totalRisk : 0;
+                    ownerRiskMap[lid].share = share;
+                    if (share > maxOwnerShare) { maxOwnerShare = share; bottleneckOwnerId = lid; }
+                });
+                const hasBottleneck = maxOwnerShare > 0.30;
+
+                // ── 3. Workload scores (from v5.27 engine) ───────────────
+                let ownerWlResult = null;
+                try { ownerWlResult = window.computeOwnerWorkloads(active); } catch(e) {}
+                const wlMap = {};
+                if (ownerWlResult) {
+                    ownerWlResult.results.forEach(function(r){ wlMap[r.ownerId] = r.ws; });
+                }
+
+                // ── 3b. Recommendations ──────────────────────────────────
+                const recommendations = [];
+                if (hasBottleneck && bottleneckOwnerId) {
+                    const o = ownerRiskMap[bottleneckOwnerId];
+                    recommendations.push({
+                        type: 'bottleneck',
+                        icon: '⚠️',
+                        title: 'Owner Bottleneck: ' + o.name,
+                        detail: o.name + ' carries ' + Math.round(maxOwnerShare * 100) + '% of portfolio risk ('
+                            + o.projects.length + ' projects). Consider redistributing leadership.'
+                    });
+                }
+                Object.keys(ownerRiskMap).forEach(function(lid) {
+                    const ws = wlMap[lid] || 0;
+                    if (ws < 70) return;
+                    const o = ownerRiskMap[lid];
+                    const lowPri  = o.projects.filter(function(x){ return x.priority <= 2 && x.score < 60; });
+                    const highRisk = o.projects.filter(function(x){ return x.score > 60 && x.priority >= 4; });
+                    if (lowPri.length) {
+                        recommendations.push({
+                            type: 'reassign', icon: '🔄',
+                            title: 'Reassign: ' + o.name + ' is overloaded',
+                            detail: lowPri.length + ' low-priority project(s) could be reassigned to free capacity: '
+                                + lowPri.slice(0,2).map(function(x){ return x.p.name.slice(0,25); }).join(', ')
+                                + (lowPri.length > 2 ? '…' : '')
+                        });
+                    }
+                    if (highRisk.length) {
+                        recommendations.push({
+                            type: 'escalate', icon: '🚨',
+                            title: 'Escalate: High-risk + high-priority under ' + o.name,
+                            detail: highRisk.slice(0,2).map(function(x){ return x.p.name.slice(0,25); }).join(', ')
+                                + ' — riskScore >' + Math.round(highRisk[0].score) + ', recommend TD review.'
+                        });
+                    }
+                });
+                // Pareto concentration warning
+                if (concentrationRatio >= 0.60 && paretoSet.length <= top20count) {
+                    recommendations.push({
+                        type: 'escalate', icon: '📊',
+                        title: 'Risk Concentration Alert',
+                        detail: paretoSet.length + ' project(s) carry '
+                            + Math.round(concentrationRatio * 100) + '% of total portfolio risk. '
+                            + 'Immediate attention needed on: '
+                            + paretoSet.slice(0,2).map(function(x){ return x.p.name.slice(0,22); }).join(', ')
+                    });
+                }
+
+                // ── 4. Portfolio Stability Index ─────────────────────────
+                const psi = Math.round(Math.max(0, Math.min(100,
+                    100
+                    - (avgRisk / 100) * 40
+                    - concentrationRatio * 25
+                    - Math.min(maxOwnerShare / 0.3, 1) * 20
+                    - deterioratingRatio * 15
+                )));
+                const psiGrade = psi >= 80 ? 'stable'
+                               : psi >= 60 ? 'moderate'
+                               : psi >= 40 ? 'unstable'
+                               : 'critical';
+
+                // ── Executive summary text ───────────────────────────────
+                const gradeText = { stable:'Stable', moderate:'Needs Attention',
+                                    unstable:'Intervention Required', critical:'Board-Level Action' };
+                const summary = 'Portfolio Stability Index: ' + psi + '/100 — ' + gradeText[psiGrade] + '. '
+                    + 'Average project risk is ' + Math.round(avgRisk) + '/100 across ' + n + ' active project(s). '
+                    + (paretoSet.length > 0
+                        ? paretoSet.length + ' project(s) account for ' + Math.round(concentrationRatio*100) + '% of total risk. '
+                        : '')
+                    + (hasBottleneck
+                        ? ownerRiskMap[bottleneckOwnerId].name + ' holds ' + Math.round(maxOwnerShare*100) + '% of portfolio risk — structural bottleneck detected. '
+                        : '')
+                    + (deteriorCount > 0
+                        ? Math.round(deterioratingRatio*100) + '% of projects are deteriorating or escalating.'
+                        : 'No projects are currently deteriorating.');
+
+                return {
+                    n, totalRisk, avgRisk: +avgRisk.toFixed(1),
+                    paretoSet, concentrationRatio: +concentrationRatio.toFixed(3),
+                    top20count,
+                    maxOwnerShare: +maxOwnerShare.toFixed(3),
+                    bottleneckOwnerId, hasBottleneck,
+                    ownerRiskMap,
+                    recommendations,
+                    psi, psiGrade,
+                    deteriorCount, deterioratingRatio: +deterioratingRatio.toFixed(3),
+                    summary
+                };
+            };
+            // ============================================================
+            // end v5.29 EXECUTIVE DECISION ENGINE
+            // ============================================================
+
             // v5.27 OWNER WORKLOAD & ESCALATION LAYER
             // ============================================================
             window.computeOwnerWorkloads = function(projectList) {
@@ -7805,6 +8041,97 @@ ${conflict.workload.map(w => `
                         </div>`;
                 });
                 el.innerHTML = html;
+            }
+
+
+            // v5.29: Executive Decision Engine panel renderer
+            function renderDecisionPanel(allProjects) {
+                const el = document.getElementById('bod-decision-panel');
+                if (!el) return;
+
+                const d = window.computeDecisionEngine(allProjects);
+                if (!d) {
+                    el.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;">Không có dữ liệu</div>';
+                    return;
+                }
+
+                const PSI_LABELS = { stable:'Stable', moderate:'Moderate',
+                                     unstable:'Unstable', critical:'Critical' };
+                const REC_CLASSES = { reassign:'ede-rec-reassign', escalate:'ede-rec-escalate',
+                                      bottleneck:'ede-rec-bottleneck' };
+
+                // ── PSI gauge ────────────────────────────────────────────
+                const psiHtml = '<div style="display:flex;justify-content:center;margin-bottom:16px;">'
+                    + '<div class="ede-psi-ring ede-' + d.psiGrade + '">'
+                    + d.psi
+                    + '<span class="ede-psi-label">' + PSI_LABELS[d.psiGrade] + '</span>'
+                    + '</div></div>';
+
+                // ── Executive summary ────────────────────────────────────
+                const summaryHtml = '<div class="ede-summary-box">'
+                    + '<strong>📋 Executive Summary</strong>'
+                    + d.summary
+                    + '</div>';
+
+                // ── Risk concentration card ──────────────────────────────
+                const pctStr = Math.round(d.concentrationRatio * 100) + '%';
+                const concHtml = '<div class="ede-card">'
+                    + '<div class="ede-card-title">📊 Risk Concentration</div>'
+                    + '<div style="font-size:0.87em;color:#4a5568;margin-bottom:8px;">'
+                    + d.paretoSet.length + ' project(s) carry <strong>' + pctStr + '</strong> of total portfolio risk'
+                    + ' (top ' + d.top20count + ' = top 20%)'
+                    + '</div>'
+                    + '<div class="ede-pareto-bar"><div class="ede-pareto-fill" style="width:' + Math.min(d.concentrationRatio*100*1.67, 100) + '%;"></div></div>'
+                    + '<div style="font-size:0.8em;color:#718096;margin-top:4px;">'
+                    + d.paretoSet.slice(0,3).map(function(x){
+                        return '<span style="background:#ffebee;color:#c62828;padding:2px 7px;border-radius:6px;margin:2px;display:inline-block;">'
+                            + x.p.name.slice(0,22) + ' (' + x.score + ')</span>';
+                    }).join('')
+                    + (d.paretoSet.length > 3 ? '<span style="color:#718096;"> +' + (d.paretoSet.length-3) + ' more</span>' : '')
+                    + '</div>'
+                    + '</div>';
+
+                // ── Owner bottleneck card ────────────────────────────────
+                const ownerRows = Object.values(d.ownerRiskMap)
+                    .sort(function(a,b){ return b.share - a.share; })
+                    .slice(0, 5)
+                    .map(function(o) {
+                        const pct = Math.round(o.share * 100);
+                        const c   = pct > 30 ? '#c62828' : pct > 20 ? '#e65100' : '#2e7d32';
+                        return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.85em;">'
+                            + '<span style="min-width:110px;color:#2d3748;font-weight:600;">' + o.name + '</span>'
+                            + '<div style="flex:1;background:#e9ecef;height:6px;border-radius:3px;overflow:hidden;">'
+                            + '<div style="width:' + Math.min(pct*2, 100) + '%;height:100%;background:' + c + ';border-radius:3px;"></div></div>'
+                            + '<span style="min-width:36px;text-align:right;font-weight:700;color:' + c + ';">' + pct + '%</span>'
+                            + '</div>';
+                    }).join('');
+
+                const bottHtml = '<div class="ede-card">'
+                    + '<div class="ede-card-title">👤 Owner Risk Share'
+                    + (d.hasBottleneck ? ' <span style="background:#ffebee;color:#b71c1c;padding:2px 8px;border-radius:8px;font-size:0.8em;text-transform:none;letter-spacing:0;">⚡ Bottleneck</span>' : '')
+                    + '</div>'
+                    + ownerRows
+                    + '<div style="font-size:0.78em;color:#718096;margin-top:4px;">Threshold: >30% = structural risk</div>'
+                    + '</div>';
+
+                // ── Recommendations ──────────────────────────────────────
+                const recHtml = d.recommendations.length === 0
+                    ? '<div style="text-align:center;padding:16px;color:#059669;font-size:0.9em;">✅ No critical recommendations at this time</div>'
+                    : d.recommendations.map(function(r) {
+                        return '<div class="ede-rec ' + (REC_CLASSES[r.type] || 'ede-rec-bottleneck') + '">'
+                            + '<span class="ede-rec-icon">' + r.icon + '</span>'
+                            + '<div class="ede-rec-body">'
+                            + '<strong>' + r.title + '</strong>'
+                            + '<span>' + r.detail + '</span>'
+                            + '</div></div>';
+                    }).join('');
+
+                el.innerHTML = psiHtml + summaryHtml
+                    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+                    + concHtml + bottHtml + '</div>'
+                    + '<div class="ede-card" style="margin-top:0;">'
+                    + '<div class="ede-card-title">🎯 Decision Recommendations</div>'
+                    + recHtml + '</div>';
             }
 
             window.closeConflictsModal = function() {
@@ -12107,8 +12434,8 @@ ${conflict.workload.map(w => `
         <span class="version-badge-icon">ℹ️</span>
         <span>v5.25</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.28 - Predictive Risk Intelligence</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.28 - Predictive Risk Intelligence Layer</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.29 - Executive Decision Engine</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.29 - Executive Decision Engine</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-01</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
