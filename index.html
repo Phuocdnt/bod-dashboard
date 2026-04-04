@@ -3656,6 +3656,18 @@
                     <label>Mô Tả</label>
                     <textarea id="project-description" placeholder="Mô tả chi tiết dự án..."></textarea>
                 </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        📋 Tình Trạng Hiện Tại (Last Status)
+                        <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">Cập Nhật Nhanh</span>
+                    </label>
+                    <textarea id="project-last-status" placeholder="Mô tả tình trạng hiện tại của dự án..."
+                              style="min-height: 80px; border-left: 3px solid #3b82f6;"></textarea>
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+                        Ghi chú nhanh về trạng thái, tiến độ, hoặc vấn đề đang xử lý
+                    </div>
+                </div>
                 
                 <!-- TEAM SECTION - REMOVED FOR V5.11 -->
                 <!--
@@ -6636,6 +6648,13 @@ window.projects = projects;
                                                    padding: 4px 12px; border-radius: 12px; font-size: 0.85em; 
                                                    font-weight: 600; margin-top: 8px;">${config.label}</span>`;
                                 })()}
+                                ${project.lastStatus ? `
+                                    <div style="margin-top: 10px; padding: 8px 12px; background: #eff6ff;
+                                                border-left: 3px solid #3b82f6; border-radius: 0 8px 8px 0;
+                                                font-size: 0.85em; color: #1e40af; line-height: 1.5;">
+                                        <span style="font-weight: 600;">📋 Tình trạng:</span> ${project.lastStatus}
+                                    </div>
+                                ` : ''}
                                 ${(() => {
                                     // v5.25 SOP-001: Show SOP badge when project has survey data
                                     let badges = '';
@@ -9428,6 +9447,7 @@ ${conflict.workload.map(w => `
                 const _f_project_name = document.getElementById('project-name'); if (_f_project_name) _f_project_name.value = currentEditingProject?.name || '';
                 const _f_project_customer = document.getElementById('project-customer'); if (_f_project_customer) _f_project_customer.value = currentEditingProject?.customer || '';
                 const _f_project_description = document.getElementById('project-description'); if (_f_project_description) _f_project_description.value = currentEditingProject?.description || '';
+                const _ls = document.getElementById('project-last-status'); if (_ls) _ls.value = currentEditingProject?.lastStatus || '';
                 
                 // v5.11: Budget field - Admin can edit, BOD can view only
                 const budgetField = document.getElementById('budget-field');
@@ -10829,6 +10849,7 @@ ${conflict.workload.map(w => `
                 
                 const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
+                const lastStatus = document.getElementById('project-last-status')?.value.trim() || '';
                 // v5.11: Team section removed
                 // const leader = document.getElementById('project-leader').value;
                 const status = document.getElementById('project-status').value || 'planning';
@@ -10959,6 +10980,7 @@ ${conflict.workload.map(w => `
                     currentEditingProject.pm = pm;
                     currentEditingProject.actualValue = actualValue ? parseFloat(actualValue) : null;
                     currentEditingProject.description = description;
+                    currentEditingProject.lastStatus = lastStatus;
                     // v5.11: Team section removed
                     // currentEditingProject.leader = leader;
                     currentEditingProject.status = status;
@@ -10992,6 +11014,7 @@ ${conflict.workload.map(w => `
                         pm: pm,
                         actualValue: actualValue ? parseFloat(actualValue) : null,
                         description: description,
+                        lastStatus: lastStatus,
                         // v5.11: Team section removed
                         // leader: leader,
                         status: status,
