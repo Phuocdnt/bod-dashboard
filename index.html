@@ -7548,6 +7548,7 @@ ${conflict.workload.map(w => `
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Status</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Progress</th>
                             <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef;">Risk Score</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef; min-width: 200px;">📋 Last Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -7608,6 +7609,16 @@ ${conflict.workload.map(w => `
                                                 return `<span style="background:${_c}22;color:${_c};padding:4px 10px;border-radius:12px;font-weight:700;font-size:0.9em;">${_r.score}</span>`;
                                             } catch(e){ return '-'; }
                                         })()}
+                                    </td>
+                                    <td style="padding: 12px; max-width: 280px;">
+                                        ${project.lastStatus
+                                            ? `<div style="font-size: 0.85em; color: #1e40af; background: #eff6ff;
+                                                          padding: 6px 10px; border-radius: 6px;
+                                                          border-left: 3px solid #3b82f6;
+                                                          line-height: 1.5; max-height: 72px;
+                                                          overflow: hidden; text-overflow: ellipsis;">
+                                                       ${project.lastStatus}</div>`
+                                            : '<span style="color:#d1d5db;">—</span>'}
                                     </td>
                                 </tr>
                             `;
