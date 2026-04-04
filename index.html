@@ -2536,6 +2536,9 @@
                     <button class="btn" onclick="nextMonth()">â–¶</button>
                     <button class="btn" onclick="todayMonth()">Hôm Nay</button>
                 </div>
+                <div style="font-size:0.82em;color:#718096;display:flex;align-items:center;gap:6px;">
+                    💡 Click 1 ngày để xem chi tiết &nbsp;·&nbsp; <kbd style="background:#f3f4f6;padding:1px 6px;border-radius:4px;border:1px solid #ddd;">Shift</kbd>+Click để chọn khoảng thời gian
+                </div>
                 <select id="calendar-filter-person" onchange="renderCalendar()" style="padding: 10px; border-radius: 8px; border: 2px solid #e9ecef;"><option value="">Tất cả nhân sự</option></select>
             </div>
             <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
@@ -3381,6 +3384,15 @@
                         </div>
                     </div>
             </div>
+        </div>
+
+        <!-- Calendar Detail Panel -->
+        <div id="cal-detail-panel">
+            <div class="cal-dp-header">
+                <span style="font-size:1.05em;font-weight:700;" id="cal-dp-title">📅 Chi tiết ngày</span>
+                <button class="cal-dp-close" onclick="closeCalDetailPanel()">✕</button>
+            </div>
+            <div class="cal-dp-body" id="cal-dp-body"></div>
         </div>
 
         <!-- Nhân Sự Tab -->
@@ -9242,7 +9254,8 @@ ${conflict.workload.map(w => `
                     html += `
                         <div class="calendar-day-cell ${dayEvents.length > 3 ? 'has-many-events' : ''}" 
                              data-date="${dateKey}"
-                             style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; 
+                             onclick="handleCalDayClick('${dateKey}', event)"
+                             style="min-height: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 10px; cursor:pointer;
                             ${!isCurrentMonth ? 'background: #f8f9fa; opacity: 0.5;' : 'background: white;'}
                             ${isToday ? 'border-color: #667eea; border-width: 3px; background: rgba(102, 126, 234, 0.05);' : ''}
                             ${hasConflict ? 'border-color: #f57c00; border-width: 2px;' : ''}
@@ -9302,6 +9315,252 @@ ${conflict.workload.map(w => `
                 
                 document.getElementById('calendar-grid').innerHTML = html;
             }
+
+
+            // ============================================================
+            // CALENDAR SELECTION & DETAIL PANEL
+            // ============================================================
+            var _calSelStart = null;
+            var _calSelEnd   = null;
+            var _calEvMap    = {};   // eventsMap snapshot for detail panel
+
+            window.handleCalDayClick = function(dateKey, event) {
+                event.stopPropagation();
+                if (!_calSelStart || !event.shiftKey) {
+                    _calSelStart = dateKey;
+                    _calSelEnd   = dateKey;
+                } else {
+                    var sorted = [_calSelStart, dateKey].sort();
+                    _calSelStart = sorted[0];
+                    _calSelEnd   = sorted[1];
+                }
+                _calHighlight();
+                _calShowPanel();
+            };
+
+            function _calHighlight() {
+                document.querySelectorAll('.calendar-day-cell').forEach(function(el) {
+                    el.classList.remove('cal-day-selected','cal-day-in-range','cal-day-range-start','cal-day-range-end');
+                });
+                if (!_calSelStart) return;
+                var s = _calSelStart, e = _calSelEnd || _calSelStart;
+                document.querySelectorAll('.calendar-day-cell').forEach(function(el) {
+                    var d = el.dataset.date;
+                    if (!d) return;
+                    if (d === s && d === e)  el.classList.add('cal-day-selected');
+                    else if (d === s)        el.classList.add('cal-day-selected','cal-day-range-start');
+                    else if (d === e)        el.classList.add('cal-day-selected','cal-day-range-end');
+                    else if (d > s && d < e) el.classList.add('cal-day-in-range');
+                });
+            }
+
+            function _calDates(s, e) {
+                var dates = [], cur = new Date(s), last = new Date(e);
+                while (cur <= last) {
+                    dates.push(cur.toISOString().split('T')[0]);
+                    cur.setDate(cur.getDate() + 1);
+                }
+                return dates;
+            }
+
+            function _calShowPanel() {
+                var panel = document.getElementById('cal-detail-panel');
+                var titleEl = document.getElementById('cal-dp-title');
+                var bodyEl  = document.getElementById('cal-dp-body');
+                if (!panel) return;
+
+                var s = _calSelStart, e = _calSelEnd || _calSelStart;
+                var fmt = function(d) {
+                    return new Date(d + 'T00:00:00').toLocaleDateString('vi-VN',
+                        {weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+                };
+                titleEl.textContent = (s === e) ? '📅 ' + fmt(s) : '📅 ' + fmt(s) + '  →  ' + fmt(e);
+
+                // Collect events from snapshot
+                var dates = _calDates(s, e);
+                var allEvts = [];
+                dates.forEach(function(d) {
+                    (_calEvMap[d] || []).forEach(function(ev) {
+                        allEvts.push(Object.assign({}, ev, {_date: d}));
+                    });
+                });
+
+                if (!allEvts.length) {
+                    bodyEl.innerHTML = '<div class="cal-dp-empty">📭 Không có công việc nào trong khoảng thời gian này</div>';
+                    panel.classList.add('show');
+                    panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+                    return;
+                }
+
+                // Stats
+                var people   = [...new Set(allEvts.map(function(ev){return ev.person;}))];
+                var projects = [...new Set(allEvts.map(function(ev){return ev.project;}))];
+                var tasks    = [...new Set(allEvts.map(function(ev){return ev.task;}))];
+
+                var statsHtml = '<div class="cal-dp-summary">'
+                    + '<span class="cal-dp-stat">👥 ' + people.length   + ' nhân viên</span>'
+                    + '<span class="cal-dp-stat">📁 ' + projects.length + ' dự án</span>'
+                    + '<span class="cal-dp-stat">📌 ' + tasks.length    + ' loại công việc</span>'
+                    + '<span class="cal-dp-stat">📊 ' + allEvts.length  + ' sự kiện</span>'
+                    + '</div>';
+
+                // Group by person
+                var byPerson = {};
+                allEvts.forEach(function(ev) {
+                    var k = ev.person || 'N/A';
+                    if (!byPerson[k]) byPerson[k] = [];
+                    byPerson[k].push(ev);
+                });
+                Object.values(byPerson).forEach(function(arr) {
+                    arr.sort(function(a,b){return a._date.localeCompare(b._date);});
+                });
+
+                var typeInfo = function(t) {
+                    if (t.includes('start'))  return {cls:'cal-dp-type-start',  txt:'▶ Bắt đầu'};
+                    if (t.includes('end'))    return {cls:'cal-dp-type-end',    txt:'✅ Kết thúc'};
+                    if (t.includes('survey')) return {cls:'cal-dp-date-badge',  txt:'📋 Survey'};
+                    return                          {cls:'cal-dp-type-ongoing', txt:'⏳ Đang thực hiện'};
+                };
+                var fmtShort = function(d) {
+                    return new Date(d+'T00:00:00').toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
+                };
+
+                var peopleHtml = Object.entries(byPerson).map(function(entry) {
+                    var name = entry[0], evts = entry[1];
+                    var rows = evts.map(function(ev) {
+                        var ti = typeInfo(ev.type || '');
+                        var iqr = ev.projectCode || ev.project.split('-')[0].trim();
+                        var teamStr = (ev.teamMembers && ev.teamMembers.length)
+                            ? ' &nbsp;·&nbsp; 👥 <span style="color:#718096;">' + ev.teamMembers.join(', ') + '</span>' : '';
+                        return '<div class="cal-dp-task">'
+                            + '<span class="cal-dp-date-badge">' + fmtShort(ev._date) + '</span>'
+                            + '<span class="cal-dp-date-badge ' + ti.cls + '">' + ti.txt + '</span>'
+                            + '<div style="flex:1;min-width:0;">'
+                            + '<div style="font-weight:600;color:#2d3748;">' + (ev.icon||'📌') + ' ' + ev.task + '</div>'
+                            + '<div style="color:#667eea;font-size:0.88em;margin-top:2px;">📁 ' + iqr + teamStr + '</div>'
+                            + '</div></div>';
+                    }).join('');
+                    return '<div class="cal-dp-person-block">'
+                        + '<div class="cal-dp-person-header">👤 ' + name
+                        + '<span style="background:#667eea22;color:#667eea;padding:2px 8px;border-radius:10px;font-size:0.82em;font-weight:700;margin-left:auto;">'
+                        + evts.length + ' việc</span></div>' + rows + '</div>';
+                }).join('');
+
+                bodyEl.innerHTML = statsHtml + peopleHtml;
+                panel.classList.add('show');
+                panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+            }
+
+            window.closeCalDetailPanel = function() {
+                var p = document.getElementById('cal-detail-panel');
+                if (p) p.classList.remove('show');
+                _calSelStart = null; _calSelEnd = null;
+                _calHighlight();
+            };
+
+            // Rebuild event snapshot after each renderCalendar call
+            function _calRebuildMap() {
+                var vp = typeof getVisibleProjects === 'function' ? getVisibleProjects() : (window.projects || []);
+                var filterPerson = (document.getElementById('calendar-filter-person') || {}).value || '';
+                var map = {};
+                var add = function(dk, ev) { if (!map[dk]) map[dk] = []; map[dk].push(ev); };
+
+                vp.forEach(function(project) {
+                    var st = (project.status || '').toLowerCase();
+                    if (st === 'completed' || st === 'cancelled') return;
+
+                    // Milestones
+                    (project.milestones || []).forEach(function(ms) {
+                        if (filterPerson) {
+                            var ok = ms.person === filterPerson ||
+                                     (ms.assignedMembers || []).includes(filterPerson);
+                            if (!ok) return;
+                        } else if (!ms.person) return;
+
+                        var msInfo = (window.STANDARD_MILESTONES || []).find(function(m){return m.id===ms.id;}) || {};
+                        var person = (window.teamMembers||[]).find(function(m){return m.id===ms.person;});
+                        var disp = filterPerson
+                            ? ((window.teamMembers||[]).find(function(m){return m.id===filterPerson;})||{}).name||'N/A'
+                            : (person ? person.name : 'N/A');
+                        var teams = (ms.assignedMembers||[]).map(function(mid){
+                            var m=(window.teamMembers||[]).find(function(x){return x.id===mid;});
+                            return m?m.name:null;}).filter(Boolean);
+                        var pcode = project.name.split('-')[0].trim();
+                        var base = {project:project.name,projectCode:pcode,task:msInfo.name||ms.id,
+                                    person:disp,personId:ms.person,icon:msInfo.icon||'📌',teamMembers:teams};
+                        var s = ms.actualStartDate || ms.planStartDate;
+                        var e = ms.actualCompleteDate || ms.planCompleteDate;
+                        if (s) add(s, Object.assign({},base,{type:'milestone-start'}));
+                        if (e) add(e, Object.assign({},base,{type:'milestone-end'}));
+                        if (s && e) {
+                            var cur = new Date(s); cur.setDate(cur.getDate()+1);
+                            var last = new Date(e);
+                            while (cur < last) {
+                                add(cur.toISOString().split('T')[0], Object.assign({},base,{type:'milestone-ongoing'}));
+                                cur.setDate(cur.getDate()+1);
+                            }
+                        }
+                    });
+
+                    // Surveys
+                    Object.entries(project.surveyRounds || {}).forEach(function(entry) {
+                        var key=entry[0], sv=entry[1];
+                        if (filterPerson && sv.person !== filterPerson) return;
+                        if (!sv.person) return;
+                        var person = (window.teamMembers||[]).find(function(m){return m.id===sv.person;});
+                        var pcode = project.name.split('-')[0].trim();
+                        if (sv.startDate) add(sv.startDate, {type:'survey',project:project.name,projectCode:pcode,
+                            task:key.replace('survey','Survey '),person:person?person.name:'N/A',
+                            personId:sv.person,icon:'📋',teamMembers:[]});
+                    });
+
+                    // Installation phases
+                    (project.installationPhases || []).forEach(function(inst) {
+                        if (filterPerson) {
+                            var ok = inst.person === filterPerson ||
+                                     (inst.assignedMembers||[]).includes(filterPerson);
+                            if (!ok) return;
+                        } else if (!inst.person) return;
+                        var person = (window.teamMembers||[]).find(function(m){return m.id===inst.person;});
+                        var disp = filterPerson
+                            ? ((window.teamMembers||[]).find(function(m){return m.id===filterPerson;})||{}).name||'N/A'
+                            : (person?person.name:'N/A');
+                        var teams = (inst.assignedMembers||[]).map(function(mid){
+                            var m=(window.teamMembers||[]).find(function(x){return x.id===mid;});
+                            return m?m.name:null;}).filter(Boolean);
+                        var pcode = project.name.split('-')[0].trim();
+                        var base = {project:project.name,projectCode:pcode,
+                                    task:inst.name||'Installation '+inst.number,
+                                    person:disp,personId:inst.person,icon:'🔧',teamMembers:teams};
+                        var s = inst.actualStartDate || inst.planStartDate;
+                        var e = inst.actualCompleteDate || inst.planCompleteDate;
+                        if (s) add(s, Object.assign({},base,{type:'installation-start'}));
+                        if (e) add(e, Object.assign({},base,{type:'installation-end'}));
+                        if (s && e) {
+                            var cur = new Date(s); cur.setDate(cur.getDate()+1);
+                            var last = new Date(e);
+                            while (cur < last) {
+                                add(cur.toISOString().split('T')[0], Object.assign({},base,{type:'installation-ongoing'}));
+                                cur.setDate(cur.getDate()+1);
+                            }
+                        }
+                    });
+                });
+                _calEvMap = map;
+            }
+
+            // Hook into renderCalendar to rebuild map after each render
+            (function() {
+                var _orig = window.renderCalendar;
+                window.renderCalendar = function() {
+                    _orig.apply(this, arguments);
+                    _calRebuildMap();
+                    if (_calSelStart) _calHighlight();
+                };
+            })();
+            // ============================================================
+            // end CALENDAR SELECTION & DETAIL PANEL
+            // ============================================================
 
             window.previousMonth = function() {
                 currentDate.setMonth(currentDate.getMonth() - 1);
