@@ -2268,6 +2268,51 @@
         .ede-summary-box strong { color: #c5cae9; font-size: 0.8em;
             text-transform: uppercase; letter-spacing: 0.06em; display: block;
             margin-bottom: 6px; }
+
+        /* ===== CALENDAR DATE SELECTION ===== */
+        .cal-day-selected {
+            border-color: #667eea !important; border-width: 2px !important;
+            background: rgba(102, 126, 234, 0.12) !important; opacity: 1 !important;
+        }
+        .cal-day-in-range {
+            border-color: #a5b4fc !important;
+            background: rgba(102, 126, 234, 0.06) !important; opacity: 1 !important;
+        }
+        .cal-day-range-start { border-left: 3px solid #667eea !important; }
+        .cal-day-range-end   { border-right: 3px solid #667eea !important; }
+        #cal-detail-panel {
+            display: none; margin-top: 20px;
+            border: 2px solid #667eea; border-radius: 14px;
+            overflow: hidden; box-shadow: 0 4px 20px rgba(102,126,234,0.15);
+        }
+        #cal-detail-panel.show { display: block; }
+        .cal-dp-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 16px 22px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .cal-dp-close {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            font-size: 1.1em; line-height: 1;
+        }
+        .cal-dp-body { background: white; padding: 18px 22px; max-height: 520px; overflow-y: auto; }
+        .cal-dp-person-block { margin-bottom: 14px; border: 1px solid #e9ecef; border-radius: 10px; overflow: hidden; }
+        .cal-dp-person-header {
+            background: #f8f9fa; padding: 9px 14px;
+            font-weight: 700; font-size: 0.9em; color: #2d3748;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .cal-dp-task { padding: 9px 14px; border-top: 1px solid #f0f0f0; font-size: 0.88em; display: flex; gap: 8px; align-items: flex-start; }
+        .cal-dp-task:hover { background: #fafbff; }
+        .cal-dp-date-badge { background:#e0e7ff;color:#3730a3;padding:2px 7px;border-radius:6px;font-size:0.79em;font-weight:600;white-space:nowrap;flex-shrink:0; }
+        .cal-dp-type-start  { background:#dbeafe;color:#1e40af; }
+        .cal-dp-type-end    { background:#dcfce7;color:#166534; }
+        .cal-dp-type-ongoing{ background:#fef3c7;color:#92400e; }
+        .cal-dp-summary { display:flex;gap:10px;flex-wrap:wrap;padding:0 0 14px;border-bottom:1px solid #e9ecef;margin-bottom:14px; }
+        .cal-dp-stat { background:#f3f4f6;border-radius:8px;padding:6px 14px;font-size:0.85em;font-weight:600;color:#374151; }
+        .cal-dp-empty { text-align:center;padding:30px;color:#a0aec0;font-size:0.9em; }
+        /* ===== end calendar selection ===== */
         /* ===== end v5.29 ===== */
     </style>
 </head>
