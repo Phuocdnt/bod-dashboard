@@ -7301,6 +7301,12 @@ ${conflict.workload.map(w => `
                                     <div style="font-size:0.8em;color:${border};margin-top:6px;font-weight:600;">
                                         ➡️ ${r.action}${r.override === 'blocker' ? ' ⚠️ (Blocker override)' : ''}
                                     </div>
+                                    ${p.lastStatus ? `
+                                        <div style='margin-top:8px;padding:7px 10px;background:#eff6ff;
+                                                    border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;
+                                                    font-size:0.82em;color:#1e40af;line-height:1.5;'>
+                                            <span style='font-weight:700;'>📋 Tình trạng:</span> ${p.lastStatus}
+                                        </div>` : ''}
                                 </div>
                             `;
                         });
@@ -8057,6 +8063,16 @@ ${conflict.workload.map(w => `
                             <div style="font-size:0.75em;color:#718096;text-align:right;min-width:90px;">
                                 ${r.action.length > 25 ? r.action.slice(0,25)+'...' : r.action}
                             </div>
+                            ${p.lastStatus ? `
+                                <div style='width:100%;margin-top:5px;padding:5px 8px;
+                                            background:#eff6ff;border-left:2px solid #3b82f6;
+                                            border-radius:0 4px 4px 0;font-size:0.78em;
+                                            color:#1e40af;line-height:1.4;
+                                            white-space:normal;overflow:hidden;
+                                            display:-webkit-box;-webkit-line-clamp:2;
+                                            -webkit-box-orient:vertical;'>
+                                    📋 ${p.lastStatus}
+                                </div>` : ''}
                         </div>`;
                 });
                 el.innerHTML = html;
