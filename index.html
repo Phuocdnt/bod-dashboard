@@ -3697,12 +3697,12 @@
                 <div class="form-group">
                     <label>📊 Trạng Thái Dự Án</label>
                     <select id="project-status" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%;">
-                        <option value="planning">📝 Planning (Đang lên kế hoạch)</option>
-                        <option value="in-progress">🔄 In Progress (Đang thực hiện)</option>
-                        <option value="on-hold">⏸️ On Hold (Tạm dừng)</option>
-                        <option value="delayed">⚠️ Delayed (Trễ tiến độ)</option>
-                        <option value="completed">✅ Completed (Hoàn thành)</option>
-                        <option value="cancelled">❌ Cancelled (Đã hủy)</option>
+                        <option value="Planning">📝 Planning (Đang lên kế hoạch)</option>
+                        <option value="In Progress">🔄 In Progress (Đang thực hiện)</option>
+                        <option value="On Hold">⏸️ On Hold (Tạm dừng)</option>
+                        <option value="Delayed">⚠️ Delayed (Trễ tiến độ)</option>
+                        <option value="Completed">✅ Completed (Hoàn thành)</option>
+                        <option value="Cancelled">❌ Cancelled (Đã hủy)</option>
                     </select>
                 </div>
                 
@@ -9531,7 +9531,7 @@ ${conflict.workload.map(w => `
                     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.sale === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
                 
                 // Populate status
-                const _f_status = document.getElementById('project-status'); if (_f_status) _f_status.value = currentEditingProject?.status || 'planning';
+                const _f_status = document.getElementById('project-status'); if (_f_status) _f_status.value = currentEditingProject?.status || 'Planning';
                 
                 // Populate survey person and member selects
                 ['survey1', 'survey2', 'survey3'].forEach(survey => {
@@ -10879,7 +10879,10 @@ ${conflict.workload.map(w => `
                 const lastStatus = document.getElementById('project-last-status')?.value.trim() || '';
                 // v5.11: Team section removed
                 // const leader = document.getElementById('project-leader').value;
-                const status = document.getElementById('project-status').value || 'planning';
+                const _rawStatus = document.getElementById('project-status').value || 'Planning';
+                const _statusMap = {'planning':'Planning','in-progress':'In Progress','on-hold':'On Hold',
+                                    'delayed':'Delayed','completed':'Completed','cancelled':'Cancelled'};
+                const status = _statusMap[_rawStatus] || _rawStatus;
 
                 if (!name) {
                     showToast('❌ Vui lòng điền đầy đủ thông tin!', 'error');
