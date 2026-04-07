@@ -507,9 +507,9 @@ YÊU CẦU BẮT BUỘC:
 3. Nêu tình huống làm việc cụ thể (họp nhóm, deadline, feedback, xung đột...)
 4. Đoạn 2 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
-6. QUAN TRỌNG — Giới hạn độ dài: mỗi item trong array tối đa 35 từ tiếng Việt. blindSpots mỗi đoạn tối đa 60 từ. personalStyle mỗi đoạn tối đa 80 từ. Súc tích, không lặp ý.
+6. QUAN TRỌNG — Giới hạn độ dài: mỗi item trong array tối đa 55 từ tiếng Việt. blindSpots mỗi đoạn tối đa 100 từ. personalStyle mỗi đoạn tối đa 100 từ. Súc tích và cụ thể, không lặp ý.
 
-Trả về JSON thuần (không markdown):\n{"personalStyle":"2 đoạn ngắn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n: (1) tổng quan màu+archetype+IE+điểm số thực, (2) điểm khác biệt so với người cùng màu chính — ví dụ tình huống","strengths":["6 điểm ngắn — màu nguồn gốc + tình huống cụ thể, tối đa 35 từ/điểm"],"weaknesses":["5 điểm ngắn — stress behavior + ví dụ, tối đa 35 từ/điểm"],"valueToTeam":["4 đóng góp gắn với role ${role}, tối đa 25 từ/điểm"],"effectiveCommunication":["4 cách actionable dựa trên IE+màu, tối đa 25 từ/cách"],"communicationBarriers":["3 điều tránh + lý do ngắn gọn, tối đa 25 từ/điểm"],"blindSpots":"2 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n — mỗi đoạn 1 điểm mù đặc thù có ví dụ, tối đa 60 từ/đoạn","development":["5 gợi ý actionable — phát triển chiều yếu, tối đa 30 từ/gợi ý"],"idealEnvironment":["3 môi trường cụ thể, tối đa 25 từ/môi trường"],"managingTips":["4 cách quản lý có ví dụ câu nói/hành động, tối đa 35 từ/cách"]}'
+Trả về JSON thuần (không markdown):\n{"personalStyle":"3 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n: (1) tổng quan màu+archetype+IE+điểm số thực, (2) phong cách lãnh đạo và stress behavior thực tế, (3) điểm khác biệt so với người cùng màu chính — ví dụ tình huống","strengths":["6 điểm — màu nguồn gốc + tình huống cụ thể, tối đa 55 từ/điểm"],"weaknesses":["5 điểm — stress behavior + ví dụ tình huống, tối đa 55 từ/điểm"],"valueToTeam":["5 đóng góp gắn với role ${role}, tối đa 45 từ/điểm"],"effectiveCommunication":["5 cách actionable dựa trên IE+màu, tối đa 45 từ/cách"],"communicationBarriers":["4 điều tránh + lý do, tối đa 45 từ/điểm"],"blindSpots":"2 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n — mỗi đoạn 1 điểm mù đặc thù có ví dụ tình huống, tối đa 100 từ/đoạn","development":["5 gợi ý actionable — phát triển chiều yếu, tối đa 45 từ/gợi ý"],"idealEnvironment":["4 môi trường cụ thể, tối đa 40 từ/môi trường"],"managingTips":["5 cách quản lý có ví dụ câu nói/hành động, tối đa 55 từ/cách"]}'
 `;
   try{
     // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
@@ -727,7 +727,7 @@ function renderProfile(name,role,dept,d,n){
   const SL={r:'⚔️ Kiểm soát tăng cao',y:'🌀 Phân tán, hời hợt',g:'🐢 Thu mình, im lặng',b:'🔍 Phân tích quá mức'};
   const bars=['r','y','g','b'].map(k=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[k].c}">${CI[k].e} ${CI[k].l}</span><span class="cb-pct" style="color:${CI[k].c}">${pct(k)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${pct(k)}%;background:${CI[k].c}"></div></div></div>`).join('');
   const list=(arr,cls='')=>`<ul class="profile-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-  const paras=t=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
+  const paras=t=>(t||'').split(/\\n|\n/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
   const sec2=(ic,title,body)=>`<div class="profile-section"><div class="ps-label">${ic} ${title}</div><div class="ps-content">${body}</div></div>`;
   document.getElementById('profileContainer').innerHTML=`
     <div class="card">
