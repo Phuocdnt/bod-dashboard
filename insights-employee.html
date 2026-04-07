@@ -532,12 +532,14 @@ Trả về JSON thuần (không markdown):\n{"personalStyle":"2 đoạn ngắn, 
     }
     if(!raw)throw new Error('Worker trả về response rỗng');
 
-    // Kiểm tra stop_reason — nếu max_tokens thì JSON có thể bị cắt
+    // ── DIAGNOSTIC LOGGING ──
+    const inputTk  = data.usage?.input_tokens  || 0;
+    const outputTk = data.usage?.output_tokens || 0;
+    console.log(`[AI] model:${data.model||'?'} | stop_reason:${data.stop_reason||'?'} | input_tokens:${inputTk} | output_tokens:${outputTk} | raw_chars:${raw.length}`);
     if(data.stop_reason==='max_tokens'){
-      console.error('[AI] TRUNCATED! stop_reason=max_tokens. Tăng max_tokens hoặc rút gọn prompt.');
-      throw new Error('AI response bị cắt (stop_reason=max_tokens). Vui lòng thử lại.');
+      console.error(`[AI] TRUNCATED at ${outputTk} output tokens (max_tokens sent: ${claudePayload.max_tokens}). Raw tail: ...${raw.slice(-200)}`);
+      throw new Error(`AI bị cắt ở ${outputTk} tokens (giới hạn ${claudePayload.max_tokens}). Vui lòng thử lại.`);
     }
-    console.log('[AI] raw length:', raw.length, '| stop_reason:', data.stop_reason||'unknown', '| first 100:', raw.slice(0,100));
 
     // Hàm repair JSON hoàn chỉnh:
     // - Escape literal newline/tab trong string values
