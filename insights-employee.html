@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- saved from url=(0063)https://phuocdnt.github.io/bod-dashboard/insights-employee.html -->
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -196,7 +195,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       </div>
     </div>
     <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát → 48 câu hỏi</button>
-    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏰ Khoảng 15–20 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏰ Khoảng 15–20 phút  ·  Không có câu trả lời đúng/sai</p>
   </div>
   <!-- STEP 1: Questions -->
   <div class="step" id="s1">
@@ -291,6 +290,42 @@ const CONFIG = {
     document.getElementById('s0').style.display = 'none';
     document.querySelector('.hdr').style.display = 'none';
   });
+})();
+
+// ══════════════════════════════════════
+// PREFILL TỪ INVITE LINK (open mode)
+// Hỗ trợ ?name=...&role=...&dept=...
+// Hoạt động khi inviteTokens = {} (open mode)
+// ══════════════════════════════════════
+(function prefillFromInviteLink(){
+  var tokens = CONFIG.inviteTokens || {};
+  if(Object.keys(tokens).length > 0) return; // token mode đang bật → bỏ qua
+  var p = new URLSearchParams(location.search);
+  var name = p.get('name'), role = p.get('role'), dept = p.get('dept');
+  if(!name && !role) return;
+  function doFill(){
+    var iName = document.getElementById('iName');
+    var iRole = document.getElementById('iRole');
+    var iDept = document.getElementById('iDept');
+    if(iName && name){ iName.value = name; iName.readOnly = true; iName.style.opacity = '.75'; }
+    if(iRole && role){ iRole.value = role; iRole.readOnly = true; iRole.style.opacity = '.75'; }
+    if(iDept && dept){
+      for(var i=0; i<iDept.options.length; i++){
+        if(iDept.options[i].text === dept || iDept.options[i].value === dept){
+          iDept.selectedIndex = i; iDept.disabled = true; iDept.style.opacity = '.75'; break;
+        }
+      }
+    }
+    // Hiện identity banner
+    var banner = document.getElementById('identityBanner');
+    var bannerName = document.getElementById('bannerName');
+    if(banner && bannerName && name){
+      banner.style.display = 'flex';
+      bannerName.textContent = name;
+    }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', doFill);
+  else doFill();
 })();
 </script>
 <script>
