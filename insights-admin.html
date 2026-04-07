@@ -157,6 +157,8 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 .ibtn-open{background:rgba(59,179,113,.15);color:#3CB371;border:1px solid rgba(59,179,113,.3) !important}
 .ibtn-open:hover{background:rgba(59,179,113,.28)}
 .inv-note{font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.6;padding:10px 12px;background:rgba(245,166,35,.06);border-radius:8px;border:1px solid rgba(245,166,35,.15)}
+.btn-clear-ai{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:10px;background:var(--sur2);color:var(--muted);border:1px solid var(--bdr);cursor:pointer;font-family:var(--ff);font-size:13px;transition:all .2s}
+.btn-clear-ai:hover{color:#f87171;border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.08)}
 @media(max-width:480px){.energy-row,.p2col,.dims3{grid-template-columns:1fr}.ai-list{grid-template-columns:1fr}}
 </style>
 </head>
@@ -235,6 +237,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     </div>
     <div class="modal-footer">
       <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
+      <button class="btn-clear-ai" id="btnClearAI" onclick="clearAIProfile()" title="Xoá AI Narrative để tạo lại lần sau" style="display:none">🗑 Xoá AI</button>
       <button class="btn-close2" onclick="closeModal()">Đóng</button>
     </div>
   </div>
@@ -548,11 +551,29 @@ function openModal(id){
     <div class="m-label" style="margin-top:14px">Giao Tiếp & Quản Lý</div>
     <div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4><ul>${p.t.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
   const tabAI=document.getElementById('mTabAI');
-  if(item.AIProfile){tabAI.style.display='';renderAIPane(item.AIProfile);}
-  else{tabAI.style.display='none';}
+  const btnClearAI=document.getElementById('btnClearAI');
+  if(item.AIProfile){tabAI.style.display='';renderAIPane(item.AIProfile);btnClearAI.style.display='';}
+  else{tabAI.style.display='none';btnClearAI.style.display='none';}
   mTab('scores');
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
+}
+
+async function clearAIProfile(){
+  const item=currentItem;
+  if(!item){toast('Không tìm thấy hồ sơ',true);return;}
+  if(!confirm(`Xoá AI Narrative của ${item.Title||'người này'}?\nProfile sẽ được tạo lại lần tiếp theo xuất PDF.`))return;
+  try{
+    await fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({updateMode:true,id:item.ID,aiProfile:''})
+    });
+    item.AIProfile=null;
+    document.getElementById('mTabAI').style.display='none';
+    document.getElementById('btnClearAI').style.display='none';
+    toast(`✅ Đã xoá AI Narrative của ${item.Title||''}. Sẽ tạo lại khi xuất PDF.`);
+  }catch(e){
+    toast('❌ Lỗi: '+e.message,true);
+  }
 }
 
 function renderAIPane(profile){
