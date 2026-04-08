@@ -6422,14 +6422,26 @@ window.projects = projects;
                 const delayed = calculateDelayedProjects();
                 
                 // Calculate counts by status
-                // v5.36: normalize old lowercase/hyphenated statuses
-                const _ns = s => { const m = {'in-progress':'In Progress','in progress':'In Progress','planning':'Planning','completed':'Completed','cancelled':'Canceled','on-hold':'On Hold','on hold':'On Hold','delayed':'Delayed'}; return m[(s||'').toLowerCase()] || s || 'Planning'; };
+                // v5.36b: normalize all old status formats to canonical Title Case
+                const _ns = s => {
+                    const m = {
+                        'in-progress':'In Progress', 'in progress':'In Progress',
+                        'planning':'Planning',
+                        'completed':'Completed',
+                        'cancelled':'Cancelled', 'canceled':'Cancelled',
+                        'on-hold':'On Hold', 'on hold':'On Hold',
+                        'delayed':'Delayed'
+                    };
+                    return m[(s||'').toLowerCase()] || s || 'Planning';
+                };
                 const inProgressCount = visibleProjects.filter(p => _ns(p.status) === 'In Progress').length;
                 const planningCount   = visibleProjects.filter(p => _ns(p.status) === 'Planning').length;
                 const completedCount  = visibleProjects.filter(p => _ns(p.status) === 'Completed').length;
-                const cancelledCount  = visibleProjects.filter(p => _ns(p.status) === 'Cancelled' || _ns(p.status) === 'Canceled').length;
                 const onHoldCount     = visibleProjects.filter(p => _ns(p.status) === 'On Hold').length;
+                const cancelledCount  = visibleProjects.filter(p => _ns(p.status) === 'Cancelled').length;
                 const delayedCount    = visibleProjects.filter(p => _ns(p.status) === 'Delayed').length;
+                // Sanity: sum should equal total
+                // delayedCount included in Cancelled card display
                 
                 const statsHtml = `
                     <div class="stat-card">
@@ -6476,8 +6488,8 @@ window.projects = projects;
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>🚫 Cancelled</h3>
-                        <div class="value">${cancelledCount}</div>
-                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
+                        <div class="value">${cancelledCount + delayedCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">${delayedCount > 0 ? cancelledCount + ' cancelled + ' + delayedCount + ' delayed' : 'Click để xem'}</p>
                     </div>
                     <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -12868,10 +12880,10 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.36 -->
+    <!-- Version Badge v5.36b -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.36</span>
+        <span>v5.36b</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
             <div class="version-info-item"><strong>Version:</strong> v5.36 - Status Count Fix</div>
