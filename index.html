@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.32 - PM & Date Fix</title>
+    <title>BOD Dashboard v5.33 - PM Dropdown Fix</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2355,7 +2355,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.32 - PM & DATE FIX</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.33 - PM DROPDOWN</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -3693,7 +3693,7 @@
                 </div>
                 <div class="form-group">
                     <label>👤 Project Manager (PM)</label>
-                    <input type="text" id="project-pm" placeholder="Nhập tên PM...">
+                    <select id="project-pm"><option value="">Chọn PM...</option></select>
                     <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
                         VD: Nguyễn Văn A
                     </div>
@@ -9879,6 +9879,13 @@ ${conflict.workload.map(w => `
                 if (saleSelect) saleSelect.innerHTML = '<option value="">Chọn Sale...</option>' +
                     teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.sale === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
                 
+                // v5.33: Populate PM dropdown
+                const pmSelect = document.getElementById('project-pm');
+                if (pmSelect) {
+                    pmSelect.innerHTML = '<option value="">Chọn PM...</option>' +
+                        teamMembers.map(m => `<option value="${m.id}" ${currentEditingProject?.pm === m.id ? 'selected' : ''}>${m.name}</option>`).join('');
+                }
+                
                 // Populate status
                 const _f_status = document.getElementById('project-status'); if (_f_status) _f_status.value = currentEditingProject?.status || 'Planning';
                 
@@ -11221,7 +11228,7 @@ ${conflict.workload.map(w => `
                 const customer = document.getElementById('project-customer').value.trim();
                 const budget = document.getElementById('project-budget').value || null;
                 const sale = document.getElementById('project-sale').value;
-                const pm = document.getElementById('project-pm')?.value.trim() || '';
+                const pm = document.getElementById('project-pm')?.value || '';
                 
                 const actualValue = document.getElementById('project-actual-value').value || null;
                 const description = document.getElementById('project-description').value.trim();
@@ -11475,7 +11482,7 @@ ${conflict.workload.map(w => `
                 let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
                 
                 filtered.forEach(project => {
-                    const pmName = project.pm || 'N/A';
+                    const pmName = project.pm ? (teamMembers.find(m => m.id === project.pm)?.name || project.pm) : 'N/A';
                     const customer = project.customer || 'N/A';
                     const sale = project.sale ? teamMembers.find(m => m.id === project.sale) : null;
                     
@@ -11590,6 +11597,7 @@ ${conflict.workload.map(w => `
                 delayed.forEach(project => {
                     const current = getCurrentMilestone(project);
                     const leader = teamMembers.find(m => m.id === project.leader);
+                    const pmName = project.pm ? (teamMembers.find(m => m.id === project.pm)?.name || project.pm) : 'N/A';
                     const customer = project.customer || 'N/A';
                     const sale = project.sale ? teamMembers.find(m => m.id === project.sale) : null;
                     
@@ -12848,13 +12856,13 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.32 -->
+    <!-- Version Badge v5.33 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.32</span>
+        <span>v5.33</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.32 - PM &amp; Date Fix</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.33 - PM Dropdown Fix</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
