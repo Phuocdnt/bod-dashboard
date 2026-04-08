@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.36 - Status Count Fix</title>
+    <title>BOD Dashboard v5.36c - Status Count Fix</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2355,7 +2355,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.36 - STATUS FIX</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.36c - STATUS FIX</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -6422,17 +6422,26 @@ window.projects = projects;
                 const delayed = calculateDelayedProjects();
                 
                 // Calculate counts by status
-                // v5.36b: normalize all old status formats to canonical Title Case
+                // v5.36c: robust normalizer — handles hyphens/underscores/case variants
                 const _ns = s => {
-                    const m = {
-                        'in-progress':'In Progress', 'in progress':'In Progress',
-                        'planning':'Planning',
-                        'completed':'Completed',
-                        'cancelled':'Cancelled', 'canceled':'Cancelled',
-                        'on-hold':'On Hold', 'on hold':'On Hold',
-                        'delayed':'Delayed'
-                    };
-                    return m[(s||'').toLowerCase()] || s || 'Planning';
+                    if (!s) return 'Planning';
+                    const t = s.trim();
+                    // exact match first
+                    if (t==='In Progress' || t==='in-progress') return 'In Progress';
+                    if (t==='Planning' || t==='planning') return 'Planning';
+                    if (t==='Completed' || t==='completed') return 'Completed';
+                    if (t==='On Hold' || t==='on-hold') return 'On Hold';
+                    if (t==='Cancelled' || t==='Canceled') return 'Cancelled';
+                    if (t==='Delayed' || t==='delayed') return 'Delayed';
+                    // fuzzy: replace hyphens/underscores → space, lowercase
+                    const lo = t.toLowerCase().replace(/[-_]+/g,' ').trim();
+                    if (lo==='in progress') return 'In Progress';
+                    if (lo==='planning') return 'Planning';
+                    if (lo==='completed' || lo==='complete') return 'Completed';
+                    if (lo==='on hold' || lo==='onhold') return 'On Hold';
+                    if (lo==='cancelled' || lo==='canceled' || lo==='cancel') return 'Cancelled';
+                    if (lo==='delayed') return 'Delayed';
+                    return 'Other'; // unknown — will be caught by otherCount
                 };
                 const inProgressCount = visibleProjects.filter(p => _ns(p.status) === 'In Progress').length;
                 const planningCount   = visibleProjects.filter(p => _ns(p.status) === 'Planning').length;
@@ -6440,8 +6449,13 @@ window.projects = projects;
                 const onHoldCount     = visibleProjects.filter(p => _ns(p.status) === 'On Hold').length;
                 const cancelledCount  = visibleProjects.filter(p => _ns(p.status) === 'Cancelled').length;
                 const delayedCount    = visibleProjects.filter(p => _ns(p.status) === 'Delayed').length;
-                // Sanity: sum should equal total
-                // delayedCount included in Cancelled card display
+                // catch-all: projects with unrecognized status
+                const otherCount = visibleProjects.length - inProgressCount - planningCount - completedCount - onHoldCount - cancelledCount - delayedCount;
+                // log for debug
+                if (otherCount > 0) {
+                    const others = visibleProjects.filter(p => _ns(p.status) === 'Other');
+                    console.warn('⚠️ [STATUS] ' + otherCount + ' project(s) with unrecognized status:', others.map(p => p.name + ': "' + p.status + '"'));
+                }
                 
                 const statsHtml = `
                     <div class="stat-card">
@@ -6488,8 +6502,8 @@ window.projects = projects;
                          onmouseover="this.style.transform='scale(1.05)'"
                          onmouseout="this.style.transform='scale(1)'">
                         <h3>🚫 Cancelled</h3>
-                        <div class="value">${cancelledCount + delayedCount}</div>
-                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">${delayedCount > 0 ? cancelledCount + ' cancelled + ' + delayedCount + ' delayed' : 'Click để xem'}</p>
+                        <div class="value">${cancelledCount + delayedCount + otherCount}</div>
+                        <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">${(delayedCount+otherCount) > 0 ? cancelledCount + '+' + (delayedCount+otherCount) + ' khác' : 'Click để xem'}</p>
                     </div>
                     <div class="stat-card red" style="cursor: pointer;" onclick="showDelayedProjects()"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -12880,13 +12894,13 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.36b -->
+    <!-- Version Badge v5.36c -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.36b</span>
+        <span>v5.36c</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.36 - Status Count Fix</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.36c - Status Count Fix</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
