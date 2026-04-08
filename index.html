@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.35 - Delete Old Project Fix</title>
+    <title>BOD Dashboard v5.36 - Status Count Fix</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2355,7 +2355,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.35 - DELETE FIX</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.36 - STATUS FIX</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -6422,11 +6422,14 @@ window.projects = projects;
                 const delayed = calculateDelayedProjects();
                 
                 // Calculate counts by status
-                const inProgressCount = visibleProjects.filter(p => p.status === 'In Progress').length;
-                const planningCount = visibleProjects.filter(p => p.status === 'Planning').length;
-                const completedCount = visibleProjects.filter(p => p.status === 'Completed').length;
-                const cancelledCount = visibleProjects.filter(p => p.status === 'Cancelled').length;
-                const onHoldCount = visibleProjects.filter(p => p.status === 'On Hold').length;
+                // v5.36: normalize old lowercase/hyphenated statuses
+                const _ns = s => { const m = {'in-progress':'In Progress','in progress':'In Progress','planning':'Planning','completed':'Completed','cancelled':'Canceled','on-hold':'On Hold','on hold':'On Hold','delayed':'Delayed'}; return m[(s||'').toLowerCase()] || s || 'Planning'; };
+                const inProgressCount = visibleProjects.filter(p => _ns(p.status) === 'In Progress').length;
+                const planningCount   = visibleProjects.filter(p => _ns(p.status) === 'Planning').length;
+                const completedCount  = visibleProjects.filter(p => _ns(p.status) === 'Completed').length;
+                const cancelledCount  = visibleProjects.filter(p => _ns(p.status) === 'Cancelled' || _ns(p.status) === 'Canceled').length;
+                const onHoldCount     = visibleProjects.filter(p => _ns(p.status) === 'On Hold').length;
+                const delayedCount    = visibleProjects.filter(p => _ns(p.status) === 'Delayed').length;
                 
                 const statsHtml = `
                     <div class="stat-card">
@@ -12865,13 +12868,13 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.35 -->
+    <!-- Version Badge v5.36 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.35</span>
+        <span>v5.36</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.35 - Delete Old Project Fix</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.36 - Status Count Fix</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
