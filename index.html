@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.31 - Admin Permission + Login Fix</title>
+    <title>BOD Dashboard v5.29 - Executive Decision Engine</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -2355,7 +2355,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.31 - ADMIN PERMISSION</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.29 - DECISION ENGINE</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -4032,19 +4032,6 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
                         </label>
                     </div>
                 </div>
-                <div class="form-group" id="admin-permission-block">
-                    <div style="background: #fff8e1; padding: 15px; border-radius: 8px; border: 2px solid #f59e0b;">
-                        <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
-                            <input type="checkbox" id="member-is-admin" style="width: 20px; height: 20px; margin-right: 10px;">
-                            <div>
-                                <strong>🔑 Admin (Quản trị hệ thống)</strong>
-                                <div style="font-size: 0.85em; color: #92400e; margin-top: 5px;">
-                                    Toàn quyền: thêm/sửa/xóa tất cả dự án và thành viên. Cấp thận khi gán quyền này.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
                 <div style="display: flex; gap: 10px; margin-top: 30px; justify-content: flex-end;">
                     <button type="button" class="btn" onclick="closeTeamModal()">Há»§y</button>
                     <button type="submit" class="btn btn-primary">
@@ -4136,7 +4123,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
             </div>
 
             <div class="login-footer">
-                v5.31 - Admin Permission + Login Fix<br>
+                v5.29 - Executive Decision Engine<br>
                 Aplus Engineering &amp; Service Ltd
             </div>
         </div>
@@ -4697,14 +4684,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
             }
 
             // Initialize
-            // v5.30: Guard against multiple DOMContentLoaded fires
-            let _appInitialized = false;
             document.addEventListener('DOMContentLoaded', async function() {
-                if (_appInitialized) {
-                    console.warn('⚠️ [PAGE LOAD] DOMContentLoaded called again — ignoring duplicate.');
-                    return;
-                }
-                _appInitialized = true;
                 // CRITICAL: Clear all modal contents on page load to prevent stale data
                 console.log('🧹 [PAGE LOAD] Clearing all modal contents...');
                 document.getElementById('conflicts-list').innerHTML = '';
@@ -4918,23 +4898,10 @@ function initializeDashboard() {
 
             // ============= v5.4 AUTHENTICATION HANDLERS ============= //
             
-            function showLoginScreen() {
-                document.getElementById('login-overlay').classList.remove('hidden');
+            function showLoginScreen() {                document.getElementById('login-overlay').classList.remove('hidden');
                 
                 // Populate user dropdown
                 const loginUserSelect = document.getElementById('login-user');
-                
-                // v5.30: Only rebuild dropdown when we have actual members
-                // Prevents resetting user's selection on repeated showLoginScreen calls
-                const memberCount = teamMembers.filter(m => m.id !== 'admin').length;
-                const adminExists = !!getAdminPassword();
-                if (memberCount === 0 && !adminExists) {
-                    // No data yet — keep existing dropdown (don't wipe it)
-                    console.log('⚠️ [LOGIN] showLoginScreen called but teamMembers empty — skipping dropdown rebuild');
-                    return;
-                }
-                
-                const currentVal = loginUserSelect.value; // preserve selection
                 let options = '<option value="">Chọn user...</option>';
                 
                 // Add admin
@@ -4946,7 +4913,7 @@ function initializeDashboard() {
                 // Add ALL team members (even without password - they can set on first login)
                 teamMembers.forEach(member => {
                     if (member.id !== 'admin') {
-                        const bodBadge = member.isAdmin ? ' 🔑 Admin' : member.isBOD ? ' 👁️ BOD' : '';
+                        const bodBadge = member.isBOD ? ' 👁️ BOD' : '';
                         const roleSuffix = member.role ? ` - ${member.role}` : '';
                         const passwordStatus = member.password ? '' : ' [Chưa set password]';
                         options += `<option value="${member.id}">👤 ${member.name}${bodBadge}${roleSuffix}${passwordStatus}</option>`;
@@ -4954,12 +4921,6 @@ function initializeDashboard() {
                 });
                 
                 loginUserSelect.innerHTML = options;
-                
-                // v5.30: Restore previously selected user if still valid
-                if (currentVal) {
-                    const stillExists = Array.from(loginUserSelect.options).some(o => o.value === currentVal);
-                    if (stillExists) loginUserSelect.value = currentVal;
-                }
             }
 
             function hideLoginScreen() {
@@ -8277,10 +8238,6 @@ ${conflict.workload.map(w => `
                 document.getElementById('member-role').value = member?.role || '';
                 document.getElementById('member-email').value = member?.email || '';
                 document.getElementById('member-is-bod').checked = member?.isBOD || false;
-                document.getElementById('member-is-admin').checked = member?.isAdmin || false;
-                // Hide admin checkbox when editing the main admin account
-                const adminBlock = document.getElementById('admin-permission-block');
-                if (adminBlock) adminBlock.style.display = (memberId === 'admin') ? 'none' : '';
 
                 document.getElementById('team-modal').classList.add('active');
                 document.getElementById('team-modal').dataset.editId = memberId || '';
@@ -8297,7 +8254,6 @@ ${conflict.workload.map(w => `
                 const role = document.getElementById('member-role').value.trim();
                 const email = document.getElementById('member-email').value.trim();
                 const isBOD = document.getElementById('member-is-bod').checked;
-                const isAdmin = document.getElementById('member-is-admin').checked;
                 const editId = document.getElementById('team-modal').dataset.editId;
 
                 if (!name) {
@@ -8312,7 +8268,6 @@ ${conflict.workload.map(w => `
                         member.role = role;
                         member.email = email;
                         member.isBOD = isBOD;
-                        member.isAdmin = isAdmin;
                     }
                 } else {
                     teamMembers.push({
@@ -8328,7 +8283,7 @@ ${conflict.workload.map(w => `
                 saveToStorage();
                 closeTeamModal();
                 renderAll();
-                const roleMsg = isAdmin ? ' (🔑 Admin)' : isBOD ? ' (BOD - Xem tất cả)' : '';
+                const roleMsg = isBOD ? ' (BOD - Xem tất cả)' : '';
                 showToast(`✅ Đã lưu nhân sự${roleMsg}!`, 'success');
             };
 
@@ -9667,7 +9622,7 @@ ${conflict.workload.map(w => `
                                 display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; font-weight: 600; margin: 0 auto 15px;">${initial}</div>
                             <div style="font-size: 1.2em; font-weight: 600; color: #2d3748; margin-bottom: 5px;">
                                 ${member.name}
-                                ${member.isAdmin ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #f59e0b;">🔑 Admin</span>' : member.isBOD ? '<span style="background: #e8eaf6; color: #5e35b1; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #9575cd;">👁️ BOD</span>' : ''}
+                                ${member.isBOD ? '<span style="background: #e8eaf6; color: #5e35b1; padding: 2px 8px; border-radius: 8px; font-size: 0.7em; margin-left: 5px; border: 1px solid #9575cd;">👁️ BOD</span>' : ''}
                             </div>
                             <div style="color: #718096; font-size: 0.9em; margin-bottom: 15px;">${member.role || 'Nhân viên'}</div>
                             <div style="font-size: 0.9em; color: #718096;">📧 ${member.email || 'Chưa có email'}</div>
@@ -11475,12 +11430,19 @@ ${conflict.workload.map(w => `
                 let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
                 
                 filtered.forEach(project => {
-                    const leader = teamMembers.find(m => m.id === project.leader);
                     const customer = project.customer || 'N/A';
                     const sale = project.sale ? teamMembers.find(m => m.id === project.sale) : null;
-                    
-                    const startDate = project.startDate ? new Date(project.startDate).toLocaleDateString('vi-VN') : 'N/A';
-                    const deadline = project.deadline ? new Date(project.deadline).toLocaleDateString('vi-VN') : 'N/A';
+                    const pmName = project.pm || 'N/A';
+
+                    // fix v5.31: derive dates from milestones (project.startDate/deadline do not exist)
+                    const _surveyMs = (project.milestones || []).find(m => m.id === 'survey');
+                    const _survey1 = project.surveyRounds && project.surveyRounds.survey1;
+                    const _firstDate = (_surveyMs && _surveyMs.planStartDate)
+                                    || (_survey1 && _survey1.startDate) || null;
+                    const _handoverMs = (project.milestones || []).find(m => m.id === 'handover');
+                    const _deadlineDate = _handoverMs && _handoverMs.planCompleteDate ? _handoverMs.planCompleteDate : null;
+                    const startDate = _firstDate ? new Date(_firstDate).toLocaleDateString('vi-VN') : 'N/A';
+                    const deadline = _deadlineDate ? new Date(_deadlineDate).toLocaleDateString('vi-VN') : 'N/A';
                     
                     html += `
                         <div style="border: 2px solid ${color}33; border-radius: 12px; padding: 20px; background: white; 
@@ -11493,7 +11455,7 @@ ${conflict.workload.map(w => `
                                 <div>
                                     <h3 style="color: #2d3748; margin-bottom: 5px;">${project.name}</h3>
                                     <div style="color: #718096; font-size: 0.9em;">
-                                        🏢 ${customer} | 👤 ${leader ? leader.name : 'N/A'}${sale ? ` | 💼 ${sale.name}` : ''}
+                                        🏢 ${customer} | 👤 PM: ${pmName}${sale ? ` | 💼 ${sale.name}` : ''}
                                     </div>
                                 </div>
                                 <div style="background: ${color}22; color: ${color}; padding: 8px 15px; border-radius: 20px; 
@@ -11809,7 +11771,6 @@ ${conflict.workload.map(w => `
                 const role = document.getElementById('member-role').value.trim();
                 const email = document.getElementById('member-email').value.trim();
                 const isBOD = document.getElementById('member-is-bod').checked;
-                const isAdmin = document.getElementById('member-is-admin').checked;
                 const editId = document.getElementById('team-modal').dataset.editId;
 
                 if (!name) {
@@ -11824,7 +11785,6 @@ ${conflict.workload.map(w => `
                         member.role = role;
                         member.email = email;
                         member.isBOD = isBOD;
-                        member.isAdmin = isAdmin;
                     }
                 } else {
                     teamMembers.push({
@@ -11840,7 +11800,7 @@ ${conflict.workload.map(w => `
                 saveToStorage();
                 closeTeamModal();
                 renderAll();
-                const roleMsg = isAdmin ? ' (🔑 Admin)' : isBOD ? ' (BOD - Xem tất cả)' : '';
+                const roleMsg = isBOD ? ' (BOD - Xem tất cả)' : '';
                 showToast(`✅ Đã lưu nhân sự${roleMsg}!`, 'success');
             };
 
@@ -12850,8 +12810,8 @@ ${conflict.workload.map(w => `
         <span class="version-badge-icon">ℹ️</span>
         <span>v5.25</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.31 - Admin Permission + Login Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.31 - Admin Permission + Login Fix</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.29 - Executive Decision Engine</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.29 - Executive Decision Engine</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-01</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
