@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.36c - Status Count Fix</title>
+    <title>BOD Dashboard v5.37 - Flagged Watchlist</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -231,6 +231,104 @@
         .stat-card.red {
             background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
         }
+
+        .stat-card.teal {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        }
+
+        /* ===== v5.37 WATCHLIST / FLAG STYLES ===== */
+        .flag-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: #fff; padding: 3px 10px; border-radius: 12px;
+            font-size: 0.78em; font-weight: 700; margin-top: 6px;
+            animation: flagPulse 2s ease-in-out infinite;
+        }
+        @keyframes flagPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+            50%      { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+        }
+        .flag-note-badge {
+            display: block; margin-top: 4px;
+            background: #fff5f5; border-left: 3px solid #ef4444;
+            color: #991b1b; font-size: 0.8em; padding: 4px 8px;
+            border-radius: 0 6px 6px 0; line-height: 1.4;
+        }
+        .quick-flag-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: none; border: 2px solid #e5e7eb;
+            border-radius: 8px; cursor: pointer; padding: 4px 8px;
+            font-size: 1.1em; transition: all 0.2s; z-index: 2;
+            color: #9ca3af;
+        }
+        .quick-flag-btn:hover { border-color: #ef4444; color: #ef4444; transform: scale(1.1); }
+        .quick-flag-btn.active { border-color: #ef4444; background: #fef2f2; color: #ef4444; }
+        .project-card { position: relative; }
+
+        /* Watchlist modal */
+        #watchlist-modal .modal-content { max-width: 980px; }
+        .watchlist-item {
+            background: #fff; border: 2px solid #fecaca;
+            border-radius: 12px; padding: 16px 20px; margin-bottom: 14px;
+            transition: box-shadow 0.2s;
+        }
+        .watchlist-item:hover { box-shadow: 0 4px 16px rgba(220,38,38,0.1); }
+        .watchlist-item-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 12px; flex-wrap: wrap;
+        }
+        .watchlist-item-title {
+            font-weight: 700; font-size: 1.05em; color: #1e293b;
+        }
+        .watchlist-item-meta {
+            font-size: 0.82em; color: #64748b; margin-top: 3px;
+        }
+        .watchlist-item-actions {
+            display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+        }
+        .watchlist-update-row {
+            margin-top: 12px; padding-top: 12px;
+            border-top: 1px solid #fee2e2;
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
+            align-items: end;
+        }
+        .watchlist-update-row label {
+            font-size: 0.8em; color: #64748b; display: block; margin-bottom: 4px;
+        }
+        .watchlist-update-row select,
+        .watchlist-update-row textarea {
+            width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0;
+            border-radius: 6px; font-size: 0.88em; font-family: inherit;
+            resize: none;
+        }
+        .watchlist-update-row textarea { resize: vertical; min-height: 60px; }
+        .btn-unflag {
+            background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
+            padding: 5px 12px; border-radius: 6px; cursor: pointer;
+            font-size: 0.82em; font-weight: 600;
+        }
+        .btn-unflag:hover { background: #dc2626; color: #fff; }
+        .flag-section {
+            margin-top: 28px; padding: 18px; background: #fff5f5;
+            border: 1.5px dashed #fca5a5; border-radius: 10px;
+        }
+        .flag-section label { font-size: 0.9em; color: #7f1d1d; font-weight: 600; display: block; margin-bottom: 8px; }
+        .flag-toggle-row { display: flex; align-items: center; gap: 14px; }
+        .flag-checkbox-wrap {
+            display: flex; align-items: center; gap: 8px;
+            cursor: pointer; user-select: none;
+        }
+        .flag-checkbox-wrap input[type=checkbox] {
+            width: 18px; height: 18px; accent-color: #dc2626; cursor: pointer;
+        }
+        #flag-note-input {
+            width: 100%; margin-top: 10px; padding: 8px 12px;
+            border: 1px solid #fca5a5; border-radius: 6px;
+            font-size: 0.88em; font-family: inherit; resize: none;
+            background: #fff; min-height: 54px;
+        }
+        /* ===== end v5.37 ===== */
+
 
 
         .project-card {
@@ -2355,7 +2453,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.36c - STATUS FIX</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.37 - WATCHLIST</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -3949,6 +4047,22 @@
                 <!-- MILESTONES SECTION - PART 2 (Commissioning to Handover) -->
                 <div id="milestone-form-grid-part2"></div>
                 
+
+                <!-- v5.37 FLAG / WATCHLIST SECTION -->
+                <div class="flag-section" id="flag-section">
+                    <label>🚩 Gắn Cờ Theo Dõi</label>
+                    <div class="flag-toggle-row">
+                        <label class="flag-checkbox-wrap">
+                            <input type="checkbox" id="project-flagged">
+                            <span style="font-size:0.9em;color:#7f1d1d;font-weight:600;">Đánh dấu dự án này cần theo dõi và cập nhật hàng ngày</span>
+                        </label>
+                    </div>
+                    <div id="flag-note-container" style="display:none; margin-top:10px;">
+                        <label for="flag-note-input" style="font-size:0.82em;color:#7f1d1d;margin-bottom:4px;display:block;">📝 Lý do / ghi chú theo dõi:</label>
+                        <textarea id="flag-note-input" placeholder="VD: Cần xác nhận ngày delivery với khách, chờ phê duyệt budget..."></textarea>
+                    </div>
+                </div>
+
                 <!-- CHANGE NOTE SECTION (shown only when editing) -->
                 <div id="change-note-container" style="display: none;">
                     <div class="change-note-section">
@@ -4075,6 +4189,23 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
                 <button class="close-modal" onclick="closeConflictsModal()">×</button>
             </div>
             <div id="conflicts-list"></div>
+        </div>
+    </div>
+
+
+    <!-- v5.37 Watchlist / Flagged Projects Modal -->
+    <div id="watchlist-modal" class="modal">
+        <div class="modal-content" style="max-width: 980px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                <h2>🚩 Dự Án Cần Theo Dõi Hàng Ngày</h2>
+                <button class="close-modal" onclick="closeWatchlistModal()">×</button>
+            </div>
+            <div style="padding: 10px 0 18px; color: #64748b; font-size: 0.88em;">
+                Cập nhật nhanh tình trạng và trạng thái — không cần mở form đầy đủ.
+            </div>
+            <div id="watchlist-projects-list">
+                <p style="text-align:center;color:#9ca3af;padding:40px;">Không có dự án nào được gắn cờ</p>
+            </div>
         </div>
     </div>
 
@@ -6541,6 +6672,18 @@ window.projects = projects;
                         <div class="value">${teamMembers.length}</div>
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
+                    ${(() => {
+                        // v5.37: Flagged / Watchlist card
+                        const flaggedCount = visibleProjects.filter(p => p.flagged).length;
+                        return `<div class="stat-card teal" style="cursor:pointer;border:2px solid #f87171;"
+                             onclick="window.showFlaggedProjects()"
+                             onmouseover="this.style.transform='scale(1.05)'"
+                             onmouseout="this.style.transform='scale(1)'">
+                            <h3>🚩 Cần Theo Dõi</h3>
+                            <div class="value">${flaggedCount}</div>
+                            <p style="font-size:0.75em;opacity:0.9;margin-top:5px;">${flaggedCount > 0 ? 'Click để cập nhật' : 'Chưa có dự án'}</p>
+                        </div>`;
+                    })()}
 
 
                 `;
@@ -6747,9 +6890,18 @@ window.projects = projects;
                 
                 return `
                     <div class="project-card">
+                        <button class="quick-flag-btn ${project.flagged ? 'active' : ''}"
+                                onclick="event.stopPropagation(); window.toggleProjectFlag('${project.id}')"
+                                title="${project.flagged ? 'Bỏ theo dõi' : 'Gắn cờ theo dõi'}">
+                            🚩
+                        </button>
                         <div class="project-header">
                             <div class="project-title">
                                 <h3>${project.name}</h3>
+                                ${project.flagged ? `
+                                    <span class="flag-badge">🚩 Đang Theo Dõi</span>
+                                    ${project.flagNote ? `<span class="flag-note-badge">📝 ${project.flagNote}</span>` : ''}
+                                ` : ''}
                                 <p>${project.description || 'Không có mô tả'}</p>
                                 ${project.customer ? `<p style="color: #667eea; margin-top: 5px;">🏢 ${project.customer}</p>` : ''}
                                 ${project.budget ? `<p style="color: #059669; margin-top: 5px;">💰 Budget: ${new Intl.NumberFormat('vi-VN').format(project.budget)} VNĐ</p>` : ''}
@@ -7035,6 +7187,115 @@ window.projects = projects;
                     </div>
                 `;
             }
+
+
+
+            // ============= v5.37 WATCHLIST / FLAGGED FUNCTIONS ============= //
+
+            window.showFlaggedProjects = function() {
+                const flagged = getVisibleProjects().filter(p => p.flagged);
+                const listEl = document.getElementById('watchlist-projects-list');
+                if (!listEl) return;
+
+                if (flagged.length === 0) {
+                    listEl.innerHTML = '<p style="text-align:center;color:#9ca3af;padding:40px;">Chưa có dự án nào được gắn cờ</p>';
+                } else {
+                    const statusConfig = {
+                        'Planning':    { label:'📝 Planning',    bg:'#e3f2fd', color:'#1565c0' },
+                        'In Progress': { label:'🔄 In Progress', bg:'#e8f5e9', color:'#2e7d32' },
+                        'On Hold':     { label:'⏸️ On Hold',     bg:'#fff3e0', color:'#e65100' },
+                        'Delayed':     { label:'⚠️ Delayed',     bg:'#ffebee', color:'#c62828' },
+                        'Completed':   { label:'✅ Completed',   bg:'#e0f2f1', color:'#00695c' },
+                        'Cancelled':   { label:'❌ Cancelled',   bg:'#f3e5f5', color:'#6a1b9a' }
+                    };
+                    listEl.innerHTML = flagged.map(p => {
+                        const pmName = p.pm ? (teamMembers.find(m => m.id === p.pm)?.name || 'N/A') : 'Chưa phân công';
+                        const sc = statusConfig[p.status] || statusConfig['Planning'];
+                        const flagDate = p.flaggedAt ? ` · Gắn cờ: ${p.flaggedAt}` : '';
+                        return `
+                        <div class="watchlist-item" id="watchlist-item-${p.id}">
+                            <div class="watchlist-item-header">
+                                <div>
+                                    <div class="watchlist-item-title">🚩 ${p.name}</div>
+                                    <div class="watchlist-item-meta">
+                                        🏢 ${p.customer || 'N/A'} &nbsp;·&nbsp; 🎯 PM: ${pmName}${flagDate}
+                                    </div>
+                                    ${p.flagNote ? `<div style="margin-top:5px;font-size:0.83em;color:#dc2626;">📝 ${p.flagNote}</div>` : ''}
+                                </div>
+                                <div class="watchlist-item-actions">
+                                    <span style="background:${sc.bg};color:${sc.color};padding:4px 10px;border-radius:10px;font-size:0.82em;font-weight:600;">${sc.label}</span>
+                                    <button class="btn btn-primary" style="padding:5px 12px;font-size:0.82em;" onclick="window.editProject('${p.id}'); closeWatchlistModal();">✏️ Sửa đầy đủ</button>
+                                    <button class="btn-unflag" onclick="window.toggleProjectFlag('${p.id}', true)">🏁 Bỏ theo dõi</button>
+                                </div>
+                            </div>
+                            <div class="watchlist-update-row">
+                                <div>
+                                    <label>Trạng Thái</label>
+                                    <select id="wl-status-${p.id}">
+                                        <option value="Planning"    ${p.status==='Planning'?'selected':''}>📝 Planning</option>
+                                        <option value="In Progress" ${p.status==='In Progress'?'selected':''}>🔄 In Progress</option>
+                                        <option value="On Hold"     ${p.status==='On Hold'?'selected':''}>⏸️ On Hold</option>
+                                        <option value="Delayed"     ${p.status==='Delayed'?'selected':''}>⚠️ Delayed</option>
+                                        <option value="Completed"   ${p.status==='Completed'?'selected':''}>✅ Completed</option>
+                                        <option value="Cancelled"   ${p.status==='Cancelled'?'selected':''}>❌ Cancelled</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Tình Trạng Hiện Tại (cập nhật nhanh)</label>
+                                    <textarea id="wl-note-${p.id}" placeholder="Nhập tình trạng hôm nay...">${p.lastStatus || ''}</textarea>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" style="padding:8px 18px;white-space:nowrap;"
+                                            onclick="window.quickSaveFlaggedUpdate('${p.id}')">💾 Lưu</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+                document.getElementById('watchlist-modal').classList.add('active');
+            };
+
+            window.closeWatchlistModal = function() {
+                document.getElementById('watchlist-modal').classList.remove('active');
+            };
+
+            window.toggleProjectFlag = function(projectId, fromWatchlist) {
+                const p = projects.find(pr => pr.id === projectId);
+                if (!p) return;
+                if (!canEditProject(p)) { showToast('❌ Bạn không có quyền sửa dự án này!', 'error'); return; }
+                p.flagged = !p.flagged;
+                if (p.flagged) {
+                    p.flaggedAt = new Date().toISOString().split('T')[0];
+                    showToast('🚩 Đã gắn cờ theo dõi: ' + p.name, 'success');
+                } else {
+                    p.flaggedAt = null;
+                    showToast('🏁 Đã bỏ theo dõi: ' + p.name, 'success');
+                }
+                saveToStorage();
+                renderOverview();
+                renderProjectsList();
+                if (fromWatchlist) { window.showFlaggedProjects(); }
+            };
+
+            window.quickSaveFlaggedUpdate = function(projectId) {
+                const p = projects.find(pr => pr.id === projectId);
+                if (!p) return;
+                if (!canEditProject(p)) { showToast('❌ Bạn không có quyền sửa dự án này!', 'error'); return; }
+                const newStatus = document.getElementById('wl-status-' + projectId)?.value;
+                const newNote   = document.getElementById('wl-note-' + projectId)?.value.trim();
+                const changes = [];
+                if (newStatus && newStatus !== p.status) { changes.push('Trạng thái: ' + p.status + ' → ' + newStatus); p.status = newStatus; }
+                if (newNote !== undefined && newNote !== (p.lastStatus || '')) { changes.push('Cập nhật tình trạng'); p.lastStatus = newNote; }
+                if (changes.length === 0) { showToast('ℹ️ Không có thay đổi', 'success'); return; }
+                addHistoryEntry(p, 'Cập nhật nhanh từ Watchlist', changes.map(c => ({ field: c, old: '', new: '' })));
+                saveToStorage();
+                renderOverview();
+                renderProjectsList();
+                window.showFlaggedProjects();
+                showToast('✅ Đã cập nhật: ' + p.name, 'success');
+            };
+
+            // ============= end v5.37 WATCHLIST ============= //
 
 
             // ==================== V5.6 CALENDAR TOOLTIP ====================
@@ -9856,6 +10117,20 @@ ${conflict.workload.map(w => `
                 const _f_project_customer = document.getElementById('project-customer'); if (_f_project_customer) _f_project_customer.value = currentEditingProject?.customer || '';
                 const _f_project_description = document.getElementById('project-description'); if (_f_project_description) _f_project_description.value = currentEditingProject?.description || '';
                 const _ls = document.getElementById('project-last-status'); if (_ls) _ls.value = currentEditingProject?.lastStatus || '';
+
+                // v5.37: Populate flag fields
+                const _flagCb = document.getElementById('project-flagged');
+                const _flagNote = document.getElementById('flag-note-input');
+                const _flagNoteContainer = document.getElementById('flag-note-container');
+                if (_flagCb) {
+                    _flagCb.checked = !!(currentEditingProject?.flagged);
+                    if (_flagNote) _flagNote.value = currentEditingProject?.flagNote || '';
+                    if (_flagNoteContainer) _flagNoteContainer.style.display = currentEditingProject?.flagged ? 'block' : 'none';
+                    // Toggle visibility on change
+                    _flagCb.onchange = function() {
+                        if (_flagNoteContainer) _flagNoteContainer.style.display = this.checked ? 'block' : 'none';
+                    };
+                }
                 
                 // v5.11: Budget field - Admin can edit, BOD can view only
                 const budgetField = document.getElementById('budget-field');
@@ -11409,6 +11684,17 @@ ${conflict.workload.map(w => `
                     currentEditingProject.installationPhases = installationPhases; // v5.11
                     currentEditingProject.sopSurveyType = sopSurveyType;
                     currentEditingProject.sopDecision = sopDecision;
+                    // v5.37: Save flag/watchlist fields
+                    const _fcb = document.getElementById('project-flagged');
+                    const _fn  = document.getElementById('flag-note-input');
+                    const wasFlagged = currentEditingProject.flagged;
+                    currentEditingProject.flagged  = _fcb ? _fcb.checked : false;
+                    currentEditingProject.flagNote  = _fn ? _fn.value.trim() : '';
+                    if (currentEditingProject.flagged && !wasFlagged) {
+                        currentEditingProject.flaggedAt = new Date().toISOString().split('T')[0];
+                    } else if (!currentEditingProject.flagged) {
+                        currentEditingProject.flaggedAt = null;
+                    }
                     
                     // Compare and track changes
                     const changes = compareProjects(oldProject, currentEditingProject);
@@ -11444,6 +11730,10 @@ ${conflict.workload.map(w => `
                         installationPhases: installationPhases, // v5.11
                         sopSurveyType: sopSurveyType,
                         sopDecision: sopDecision,
+                        // v5.37: flag/watchlist
+                        flagged: document.getElementById('project-flagged')?.checked || false,
+                        flagNote: document.getElementById('flag-note-input')?.value.trim() || '',
+                        flaggedAt: document.getElementById('project-flagged')?.checked ? new Date().toISOString().split('T')[0] : null,
                         createdDate: new Date().toISOString().split('T')[0],
                         createdBy: currentUser ? currentUser.id : null,
                         issues: [], // Feature #2: Issues array
@@ -12894,13 +13184,13 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.36c -->
+    <!-- Version Badge v5.37 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.36c</span>
+        <span>v5.37</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.36c - Status Count Fix</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.37 - Flagged Watchlist</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
