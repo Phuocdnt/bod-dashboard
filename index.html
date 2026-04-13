@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.37 - Flagged Watchlist</title>
+    <title>BOD Dashboard v5.38 - Flagged Watchlist</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -236,7 +236,7 @@
             background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
         }
 
-        /* ===== v5.37 WATCHLIST / FLAG STYLES ===== */
+        /* ===== v5.38 WATCHLIST / FLAG STYLES ===== */
         .flag-badge {
             display: inline-flex; align-items: center; gap: 4px;
             background: linear-gradient(135deg, #dc2626, #ef4444);
@@ -327,7 +327,7 @@
             font-size: 0.88em; font-family: inherit; resize: none;
             background: #fff; min-height: 54px;
         }
-        /* ===== end v5.37 ===== */
+        /* ===== end v5.38 ===== */
 
 
 
@@ -2453,7 +2453,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.37 - WATCHLIST</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.38 - WATCHLIST</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -4048,7 +4048,7 @@
                 <div id="milestone-form-grid-part2"></div>
                 
 
-                <!-- v5.37 FLAG / WATCHLIST SECTION -->
+                <!-- v5.38 FLAG / WATCHLIST SECTION -->
                 <div class="flag-section" id="flag-section">
                     <label>🚩 Gắn Cờ Theo Dõi</label>
                     <div class="flag-toggle-row">
@@ -4193,7 +4193,7 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
     </div>
 
 
-    <!-- v5.37 Watchlist / Flagged Projects Modal -->
+    <!-- v5.38 Watchlist / Flagged Projects Modal -->
     <div id="watchlist-modal" class="modal">
         <div class="modal-content" style="max-width: 980px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
@@ -6190,11 +6190,11 @@ window.projects = projects;
 
             // ============= DELAYED PROJECTS HELPERS ============= //
             function getCurrentMilestone(project) {
-                // Survey rounds first
+                // Survey rounds first - return first survey not yet completed
                 if (project.surveyRounds) {
                     for (let key in project.surveyRounds) {
                         const round = project.surveyRounds[key];
-                        if (round.person && (!round.completeDate || !round.startDate)) {
+                        if (round.person && !round.completeDate) {
                             return {
                                 ...round,
                                 name: `Survey ${key.replace('survey', '')}`,
@@ -6206,27 +6206,46 @@ window.projects = projects;
                     }
                 }
                 
-                // Regular milestones - find first not completed
+                // Regular milestones: milestone hiện hành = ngay sau milestone cuối cùng có actualCompleteDate
+                let lastCompletedIndex = -1;
+                for (let i = 0; i < project.milestones.length; i++) {
+                    if (project.milestones[i].actualCompleteDate) {
+                        lastCompletedIndex = i;
+                    }
+                }
+                
+                // Trả về milestone kế tiếp sau cái vừa complete
+                const nextIndex = lastCompletedIndex + 1;
+                if (nextIndex < project.milestones.length) {
+                    const m = project.milestones[nextIndex];
+                    const msInfo = STANDARD_MILESTONES.find(sm => sm.id === m.id);
+                    return {
+                        ...m,
+                        name: msInfo?.name || m.id,
+                        icon: msInfo?.icon || '📌',
+                        type: 'milestone'
+                    };
+                }
+                
+                // Tất cả đã complete - trả về cái cuối
+                if (lastCompletedIndex >= 0) {
+                    const m = project.milestones[lastCompletedIndex];
+                    const msInfo = STANDARD_MILESTONES.find(sm => sm.id === m.id);
+                    return {
+                        ...m,
+                        name: msInfo?.name || m.id,
+                        icon: msInfo?.icon || '📌',
+                        type: 'milestone'
+                    };
+                }
+                
+                // Chưa có milestone nào complete - trả về cái đầu tiên có data
                 for (let milestone of project.milestones) {
-                    if (milestone.person && milestone.actualStartDate && !milestone.actualCompleteDate) {
+                    if (milestone.person || milestone.planStartDate || milestone.planCompleteDate || milestone.actualStartDate) {
                         const msInfo = STANDARD_MILESTONES.find(sm => sm.id === milestone.id);
                         return {
                             ...milestone,
                             name: msInfo?.name || milestone.id,
-                            icon: msInfo?.icon || '📌',
-                            type: 'milestone'
-                        };
-                    }
-                }
-                
-                // All completed or no assignments - return last milestone with data
-                for (let i = project.milestones.length - 1; i >= 0; i--) {
-                    const m = project.milestones[i];
-                    if (m.person || m.planStartDate || m.planCompleteDate || m.actualStartDate || m.actualCompleteDate) {
-                        const msInfo = STANDARD_MILESTONES.find(sm => sm.id === m.id);
-                        return {
-                            ...m,
-                            name: msInfo?.name || m.id,
                             icon: msInfo?.icon || '📌',
                             type: 'milestone'
                         };
@@ -6673,7 +6692,7 @@ window.projects = projects;
                         <p style="font-size: 0.75em; opacity: 0.9; margin-top: 5px;">Click để xem</p>
                     </div>
                     ${(() => {
-                        // v5.37: Flagged / Watchlist card
+                        // v5.38: Flagged / Watchlist card
                         const flaggedCount = visibleProjects.filter(p => p.flagged).length;
                         return `<div class="stat-card teal" style="cursor:pointer;border:2px solid #f87171;"
                              onclick="window.showFlaggedProjects()"
@@ -7190,7 +7209,7 @@ window.projects = projects;
 
 
 
-            // ============= v5.37 WATCHLIST / FLAGGED FUNCTIONS ============= //
+            // ============= v5.38 WATCHLIST / FLAGGED FUNCTIONS ============= //
 
             window.showFlaggedProjects = function() {
                 const flagged = getVisibleProjects().filter(p => p.flagged);
@@ -7295,7 +7314,7 @@ window.projects = projects;
                 showToast('✅ Đã cập nhật: ' + p.name, 'success');
             };
 
-            // ============= end v5.37 WATCHLIST ============= //
+            // ============= end v5.38 WATCHLIST ============= //
 
 
             // ==================== V5.6 CALENDAR TOOLTIP ====================
@@ -10118,7 +10137,7 @@ ${conflict.workload.map(w => `
                 const _f_project_description = document.getElementById('project-description'); if (_f_project_description) _f_project_description.value = currentEditingProject?.description || '';
                 const _ls = document.getElementById('project-last-status'); if (_ls) _ls.value = currentEditingProject?.lastStatus || '';
 
-                // v5.37: Populate flag fields
+                // v5.38: Populate flag fields
                 const _flagCb = document.getElementById('project-flagged');
                 const _flagNote = document.getElementById('flag-note-input');
                 const _flagNoteContainer = document.getElementById('flag-note-container');
@@ -11684,7 +11703,7 @@ ${conflict.workload.map(w => `
                     currentEditingProject.installationPhases = installationPhases; // v5.11
                     currentEditingProject.sopSurveyType = sopSurveyType;
                     currentEditingProject.sopDecision = sopDecision;
-                    // v5.37: Save flag/watchlist fields
+                    // v5.38: Save flag/watchlist fields
                     const _fcb = document.getElementById('project-flagged');
                     const _fn  = document.getElementById('flag-note-input');
                     const wasFlagged = currentEditingProject.flagged;
@@ -11730,7 +11749,7 @@ ${conflict.workload.map(w => `
                         installationPhases: installationPhases, // v5.11
                         sopSurveyType: sopSurveyType,
                         sopDecision: sopDecision,
-                        // v5.37: flag/watchlist
+                        // v5.38: flag/watchlist
                         flagged: document.getElementById('project-flagged')?.checked || false,
                         flagNote: document.getElementById('flag-note-input')?.value.trim() || '',
                         flaggedAt: document.getElementById('project-flagged')?.checked ? new Date().toISOString().split('T')[0] : null,
@@ -13184,13 +13203,13 @@ ${conflict.workload.map(w => `
  </div>
 
 
-    <!-- Version Badge v5.37 -->
+    <!-- Version Badge v5.38 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.37</span>
+        <span>v5.38</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
             <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.37 - Flagged Watchlist</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.38 - Flagged Watchlist</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
