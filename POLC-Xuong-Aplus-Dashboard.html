@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>POLC · Xưởng Aplus — SharePoint Edition</title>
 <style>
-:root{--bg:#0f1117;--sf:#181c27;--sf2:#1f2436;--bd:#2a3045;--tx:#e8ecf4;--mu:#6b7394;--ac:#f97316;--a2:#3b82f6;--gr:#22c55e;--ye:#eab308;--re:#ef4444;--pu:#a855f7;--cy:#06b6d4;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;--mo:"Cascadia Code","Consolas","Courier New",monospace;}
+:root{--bg:#f0f2f7;--sf:#ffffff;--sf2:#f5f7fb;--bd:#e2e6f0;--tx:#1e2235;--mu:#6b7394;--ac:#f97316;--a2:#3b82f6;--gr:#22c55e;--ye:#eab308;--re:#ef4444;--pu:#a855f7;--cy:#06b6d4;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;--mo:"Cascadia Code","Consolas","Courier New",monospace;}
 *{box-sizing:border-box;margin:0;padding:0;}body{background:var(--bg);color:var(--tx);font-family:var(--fn);min-height:100vh;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--sf);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
 header{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
@@ -35,7 +35,7 @@ aside{width:205px;background:var(--sf);border-right:1px solid var(--bd);padding:
 .nlb{font-size:9px;font-weight:700;color:var(--mu);letter-spacing:1.2px;padding:0 14px 4px;text-transform:uppercase;}
 .ni{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--mu);transition:all .15s;border-left:2px solid transparent;user-select:none;}
 .ni:hover{color:var(--tx);background:var(--sf2);}
-.ni.act{color:var(--ac);border-left-color:var(--ac);background:rgba(249,115,22,.07);}
+.ni.act{color:var(--ac);border-left-color:var(--ac);background:rgba(249,115,22,.1);}
 .nic{font-size:12px;width:16px;text-align:center;}
 .nc{margin-left:auto;background:var(--sf2);color:var(--mu);font-size:10px;padding:1px 6px;border-radius:8px;font-family:var(--mo);}
 .nc.alr{background:rgba(239,68,68,.2);color:var(--re);}
@@ -59,7 +59,7 @@ main{flex:1;padding:18px 22px;overflow-y:auto;}
 table{width:100%;border-collapse:collapse;}
 thead th{background:var(--sf2);padding:7px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);white-space:nowrap;}
 tbody tr{border-bottom:1px solid var(--bd);transition:background .1s;}tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font-size:12px;vertical-align:middle;}
+tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:12px;vertical-align:middle;}
 .stt{font-family:var(--mo);font-size:10px;color:var(--mu);}
 .tn{font-weight:600;line-height:1.4;}.td{font-size:10px;color:var(--mu);margin-top:1px;}
 .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap;}
@@ -235,7 +235,7 @@ tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font
     <span id="mbg" class="mbg mbg-lc">LOCAL</span>
     <span class="clk" id="clk"></span>
     <button class="btn btq" onclick="nav('setup')">⚙ Cài đặt SP</button>
-    <button class="btn btq" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btq" onclick="openImport()">📥 Import</button><button class="btn btq" onclick="exportAllJSON()">📤 JSON</button><button class="btn btq" onclick="exportCSV()">⬇ CSV</button><button class="btn btq" onclick="exportExcel()" style="background:rgba(34,197,94,.15);color:var(--gr);border:1px solid rgba(34,197,94,.3)">📊 Excel</button>
     <button class="btn btp" onclick="openAddTask()">＋ Công việc</button>
   </div>
 </header>
@@ -283,7 +283,7 @@ tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font
 </div>
 
 <div class="pg" id="pg-members">
-  <div class="shd" style="margin-bottom:12px"><span class="sti">Nhân sự xưởng</span></div>
+  <div class="shd" style="margin-bottom:12px"><span class="sti">Nhân sự xưởng</span><button class="btn btp" onclick="openAddMember()">＋ Thêm nhân sự</button></div>
   <div class="mg" id="mg"></div>
 </div>
 
@@ -341,6 +341,28 @@ tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font
   <div id="ml"></div>
 </div>
 
+
+<div class="pg" id="pg-partners">
+  <div class="shd">
+    <div><span class="sti">🤝 Đơn hàng gia công đối tác</span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btq" onclick="exportPartnersCSV()">📄 CSV</button>
+      <button class="btn btp" onclick="openAddPartnerOrder()">＋ Thêm đơn</button>
+    </div>
+  </div>
+  <div class="fb">
+    <input class="fi" placeholder="🔍 Tìm đơn hàng..." id="pt-search" oninput="renderPartners()">
+    <select class="fs" id="pt-status" onchange="renderPartners()">
+      <option value="">Tất cả trạng thái</option>
+      <option value="pending">Chờ xử lý</option>
+      <option value="inprogress">Đang gia công</option>
+      <option value="done">Hoàn thành</option>
+      <option value="late">Trễ hạn</option>
+    </select>
+    <select class="fs" id="pt-partner" onchange="renderPartners()"><option value="">Tất cả đối tác</option></select>
+  </div>
+  <div id="pt-wrap"></div>
+</div>
 <div class="pg" id="pg-setup">
   <div class="shd"><div><span class="sti">⚙ Cài đặt SharePoint Lists</span></div></div>
   <div id="sp-sb" style="margin-bottom:14px"></div>
@@ -349,11 +371,18 @@ tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font
       <div class="tw" style="margin-bottom:0">
         <div style="padding:11px 15px;border-bottom:1px solid var(--bd)"><span class="sti">Kết nối</span></div>
         <div style="padding:14px 15px">
-          <div class="fg" style="margin-bottom:10px"><label class="fl">SharePoint Site URL</label><input class="fc" id="cfg-s" placeholder="https://dhivn.sharepoint.com/sites/AESProjectManagement"></div>
-          <div class="fg" style="margin-bottom:10px"><label class="fl">Prefix tên Lists</label><input class="fc" id="cfg-p" value="POLC"></div>
-          <button class="btn bti" onclick="testConn()" style="width:100%;justify-content:center;margin-bottom:7px">🔌 Kiểm tra kết nối</button>
-          <button class="btn btg" onclick="setupLists()" style="width:100%;justify-content:center">🏗 Tạo SharePoint Lists tự động</button>
-          <div style="font-size:10px;color:var(--mu);margin-top:7px;line-height:1.6">Yêu cầu quyền <b>Site Owner</b> hoặc <b>Full Control</b> để tạo Lists.</div>
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">Azure Function URL</label>
+            <input class="fc" value="https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy?dashboard=polc" readonly style="font-size:10px;color:var(--mu)">
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">API Key</label>
+            <input class="fc" id="cfg-api-key" type="password" placeholder="API Key...">
+            <button class="btn btq" onclick="document.getElementById('cfg-api-key').type=document.getElementById('cfg-api-key').type==='password'?'text':'password'" style="margin-top:4px;font-size:10px">👁 Hiện/ẩn</button>
+          </div>
+          <button class="btn bti" onclick="retryAzure()" style="width:100%;justify-content:center;margin-bottom:7px">🔌 Kiểm tra kết nối Azure</button>
+          <button class="btn btg" onclick="forceSyncNow()" style="width:100%;justify-content:center">☁ Sync ngay lên Azure</button>
+          <div style="font-size:10px;color:var(--mu);margin-top:7px;line-height:1.6">Dữ liệu đồng bộ tự động mỗi <b>30 giây</b> và ngay sau mỗi lần lưu.</div>
         </div>
       </div>
     </div>
@@ -467,54 +496,134 @@ tbody tr:hover{background:rgba(255,255,255,.016);}tbody td{padding:8px 11px;font
   <div class="mft"><button class="btn btq" onclick="closeM('mo-tx')">Hủy</button><button class="btn btp" onclick="saveTx()">💾 Cập nhật kho</button></div>
 </div></div>
 
+
+<div class="mo" id="mo-partner">
+<div class="md" style="max-width:580px">
+  <div class="mhd"><span class="mtt" id="pt-tt">Thêm đơn gia công</span><div class="mcl" onclick="closeM('mo-partner')">✕</div></div>
+  <div class="mbd">
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Tên đơn hàng *</label><input class="fc" id="pt-nm" placeholder="Gia công bánh nhông Z-19..."></div>
+      <div class="fg"><label class="fl">Mã đơn / PO</label><input class="fc" id="pt-po" placeholder="PO-2026-001"></div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Công ty đối tác *</label><input class="fc" id="pt-cp" placeholder="Công ty TNHH ABC..."></div>
+      <div class="fg"><label class="fl">Liên hệ</label><input class="fc" id="pt-ct" placeholder="Nguyễn Văn A - 0901..."></div>
+    </div>
+    <div class="fr fr3">
+      <div class="fg"><label class="fl">Trạng thái</label>
+        <select class="fc" id="pt-st">
+          <option value="pending">Chờ xử lý</option>
+          <option value="inprogress">Đang gia công</option>
+          <option value="done">Hoàn thành</option>
+          <option value="late">Trễ hạn</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Ngày đặt</label><input class="fc" type="date" id="pt-od"></div>
+      <div class="fg"><label class="fl">Hạn giao hàng</label><input class="fc" type="date" id="pt-dd"></div>
+    </div>
+    <div class="fr fr3">
+      <div class="fg"><label class="fl">Số lượng</label><input class="fc" type="number" id="pt-qt" min="0" value="0"></div>
+      <div class="fg"><label class="fl">Đơn vị</label><select class="fc" id="pt-un"><option value="pcs">pcs</option><option value="bộ">bộ</option><option value="m">m</option><option value="kg">kg</option></select></div>
+      <div class="fg"><label class="fl">Giá trị (VNĐ)</label><input class="fc" type="number" id="pt-vl" min="0" value="0"></div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Đã nhận</label><input class="fc" type="number" id="pt-rc" min="0" value="0"></div>
+      <div class="fg"><label class="fl">Ưu tiên</label><select class="fc" id="pt-pr"><option value="medium">Trung bình</option><option value="high">Cao</option><option value="low">Thấp</option></select></div>
+    </div>
+    <div class="fr ff"><div class="fg"><label class="fl">Ghi chú / Thông số kỹ thuật</label><textarea class="fc" id="pt-nt" placeholder="Vật liệu, dung sai, yêu cầu đặc biệt..."></textarea></div></div>
+  </div>
+  <div class="mft"><input type="hidden" id="pt-id"><button class="btn btq" onclick="closeM('mo-partner')">Hủy</button><button class="btn btp" onclick="savePartnerOrder()">💾 Lưu đơn hàng</button></div>
+</div></div>
+
+<div class="mo" id="mo-member">
+<div class="md" style="max-width:460px">
+  <div class="mhd"><span class="mtt" id="mb-tt">Thêm nhân sự</span><div class="mcl" onclick="closeM('mo-member')">✕</div></div>
+  <div class="mbd">
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Tên *</label><input class="fc" id="mb-nm" placeholder="Nguyễn Văn A"></div>
+      <div class="fg"><label class="fl">Tên gọi tắt *</label><input class="fc" id="mb-id" placeholder="Sang, Lộc..."></div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Vai trò</label><input class="fc" id="mb-rl" placeholder="Thợ xưởng, Lắp đặt..."></div>
+      <div class="fg"><label class="fl">Màu đại diện</label><input class="fc" type="color" id="mb-cl" value="#f97316"></div>
+    </div>
+    <div class="fr ff"><div class="fg"><label class="fl">Ghi chú</label><input class="fc" id="mb-nt" placeholder="Chuyên môn, ca làm..."></div></div>
+  </div>
+  <div class="mft"><input type="hidden" id="mb-id-edit"><button class="btn btq" onclick="closeM('mo-member')">Hủy</button><button class="btn btp" onclick="saveMember()">💾 Lưu</button></div>
+</div></div>
+
+<div class="mo" id="mo-import">
+<div class="md" style="max-width:520px">
+  <div class="mhd"><span class="mtt">📥 Import dữ liệu JSON</span><div class="mcl" onclick="closeM('mo-import')">✕</div></div>
+  <div class="mbd">
+    <div class="al ai" style="margin-bottom:12px">💡 Paste JSON hoặc chọn file .json đã xuất trước đó. Dữ liệu hiện tại sẽ bị ghi đè.</div>
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Chọn file JSON</label>
+      <input type="file" accept=".json" id="imp-file" class="fc" onchange="loadImportFile(this)">
+    </div>
+    <div class="fg">
+      <label class="fl">Hoặc paste JSON trực tiếp</label>
+      <textarea class="fc" id="imp-json" style="min-height:160px;font-family:var(--mo);font-size:11px" placeholder='{"tasks":[...],"logs":[...],"mats":[...],"partners":[...],"members":[...]}'></textarea>
+    </div>
+    <div id="imp-preview" style="margin-top:10px"></div>
+  </div>
+  <div class="mft">
+    <button class="btn btq" onclick="closeM('mo-import')">Hủy</button>
+    <button class="btn btq" onclick="validateImport()">🔍 Kiểm tra</button>
+    <button class="btn btp" onclick="doImport()">📥 Import</button>
+  </div>
+</div></div>
 <div id="toast"></div>
 <script>
-// ═══════════ CONFIG ═══════════
-const DFLT_SITE='https://dhivn.sharepoint.com/sites/AESProjectManagement';
-let cfg={site:localStorage.getItem('polc_cfg_s')||DFLT_SITE,pfx:localStorage.getItem('polc_cfg_p')||'POLC'};
-let spBase='',isSpMode=window.location.hostname.includes('sharepoint.com'),spOK=false;
-let _dg=null,_dge=0;
+// ═══════════ AZURE BLOB CONFIG ═══════════
+const AZURE_CFG = {
+  functionUrl: 'https://bod-dashboard-proxy-dhi-fmepb7akaehvfgbr.southeastasia-01.azurewebsites.net/api/blob-proxy?dashboard=polc',
+  apiKey: localStorage.getItem('polc_azure_key') || 'AES-BOD-Dashboard-2025-dhi9k3mP7xN2vQ8s',
+  enabled: true,
+  syncInterval: 30000 // 30 seconds
+};
+let azureOK = false, lastSync = null, syncTimer = null, isSaving = false;
 
-function getLists(){const p=cfg.pfx;return{tasks:p+'-Tasks',logs:p+'-Logs',mats:p+'-Materials',tx:p+'-MatTx'};}
+// ── Azure read ──
+async function azureLoad() {
+  const r = await fetch(AZURE_CFG.functionUrl, {
+    method: 'GET',
+    headers: { 'Authorization': 'Bearer ' + AZURE_CFG.apiKey, 'Content-Type': 'application/json' }
+  });
+  if (r.status === 404) return null; // first time, no data yet
+  if (!r.ok) throw new Error('Azure load failed: ' + r.status);
+  return await r.json();
+}
 
-// ═══════════ SP API ═══════════
-async function getDg(){
-  if(_dg&&Date.now()<_dge)return _dg;
-  const r=await fetch(spBase+'/contextinfo',{method:'POST',headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json'},credentials:'include'});
-  if(!r.ok)throw new Error('Auth failed '+r.status);
-  const d=await r.json();_dg=d.FormDigestValue;_dge=Date.now()+(parseInt(d.FormDigestTimeoutSeconds||1800)-60)*1000;return _dg;
+// ── Azure write (debounced) ──
+async function azureSave(data) {
+  if (!AZURE_CFG.enabled || isSaving) return;
+  isSaving = true;
+  try {
+    const r = await fetch(AZURE_CFG.functionUrl, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AZURE_CFG.apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error('Azure save failed: ' + r.status);
+    lastSync = new Date();
+    setSS('ok', 'Azure ✓ ' + lastSync.toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'}));
+    return true;
+  } catch(e) {
+    setSS('err', 'Lỗi sync: ' + e.message.slice(0,30));
+    return false;
+  } finally { isSaving = false; }
 }
-async function spGet(list,opts=''){
-  const r=await fetch(spBase+`/web/lists/getbytitle('${encodeURIComponent(list)}')/items?$top=5000${opts}`,{headers:{'Accept':'application/json;odata=nometadata'},credentials:'include'});
-  if(!r.ok)throw new Error('GET '+list+' '+r.status);
-  return(await r.json()).value||[];
+
+// ── Debounced save (2s delay) ──
+let _saveTimer = null;
+function scheduleSave() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => { azureSave(buildSavePayload()); }, 2000);
 }
-async function spPost(list,data){
-  const dg=await getDg();
-  const r=await fetch(spBase+`/web/lists/getbytitle('${encodeURIComponent(list)}')/items`,{
-    method:'POST',credentials:'include',
-    headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json;odata=nometadata','X-RequestDigest':dg},
-    body:JSON.stringify(data)
-  });
-  if(!r.ok){const t=await r.text();throw new Error('POST '+r.status+' '+t.slice(0,150));}
-  return r.status===204?{}:await r.json();
-}
-async function spPatch(list,id,data){
-  const dg=await getDg();
-  const r=await fetch(spBase+`/web/lists/getbytitle('${encodeURIComponent(list)}')/items(${id})`,{
-    method:'POST',credentials:'include',
-    headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json;odata=nometadata','X-RequestDigest':dg,'X-HTTP-Method':'MERGE','IF-MATCH':'*'},
-    body:JSON.stringify(data)
-  });
-  if(!r.ok&&r.status!==204)throw new Error('PATCH '+r.status);
-}
-async function spDel(list,id){
-  const dg=await getDg();
-  const r=await fetch(spBase+`/web/lists/getbytitle('${encodeURIComponent(list)}')/items(${id})`,{
-    method:'POST',credentials:'include',
-    headers:{'Accept':'application/json;odata=nometadata','X-RequestDigest':dg,'X-HTTP-Method':'DELETE','IF-MATCH':'*'}
-  });
-  if(!r.ok&&r.status!==204)throw new Error('DEL '+r.status);
+
+function buildSavePayload() {
+  return { tasks, logs, mats, partners, members: MB, version: '2.0', savedAt: new Date().toISOString() };
 }
 
 // ═══════════ STATIC DATA ═══════════
@@ -554,7 +663,12 @@ const SEED_M=[
 ];
 
 // ═══════════ STATE ═══════════
-let tasks=[],logs=[],mats=[],curPg='overview',eTId=null,eMId=null,pDate=today();
+let tasks=[],logs=[],mats=[],partners=[],curPg='overview',eTId=null,eMId=null,ePId=null,pDate=today();
+const SEED_P=[
+  {id:1,name:'Gia công bánh nhông Z-19 SQ.30mm',po:'PO-2604-001',company:'Cơ khí Minh Tân',contact:'Minh - 0901234567',status:'inprogress',orderDate:'2026-04-01',dueDate:'2026-04-15',qty:14,unit:'pcs',received:0,value:2800000,priority:'high',note:'SP-DR-2120-Z19, dung sai ±0.05mm'},
+  {id:2,name:'Phay CNC transfer roller PA6',po:'PO-2604-002',company:'Tiện CNC Phước Thành',contact:'Thành - 0912345678',status:'inprogress',orderDate:'2026-04-03',dueDate:'2026-04-10',qty:3,unit:'pcs',received:1,value:1500000,priority:'medium',note:'PA6-40-140-200mmL'},
+  {id:3,name:'Cắt laser tấm SS304',po:'PO-2604-003',company:'Laser Kim Loại DHI',contact:'Hùng - 0923456789',status:'pending',orderDate:'2026-04-05',dueDate:'2026-04-20',qty:5,unit:'tấm',received:0,value:800000,priority:'low',note:'40x40mm, dày 3mm'},
+];
 
 // ═══════════ UTILS ═══════════
 function today(){return new Date().toISOString().slice(0,10);}
@@ -576,8 +690,40 @@ function mapL(l){return{id:l.ID,taskId:l.TaskId,date:l.LogDate?l.LogDate.slice(0
 function mapM(m,txs){return{id:m.ID,name:m.Title||'',code:m.Code||'',cat:m.Category||'other',unit:m.MatUnit||'pcs',icon:m.Icon||'📦',qty:m.Qty||0,min:m.MinQty||0,max:m.MaxQty||100,status:m.MatStatus||'ok',supplier:m.Supplier||'',note:m.MatNote||'',transactions:(txs||[]).map(x=>({id:x.ID,type:x.TxType,qty:x.Qty||0,date:x.TxDate?x.TxDate.slice(0,10):'',who:x.Who||'',note:x.TxNote||'',balAfter:x.BalAfter||0}))};}
 
 // ═══════════ LOAD / SAVE ═══════════
-function lsave(){localStorage.setItem('polc_t',JSON.stringify(tasks));localStorage.setItem('polc_l',JSON.stringify(logs));localStorage.setItem('polc_m',JSON.stringify(mats));}
-function lload(){tasks=JSON.parse(localStorage.getItem('polc_t')||'null')||SEED_T.map(t=>({...t}));logs=JSON.parse(localStorage.getItem('polc_l')||'[]');mats=JSON.parse(localStorage.getItem('polc_m')||'null')||SEED_M.map(m=>({...m,transactions:[...m.transactions]}));}
+function lsave(){
+  // Always cache locally first (fast)
+  localStorage.setItem('polc_t',JSON.stringify(tasks));
+  localStorage.setItem('polc_l',JSON.stringify(logs));
+  localStorage.setItem('polc_m',JSON.stringify(mats));
+  localStorage.setItem('polc_p',JSON.stringify(partners));
+  localStorage.setItem('polc_mb',JSON.stringify(MB));
+  // Then sync to Azure (debounced 2s)
+  if(azureOK) scheduleSave();
+}
+function lload(){
+  tasks=JSON.parse(localStorage.getItem('polc_t')||'null')||SEED_T.map(t=>({...t}));
+  logs=JSON.parse(localStorage.getItem('polc_l')||'[]');
+  mats=JSON.parse(localStorage.getItem('polc_m')||'null')||SEED_M.map(m=>({...m,transactions:[...m.transactions]}));
+  partners=JSON.parse(localStorage.getItem('polc_p')||'null')||SEED_P.map(p=>({...p}));
+  const savedMB=JSON.parse(localStorage.getItem('polc_mb')||'null');
+  if(savedMB&&savedMB.length)MB.splice(0,MB.length,...savedMB);
+}
+
+function applyAzureData(d) {
+  if(!d) return false;
+  if(d.tasks&&d.tasks.length) tasks=d.tasks;
+  if(d.logs) logs=d.logs;
+  if(d.mats&&d.mats.length) mats=d.mats;
+  if(d.partners) partners=d.partners;
+  if(d.members&&d.members.length) MB.splice(0,MB.length,...d.members);
+  // Cache locally
+  localStorage.setItem('polc_t',JSON.stringify(tasks));
+  localStorage.setItem('polc_l',JSON.stringify(logs));
+  localStorage.setItem('polc_m',JSON.stringify(mats));
+  localStorage.setItem('polc_p',JSON.stringify(partners));
+  localStorage.setItem('polc_mb',JSON.stringify(MB));
+  return true;
+}
 
 async function loadSP(){
   const L=getLists();
@@ -607,7 +753,14 @@ async function seedSP(){
 }
 
 async function refreshData(){
-  if(isSpMode&&spOK)await loadSP();else lload();
+  if(azureOK){
+    setSS('ld','Đang tải...');showLd('Đang tải từ Azure...');
+    try{
+      const d=await azureLoad();
+      if(d){applyAzureData(d);lastSync=new Date();setSS('ok','Azure ✓ '+lastSync.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}));}
+    }catch(e){setSS('err','Lỗi: '+e.message.slice(0,25));toast('Lỗi sync Azure',false);}
+    finally{hideLd();}
+  }else{lload();}
   renderPage();
 }
 
@@ -617,7 +770,7 @@ function nav(p){
   document.querySelectorAll('.pg').forEach(x=>x.classList.remove('act'));
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('act'));
   document.getElementById('pg-'+p).classList.add('act');
-  const ps=['overview','tasks','kanban','members','production','materials','setup'];
+  const ps=['overview','tasks','kanban','members','production','materials','partners','setup'];
   document.querySelectorAll('.ni')[ps.indexOf(p)]?.classList.add('act');
   renderPage();
 }
@@ -630,6 +783,7 @@ function renderPage(){
   if(curPg==='production')renderProd();
   if(curPg==='materials')renderMats();
   if(curPg==='setup')renderSetup();
+  if(curPg==='partners')renderPartners();
 }
 function upNC(){
   document.getElementById('nc-t').textContent=tasks.length;
@@ -692,7 +846,7 @@ function renderMems(){
     const pct=mt.length?Math.round(d/mt.length*100):0;
     const tq=logs.filter(l=>l.date===today()&&l.who===m.id).reduce((s,l)=>s+(+l.qty||0),0);
     const ini=m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    return`<div class="mc"><div class="mch"><div class="av" style="background:${m.color}">${ini}</div><div><div class="mcn">${m.name}</div><div class="mcr">${m.role}</div></div></div><div class="mcs"><div><div class="msv" style="color:var(--a2)">${ip}</div><div class="msl">Đang làm</div></div><div><div class="msv" style="color:var(--ye)">${td}</div><div class="msl">Chờ</div></div><div><div class="msv" style="color:var(--gr)">${d}</div><div class="msl">Xong</div></div><div><div class="msv" style="color:var(--ac)">${tq||'—'}</div><div class="msl">TP HN</div></div></div><div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mu);margin-bottom:2px"><span>Hoàn thành</span><span style="color:${m.color};font-weight:700">${pct}%</span></div><div style="height:4px;background:var(--sf2);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${m.color};border-radius:2px"></div></div></div></div>`;
+    return`<div class="mc"><div class="mch"><div class="av" style="background:${m.color}">${ini}</div><div><div class="mcn">${m.name}</div><div class="mcr">${m.role}</div></div><div style="margin-left:auto;display:flex;gap:4px"><button class="ib" onclick="openEM_member('${m.id}')" title="Sửa">✎</button><button class="ib d" onclick="delMember('${m.id}')" title="Xóa">✕</button></div></div><div class="mcs"><div><div class="msv" style="color:var(--a2)">${ip}</div><div class="msl">Đang làm</div></div><div><div class="msv" style="color:var(--ye)">${td}</div><div class="msl">Chờ</div></div><div><div class="msv" style="color:var(--gr)">${d}</div><div class="msl">Xong</div></div><div><div class="msv" style="color:var(--ac)">${tq||'—'}</div><div class="msl">TP HN</div></div></div><div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mu);margin-bottom:2px"><span>Hoàn thành</span><span style="color:${m.color};font-weight:700">${pct}%</span></div><div style="height:4px;background:var(--sf2);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${m.color};border-radius:2px"></div></div></div></div>`;
   }).join('');
 }
 
@@ -742,11 +896,38 @@ function renderMats(){
 
 // ── SETUP ──
 function renderSetup(){
-  document.getElementById('cfg-s').value=cfg.site;document.getElementById('cfg-p').value=cfg.pfx;
   const bar=document.getElementById('sp-sb');
-  if(isSpMode&&spOK)bar.innerHTML=`<div class="al ag">✅ <b>SharePoint đã kết nối!</b> Tất cả dữ liệu đồng bộ thời gian thực. Site: ${cfg.site}</div>`;
-  else if(isSpMode)bar.innerHTML=`<div class="al ae">❌ Kết nối SharePoint thất bại. Kiểm tra quyền truy cập.</div>`;
-  else bar.innerHTML=`<div class="al aw">⚠ Đang chạy ở <b>chế độ cục bộ</b>. Mở file từ SharePoint để kích hoạt đồng bộ đa người dùng.</div>`;
+  if(azureOK){
+    const syncTime=lastSync?lastSync.toLocaleString('vi-VN'):'Chưa sync';
+    bar.innerHTML=`<div class="al ag">✅ <b>Azure Cloud đã kết nối!</b> Dữ liệu đồng bộ thời gian thực cho tất cả users. Lần sync cuối: ${syncTime}</div>`;
+  } else {
+    bar.innerHTML=`<div class="al ae">❌ <b>Không kết nối được Azure.</b> Đang chạy LOCAL MODE — dữ liệu chỉ lưu trên máy này.<br><button class="btn bti" onclick="retryAzure()" style="margin-top:8px">🔄 Thử kết nối lại</button></div>`;
+  }
+  // Show API key config
+  const keyEl=document.getElementById('cfg-api-key');
+  if(keyEl) keyEl.value=AZURE_CFG.apiKey;
+}
+
+async function forceSyncNow(){
+  if(!azureOK){toast('Chưa kết nối Azure!',false);return;}
+  showLd('Đang sync lên Azure...');
+  const ok=await azureSave(buildSavePayload());
+  hideLd();
+  if(ok)toast('☁ Sync thành công!');
+  else toast('❌ Sync thất bại',false);
+}
+
+async function retryAzure(){
+  setSS('ld','Đang kết nối...');
+  try{
+    const d=await azureLoad();
+    azureOK=true;
+    if(d) applyAzureData(d);
+    document.getElementById('mbg').textContent='AZURE SYNC';
+    document.getElementById('mbg').className='mbg mbg-sp';
+    setSS('ok','Azure ✓');
+    renderPage();toast('✅ Kết nối Azure thành công!');
+  }catch(e){setSS('err','Vẫn lỗi');toast('❌ Vẫn không kết nối được: '+e.message,false);}
 }
 
 // ═══════════ CRUD — TASKS ═══════════
@@ -910,23 +1091,290 @@ async function setupLists(){
 }
 
 function startClock(){const e=document.getElementById('clk');const t=()=>{const n=new Date();e.textContent=n.toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit'})+' '+n.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};t();setInterval(t,1000);}
-['mo-task','mo-log','mo-mat','mo-tx'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeM(id);});});
+['mo-task','mo-log','mo-mat','mo-tx','mo-partner','mo-member','mo-import'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeM(id);});});
 
 // ═══════════ INIT ═══════════
 (async function(){
   startClock();
-  if(isSpMode){
-    const m=window.location.pathname.match(/^(\/sites\/[^\/]+)/i);
-    const sp=m?window.location.origin+m[1]:cfg.site;
-    spBase=sp+'/_api';cfg.site=sp;
-    document.getElementById('mbg').textContent='SHAREPOINT';document.getElementById('mbg').className='mbg mbg-sp';
-    showLd('Đang kết nối SharePoint...');
-    try{await getDg();spOK=true;setSS('ok','Đã kết nối SP');await loadSP();}
-    catch(e){spOK=false;setSS('err','SP lỗi — local');lload();hideLd();}
-  }else{
-    document.getElementById('mbg').textContent='LOCAL MODE';setSS('err','Chưa kết nối SP');lload();hideLd();
-  }
+  lload(); // Load local cache immediately (fast UI)
   renderPage();
-  if(isSpMode&&spOK)setInterval(async()=>{await loadSP();renderPage();},60000);
+  setSS('ld','Đang kết nối Azure...');
+  showLd('Đang kết nối Azure Cloud...');
+  try{
+    const d = await azureLoad();
+    if(d){
+      applyAzureData(d);
+      azureOK = true;
+      document.getElementById('mbg').textContent='AZURE SYNC';
+      document.getElementById('mbg').className='mbg mbg-sp';
+      setSS('ok','Azure ✓ ' + new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}));
+      toast('✅ Đã tải dữ liệu từ Azure Cloud!');
+    } else {
+      // First time — no data in Azure yet, push local data up
+      azureOK = true;
+      document.getElementById('mbg').textContent='AZURE SYNC';
+      document.getElementById('mbg').className='mbg mbg-sp';
+      await azureSave(buildSavePayload());
+      toast('☁ Đã khởi tạo dữ liệu lên Azure!');
+    }
+  } catch(e){
+    azureOK = false;
+    document.getElementById('mbg').textContent='LOCAL MODE';
+    document.getElementById('mbg').className='mbg mbg-lc';
+    setSS('err','Azure lỗi — LOCAL');
+    toast('⚠ Không kết nối được Azure — đang dùng LOCAL', false);
+  } finally{ hideLd(); }
+  renderPage();
+  // Auto-refresh every 30s to pick up changes from other users
+  setInterval(async()=>{
+    if(!azureOK) return;
+    try{
+      const d=await azureLoad();
+      if(d && d._lastModified){
+        const remoteTime = new Date(d._lastModified.timestamp).getTime();
+        const localTime = lastSync ? lastSync.getTime() : 0;
+        if(remoteTime > localTime + 5000){ // 5s buffer to avoid self-overwrite
+          applyAzureData(d);
+          lastSync = new Date(d._lastModified.timestamp);
+          setSS('ok','Azure ✓ '+lastSync.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}));
+          renderPage();
+        }
+      }
+    }catch(e){ setSS('err','Auto-sync lỗi'); }
+  }, AZURE_CFG.syncInterval);
 })();
-</script></body></html>
+</script></body></html><script>
+// ═══════════ PARTNERS CRUD ═══════════
+const PT_SC={pending:{l:'Chờ xử lý',c:'s-todo'},inprogress:{l:'Đang gia công',c:'s-inprogress'},done:{l:'Hoàn thành',c:'s-done'},late:{l:'Trễ hạn',c:'s-blocked'}};
+
+function renderPartners(){
+  const s=(document.getElementById('pt-search')?.value||'').toLowerCase();
+  const fS=document.getElementById('pt-status')?.value||'',fP=document.getElementById('pt-partner')?.value||'';
+  // Populate partner dropdown
+  const sel=document.getElementById('pt-partner');
+  if(sel&&sel.options.length<=1){const companies=[...new Set(partners.map(p=>p.company))];companies.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});}
+  // Auto mark late
+  const now=new Date();now.setHours(0,0,0,0);
+  partners.forEach(p=>{if(p.status!=='done'&&p.dueDate&&new Date(p.dueDate+'T00:00:00')<now)p.status='late';});
+  const fl=partners.filter(p=>{
+    if(s&&!p.name.toLowerCase().includes(s)&&!(p.company||'').toLowerCase().includes(s)&&!(p.po||'').toLowerCase().includes(s))return false;
+    if(fS&&p.status!==fS)return false;if(fP&&p.company!==fP)return false;return true;
+  });
+  // Summary
+  const tot=partners.length,inp=partners.filter(p=>p.status==='inprogress').length,don=partners.filter(p=>p.status==='done').length,late=partners.filter(p=>p.status==='late').length;
+  const totVal=partners.reduce((s,p)=>s+(+p.value||0),0);
+  const hdr=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px">
+    <div class="msc"><div class="msv2">${tot}</div><div class="msl2">Tổng đơn</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--a2)">${inp}</div><div class="msl2">Đang gia công</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--gr)">${don}</div><div class="msl2">Hoàn thành</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--re)">${late}</div><div class="msl2">Trễ hạn</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--ac);font-size:14px">${(totVal/1e6).toFixed(1)}M</div><div class="msl2">Tổng giá trị</div></div>
+  </div>`;
+  if(!fl.length){document.getElementById('pt-wrap').innerHTML=hdr+'<div class="emp"><div class="empi">🤝</div><div class="empt">Không có đơn hàng</div></div>';return;}
+  const pc={high:'#ef4444',medium:'#eab308',low:'#22c55e'};
+  const rows=fl.map((p,i)=>{
+    const pct=p.qty>0?Math.min(Math.round(p.received/p.qty*100),100):0;
+    const pgC=pct>=100?'var(--gr)':pct>=50?'var(--a2)':pct>0?'var(--ac)':'var(--mu)';
+    const dCl=p.status==='late'?'dv':p.dueDate&&new Date(p.dueDate+'T00:00:00')<=new Date(new Date().setDate(new Date().getDate()+3))?'ds':'do';
+    return`<tr>
+      <td class="stt">${i+1}</td>
+      <td style="max-width:200px"><div style="display:flex;align-items:center;gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:${pc[p.priority||'medium']};flex-shrink:0"></div><div class="tn">${p.name}</div></div>${p.po?`<div class="td" style="font-family:var(--mo)">${p.po}</div>`:''}</td>
+      <td><div style="font-size:12px;font-weight:600">${p.company}</div><div style="font-size:10px;color:var(--mu)">${p.contact||''}</div></td>
+      <td><span class="badge ${PT_SC[p.status]?.c||'s-todo'}"><span class="bdi"></span>${PT_SC[p.status]?.l||p.status}</span></td>
+      <td><div style="display:flex;align-items:center;gap:7px"><div style="font-family:var(--mo);font-size:13px;font-weight:700">${p.received}/${p.qty}</div><div style="flex:1;height:5px;background:var(--sf2);border-radius:3px;overflow:hidden;min-width:50px"><div style="width:${pct}%;height:100%;background:${pgC};border-radius:3px"></div></div><span style="font-size:10px;color:var(--mu)">${pct}%</span></div></td>
+      <td style="font-family:var(--mo);font-size:11px" class="${dCl}">${fmtD(p.dueDate)}</td>
+      <td style="font-family:var(--mo);font-size:11px;color:var(--ac)">${p.value?p.value.toLocaleString('vi-VN')+'đ':''}</td>
+      <td>${p.note?`<span style="font-size:10px;color:var(--mu)" title="${p.note}">📝 ${p.note.slice(0,30)}${p.note.length>30?'...':''}</span>`:''}</td>
+      <td><div style="display:flex;gap:2px"><button class="ib" onclick="openEP(${p.id})">✎</button><button class="ib d" onclick="delPartnerOrder(${p.id})">✕</button></div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('pt-wrap').innerHTML=hdr+`<div class="tw"><table><thead><tr><th>#</th><th>Tên đơn / PO</th><th>Đối tác</th><th>Trạng thái</th><th>Tiến độ nhận</th><th>Hạn giao</th><th>Giá trị</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function openAddPartnerOrder(){
+  ePId=null;document.getElementById('pt-tt').textContent='Thêm đơn gia công';
+  document.getElementById('pt-id').value='';
+  ['pt-nm','pt-po','pt-cp','pt-ct','pt-nt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pt-st').value='pending';document.getElementById('pt-pr').value='medium';
+  document.getElementById('pt-qt').value='0';document.getElementById('pt-vl').value='0';document.getElementById('pt-rc').value='0';
+  document.getElementById('pt-un').value='pcs';
+  document.getElementById('pt-od').value=today();document.getElementById('pt-dd').value='';
+  openM('mo-partner');
+}
+function openEP(id){
+  const p=partners.find(p=>p.id==id);if(!p)return;ePId=id;
+  document.getElementById('pt-tt').textContent='Sửa đơn hàng';
+  document.getElementById('pt-id').value=id;document.getElementById('pt-nm').value=p.name;
+  document.getElementById('pt-po').value=p.po||'';document.getElementById('pt-cp').value=p.company;
+  document.getElementById('pt-ct').value=p.contact||'';document.getElementById('pt-st').value=p.status;
+  document.getElementById('pt-pr').value=p.priority||'medium';document.getElementById('pt-qt').value=p.qty||0;
+  document.getElementById('pt-vl').value=p.value||0;document.getElementById('pt-rc').value=p.received||0;
+  document.getElementById('pt-un').value=p.unit||'pcs';
+  document.getElementById('pt-od').value=p.orderDate||today();document.getElementById('pt-dd').value=p.dueDate||'';
+  document.getElementById('pt-nt').value=p.note||'';openM('mo-partner');
+}
+function savePartnerOrder(){
+  const nm=document.getElementById('pt-nm').value.trim();const cp=document.getElementById('pt-cp').value.trim();
+  if(!nm||!cp){alert('Nhập tên đơn và công ty!');return;}
+  const d={name:nm,po:document.getElementById('pt-po').value.trim(),company:cp,contact:document.getElementById('pt-ct').value.trim(),
+    status:document.getElementById('pt-st').value,priority:document.getElementById('pt-pr').value,
+    qty:+document.getElementById('pt-qt').value||0,unit:document.getElementById('pt-un').value,
+    value:+document.getElementById('pt-vl').value||0,received:+document.getElementById('pt-rc').value||0,
+    orderDate:document.getElementById('pt-od').value,dueDate:document.getElementById('pt-dd').value,
+    note:document.getElementById('pt-nt').value.trim()};
+  if(ePId){const i=partners.findIndex(p=>p.id==ePId);if(i!==-1)partners[i]={...partners[i],...d};}
+  else{d.id=Date.now();partners.push(d);}
+  lsave();closeM('mo-partner');renderPage();toast('Đã lưu đơn hàng!');
+}
+function delPartnerOrder(id){
+  if(!confirm('Xóa đơn hàng này?'))return;
+  partners=partners.filter(p=>p.id!=id);lsave();renderPage();toast('Đã xóa!');
+}
+function exportPartnersCSV(){
+  const h=['STT','Tên đơn','PO','Đối tác','Liên hệ','Trạng thái','SL','Đã nhận','Đơn vị','Giá trị','Ngày đặt','Hạn giao','Ghi chú'];
+  const r=partners.map((p,i)=>[i+1,`"${p.name}"`,p.po||'',`"${p.company}"`,p.contact||'',PT_SC[p.status]?.l||p.status,p.qty,p.received,p.unit,p.value||0,p.orderDate||'',p.dueDate||'',`"${p.note||''}"`]);
+  const csv=[h,...r].map(x=>x.join(',')).join('\n');
+  const b=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`POLC-Partners-${today()}.csv`;a.click();
+}
+
+// ═══════════ MEMBERS CRUD ═══════════
+function openAddMember(){
+  document.getElementById('mb-tt').textContent='Thêm nhân sự';
+  document.getElementById('mb-id-edit').value='';
+  ['mb-nm','mb-nt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('mb-id').value='';document.getElementById('mb-rl').value='Thợ xưởng';
+  document.getElementById('mb-cl').value='#f97316';openM('mo-member');
+}
+function openEM_member(id){
+  const m=MB.find(m=>m.id==id);if(!m)return;
+  document.getElementById('mb-tt').textContent='Sửa nhân sự';
+  document.getElementById('mb-id-edit').value=id;document.getElementById('mb-nm').value=m.name;
+  document.getElementById('mb-id').value=m.id;document.getElementById('mb-rl').value=m.role||'';
+  document.getElementById('mb-cl').value=m.color;openM('mo-member');
+}
+function saveMember(){
+  const nm=document.getElementById('mb-nm').value.trim();const mid=document.getElementById('mb-id').value.trim();
+  if(!nm||!mid){alert('Nhập đủ tên và tên gọi tắt!');return;}
+  const d={id:mid,name:nm,role:document.getElementById('mb-rl').value.trim(),color:document.getElementById('mb-cl').value};
+  const editId=document.getElementById('mb-id-edit').value;
+  if(editId){const i=MB.findIndex(m=>m.id==editId);if(i!==-1)MB[i]={...MB[i],...d};}
+  else MB.push(d);
+  lsave();closeM('mo-member');renderPage();toast('Đã lưu nhân sự!');
+}
+function delMember(id){
+  if(!confirm('Xóa nhân sự này?'))return;
+  const i=MB.findIndex(m=>m.id==id);if(i!==-1)MB.splice(i,1);
+  lsave();renderPage();toast('Đã xóa!');
+}
+
+// ═══════════ JSON EXPORT / IMPORT ═══════════
+function exportAllJSON(){
+  const data={
+    exportDate:new Date().toISOString(),version:'2.0',
+    tasks,logs,mats,partners,
+    members:MB
+  };
+  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`POLC-Backup-${today()}.json`;a.click();
+  toast('Xuất JSON thành công!');
+}
+function openImport(){document.getElementById('imp-json').value='';document.getElementById('imp-preview').innerHTML='';openM('mo-import');}
+function loadImportFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{document.getElementById('imp-json').value=e.target.result;validateImport();};
+  reader.readAsText(file);
+}
+function validateImport(){
+  try{
+    const raw=document.getElementById('imp-json').value.trim();
+    const d=JSON.parse(raw);
+    const summary=`<div class="al ag">✅ JSON hợp lệ — Tasks: ${(d.tasks||[]).length}, Logs: ${(d.logs||[]).length}, Vật liệu: ${(d.mats||[]).length}, Đối tác: ${(d.partners||[]).length}, Nhân sự: ${(d.members||[]).length}</div>`;
+    document.getElementById('imp-preview').innerHTML=summary;
+  }catch(e){document.getElementById('imp-preview').innerHTML=`<div class="al ae">❌ JSON không hợp lệ: ${e.message}</div>`;}
+}
+function doImport(){
+  try{
+    const d=JSON.parse(document.getElementById('imp-json').value.trim());
+    if(!confirm(`Import sẽ ghi đè dữ liệu hiện tại!\nTasks: ${(d.tasks||[]).length}, Vật liệu: ${(d.mats||[]).length}, Đối tác: ${(d.partners||[]).length}\n\nBạn có chắc chắn không?`))return;
+    if(d.tasks)tasks=d.tasks;
+    if(d.logs)logs=d.logs;
+    if(d.mats)mats=d.mats;
+    if(d.partners)partners=d.partners;
+    if(d.members&&d.members.length)MB.splice(0,MB.length,...d.members);
+    lsave();closeM('mo-import');renderPage();
+    toast('Import thành công!');
+  }catch(e){toast('Lỗi import: '+e.message,false);}
+}
+
+// ═══════════ EXCEL EXPORT ═══════════
+function exportExcel(){
+  // Build HTML table → Excel via data URI
+  const now=today();
+  let wb=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+<head><meta charset="UTF-8">
+<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>
+<x:ExcelWorksheet><x:Name>Tasks</x:Name><x:WorksheetOptions><x:Selected/></x:WorksheetOptions></x:ExcelWorksheet>
+<x:ExcelWorksheet><x:Name>Doi_Tac</x:Name><x:WorksheetOptions/></x:ExcelWorksheet>
+<x:ExcelWorksheet><x:Name>Vat_Lieu</x:Name><x:WorksheetOptions/></x:ExcelWorksheet>
+<x:ExcelWorksheet><x:Name>Thanh_Pham</x:Name><x:WorksheetOptions/></x:ExcelWorksheet>
+</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+</head><body>`;
+
+  // Sheet 1: Tasks
+  wb+=`<table x:str><tr style="background:#f97316;color:#fff;font-weight:bold">
+    <th>STT</th><th>Tên công việc</th><th>Mô tả</th><th>Team</th><th>Người TH</th>
+    <th>Trạng thái</th><th>Ưu tiên</th><th>Tiến độ%</th><th>Hạn</th><th>Dự án</th><th>Mục tiêu</th><th>Ghi chú</th>
+  </tr>`;
+  tasks.forEach((t,i)=>{
+    const sc={'todo':'Chưa bắt đầu','inprogress':'Đang làm','review':'Chờ review','done':'Hoàn thành','blocked':'Bị chặn'};
+    wb+=`<tr><td>${i+1}</td><td>${t.name}</td><td>${t.desc||''}</td><td>${t.team}</td><td>${t.assignee}</td>
+      <td>${sc[t.status]||t.status}</td><td>${t.priority}</td><td>${t.progress||0}</td>
+      <td>${t.due||''}</td><td>${t.project||''}</td><td>${t.target||0}</td><td>${t.note||''}</td></tr>`;
+  });
+  wb+=`</table>`;
+
+  // Sheet 2: Partners
+  wb+=`<table x:str><tr style="background:#3b82f6;color:#fff;font-weight:bold">
+    <th>STT</th><th>Tên đơn</th><th>PO</th><th>Đối tác</th><th>Liên hệ</th>
+    <th>Trạng thái</th><th>SL</th><th>Đã nhận</th><th>Đơn vị</th><th>Giá trị</th><th>Ngày đặt</th><th>Hạn giao</th><th>Ghi chú</th>
+  </tr>`;
+  partners.forEach((p,i)=>{
+    const sc={'pending':'Chờ xử lý','inprogress':'Đang gia công','done':'Hoàn thành','late':'Trễ hạn'};
+    wb+=`<tr><td>${i+1}</td><td>${p.name}</td><td>${p.po||''}</td><td>${p.company}</td><td>${p.contact||''}</td>
+      <td>${sc[p.status]||p.status}</td><td>${p.qty}</td><td>${p.received}</td><td>${p.unit}</td>
+      <td>${p.value||0}</td><td>${p.orderDate||''}</td><td>${p.dueDate||''}</td><td>${p.note||''}</td></tr>`;
+  });
+  wb+=`</table>`;
+
+  // Sheet 3: Materials
+  wb+=`<table x:str><tr style="background:#22c55e;color:#fff;font-weight:bold">
+    <th>STT</th><th>Tên vật liệu</th><th>Mã</th><th>Loại</th><th>Tồn kho</th>
+    <th>Đơn vị</th><th>Tối thiểu</th><th>Tối đa</th><th>Trạng thái</th><th>NCC</th><th>Ghi chú</th>
+  </tr>`;
+  mats.forEach((m,i)=>{
+    wb+=`<tr><td>${i+1}</td><td>${m.name}</td><td>${m.code||''}</td><td>${m.cat}</td><td>${m.qty}</td>
+      <td>${m.unit}</td><td>${m.min}</td><td>${m.max}</td><td>${m.status}</td><td>${m.supplier||''}</td><td>${m.note||''}</td></tr>`;
+  });
+  wb+=`</table>`;
+
+  // Sheet 4: Logs
+  wb+=`<table x:str><tr style="background:#f97316;color:#fff;font-weight:bold">
+    <th>STT</th><th>Công việc</th><th>Ngày</th><th>Ca</th><th>Người TH</th>
+    <th>Số lượng</th><th>NG</th><th>Đơn vị</th><th>Vật liệu dùng</th><th>Ghi chú</th>
+  </tr>`;
+  logs.forEach((l,i)=>{
+    const t=tasks.find(t=>t.id==l.taskId);
+    wb+=`<tr><td>${i+1}</td><td>${t?t.name:'CV#'+l.taskId}</td><td>${l.date||''}</td>
+      <td>${l.shift||''}</td><td>${l.who}</td><td>${l.qty}</td><td>${l.ng||0}</td>
+      <td>${l.unit||'pcs'}</td><td>${l.mat||''}</td><td>${l.note||''}</td></tr>`;
+  });
+  wb+=`</table></body></html>`;
+
+  const b=new Blob([wb],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`POLC-Dashboard-${now}.xls`;a.click();
+  toast('Xuất Excel thành công!');
+}
+</script>
