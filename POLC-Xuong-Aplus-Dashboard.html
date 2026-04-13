@@ -251,6 +251,10 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
   <div class="ni" onclick="nav('production')"><span class="nic">📦</span>Thành phẩm<span class="nc" id="nc-p">0</span></div>
   <div class="ni" onclick="nav('materials')"><span class="nic">🧱</span>Vật liệu<span class="nc alr" id="nc-m">0</span></div>
   <hr class="ndv">
+  <div class="nlb">Gia công ngoài</div>
+  <div class="ni" onclick="nav('partners')"><span class="nic">🤝</span>Đối tác GC<span class="nc alr" id="nc-pt">0</span></div>
+  <div class="ni" onclick="nav('outsource')"><span class="nic">🏭</span>Checklist GC<span class="nc alr" id="nc-os">0</span></div>
+  <hr class="ndv">
   <div class="nlb">Thành viên</div>
   <div id="sbm"></div>
 </aside>
@@ -362,6 +366,37 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     <select class="fs" id="pt-partner" onchange="renderPartners()"><option value="">Tất cả đối tác</option></select>
   </div>
   <div id="pt-wrap"></div>
+</div>
+<div class="pg" id="pg-outsource">
+  <div class="shd">
+    <div><span class="sti">🏭 Đặt hàng gia công ngoài</span><span class="ssu">LBN · Quang Trung · ...</span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btq" onclick="refreshData()">🔄</button>
+      <button class="btn btq" onclick="exportOutsourceExcel()">📊 Excel</button>
+      <button class="btn btq" onclick="openAddOsGroup()">＋ Nhóm mới</button>
+      <button class="btn btp" onclick="openAddOsItem(null)">＋ Thêm item</button>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div id="os-summary" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px"></div>
+
+  <!-- Filters -->
+  <div class="fb">
+    <input class="fi" placeholder="🔍 Tìm item..." id="os-search" oninput="renderOutsource()">
+    <select class="fs" id="os-company" onchange="renderOutsource()"><option value="">Tất cả công ty</option></select>
+    <select class="fs" id="os-status" onchange="renderOutsource()">
+      <option value="">Tất cả trạng thái</option>
+      <option value="pending">Chờ</option>
+      <option value="inprogress">Đang làm</option>
+      <option value="pass">Pass ✅</option>
+      <option value="fail">Fail ❌</option>
+      <option value="late">Trễ hạn</option>
+    </select>
+    <select class="fs" id="os-group" onchange="renderOutsource()"><option value="">Tất cả nhóm</option></select>
+  </div>
+
+  <div id="os-content"></div>
 </div>
 <div class="pg" id="pg-setup">
   <div class="shd"><div><span class="sti">⚙ Cài đặt SharePoint Lists</span></div></div>
@@ -573,6 +608,57 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     <button class="btn btp" onclick="doImport()">📥 Import</button>
   </div>
 </div></div>
+
+<!-- Modal: Add/Edit Outsource Item -->
+<div class="mo" id="mo-os-item">
+<div class="md" style="max-width:600px">
+  <div class="mhd"><span class="mtt" id="os-item-tt">Thêm item gia công</span><div class="mcl" onclick="closeM('mo-os-item')">✕</div></div>
+  <div class="mbd">
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Mã / Tên item *</label><input class="fc" id="osi-nm" placeholder="HVB_COF_01..."></div>
+      <div class="fg"><label class="fl">Nhóm</label><select class="fc" id="osi-grp"></select></div>
+    </div>
+    <div class="fr fr3">
+      <div class="fg"><label class="fl">Đơn vị</label>
+        <select class="fc" id="osi-un"><option value="pcs">pcs</option><option value="Set">Set</option><option value="m">m</option><option value="kg">kg</option><option value="bộ">bộ</option></select>
+      </div>
+      <div class="fg"><label class="fl">Số lượng</label><input class="fc" type="number" id="osi-qt" min="0" value="1"></div>
+      <div class="fg"><label class="fl">Người phụ trách</label><input class="fc" id="osi-re" placeholder="LBN, Sang..."></div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Required Date *</label><input class="fc" type="date" id="osi-rd"></div>
+      <div class="fg"><label class="fl">Actual Date</label><input class="fc" type="date" id="osi-ad"></div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Công ty gia công</label><input class="fc" id="osi-cp" placeholder="LBN, Quang Trung..."></div>
+      <div class="fg"><label class="fl">Trạng thái</label>
+        <select class="fc" id="osi-st">
+          <option value="pending">⏳ Chờ</option>
+          <option value="inprogress">🔄 Đang làm</option>
+          <option value="pass">✅ Pass</option>
+          <option value="fail">❌ Fail</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr ff"><div class="fg"><label class="fl">Comment / Technical Inspection</label><textarea class="fc" id="osi-cm" placeholder="Ghi chú kỹ thuật, vấn đề cần xử lý..."></textarea></div></div>
+  </div>
+  <div class="mft"><input type="hidden" id="osi-id"><button class="btn btq" onclick="closeM('mo-os-item')">Hủy</button><button class="btn btp" onclick="saveOsItem()">💾 Lưu</button></div>
+</div></div>
+
+<!-- Modal: Add Group -->
+<div class="mo" id="mo-os-group">
+<div class="md" style="max-width:420px">
+  <div class="mhd"><span class="mtt">Thêm nhóm gia công</span><div class="mcl" onclick="closeM('mo-os-group')">✕</div></div>
+  <div class="mbd">
+    <div class="fr ff"><div class="fg"><label class="fl">Tên nhóm *</label><input class="fc" id="osg-nm" placeholder="Fabrication Drawing_COF..."></div></div>
+    <div class="fr ff"><div class="fg"><label class="fl">Dự án / Hợp đồng</label><input class="fc" id="osg-pj" placeholder="HVB HM-TG-VT..."></div></div>
+    <div class="fr fr2">
+      <div class="fg"><label class="fl">Công ty gia công</label><input class="fc" id="osg-cp" placeholder="LBN, Quang Trung..."></div>
+      <div class="fg"><label class="fl">Màu nhóm</label><input class="fc" type="color" id="osg-cl" value="#3b82f6"></div>
+    </div>
+  </div>
+  <div class="mft"><input type="hidden" id="osg-id"><button class="btn btq" onclick="closeM('mo-os-group')">Hủy</button><button class="btn btp" onclick="saveOsGroup()">💾 Lưu</button></div>
+</div></div>
 <div id="toast"></div>
 <script>
 // ═══════════ AZURE BLOB CONFIG ═══════════
@@ -623,7 +709,7 @@ function scheduleSave() {
 }
 
 function buildSavePayload() {
-  return { tasks, logs, mats, partners, members: MB, version: '2.0', savedAt: new Date().toISOString() };
+  return { tasks, logs, mats, partners, outsourceGroups, outsourceItems, members: MB, version: '2.0', savedAt: new Date().toISOString() };
 }
 
 // ═══════════ STATIC DATA ═══════════
@@ -663,7 +749,29 @@ const SEED_M=[
 ];
 
 // ═══════════ STATE ═══════════
-let tasks=[],logs=[],mats=[],partners=[],curPg='overview',eTId=null,eMId=null,ePId=null,pDate=today();
+let tasks=[],logs=[],mats=[],partners=[],outsourceGroups=[],outsourceItems=[],curPg='overview',eTId=null,eMId=null,ePId=null,eOsId=null,eOsGId=null,pDate=today();
+
+const SEED_OSG=[
+  {id:'osg1',name:'Fabrication Drawing_COF',project:'HVB HM-TG-VT',company:'LBN',color:'#3b82f6'},
+  {id:'osg2',name:'Fabrication Drawing_M0',project:'HVB HM-TG-VT',company:'LBN',color:'#22c55e'},
+  {id:'osg3',name:'Mechanical Parts',project:'HVB HM-TG-VT',company:'Quang Trung',color:'#f97316'},
+];
+const SEED_OSI=[
+  {id:'osi1',groupId:'osg1',name:'HVB_COF_01',unit:'Set',qty:2,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi2',groupId:'osg1',name:'HVB_COF_02',unit:'pcs',qty:4,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi3',groupId:'osg1',name:'HVB_COF_03',unit:'pcs',qty:4,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi4',groupId:'osg1',name:'HVB_COF_04',unit:'Set',qty:4,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi5',groupId:'osg1',name:'HVB_COF_05',unit:'pcs',qty:2,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi6',groupId:'osg1',name:'HVB_COF_11',unit:'pcs',qty:4,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi7',groupId:'osg1',name:'HVB_COF_12',unit:'pcs',qty:4,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-04',company:'LBN',status:'pass',comment:''},
+  {id:'osi8',groupId:'osg2',name:'HVB_M0_01',unit:'pcs',qty:1,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-04',company:'LBN',status:'pass',comment:''},
+  {id:'osi9',groupId:'osg2',name:'HVB_M0_02',unit:'pcs',qty:1,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-04',company:'LBN',status:'pass',comment:''},
+  {id:'osi10',groupId:'osg2',name:'HVB_M0_04',unit:'pcs',qty:1,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-04',company:'LBN',status:'pass',comment:''},
+  {id:'osi11',groupId:'osg2',name:'HVB_M0_05',unit:'pcs',qty:2,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-09',company:'LBN',status:'pass',comment:''},
+  {id:'osi12',groupId:'osg2',name:'HVB_M0_06',unit:'Set',qty:1,responsible:'LBN',requiredDate:'2026-04-08',actualDate:'2026-04-04',company:'LBN',status:'pass',comment:''},
+  {id:'osi13',groupId:'osg3',name:'SP-DR-2120-Z19',unit:'pcs',qty:14,responsible:'Quang Trung',requiredDate:'2026-04-11',actualDate:'',company:'Quang Trung',status:'inprogress',comment:'Bánh nhông Z-19 SQ.30mm'},
+  {id:'osi14',groupId:'osg3',name:'125255F-LC',unit:'pcs',qty:9,responsible:'Quang Trung',requiredDate:'2026-04-11',actualDate:'',company:'Quang Trung',status:'pending',comment:'4+5 pcs'},
+];
 const SEED_P=[
   {id:1,name:'Gia công bánh nhông Z-19 SQ.30mm',po:'PO-2604-001',company:'Cơ khí Minh Tân',contact:'Minh - 0901234567',status:'inprogress',orderDate:'2026-04-01',dueDate:'2026-04-15',qty:14,unit:'pcs',received:0,value:2800000,priority:'high',note:'SP-DR-2120-Z19, dung sai ±0.05mm'},
   {id:2,name:'Phay CNC transfer roller PA6',po:'PO-2604-002',company:'Tiện CNC Phước Thành',contact:'Thành - 0912345678',status:'inprogress',orderDate:'2026-04-03',dueDate:'2026-04-10',qty:3,unit:'pcs',received:1,value:1500000,priority:'medium',note:'PA6-40-140-200mmL'},
@@ -697,6 +805,8 @@ function lsave(){
   localStorage.setItem('polc_m',JSON.stringify(mats));
   localStorage.setItem('polc_p',JSON.stringify(partners));
   localStorage.setItem('polc_mb',JSON.stringify(MB));
+  localStorage.setItem('polc_osg',JSON.stringify(outsourceGroups));
+  localStorage.setItem('polc_osi',JSON.stringify(outsourceItems));
   // Then sync to Azure (debounced 2s)
   if(azureOK) scheduleSave();
 }
@@ -707,6 +817,8 @@ function lload(){
   partners=JSON.parse(localStorage.getItem('polc_p')||'null')||SEED_P.map(p=>({...p}));
   const savedMB=JSON.parse(localStorage.getItem('polc_mb')||'null');
   if(savedMB&&savedMB.length)MB.splice(0,MB.length,...savedMB);
+  outsourceGroups=JSON.parse(localStorage.getItem('polc_osg')||'null')||SEED_OSG.map(g=>({...g}));
+  outsourceItems=JSON.parse(localStorage.getItem('polc_osi')||'null')||SEED_OSI.map(i=>({...i}));
 }
 
 function applyAzureData(d) {
@@ -715,6 +827,8 @@ function applyAzureData(d) {
   if(d.logs) logs=d.logs;
   if(d.mats&&d.mats.length) mats=d.mats;
   if(d.partners) partners=d.partners;
+  if(d.outsourceGroups) outsourceGroups=d.outsourceGroups;
+  if(d.outsourceItems) outsourceItems=d.outsourceItems;
   if(d.members&&d.members.length) MB.splice(0,MB.length,...d.members);
   // Cache locally
   localStorage.setItem('polc_t',JSON.stringify(tasks));
@@ -770,7 +884,7 @@ function nav(p){
   document.querySelectorAll('.pg').forEach(x=>x.classList.remove('act'));
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('act'));
   document.getElementById('pg-'+p).classList.add('act');
-  const ps=['overview','tasks','kanban','members','production','materials','partners','setup'];
+  const ps=['overview','tasks','kanban','members','production','materials','partners','outsource','setup'];
   document.querySelectorAll('.ni')[ps.indexOf(p)]?.classList.add('act');
   renderPage();
 }
@@ -784,6 +898,7 @@ function renderPage(){
   if(curPg==='materials')renderMats();
   if(curPg==='setup')renderSetup();
   if(curPg==='partners')renderPartners();
+  if(curPg==='outsource')renderOutsource();
 }
 function upNC(){
   document.getElementById('nc-t').textContent=tasks.length;
@@ -1091,7 +1206,7 @@ async function setupLists(){
 }
 
 function startClock(){const e=document.getElementById('clk');const t=()=>{const n=new Date();e.textContent=n.toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit'})+' '+n.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};t();setInterval(t,1000);}
-['mo-task','mo-log','mo-mat','mo-tx','mo-partner','mo-member','mo-import'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeM(id);});});
+['mo-task','mo-log','mo-mat','mo-tx','mo-partner','mo-member','mo-import','mo-os-item','mo-os-group'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeM(id);});});
 
 // ═══════════ INIT ═══════════
 (async function(){
@@ -1376,5 +1491,222 @@ function exportExcel(){
   const a=document.createElement('a');a.href=URL.createObjectURL(b);
   a.download=`POLC-Dashboard-${now}.xls`;a.click();
   toast('Xuất Excel thành công!');
+}
+</script>
+<script>
+// ═══════════════════════════════════════════
+// OUTSOURCE TRACKING — Đặt hàng gia công ngoài
+// ═══════════════════════════════════════════
+const OS_SC={
+  pending:{l:'⏳ Chờ',c:'s-todo',bg:'rgba(107,115,148,.15)',cl:'#6b7394'},
+  inprogress:{l:'🔄 Đang làm',c:'s-inprogress',bg:'rgba(59,130,246,.15)',cl:'#3b82f6'},
+  pass:{l:'✅ Pass',c:'s-done',bg:'rgba(34,197,94,.15)',cl:'#22c55e'},
+  fail:{l:'❌ Fail',c:'s-blocked',bg:'rgba(239,68,68,.15)',cl:'#ef4444'},
+  late:{l:'🚨 Trễ',c:'s-blocked',bg:'rgba(239,68,68,.15)',cl:'#ef4444'}
+};
+
+function renderOutsource(){
+  const now=new Date();now.setHours(0,0,0,0);
+  // Auto-mark late
+  outsourceItems.forEach(i=>{
+    if(i.status!=='pass'&&i.status!=='fail'&&i.requiredDate&&new Date(i.requiredDate+'T00:00:00')<now) i._late=true;
+    else i._late=false;
+  });
+  const search=(document.getElementById('os-search')?.value||'').toLowerCase();
+  const fCp=document.getElementById('os-company')?.value||'';
+  const fSt=document.getElementById('os-status')?.value||'';
+  const fGr=document.getElementById('os-group')?.value||'';
+
+  // Populate dropdowns
+  const cpSel=document.getElementById('os-company');
+  if(cpSel&&cpSel.options.length<=1){const cps=[...new Set(outsourceItems.map(i=>i.company).filter(Boolean))];cps.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cpSel.appendChild(o);});}
+  const grSel=document.getElementById('os-group');
+  if(grSel&&grSel.options.length<=1){outsourceGroups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.name;grSel.appendChild(o);});}
+
+  // Summary
+  const tot=outsourceItems.length,pass=outsourceItems.filter(i=>i.status==='pass').length,
+    fail=outsourceItems.filter(i=>i.status==='fail').length,
+    late=outsourceItems.filter(i=>i._late).length,
+    pct=tot>0?Math.round(pass/tot*100):0;
+  document.getElementById('os-summary').innerHTML=`
+    <div class="msc"><div class="msv2">${tot}</div><div class="msl2">Tổng items</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--gr)">${pass}</div><div class="msl2">✅ Pass</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--re)">${fail}</div><div class="msl2">❌ Fail</div></div>
+    <div class="msc"><div class="msv2" style="color:var(--ye)">${late}</div><div class="msl2">🚨 Trễ hạn</div></div>
+    <div class="msc">
+      <div class="msv2" style="color:${pct>=100?'var(--gr)':pct>=50?'var(--a2)':'var(--ac)'}">${pct}%</div>
+      <div class="msl2">Hoàn thành</div>
+      <div style="height:4px;background:var(--sf2);border-radius:2px;overflow:hidden;margin-top:4px">
+        <div style="width:${pct}%;height:100%;background:${pct>=100?'var(--gr)':pct>=50?'var(--a2)':'var(--ac)'};border-radius:2px"></div>
+      </div>
+    </div>`;
+
+  // Filter items
+  const filteredItems=outsourceItems.filter(i=>{
+    if(search&&!i.name.toLowerCase().includes(search)&&!(i.company||'').toLowerCase().includes(search)&&!(i.comment||'').toLowerCase().includes(search))return false;
+    if(fCp&&i.company!==fCp)return false;
+    if(fGr&&i.groupId!==fGr)return false;
+    if(fSt){if(fSt==='late'&&!i._late)return false;if(fSt!=='late'&&i.status!==fSt)return false;}
+    return true;
+  });
+
+  // Group by groupId
+  const activeGroups=fGr?outsourceGroups.filter(g=>g.id===fGr):outsourceGroups;
+  let html='';
+  activeGroups.forEach(g=>{
+    const items=filteredItems.filter(i=>i.groupId===g.id);
+    if(!items.length&&(search||fCp||fSt||fGr))return;
+    const gPass=outsourceItems.filter(i=>i.groupId===g.id&&i.status==='pass').length;
+    const gTot=outsourceItems.filter(i=>i.groupId===g.id).length;
+    const gPct=gTot>0?Math.round(gPass/gTot*100):0;
+    html+=`<div class="tw" style="margin-bottom:14px">
+      <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;gap:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${g.color};flex-shrink:0"></div>
+        <div style="flex:1">
+          <span style="font-size:13px;font-weight:700">${g.name}</span>
+          ${g.project?`<span style="font-size:10px;color:var(--mu);margin-left:8px">📁 ${g.project}</span>`:''}
+          ${g.company?`<span class="badge mor" style="margin-left:8px;font-size:10px">${g.company}</span>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--mu)">${gPass}/${gTot} Pass</span>
+          <div style="width:80px;height:5px;background:var(--sf);border-radius:3px;overflow:hidden">
+            <div style="width:${gPct}%;height:100%;background:${g.color};border-radius:3px"></div>
+          </div>
+          <span style="font-size:10px;font-family:var(--mo);color:var(--mu)">${gPct}%</span>
+          <button class="ib" onclick="openEditOsGroup('${g.id}')" title="Sửa nhóm">✎</button>
+          <button class="ib" onclick="openAddOsItem('${g.id}')" title="Thêm item" style="color:var(--gr)">＋</button>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:var(--sf2)">
+            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:30px">#</th>
+            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd)">Item / Mã</th>
+            <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:55px">Unit</th>
+            <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:50px">Qty</th>
+            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Responsible</th>
+            <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Required Date</th>
+            <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Actual Date</th>
+            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd)">Comment</th>
+            <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:90px">Status</th>
+            <th style="padding:6px 10px;border-bottom:1px solid var(--bd);width:60px"></th>
+          </tr>
+        </thead>
+        <tbody>${(items.length?items:outsourceItems.filter(i=>i.groupId===g.id)).map((item,idx)=>{
+          const st=item._late?'late':(item.status||'pending');
+          const sc=OS_SC[st]||OS_SC.pending;
+          const rdCls=item._late?'dv':item.requiredDate&&new Date(item.requiredDate+'T00:00:00')<=new Date(new Date().setDate(new Date().getDate()+3))?'ds':'';
+          const delayed=item.actualDate&&item.requiredDate&&new Date(item.actualDate+'T00:00:00')>new Date(item.requiredDate+'T00:00:00');
+          return`<tr style="border-bottom:1px solid var(--bd);${st==='pass'?'opacity:.85':''}">
+            <td style="padding:7px 10px;font-size:10px;color:var(--mu);font-family:var(--mo)">${idx+1}</td>
+            <td style="padding:7px 10px;font-size:12px;font-weight:600">${item.name}${item.company&&item.company!==g.company?`<span style="font-size:9px;color:var(--mu);margin-left:5px">${item.company}</span>`:''}</td>
+            <td style="padding:7px 10px;font-size:11px;text-align:center;color:var(--mu)">${item.unit||'pcs'}</td>
+            <td style="padding:7px 10px;font-size:12px;font-weight:700;text-align:center;font-family:var(--mo)">${item.qty||0}</td>
+            <td style="padding:7px 10px;font-size:11px;color:var(--cy)">${item.responsible||''}</td>
+            <td style="padding:7px 10px;font-size:11px;text-align:center;font-family:var(--mo)" class="${rdCls}">${fmtD(item.requiredDate)}</td>
+            <td style="padding:7px 10px;font-size:11px;text-align:center;font-family:var(--mo);color:${delayed?'var(--re)':item.actualDate?'var(--gr)':'var(--mu)'}">${item.actualDate?fmtD(item.actualDate):'—'}${delayed?' ⚠':''}</td>
+            <td style="padding:7px 10px;font-size:10px;color:var(--mu);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.comment||''}">${item.comment||''}</td>
+            <td style="padding:7px 10px;text-align:center">
+              <span class="badge ${sc.c}" style="cursor:pointer;font-size:10px" onclick="cycleOsStatus('${item.id}')" title="Click để đổi">${sc.l}</span>
+            </td>
+            <td style="padding:7px 10px">
+              <div style="display:flex;gap:2px">
+                <button class="ib" onclick="openEditOsItem('${item.id}')">✎</button>
+                <button class="ib d" onclick="delOsItem('${item.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  });
+
+  // Items without group
+  const ungrouped=filteredItems.filter(i=>!outsourceGroups.find(g=>g.id===i.groupId));
+  if(ungrouped.length){html+='<div style="color:var(--mu);font-size:11px;margin-top:8px">'+ungrouped.length+' items chưa có nhóm</div>';}
+
+  if(!html)html='<div class="emp"><div class="empi">🏭</div><div class="empt">Chưa có dữ liệu gia công</div></div>';
+  document.getElementById('os-content').innerHTML=html;
+}
+
+// ── CRUD Groups ──
+function openAddOsGroup(){eOsGId=null;document.getElementById('osg-id').value='';['osg-nm','osg-pj','osg-cp'].forEach(i=>document.getElementById(i).value='');document.getElementById('osg-cl').value='#3b82f6';openM('mo-os-group');}
+function openEditOsGroup(id){const g=outsourceGroups.find(g=>g.id===id);if(!g)return;eOsGId=id;document.getElementById('osg-id').value=id;document.getElementById('osg-nm').value=g.name;document.getElementById('osg-pj').value=g.project||'';document.getElementById('osg-cp').value=g.company||'';document.getElementById('osg-cl').value=g.color||'#3b82f6';openM('mo-os-group');}
+function saveOsGroup(){
+  const nm=document.getElementById('osg-nm').value.trim();if(!nm){alert('Nhập tên nhóm!');return;}
+  const d={name:nm,project:document.getElementById('osg-pj').value.trim(),company:document.getElementById('osg-cp').value.trim(),color:document.getElementById('osg-cl').value};
+  const id=document.getElementById('osg-id').value;
+  if(id){const i=outsourceGroups.findIndex(g=>g.id===id);if(i!==-1)outsourceGroups[i]={...outsourceGroups[i],...d};}
+  else{d.id='osg'+Date.now();outsourceGroups.push(d);}
+  lsave();closeM('mo-os-group');renderOutsource();toast('Đã lưu nhóm!');
+}
+
+// ── CRUD Items ──
+function openAddOsItem(groupId){
+  eOsId=null;document.getElementById('osi-id').value='';
+  ['osi-nm','osi-re','osi-cp','osi-cm'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('osi-item-tt').textContent='Thêm item gia công';
+  document.getElementById('osi-qt').value='1';document.getElementById('osi-un').value='pcs';
+  document.getElementById('osi-st').value='pending';
+  document.getElementById('osi-rd').value='';document.getElementById('osi-ad').value='';
+  // Populate group dropdown
+  const sel=document.getElementById('osi-grp');sel.innerHTML='<option value="">-- Chọn nhóm --</option>'+outsourceGroups.map(g=>`<option value="${g.id}"${g.id===groupId?' selected':''}>${g.name}</option>`).join('');
+  openM('mo-os-item');
+}
+function openEditOsItem(id){
+  const item=outsourceItems.find(i=>i.id===id);if(!item)return;
+  eOsId=id;document.getElementById('osi-id').value=id;
+  document.getElementById('osi-item-tt').textContent='Sửa item';
+  document.getElementById('osi-nm').value=item.name;document.getElementById('osi-qt').value=item.qty||1;
+  document.getElementById('osi-un').value=item.unit||'pcs';document.getElementById('osi-re').value=item.responsible||'';
+  document.getElementById('osi-cp').value=item.company||'';document.getElementById('osi-st').value=item.status||'pending';
+  document.getElementById('osi-rd').value=item.requiredDate||'';document.getElementById('osi-ad').value=item.actualDate||'';
+  document.getElementById('osi-cm').value=item.comment||'';
+  const sel=document.getElementById('osi-grp');sel.innerHTML='<option value="">-- Chọn nhóm --</option>'+outsourceGroups.map(g=>`<option value="${g.id}"${g.id===item.groupId?' selected':''}>${g.name}</option>`).join('');
+  openM('mo-os-item');
+}
+function saveOsItem(){
+  const nm=document.getElementById('osi-nm').value.trim();if(!nm){alert('Nhập tên item!');return;}
+  const d={name:nm,groupId:document.getElementById('osi-grp').value,unit:document.getElementById('osi-un').value,qty:+document.getElementById('osi-qt').value||1,responsible:document.getElementById('osi-re').value.trim(),company:document.getElementById('osi-cp').value.trim(),status:document.getElementById('osi-st').value,requiredDate:document.getElementById('osi-rd').value,actualDate:document.getElementById('osi-ad').value,comment:document.getElementById('osi-cm').value.trim()};
+  const id=document.getElementById('osi-id').value;
+  if(id){const i=outsourceItems.findIndex(x=>x.id===id);if(i!==-1)outsourceItems[i]={...outsourceItems[i],...d};}
+  else{d.id='osi'+Date.now();outsourceItems.push(d);}
+  lsave();closeM('mo-os-item');renderOutsource();toast('Đã lưu!');
+}
+function delOsItem(id){if(!confirm('Xóa item này?'))return;outsourceItems=outsourceItems.filter(i=>i.id!==id);lsave();renderOutsource();toast('Đã xóa!');}
+function cycleOsStatus(id){
+  const ss=['pending','inprogress','pass','fail'];const item=outsourceItems.find(i=>i.id===id);if(!item)return;
+  const idx=ss.indexOf(item.status);item.status=ss[(idx+1)%ss.length];
+  if(item.status==='pass'&&!item.actualDate)item.actualDate=today();
+  lsave();renderOutsource();
+}
+
+// ── Export Excel ──
+function exportOutsourceExcel(){
+  let wb=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>`;
+  wb+=`<table x:str><tr style="background:#1e40af;color:#fff;font-weight:bold">
+    <th>No.</th><th>Items</th><th>Unit</th><th>Qty</th><th>Responsible</th>
+    <th>Required Date</th><th>Actual Date</th><th>Comment</th><th>Status</th><th>Company</th><th>Group</th>
+  </tr>`;
+  let rowNum=1;
+  outsourceGroups.forEach(g=>{
+    const items=outsourceItems.filter(i=>i.groupId===g.id);
+    if(!items.length)return;
+    wb+=`<tr style="background:#166534;color:#fff;font-weight:bold"><td colspan="11">${g.name}${g.project?' — '+g.project:''}</td></tr>`;
+    items.forEach(item=>{
+      const sc={pending:'Pending',inprogress:'In Progress',pass:'Pass',fail:'Fail'};
+      wb+=`<tr${item.status==='pass'?'':item._late?' style="background:#fef2f2"':''}>
+        <td>${rowNum++}</td><td>${item.name}</td><td>${item.unit||'pcs'}</td><td>${item.qty||0}</td>
+        <td>${item.responsible||''}</td><td>${item.requiredDate||''}</td><td>${item.actualDate||''}</td>
+        <td>${item.comment||''}</td><td>${sc[item.status]||item.status}</td>
+        <td>${item.company||''}</td><td>${g.name}</td>
+      </tr>`;
+    });
+  });
+  wb+=`</table></body></html>`;
+  const b=new Blob([wb],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`POLC-Outsource-${today()}.xls`;a.click();
+  toast('Xuất Excel gia công!');
 }
 </script>
