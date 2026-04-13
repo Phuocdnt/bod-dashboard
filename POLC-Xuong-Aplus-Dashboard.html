@@ -267,7 +267,7 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     <div class="tw" style="margin-bottom:0"><div style="padding:10px 13px;border-bottom:1px solid var(--bd)"><span class="sti">Thành phẩm hôm nay</span></div><div style="padding:12px 13px" id="ch-td"></div></div>
   </div>
   <div class="shd"><div><span class="sti">Sắp đến hạn</span><span class="ssu">(10 ngày tới)</span></div><button class="btn btq" onclick="nav('tasks')">Xem tất cả →</button></div>
-  <div class="tw"><table><thead><tr><th>#</th><th>Công việc</th><th>Người TH</th><th>Trạng thái</th><th>Hạn</th><th>Dự án</th></tr></thead><tbody id="up-bd"></tbody></table></div>
+  <div class="tw"><table><thead><tr><th>#</th><th>Công việc</th><th>Bản vẽ</th><th>Người TH</th><th>Trạng thái</th><th>Hạn</th><th>Dự án</th></tr></thead><tbody id="up-bd"></tbody></table></div>
 </div>
 
 <div class="pg" id="pg-tasks">
@@ -434,6 +434,17 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     </div>
   </div>
   <div style="margin-top:12px" class="al ai">💡 Sau khi tạo Lists xong, reload file từ SharePoint — dữ liệu mẫu sẽ tự động được migrate lên.</div>
+  <div style="margin-top:16px">
+    <div class="tw" style="margin-bottom:0">
+      <div style="padding:11px 15px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+        <span class="sti">🏭 Danh sách Contractors</span>
+        <span style="font-size:10px;color:var(--mu)">Dùng cho dropdown khi thêm đơn gia công</span>
+      </div>
+      <div style="padding:14px 15px" id="contractors-list">
+        <div style="color:var(--mu);font-size:12px">Đang tải...</div>
+      </div>
+    </div>
+  </div>
 </div>
 </main></div>
 <div class="mo" id="mo-task">
@@ -443,17 +454,32 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     <div class="fr ff"><div class="fg"><label class="fl">Tên công việc *</label><input class="fc" id="t-nm" placeholder="Tên công việc..."></div></div>
     <div class="fr ff"><div class="fg"><label class="fl">Mô tả / Thông số</label><textarea class="fc" id="t-ds" placeholder="Chi tiết kỹ thuật..."></textarea></div></div>
     <div class="fr fr2">
+      <div class="fg"><label class="fl">Mã bản vẽ / Drawing Code</label><input class="fc" id="t-dc" placeholder="HVB_COF_01, KMD034501D..."></div>
       <div class="fg"><label class="fl">Team</label><select class="fc" id="t-tm"><option value="xưởng">Xưởng</option><option value="Tiện/phay/CNC">Tiện/phay/CNC</option></select></div>
-      <div class="fg"><label class="fl">Người thực hiện</label><select class="fc" id="t-as"><option value="Sang">Nguyễn Thanh Sang</option><option value="Lộc">Hoàng Lộc</option><option value="Hiểu">Hiểu</option><option value="Bình">Bình</option><option value="Quý">Nguyễn Phú Quý</option><option value="Dương">Võ Dương</option><option value="Sang/Lộc/Hiểu/Bình/Quý/Dương">Tất cả</option></select></div>
+    </div>
+    <div class="fr ff">
+      <div class="fg"><label class="fl">Người phụ trách</label><select class="fc" id="t-as" style="width:100%"></select></div>
     </div>
     <div class="fr fr3">
       <div class="fg"><label class="fl">Trạng thái</label><select class="fc" id="t-st"><option value="todo">Chưa bắt đầu</option><option value="inprogress">Đang làm</option><option value="review">Chờ review</option><option value="done">Hoàn thành</option><option value="blocked">Bị chặn</option></select></div>
       <div class="fg"><label class="fl">Ưu tiên</label><select class="fc" id="t-pr"><option value="medium">Trung bình</option><option value="high">Cao</option><option value="low">Thấp</option></select></div>
       <div class="fg"><label class="fl">Tiến độ %</label><input class="fc" type="number" id="t-pg" min="0" max="100" value="0"></div>
     </div>
-    <div class="fr fr2">
+    <div class="fr fr3">
       <div class="fg"><label class="fl">Hạn hoàn thành</label><input class="fc" type="date" id="t-du"></div>
       <div class="fg"><label class="fl">Dự án / PO</label><input class="fc" id="t-pj" placeholder="HVB HM-TG-VT..."></div>
+      <div class="fg">
+        <label class="fl">IQR — Dự án / Nhập kho</label>
+        <div style="display:flex;gap:5px">
+          <select class="fc" id="t-iqr-type" style="width:100px;flex-shrink:0" onchange="updateIQRPlaceholder()">
+            <option value="project">Dự án</option>
+            <option value="receipt">Nhập kho</option>
+            <option value="po">PO</option>
+            <option value="other">Khác</option>
+          </select>
+          <input class="fc" id="t-iqr" placeholder="IQR-2604-001...">
+        </div>
+      </div>
     </div>
     <div class="fr fr2">
       <div class="fg"><label class="fl">Mục tiêu sản lượng</label><input class="fc" type="number" id="t-tg" min="0" value="0"></div>
@@ -630,7 +656,7 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
       <div class="fg"><label class="fl">Actual Date</label><input class="fc" type="date" id="osi-ad"></div>
     </div>
     <div class="fr fr2">
-      <div class="fg"><label class="fl">Công ty gia công</label><input class="fc" id="osi-cp" placeholder="LBN, Quang Trung..."></div>
+      <div class="fg"><label class="fl">Contractor</label><select class="fc" id="osi-cp"></select></div>
       <div class="fg"><label class="fl">Trạng thái</label>
         <select class="fc" id="osi-st">
           <option value="pending">⏳ Chờ</option>
@@ -639,6 +665,21 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
           <option value="fail">❌ Fail</option>
         </select>
       </div>
+    </div>
+    <div class="fr fr2">
+      <div class="fg">
+        <label class="fl">IQR — Dự án / Nhập kho</label>
+        <div style="display:flex;gap:5px">
+          <select class="fc" id="osi-iqr-type" style="width:95px;flex-shrink:0">
+            <option value="project">Dự án</option>
+            <option value="receipt">Nhập kho</option>
+            <option value="po">PO</option>
+            <option value="other">Khác</option>
+          </select>
+          <input class="fc" id="osi-iqr" placeholder="IQR-2604-001...">
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Giá trị (VNĐ)</label><input class="fc" type="number" id="osi-vl" min="0" value="0"></div>
     </div>
     <div class="fr ff"><div class="fg"><label class="fl">Comment / Technical Inspection</label><textarea class="fc" id="osi-cm" placeholder="Ghi chú kỹ thuật, vấn đề cần xử lý..."></textarea></div></div>
   </div>
@@ -653,7 +694,7 @@ tbody tr:hover{background:rgba(0,0,0,.025);}tbody td{padding:8px 11px;font-size:
     <div class="fr ff"><div class="fg"><label class="fl">Tên nhóm *</label><input class="fc" id="osg-nm" placeholder="Fabrication Drawing_COF..."></div></div>
     <div class="fr ff"><div class="fg"><label class="fl">Dự án / Hợp đồng</label><input class="fc" id="osg-pj" placeholder="HVB HM-TG-VT..."></div></div>
     <div class="fr fr2">
-      <div class="fg"><label class="fl">Công ty gia công</label><input class="fc" id="osg-cp" placeholder="LBN, Quang Trung..."></div>
+      <div class="fg"><label class="fl">Contractor</label><select class="fc" id="osg-cp"></select></div>
       <div class="fg"><label class="fl">Màu nhóm</label><input class="fc" type="color" id="osg-cl" value="#3b82f6"></div>
     </div>
   </div>
@@ -709,7 +750,7 @@ function scheduleSave() {
 }
 
 function buildSavePayload() {
-  return { tasks, logs, mats, partners, outsourceGroups, outsourceItems, members: MB, version: '2.0', savedAt: new Date().toISOString() };
+  return { tasks, logs, mats, partners, outsourceGroups, outsourceItems, contractors, members: MB, version: '2.0', savedAt: new Date().toISOString() };
 }
 
 // ═══════════ STATIC DATA ═══════════
@@ -723,7 +764,7 @@ const MB=[
 ];
 const SC={todo:{l:'Chưa bắt đầu',c:'s-todo'},inprogress:{l:'Đang làm',c:'s-inprogress'},review:{l:'Chờ review',c:'s-review'},done:{l:'Hoàn thành',c:'s-done'},blocked:{l:'Bị chặn',c:'s-blocked'}};
 const SEED_T=[
-  {id:1,name:'PA6-40-140-200mmL+Roller, Sl:3 pcs',desc:'Transfer-roller',team:'xưởng',assignee:'Sang/Lộc/Hiểu/Bình/Quý/Dương',status:'inprogress',priority:'medium',due:'2026-04-05',project:'',note:'',progress:30,target:3},
+  {id:1,name:'PA6-40-140-200mmL+Roller, Sl:3 pcs',desc:'Transfer-roller',drawingCode:'',team:'xưởng',assignee:'Sang/Lộc/Hiểu/Bình/Quý/Dương',status:'inprogress',priority:'medium',due:'2026-04-05',project:'',note:'',progress:30,target:3},
   {id:2,name:'Bộ bánh răng nhựa AAKSPR-CPS-8P, 1 bộ',desc:'Sproket Z=13, trục 40mm',team:'xưởng',assignee:'Sang/Lộc/Hiểu/Bình/Quý/Dương',status:'inprogress',priority:'medium',due:'2026-04-09',project:'',note:'',progress:20,target:6},
   {id:3,name:'Gia công SP-DR-2120-Z19: 14pcs',desc:'Bánh nhông Z-19 SQ.30mm',team:'xưởng',assignee:'Sang/Lộc/Hiểu/Bình/Quý/Dương',status:'todo',priority:'medium',due:'2026-04-11',project:'',note:'',progress:0,target:14},
   {id:4,name:'Gia công 125255F-LC: 4pcs',desc:'Bánh nhông Z-18 DF.30mm',team:'xưởng',assignee:'Sang/Lộc/Hiểu/Bình/Quý/Dương',status:'todo',priority:'high',due:'2026-04-11',project:'',note:'HÀNG CỦA HVB',progress:0,target:4},
@@ -749,7 +790,14 @@ const SEED_M=[
 ];
 
 // ═══════════ STATE ═══════════
-let tasks=[],logs=[],mats=[],partners=[],outsourceGroups=[],outsourceItems=[],curPg='overview',eTId=null,eMId=null,ePId=null,eOsId=null,eOsGId=null,pDate=today();
+let tasks=[],logs=[],mats=[],partners=[],outsourceGroups=[],outsourceItems=[],contractors=[],curPg='overview',eTId=null,eMId=null,ePId=null,eOsId=null,eOsGId=null,pDate=today();
+
+const SEED_CONTRACTORS=[
+  {id:'ct1',name:'LBN',contact:'',note:'Fabrication drawing'},
+  {id:'ct2',name:'Quang Trung',contact:'',note:'Mechanical parts - CNC'},
+  {id:'ct3',name:'Tiện CNC Phước Thành',contact:'Thành - 0912345678',note:'CNC turning'},
+  {id:'ct4',name:'Cơ khí Minh Tân',contact:'Minh - 0901234567',note:'General fabrication'},
+];
 
 const SEED_OSG=[
   {id:'osg1',name:'Fabrication Drawing_COF',project:'HVB HM-TG-VT',company:'LBN',color:'#3b82f6'},
@@ -793,7 +841,7 @@ function toast(msg,ok=true){const e=document.getElementById('toast');e.textConte
 function setSS(s,t){const d=document.getElementById('sdot');d.className='sdot'+(s==='ok'?'':s==='err'?' err':' ld');document.getElementById('stxt').textContent=t;}
 
 // ═══════════ DATA MAPPING ═══════════
-function mapT(t){return{id:t.ID,name:t.Title||'',desc:t.TaskDesc||'',team:t.Team||'xưởng',assignee:t.Assignee||'',status:t.TaskStatus||'todo',priority:t.Priority||'medium',progress:t.Progress||0,due:t.DueDate?t.DueDate.slice(0,10):'',project:t.Project||'',target:t.Target||0,note:t.TaskNote||''};}
+function mapT(t){return{id:t.ID,name:t.Title||'',desc:t.TaskDesc||'',drawingCode:t.DrawingCode||'',iqr:t.IQR||'',iqrType:t.IQRType||'project',team:t.Team||'xưởng',assignee:t.Assignee||'',status:t.TaskStatus||'todo',priority:t.Priority||'medium',progress:t.Progress||0,due:t.DueDate?t.DueDate.slice(0,10):'',project:t.Project||'',target:t.Target||0,note:t.TaskNote||''};}
 function mapL(l){return{id:l.ID,taskId:l.TaskId,date:l.LogDate?l.LogDate.slice(0,10):'',shift:l.Shift||'',who:l.Who||'',qty:l.Qty||0,ng:l.NGCount||0,unit:l.Unit||'pcs',mat:l.MatUsed||'',note:l.LogNote||''};}
 function mapM(m,txs){return{id:m.ID,name:m.Title||'',code:m.Code||'',cat:m.Category||'other',unit:m.MatUnit||'pcs',icon:m.Icon||'📦',qty:m.Qty||0,min:m.MinQty||0,max:m.MaxQty||100,status:m.MatStatus||'ok',supplier:m.Supplier||'',note:m.MatNote||'',transactions:(txs||[]).map(x=>({id:x.ID,type:x.TxType,qty:x.Qty||0,date:x.TxDate?x.TxDate.slice(0,10):'',who:x.Who||'',note:x.TxNote||'',balAfter:x.BalAfter||0}))};}
 
@@ -807,6 +855,7 @@ function lsave(){
   localStorage.setItem('polc_mb',JSON.stringify(MB));
   localStorage.setItem('polc_osg',JSON.stringify(outsourceGroups));
   localStorage.setItem('polc_osi',JSON.stringify(outsourceItems));
+  localStorage.setItem('polc_ct',JSON.stringify(contractors));
   // Then sync to Azure (debounced 2s)
   if(azureOK) scheduleSave();
 }
@@ -819,6 +868,7 @@ function lload(){
   if(savedMB&&savedMB.length)MB.splice(0,MB.length,...savedMB);
   outsourceGroups=JSON.parse(localStorage.getItem('polc_osg')||'null')||SEED_OSG.map(g=>({...g}));
   outsourceItems=JSON.parse(localStorage.getItem('polc_osi')||'null')||SEED_OSI.map(i=>({...i}));
+  contractors=JSON.parse(localStorage.getItem('polc_ct')||'null')||SEED_CONTRACTORS.map(c=>({...c}));
 }
 
 function applyAzureData(d) {
@@ -829,6 +879,7 @@ function applyAzureData(d) {
   if(d.partners) partners=d.partners;
   if(d.outsourceGroups) outsourceGroups=d.outsourceGroups;
   if(d.outsourceItems) outsourceItems=d.outsourceItems;
+  if(d.contractors) contractors=d.contractors;
   if(d.members&&d.members.length) MB.splice(0,MB.length,...d.members);
   // Cache locally
   localStorage.setItem('polc_t',JSON.stringify(tasks));
@@ -933,7 +984,7 @@ function renderOv(){
   if(!top.length)document.getElementById('ch-td').innerHTML='<div class="emp" style="padding:16px"><div class="empi">📦</div><div class="empt">Chưa có dữ liệu hôm nay</div></div>';
   else{const mx=Math.max(...top.map(x=>x[1]));document.getElementById('ch-td').innerHTML=top.map(([tid,q])=>{const t=tasks.find(t=>t.id==tid);const n=(t?t.name:'CV#'+tid).slice(0,24);return`<div class="chr"><span class="chl" style="font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${n}">${n}</span><div class="cht"><div class="chf" style="width:${Math.round(q/mx*100)}%;background:var(--ac)">${q}</div></div><span class="chc">${q}</span></div>`;}).join('');}
   const up=tasks.filter(t=>t.status!=='done'&&t.due).sort((a,b)=>new Date(a.due)-new Date(b.due)).slice(0,8);
-  document.getElementById('up-bd').innerHTML=up.length?up.map((t,i)=>`<tr><td class="stt">${i+1}</td><td><div class="tn">${t.name}</div>${t.desc?`<div class="td">${t.desc.slice(0,55)}</div>`:''}</td><td style="color:var(--cy);font-size:11px">${fmtA(t.assignee)}</td><td>${sBg(t.status)}</td><td style="font-family:var(--mo);font-size:11px" class="${dCls(t.due)}">${fmtD(t.due)}</td><td>${t.project?`<span class="badge mor">${t.project}</span>`:''}</td></tr>`).join(''):'<tr><td colspan="6" class="emp">Không có</td></tr>';
+  document.getElementById('up-bd').innerHTML=up.length?up.map((t,i)=>`<tr><td class="stt">${i+1}</td><td><div class="tn">${t.name}</div>${t.desc?`<div class="td">${t.desc.slice(0,55)}</div>`:''}</td><td><span style="font-family:var(--mo);font-size:10px;background:var(--sf2);border:1px solid var(--bd);border-radius:4px;padding:1px 5px;color:var(--a2)">${t.drawingCode||'—'}</span></td><td style="color:var(--cy);font-size:11px">${fmtA(t.assignee)}</td><td>${sBg(t.status)}</td><td style="font-family:var(--mo);font-size:11px" class="${dCls(t.due)}">${fmtD(t.due)}</td><td>${t.project?`<span class="badge mor">${t.project}</span>`:''}</td></tr>`).join(''):'<tr><td colspan="6" class="emp">Không có</td></tr>';
 }
 
 // ── TASKS ──
@@ -945,7 +996,7 @@ function renderTasks(){
   const sel=document.getElementById('fmb');if(sel&&sel.options.length<=1)MB.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.name;sel.appendChild(o);});
   if(!fl.length){document.getElementById('tw').innerHTML='<div class="emp"><div class="empi">📋</div><div class="empt">Không tìm thấy</div></div>';return;}
   const pc={high:'#ef4444',medium:'#eab308',low:'#22c55e'};
-  document.getElementById('tw').innerHTML=`<div class="tw"><table><thead><tr><th>#</th><th>Công việc</th><th>Team</th><th>Người TH</th><th>Tiến độ</th><th>Trạng thái</th><th>Hạn</th><th>TP HN</th><th>Dự án</th><th></th></tr></thead><tbody>${fl.map((t,i)=>{const tq=logs.filter(l=>l.date===today()&&l.taskId==t.id).reduce((s,l)=>s+(+l.qty||0),0);return`<tr><td class="stt">${i+1}</td><td style="max-width:220px"><div style="display:flex;align-items:center;gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:${pc[t.priority||'medium']};flex-shrink:0"></div><div class="tn">${t.name}</div></div>${t.desc?`<div class="td">${t.desc.slice(0,65)}</div>`:''}${t.note?`<div style="font-size:9px;color:var(--cy);margin-top:1px">📌 ${t.note}</div>`:''}</td><td><span class="badge ${t.team&&t.team.includes('CNC')?'bc':'bt'}">${t.team}</span></td><td style="color:var(--cy);font-size:10px">${fmtA(t.assignee)}</td><td><div class="pw"><div class="pf" style="width:${t.progress||0}%;background:${pC(t.progress||0)}"></div></div><div style="font-size:9px;color:var(--mu);font-family:var(--mo);margin-top:1px">${t.progress||0}%</div></td><td><span class="badge ${SC[t.status]?.c||'s-todo'}" onclick="cycleS(${t.id})" style="cursor:pointer" title="Click đổi"><span class="bdi"></span>${SC[t.status]?.l||t.status}</span></td><td style="font-family:var(--mo);font-size:10px" class="${dCls(t.due)}">${fmtD(t.due)}</td><td><div style="display:flex;align-items:center;gap:4px"><span style="font-family:var(--mo);font-size:13px;font-weight:800;color:${tq>0?'var(--ac)':'var(--mu)'}">${tq>0?tq:'—'}</span>${t.target>0?`<span style="font-size:9px;color:var(--mu)">/${t.target}</span>`:''}<button class="ib s" onclick="qLog(${t.id})">+</button></div></td><td>${t.project?`<span class="badge mor" style="font-size:9px">${t.project}</span>`:''}</td><td><div style="display:flex;gap:2px"><button class="ib" onclick="openET(${t.id})">✎</button><button class="ib d" onclick="delTask(${t.id})">✕</button></div></td></tr>`;}).join('')}</tbody></table></div>`;
+  document.getElementById('tw').innerHTML=`<div class="tw"><table><thead><tr><th>#</th><th>Công việc</th><th>Bản vẽ</th><th>IQR</th><th>Team</th><th>Người TH</th><th>Tiến độ</th><th>Trạng thái</th><th>Hạn</th><th>TP HN</th><th>Dự án</th><th></th></tr></thead><tbody>${fl.map((t,i)=>{const tq=logs.filter(l=>l.date===today()&&l.taskId==t.id).reduce((s,l)=>s+(+l.qty||0),0);return`<tr><td class="stt">${i+1}</td><td style="max-width:220px"><div style="display:flex;align-items:center;gap:4px"><div style="width:5px;height:5px;border-radius:50%;background:${pc[t.priority||'medium']};flex-shrink:0"></div><div class="tn">${t.name}</div></div>${t.desc?`<div class="td">${t.desc.slice(0,65)}</div>`:''}${t.note?`<div style="font-size:9px;color:var(--cy);margin-top:1px">📌 ${t.note}</div>`:''}</td><td><span style="font-family:var(--mo);font-size:10px;background:var(--sf2);border:1px solid var(--bd);border-radius:4px;padding:2px 6px;color:var(--a2);white-space:nowrap">${t.drawingCode||'—'}</span></td><td>${t.iqr?`<div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:var(--mo);font-size:9px;padding:1px 5px;border-radius:3px;white-space:nowrap;font-weight:700;background:${{'project':'rgba(59,130,246,.15)','receipt':'rgba(34,197,94,.15)','po':'rgba(249,115,22,.15)','other':'rgba(107,115,148,.15)'}[t.iqrType||'project']};color:${{'project':'#3b82f6','receipt':'#22c55e','po':'#f97316','other':'#6b7394'}[t.iqrType||'project']}">${{'project':'📁','receipt':'📦','po':'🧾','other':'📋'}[t.iqrType||'project']} ${t.iqrType||'project'}</span><span style="font-family:var(--mo);font-size:10px;font-weight:700;color:var(--tx)">${t.iqr}</span></div>`:'<span style="color:var(--mu)">—</span>'}</td><td><span class="badge ${t.team&&t.team.includes('CNC')?'bc':'bt'}">${t.team}</span></td><td style="color:var(--cy);font-size:10px">${fmtA(t.assignee)}</td><td><div class="pw"><div class="pf" style="width:${t.progress||0}%;background:${pC(t.progress||0)}"></div></div><div style="font-size:9px;color:var(--mu);font-family:var(--mo);margin-top:1px">${t.progress||0}%</div></td><td><span class="badge ${SC[t.status]?.c||'s-todo'}" onclick="cycleS(${t.id})" style="cursor:pointer" title="Click đổi"><span class="bdi"></span>${SC[t.status]?.l||t.status}</span></td><td style="font-family:var(--mo);font-size:10px" class="${dCls(t.due)}">${fmtD(t.due)}</td><td><div style="display:flex;align-items:center;gap:4px"><span style="font-family:var(--mo);font-size:13px;font-weight:800;color:${tq>0?'var(--ac)':'var(--mu)'}">${tq>0?tq:'—'}</span>${t.target>0?`<span style="font-size:9px;color:var(--mu)">/${t.target}</span>`:''}<button class="ib s" onclick="qLog(${t.id})">+</button></div></td><td>${t.project?`<span class="badge mor" style="font-size:9px">${t.project}</span>`:''}</td><td><div style="display:flex;gap:2px"><button class="ib" onclick="openET(${t.id})">✎</button><button class="ib d" onclick="delTask(${t.id})">✕</button></div></td></tr>`;}).join('')}</tbody></table></div>`;
 }
 
 // ── KANBAN ──
@@ -1046,11 +1097,17 @@ async function retryAzure(){
 }
 
 // ═══════════ CRUD — TASKS ═══════════
-function openAddTask(){eTId=null;document.getElementById('tt').textContent='Thêm công việc';document.getElementById('t-id').value='';['t-nm','t-ds','t-pj','t-nt'].forEach(i=>document.getElementById(i).value='');document.getElementById('t-tm').value='xưởng';document.getElementById('t-as').value='Sang/Lộc/Hiểu/Bình/Quý/Dương';document.getElementById('t-st').value='todo';document.getElementById('t-pr').value='medium';document.getElementById('t-pg').value='0';document.getElementById('t-tg').value='0';document.getElementById('t-du').value='';openM('mo-task');}
-function openET(id){const t=tasks.find(t=>t.id==id);if(!t)return;eTId=id;document.getElementById('tt').textContent='Chỉnh sửa';document.getElementById('t-id').value=id;document.getElementById('t-nm').value=t.name;document.getElementById('t-ds').value=t.desc||'';document.getElementById('t-tm').value=t.team;document.getElementById('t-as').value=t.assignee;document.getElementById('t-st').value=t.status;document.getElementById('t-pr').value=t.priority||'medium';document.getElementById('t-pg').value=t.progress||0;document.getElementById('t-du').value=t.due||'';document.getElementById('t-pj').value=t.project||'';document.getElementById('t-tg').value=t.target||0;document.getElementById('t-nt').value=t.note||'';openM('mo-task');}
+function populateAssigneeDropdown(selectedVal){
+  const sel=document.getElementById('t-as');
+  sel.innerHTML='<option value="">-- Chọn nhân viên --</option>'+
+    MB.map(m=>`<option value="${m.id}"${m.id===selectedVal?' selected':''}>${m.name}</option>`).join('')+
+    '<option value="all"'+(selectedVal==='all'?' selected':'')+'>Tất cả nhân viên</option>';
+}
+function openAddTask(){eTId=null;document.getElementById('tt').textContent='Thêm công việc';document.getElementById('t-id').value='';['t-nm','t-ds','t-pj','t-nt','t-dc','t-iqr'].forEach(i=>document.getElementById(i)&&(document.getElementById(i).value=''));document.getElementById('t-iqr-type')&&(document.getElementById('t-iqr-type').value='project');document.getElementById('t-tm').value='xưởng';document.getElementById('t-st').value='todo';document.getElementById('t-pr').value='medium';document.getElementById('t-pg').value='0';document.getElementById('t-tg').value='0';document.getElementById('t-du').value='';populateAssigneeDropdown('');openM('mo-task');}
+function openET(id){const t=tasks.find(t=>t.id==id);if(!t)return;eTId=id;document.getElementById('tt').textContent='Chỉnh sửa';document.getElementById('t-id').value=id;document.getElementById('t-nm').value=t.name;document.getElementById('t-ds').value=t.desc||'';document.getElementById('t-dc').value=t.drawingCode||'';document.getElementById('t-iqr').value=t.iqr||'';document.getElementById('t-iqr-type')&&(document.getElementById('t-iqr-type').value=t.iqrType||'project');document.getElementById('t-tm').value=t.team;document.getElementById('t-st').value=t.status;document.getElementById('t-pr').value=t.priority||'medium';document.getElementById('t-pg').value=t.progress||0;document.getElementById('t-du').value=t.due||'';document.getElementById('t-pj').value=t.project||'';document.getElementById('t-tg').value=t.target||0;document.getElementById('t-nt').value=t.note||'';populateAssigneeDropdown(t.assignee);openM('mo-task');}
 async function saveTask(){
   const nm=document.getElementById('t-nm').value.trim();if(!nm){alert('Nhập tên!');return;}
-  const d={name:nm,desc:document.getElementById('t-ds').value.trim(),team:document.getElementById('t-tm').value,assignee:document.getElementById('t-as').value,status:document.getElementById('t-st').value,priority:document.getElementById('t-pr').value,progress:+document.getElementById('t-pg').value||0,due:document.getElementById('t-du').value,project:document.getElementById('t-pj').value.trim(),target:+document.getElementById('t-tg').value||0,note:document.getElementById('t-nt').value.trim()};
+  const d={name:nm,desc:document.getElementById('t-ds').value.trim(),drawingCode:document.getElementById('t-dc').value.trim(),iqr:document.getElementById('t-iqr').value.trim(),iqrType:document.getElementById('t-iqr-type').value,team:document.getElementById('t-tm').value,assignee:document.getElementById('t-as').value,status:document.getElementById('t-st').value,priority:document.getElementById('t-pr').value,progress:+document.getElementById('t-pg').value||0,due:document.getElementById('t-du').value,project:document.getElementById('t-pj').value.trim(),target:+document.getElementById('t-tg').value||0,note:document.getElementById('t-nt').value.trim()};
   showLd('Đang lưu...');
   try{
     if(isSpMode&&spOK){const sd={Title:d.name,TaskDesc:d.desc,Team:d.team,Assignee:d.assignee,TaskStatus:d.status,Priority:d.priority,Progress:d.progress,DueDate:d.due?d.due+'T00:00:00Z':null,Project:d.project,Target:d.target,TaskNote:d.note};
@@ -1587,7 +1644,7 @@ function renderOutsource(){
             <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Responsible</th>
             <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Required Date</th>
             <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">Actual Date</th>
-            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd)">Comment</th>
+            <th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:100px">IQR</th><th style="padding:6px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd)">Comment</th>
             <th style="padding:6px 10px;text-align:center;font-size:9px;font-weight:700;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--bd);width:90px">Status</th>
             <th style="padding:6px 10px;border-bottom:1px solid var(--bd);width:60px"></th>
           </tr>
@@ -1605,7 +1662,7 @@ function renderOutsource(){
             <td style="padding:7px 10px;font-size:11px;color:var(--cy)">${item.responsible||''}</td>
             <td style="padding:7px 10px;font-size:11px;text-align:center;font-family:var(--mo)" class="${rdCls}">${fmtD(item.requiredDate)}</td>
             <td style="padding:7px 10px;font-size:11px;text-align:center;font-family:var(--mo);color:${delayed?'var(--re)':item.actualDate?'var(--gr)':'var(--mu)'}">${item.actualDate?fmtD(item.actualDate):'—'}${delayed?' ⚠':''}</td>
-            <td style="padding:7px 10px;font-size:10px;color:var(--mu);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.comment||''}">${item.comment||''}</td>
+            <td style="padding:7px 10px">${item.iqr?`<div style="display:flex;flex-direction:column;gap:1px"><span style="font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;background:${{project:'rgba(59,130,246,.15)',receipt:'rgba(34,197,94,.15)',po:'rgba(249,115,22,.15)',other:'rgba(107,115,148,.15)'}[item.iqrType||'project']};color:${{project:'#3b82f6',receipt:'#22c55e',po:'#f97316',other:'#6b7394'}[item.iqrType||'project']}">${{project:'📁',receipt:'📦',po:'🧾',other:'📋'}[item.iqrType||'project']} ${item.iqrType||'project'}</span><span style="font-family:var(--mo);font-size:10px;font-weight:700">${item.iqr}</span></div>`:'<span style="color:var(--mu)">—</span>'}</td><td style="padding:7px 10px;font-size:10px;color:var(--mu);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.comment||''}">${item.comment||''}</td>
             <td style="padding:7px 10px;text-align:center">
               <span class="badge ${sc.c}" style="cursor:pointer;font-size:10px" onclick="cycleOsStatus('${item.id}')" title="Click để đổi">${sc.l}</span>
             </td>
@@ -1661,13 +1718,13 @@ function openEditOsItem(id){
   document.getElementById('osi-un').value=item.unit||'pcs';document.getElementById('osi-re').value=item.responsible||'';
   document.getElementById('osi-cp').value=item.company||'';document.getElementById('osi-st').value=item.status||'pending';
   document.getElementById('osi-rd').value=item.requiredDate||'';document.getElementById('osi-ad').value=item.actualDate||'';
-  document.getElementById('osi-cm').value=item.comment||'';
+  document.getElementById('osi-cm').value=item.comment||'';document.getElementById('osi-iqr').value=item.iqr||'';document.getElementById('osi-iqr-type')&&(document.getElementById('osi-iqr-type').value=item.iqrType||'project');document.getElementById('osi-vl').value=item.value||0;
   const sel=document.getElementById('osi-grp');sel.innerHTML='<option value="">-- Chọn nhóm --</option>'+outsourceGroups.map(g=>`<option value="${g.id}"${g.id===item.groupId?' selected':''}>${g.name}</option>`).join('');
   openM('mo-os-item');
 }
 function saveOsItem(){
   const nm=document.getElementById('osi-nm').value.trim();if(!nm){alert('Nhập tên item!');return;}
-  const d={name:nm,groupId:document.getElementById('osi-grp').value,unit:document.getElementById('osi-un').value,qty:+document.getElementById('osi-qt').value||1,responsible:document.getElementById('osi-re').value.trim(),company:document.getElementById('osi-cp').value.trim(),status:document.getElementById('osi-st').value,requiredDate:document.getElementById('osi-rd').value,actualDate:document.getElementById('osi-ad').value,comment:document.getElementById('osi-cm').value.trim()};
+  const d={name:nm,groupId:document.getElementById('osi-grp').value,unit:document.getElementById('osi-un').value,qty:+document.getElementById('osi-qt').value||1,responsible:document.getElementById('osi-re').value.trim(),company:document.getElementById('osi-cp').value.trim(),status:document.getElementById('osi-st').value,requiredDate:document.getElementById('osi-rd').value,actualDate:document.getElementById('osi-ad').value,iqr:document.getElementById('osi-iqr').value.trim(),iqrType:document.getElementById('osi-iqr-type').value,value:+document.getElementById('osi-vl').value||0,comment:document.getElementById('osi-cm').value.trim()};
   const id=document.getElementById('osi-id').value;
   if(id){const i=outsourceItems.findIndex(x=>x.id===id);if(i!==-1)outsourceItems[i]={...outsourceItems[i],...d};}
   else{d.id='osi'+Date.now();outsourceItems.push(d);}
@@ -1709,4 +1766,128 @@ function exportOutsourceExcel(){
   a.download=`POLC-Outsource-${today()}.xls`;a.click();
   toast('Xuất Excel gia công!');
 }
+</script>
+<script>
+// ═══════════════════════════════════════════
+// CONTRACTORS MANAGEMENT
+// ═══════════════════════════════════════════
+
+// Populate contractor dropdowns
+function populateContractorDropdowns(selectedVal){
+  const opts = '<option value="">-- Chọn contractor --</option>' +
+    contractors.map(ct=>`<option value="${ct.name}"${ct.name===selectedVal?' selected':''}>${ct.name}${ct.contact?' ('+ct.contact+')':''}</option>`).join('') +
+    '<option value="__new__">＋ Thêm contractor mới...</option>';
+  ['osi-cp','osg-cp'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ el.innerHTML=opts; if(selectedVal) el.value=selectedVal; }
+  });
+}
+
+// Handle "add new" option
+function handleContractorSelect(elId){
+  const el=document.getElementById(elId);
+  if(el&&el.value==='__new__'){
+    const name=prompt('Tên contractor mới:');
+    if(name&&name.trim()){
+      const contact=prompt('Số điện thoại / liên hệ (bỏ qua nếu không có):');
+      const ct={id:'ct'+Date.now(),name:name.trim(),contact:contact||'',note:''};
+      contractors.push(ct);lsave();
+      populateContractorDropdowns(ct.name);
+      el.value=ct.name;
+      toast('Đã thêm contractor: '+ct.name);
+    } else { el.value=''; }
+  }
+}
+
+// Override openAddOsItem to populate contractors
+const _origOpenAddOsItem = openAddOsItem;
+window.openAddOsItem = function(groupId){
+  _origOpenAddOsItem(groupId);
+  populateContractorDropdowns('');
+  document.getElementById('osi-cp').onchange=function(){handleContractorSelect('osi-cp');};
+};
+
+// Override openEditOsItem
+const _origOpenEditOsItem = openEditOsItem;
+window.openEditOsItem = function(id){
+  _origOpenEditOsItem(id);
+  const item=outsourceItems.find(i=>i.id===id);
+  if(item) populateContractorDropdowns(item.company||'');
+  document.getElementById('osi-cp').onchange=function(){handleContractorSelect('osi-cp');};
+};
+
+// Override openAddOsGroup
+const _origOpenAddOsGroup = openAddOsGroup;
+window.openAddOsGroup = function(){
+  _origOpenAddOsGroup();
+  populateContractorDropdowns('');
+  document.getElementById('osg-cp').onchange=function(){handleContractorSelect('osg-cp');};
+};
+
+// Override openEditOsGroup
+const _origOpenEditOsGroup = openEditOsGroup;
+window.openEditOsGroup = function(id){
+  _origOpenEditOsGroup(id);
+  const g=outsourceGroups.find(g=>g.id===id);
+  if(g) populateContractorDropdowns(g.company||'');
+  document.getElementById('osg-cp').onchange=function(){handleContractorSelect('osg-cp');};
+};
+
+// ── Contractors Management Page (in Setup) ──
+function renderContractorsList(){
+  const el=document.getElementById('contractors-list');
+  if(!el) return;
+  el.innerHTML=contractors.map(ct=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sf2);border-radius:6px;margin-bottom:5px">
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700">${ct.name}</div>
+        ${ct.contact?`<div style="font-size:10px;color:var(--mu)">${ct.contact}</div>`:''}
+        ${ct.note?`<div style="font-size:10px;color:var(--mu)">${ct.note}</div>`:''}
+      </div>
+      <button class="ib" onclick="editContractor('${ct.id}')">✎</button>
+      <button class="ib d" onclick="delContractor('${ct.id}')">✕</button>
+    </div>`).join('') +
+    `<button class="btn btp" onclick="addContractor()" style="width:100%;justify-content:center;margin-top:8px">＋ Thêm contractor</button>`;
+}
+
+function addContractor(){
+  const name=prompt('Tên công ty / cá nhân:');
+  if(!name||!name.trim()) return;
+  const contact=prompt('Số điện thoại / liên hệ:');
+  const note=prompt('Ghi chú (loại công việc):');
+  contractors.push({id:'ct'+Date.now(),name:name.trim(),contact:contact||'',note:note||''});
+  lsave();renderContractorsList();toast('Đã thêm: '+name.trim());
+}
+function editContractor(id){
+  const ct=contractors.find(c=>c.id===id);if(!ct)return;
+  const name=prompt('Tên contractor:',ct.name);if(!name)return;
+  const contact=prompt('Liên hệ:',ct.contact);
+  const note=prompt('Ghi chú:',ct.note);
+  ct.name=name.trim();ct.contact=contact||'';ct.note=note||'';
+  lsave();renderContractorsList();toast('Đã cập nhật!');
+}
+function delContractor(id){
+  if(!confirm('Xóa contractor này?'))return;
+  contractors=contractors.filter(c=>c.id!==id);
+  lsave();renderContractorsList();toast('Đã xóa!');
+}
+
+// Auto-render contractors list when setup page opens
+const _origRenderSetup=renderSetup;
+window.renderSetup=function(){
+  _origRenderSetup();
+  setTimeout(renderContractorsList,100);
+};
+</script>
+<script>
+// IQR placeholder helper
+function updateIQRPlaceholder(){
+  const type=document.getElementById('t-iqr-type')?.value;
+  const input=document.getElementById('t-iqr');
+  if(!input) return;
+  const ph={project:'IQR-HVB-2604, IQR-AES-001...',receipt:'NK-2604-001, WH-IN-001...',po:'PO-2604-001, DHI-PO-123...',other:'Mã tham chiếu...'};
+  input.placeholder=ph[type]||'IQR...';
+}
+// Init placeholder on load
+document.addEventListener('DOMContentLoaded',updateIQRPlaceholder);
 </script>
