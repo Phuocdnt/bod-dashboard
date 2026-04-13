@@ -1645,7 +1645,7 @@ function saveOsGroup(){
 function openAddOsItem(groupId){
   eOsId=null;document.getElementById('osi-id').value='';
   ['osi-nm','osi-re','osi-cp','osi-cm'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('osi-item-tt').textContent='Thêm item gia công';
+  document.getElementById('os-item-tt').textContent='Thêm item gia công';
   document.getElementById('osi-qt').value='1';document.getElementById('osi-un').value='pcs';
   document.getElementById('osi-st').value='pending';
   document.getElementById('osi-rd').value='';document.getElementById('osi-ad').value='';
@@ -1656,7 +1656,7 @@ function openAddOsItem(groupId){
 function openEditOsItem(id){
   const item=outsourceItems.find(i=>i.id===id);if(!item)return;
   eOsId=id;document.getElementById('osi-id').value=id;
-  document.getElementById('osi-item-tt').textContent='Sửa item';
+  document.getElementById('os-item-tt').textContent='Sửa item';
   document.getElementById('osi-nm').value=item.name;document.getElementById('osi-qt').value=item.qty||1;
   document.getElementById('osi-un').value=item.unit||'pcs';document.getElementById('osi-re').value=item.responsible||'';
   document.getElementById('osi-cp').value=item.company||'';document.getElementById('osi-st').value=item.status||'pending';
