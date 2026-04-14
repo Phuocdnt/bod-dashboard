@@ -1,6 +1,3 @@
-Line wrap
-
-
 <!DOCTYPE html>
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -126,6 +123,41 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap;border:1px solid var(--bdr2)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 @media(max-width:480px){.energy-row,.p2col,.dims3{grid-template-columns:1fr}.ai-list{grid-template-columns:1fr}}
+
+/* ── Invite button ── */
+.btn-invite{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,rgba(37,99,235,.25),rgba(37,99,235,.12));border:1px solid rgba(37,99,235,.4);color:#60a5fa;cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:600;transition:all .2s}
+.btn-invite:hover{background:linear-gradient(135deg,rgba(37,99,235,.4),rgba(37,99,235,.25));box-shadow:0 3px 12px rgba(37,99,235,.3);transform:translateY(-1px)}
+/* ── Invite Modal ── */
+.inv-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.inv-overlay.open{opacity:1;pointer-events:all}
+.inv-modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6);transform:scale(.96);transition:transform .25s}
+.inv-overlay.open .inv-modal{transform:scale(1)}
+.inv-head{padding:24px 28px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:flex-start}
+.inv-head h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.inv-head p{font-size:12px;color:var(--muted)}
+.inv-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0;transition:color .15s}
+.inv-close:hover{color:var(--txt)}
+.inv-body{padding:20px 28px 24px;display:flex;flex-direction:column;gap:14px}
+.inv-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.inv-field{display:flex;flex-direction:column;gap:6px}
+.inv-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.inv-field input,.inv-field select{background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:9px;padding:9px 12px;font-family:var(--ff);font-size:13px;outline:none;transition:border .2s}
+.inv-field input:focus,.inv-field select:focus{border-color:var(--blue)}
+.inv-field input::placeholder{color:var(--muted2)}
+.inv-field select option{background:var(--sur2)}
+.inv-result{background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:10px}
+.inv-result-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:2px}
+.inv-link-url{font-size:11.5px;color:#7dd3fc;background:rgba(125,211,252,.08);border:1px solid rgba(125,211,252,.2);border-radius:7px;padding:9px 12px;word-break:break-all;cursor:pointer;transition:background .15s;font-family:monospace}
+.inv-link-url:hover{background:rgba(125,211,252,.15)}
+.inv-token-snippet{font-size:11.5px;color:#86efac;background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2);border-radius:7px;padding:9px 12px;word-break:break-all;cursor:pointer;transition:background .15s;font-family:monospace}
+.inv-token-snippet:hover{background:rgba(134,239,172,.15)}
+.inv-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ibtn-gen{flex:1;padding:11px 16px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;transition:all .2s}
+.ibtn-gen:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,99,235,.4)}
+.ibtn-copy,.ibtn-mail,.ibtn-open{padding:11px 14px;border-radius:9px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;transition:all .2s}
+.ibtn-copy:hover,.ibtn-mail:hover,.ibtn-open:hover{color:var(--txt);border-color:var(--bdr2)}
+.inv-note{font-size:12px;color:var(--muted);line-height:1.7;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:9px;padding:12px 14px}
+.inv-note code{background:var(--sur3);padding:1px 5px;border-radius:4px;font-size:11px;color:#fbbf24}
 </style>
 </head>
 <body>
@@ -134,7 +166,10 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 <div class="tb-wheel"></div>
 <span>Insights Discovery &nbsp;<em>Admin</em></span>
 </div>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="btn-invite" onclick="openInviteModal()">📨 Mời Khảo Sát</button>
 <span class="tag-admin">Admin Only</span>
+</div>
 </div>
 <div class="main-layout">
 <aside class="sidebar">
@@ -206,6 +241,58 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 </div>
 </div>
 </div>
+
+<!-- INVITE MODAL -->
+<div class="inv-overlay" id="invOverlay" onclick="if(event.target===this)closeInviteModal()">
+<div class="inv-modal">
+<div class="inv-head">
+<div>
+<h3>📨 Mời Tham Gia Khảo Sát</h3>
+<p>Tạo link cá nhân hoá để gửi cho nhân viên</p>
+</div>
+<button class="inv-close" onclick="closeInviteModal()">✕</button>
+</div>
+<div class="inv-body">
+<div class="inv-2col">
+<div class="inv-field"><label>Họ và Tên *</label><input id="invName" placeholder="Nguyễn Văn A"/></div>
+<div class="inv-field"><label>Chức Danh *</label><input id="invRole" placeholder="Manager"/></div>
+</div>
+<div class="inv-field">
+<label>Phòng Ban</label>
+<select id="invDept">
+<option value="">— Chọn phòng ban —</option>
+<option>Ban Giám Đốc</option><option>Sản Xuất</option><option>Kỹ Thuật</option>
+<option>Kinh Doanh &amp; Marketing</option><option>Nhân Sự</option>
+<option>Tài Chính &amp; Kế Toán</option><option>Chuỗi Cung Ứng</option>
+<option>Chất Lượng</option><option>Khác</option>
+</select>
+</div>
+<div class="inv-field"><label>Email Nhân Viên (để gửi mail)</label><input id="invEmail" type="email" placeholder="nhanvien@dhivn.com"/></div>
+<div class="inv-result" id="invResultBox">
+<div>
+<div class="inv-result-label">🔗 Link khảo sát cá nhân hoá</div>
+<div class="inv-link-url" id="invLinkUrl" onclick="copyInvLink()" title="Nhấn để copy"></div>
+</div>
+<div style="padding-top:10px;border-top:1px solid var(--bdr)">
+<div class="inv-result-label">🔐 Token entry (thêm vào inviteTokens trong GitHub để khoá link)</div>
+<div class="inv-token-snippet" id="invTokenSnippet" onclick="copyInvToken()" title="Nhấn để copy token entry"></div>
+</div>
+</div>
+<div class="inv-actions">
+<button class="ibtn-gen" onclick="generateInvite()">⚡ Tạo Link</button>
+<button class="ibtn-copy" id="ibtnCopy" onclick="copyInvLink()" style="display:none">📋 Copy Link</button>
+<button class="ibtn-mail" id="ibtnMail" onclick="sendInvMail()" style="display:none">✉️ Gửi Email</button>
+<button class="ibtn-open" id="ibtnOpen" onclick="openInvLink()" style="display:none">↗ Mở Link</button>
+</div>
+<div class="inv-note" id="invNote" style="display:none">
+💡 <strong>2 cách dùng:</strong><br>
+• <strong>Link đơn giản</strong> — gửi ngay, nhân viên truy cập mà không cần cập nhật GitHub. Form sẽ điền sẵn thông tin.<br>
+• <strong>Token entry</strong> — thêm vào <code>inviteTokens</code> trong <code>insights-employee.html</code> trên GitHub để khoá link (chỉ đúng người mới vào được + chỉ nộp được 1 lần).
+</div>
+</div>
+</div>
+</div>
+
 <div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
 <div id="toast"></div>
 
@@ -434,6 +521,66 @@ else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo
 
 document.addEventListener('DOMContentLoaded',loadData);
 
+// ════════════════════════════════════════
+// INVITE FEATURE
+// ════════════════════════════════════════
+const SURVEY_URL='https://phuocdnt.github.io/bod-dashboard/insights-employee.html';
+let _invLink='',_invToken='',_invTokenEntry='';
+
+function openInviteModal(){
+document.getElementById('invOverlay').classList.add('open');
+setTimeout(()=>document.getElementById('invName').focus(),200);
+}
+function closeInviteModal(){
+document.getElementById('invOverlay').classList.remove('open');
+}
+function generateInvite(){
+const name=document.getElementById('invName').value.trim();
+const role=document.getElementById('invRole').value.trim();
+const dept=document.getElementById('invDept').value;
+if(!name){toast('Vui lòng nhập họ tên',true);return;}
+if(!role){toast('Vui lòng nhập chức danh',true);return;}
+const initials=name.split(' ').map(w=>w[0]||'').join('').toLowerCase().replace(/[^a-z]/g,'').slice(0,3)||'dhi';
+_invToken=initials+Date.now().toString(36).slice(-5);
+const params=new URLSearchParams();
+params.set('name',name);params.set('role',role);
+if(dept)params.set('dept',dept);
+_invLink=SURVEY_URL+'?'+params.toString();
+const entry={name,role};if(dept)entry.dept=dept;
+_invTokenEntry=`"${_invToken}": ${JSON.stringify(entry)}`;
+document.getElementById('invLinkUrl').textContent=_invLink;
+document.getElementById('invTokenSnippet').textContent=_invTokenEntry;
+document.getElementById('invResultBox').style.display='flex';
+document.getElementById('invNote').style.display='block';
+['ibtnCopy','ibtnMail','ibtnOpen'].forEach(id=>document.getElementById(id).style.display='');
+toast('✅ Link đã được tạo!');
+}
+async function copyInvLink(){
+if(!_invLink){toast('Tạo link trước',true);return;}
+try{await navigator.clipboard.writeText(_invLink);}
+catch(e){const t=document.createElement('textarea');t.value=_invLink;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
+toast('📋 Đã copy link!');
+}
+async function copyInvToken(){
+if(!_invTokenEntry){toast('Tạo link trước',true);return;}
+try{await navigator.clipboard.writeText(_invTokenEntry);}
+catch(e){const t=document.createElement('textarea');t.value=_invTokenEntry;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
+toast('📋 Đã copy token entry!');
+}
+function sendInvMail(){
+const email=document.getElementById('invEmail').value.trim();
+const name=document.getElementById('invName').value.trim();
+if(!email){toast('Nhập email nhân viên trước',true);return;}
+if(!_invLink){toast('Tạo link trước',true);return;}
+const subject=encodeURIComponent('Mời tham gia khảo sát Insights Discovery – DHI Co Ltd');
+const body=encodeURIComponent(`Kính gửi ${name},\n\nBạn được mời tham gia khảo sát tính cách Insights Discovery của DHI Co Ltd.\n\nVui lòng truy cập link dưới đây để hoàn thành khảo sát (khoảng 10–15 phút):\n\n${_invLink}\n\nTrân trọng,\nHR & Admin Team\nDHI Co Ltd`);
+window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+}
+function openInvLink(){
+if(!_invLink){toast('Tạo link trước',true);return;}
+window.open(_invLink,'_blank');
+}
+
 // ═══════════════════════════════════════
 // RECALCULATE — Tính lại điểm từ Answers
 // ═══════════════════════════════════════
@@ -442,7 +589,6 @@ ie: new Set([24,25,26,27,28,29,30,31]),
 lead: new Set([32,33,34,35,36,37,38,39]),
 stress: new Set([40,41,42,43,44,45,46,47])
 };
-const CORE_N_NEW=28;
 
 function recalcFromAnswers(answersJson){
 let ans;
