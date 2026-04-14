@@ -1435,6 +1435,7 @@ function exportTeamReport(){
   const dist=getColorDist();
   const total=teamData.length;
   const now=new Date().toLocaleDateString('vi-VN',{year:'numeric',month:'long',day:'numeric'});
+  const teamWheelSVG=(document.getElementById('teamWheel')?.innerHTML||'').replace(/max-width:[^;"]+;?/g,'').replace(/width:100%/g,'width:220px');
   const aiOverviewEl=document.getElementById('aiOverview');
   const aiDynamicsEl=document.getElementById('aiDynamics');
   const agendaEl=document.getElementById('workshopAgenda');
@@ -1563,7 +1564,7 @@ function exportTeamReport(){
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
-.rp{background:#fff;width:210mm;min-height:297mm;margin:0 auto 20px;box-shadow:0 4px 24px rgba(0,0,0,.12);display:flex;flex-direction:column;page-break-after:always;position:relative}
+.rp{background:#fff;width:210mm;margin:0 auto 20px;box-shadow:0 4px 24px rgba(0,0,0,.12);display:flex;flex-direction:column;page-break-after:always;position:relative;overflow:hidden}
 .rph{padding:32px 40px 0;border-bottom:3px solid #f0f2f5}
 .rpo{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
 .rpt{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;padding-bottom:20px}
@@ -1618,6 +1619,23 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
         <div style="height:4px;background:#e2e8f0;border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.round(dist[c]/total*100)}%;background:${CH[c]};border-radius:99px"></div></div>
         <div style="font-size:11px;color:#94a3b8;margin-top:5px">${Math.round(dist[c]/total*100)}%</div>
       </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+      <div>
+        <div class="rl" style="margin-bottom:12px">Phân Bổ Màu Năng Lượng</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          ${['red','yellow','green','blue'].map(c=>`<div style="border-radius:10px;padding:12px;text-align:center;border:1px solid ${CH[c]}33">
+            <div style="font-size:1.6rem;font-weight:700;color:${CH[c]}">${dist[c]}</div>
+            <div style="font-size:10px;color:#64748b;margin:3px 0 8px">${CN[c]}</div>
+            <div style="height:4px;background:#e2e8f0;border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.round(dist[c]/total*100)}%;background:${CH[c]};border-radius:99px"></div></div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:4px">${Math.round(dist[c]/total*100)}%</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="rl" style="margin-bottom:12px">Team Insights Wheel</div>
+        <div style="display:flex;justify-content:center">${teamWheelSVG}</div>
+      </div>
     </div>
     <div class="rl" style="margin-bottom:10px">Danh Sách Thành Viên</div>
     <table style="width:100%;border-collapse:collapse;font-size:12.5px">
