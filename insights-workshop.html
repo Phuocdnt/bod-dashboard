@@ -1362,8 +1362,10 @@ Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
     const res=await fetch(CONFIG.workerUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
-    const text=data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
-    const ai=JSON.parse(text);
+    const rawText=data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    const jsonMatch=rawText.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('Không tìm thấy JSON trong response');
+    const ai=JSON.parse(jsonMatch[0]);
     renderAIInsights(ai);
     toast('✅ AI insights hoàn tất!');
   }catch(e){
