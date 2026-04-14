@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- saved from url=(0063)https://phuocdnt.github.io/bod-dashboard/insights-workshop.html -->
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -265,6 +264,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       </div>
       <div class="top-actions">
         <button class="btn btn-sec" onclick="generateAIInsights()">🤖 AI Phân tích nhóm</button>
+        <button class="btn btn-gold" onclick="exportTeamReport()">📄 Xuất Team Report</button>
         <button class="btn btn-pri" id="loadBtn" onclick="loadTeamData()">📄 Tải dữ liệu</button>
       </div>
     </div>
@@ -1425,6 +1425,246 @@ function renderAIInsights(ai){
       ${agendaHTML}
       ${ai.workshopFocus?`<div style="margin-top:16px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:8px">🎯 Ưu tiên workshop cho nhóm bạn</div><ul class="insight-list">${li(ai.workshopFocus)}</ul></div>`:''}
     </div>`;
+}
+
+// ════════════════════════════════════════
+// TEAM REPORT PDF EXPORT
+// ════════════════════════════════════════
+function exportTeamReport(){
+  if(!teamData.length){toast('Vui lòng tải dữ liệu trước',true);return;}
+  const dist=getColorDist();
+  const total=teamData.length;
+  const now=new Date().toLocaleDateString('vi-VN',{year:'numeric',month:'long',day:'numeric'});
+  const aiOverviewEl=document.getElementById('aiOverview');
+  const aiDynamicsEl=document.getElementById('aiDynamics');
+  const agendaEl=document.getElementById('workshopAgenda');
+  const hasAI=aiOverviewEl&&aiOverviewEl.querySelector('.ai-insights');
+  const STRENGTHS={
+    red:['Quyết đoán, dứt khoát','Tập trung vào kết quả','Dẫn dắt trong tình huống khó','Không ngại thách thức'],
+    yellow:['Nhiệt tình, tạo động lực','Sáng tạo và linh hoạt','Xây dựng không khí tích cực','Nhìn thấy tiềm năng'],
+    green:['Đồng cảm sâu sắc','Xây dựng lòng tin bền vững','Kiên nhẫn, ổn định','Đảm bảo hòa hợp nhóm'],
+    blue:['Phân tích logic','Chú trọng chi tiết & chất lượng','Cẩn thận, chính xác','Duy trì tiêu chuẩn rõ ràng']
+  };
+  const DEVELOPS={
+    red:['Dễ bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình','Có thể tạo áp lực đội nhóm'],
+    yellow:['Thiếu tập trung, dễ phân tâm','Lạc quan quá mức, bỏ qua rủi ro','Khó hoàn thành việc chi tiết'],
+    green:['Khó nói "không", dễ bị quá tải','Tránh xung đột dù cần thiết','Quyết định chậm khi nhiều ý kiến'],
+    blue:['Phân tích quá lâu, chậm quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, có vẻ xa cách']
+  };
+  const CN={red:'Fiery Red',yellow:'Sunshine Yellow',green:'Earth Green',blue:'Cool Blue'};
+  const CH={red:'#E8392A',yellow:'#F5A623',green:'#3CB371',blue:'#2B6CB0'};
+  const CG={red:'linear-gradient(135deg,#7f1d1d,#E8392A)',yellow:'linear-gradient(135deg,#78350f,#F5A623)',green:'linear-gradient(135deg,#14532d,#3CB371)',blue:'linear-gradient(135deg,#1e3a5f,#2B6CB0)'};
+  const IE={Extrovert:'🌟 Hướng ngoại',Introvert:'🌙 Hướng nội'};
+  const LL={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
+  const SL={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
+
+  const memberPages=teamData.map(m=>{
+    const pr=m.primaryColor||'blue', sc=m.secondaryColor||'green';
+    const scores=[['red',m.redScore||0],['yellow',m.yellowScore||0],['green',m.greenScore||0],['blue',m.blueScore||0]].sort((a,b)=>b[1]-a[1]);
+    const ini=(m.name||m.Title||'?').split(' ').map(w=>w[0]).slice(-2).join('').toUpperCase();
+    const name=m.name||m.Title||'—';
+    const role=m.role||m.EmployeeRole||'';
+    const dept=m.department||m.Department||'';
+    return `<div class="rp">
+      <div style="background:${CG[pr]};padding:28px 40px;display:flex;align-items:center;gap:20px">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">${ini}</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:#fff;margin-bottom:4px">${name}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px">${[role,dept].filter(Boolean).join(' · ')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:${CH[pr]}33;border:1px solid ${CH[pr]}66;color:${CH[pr]}">${CN[pr]}</span>
+            <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:${CH[sc]}22;border:1px solid ${CH[sc]}44;color:${CH[sc]}">${CN[sc]}</span>
+            ${m.ieType?`<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8)">${IE[m.ieType]||m.ieType}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div style="padding:20px 40px;flex:1;display:flex;flex-direction:column;gap:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div>
+            <div class="rl">Phân Bổ Năng Lượng</div>
+            ${scores.map(([c,s])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:11px;font-weight:600;color:${CH[c]};width:110px">${CN[c]}</span>
+              <div style="flex:1;height:6px;background:#f1f5f9;border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.round(s/28*100)}%;background:${CH[c]};border-radius:99px"></div></div>
+              <span style="font-size:11px;color:#94a3b8;width:36px;text-align:right">${s}/28</span>
+            </div>`).join('')}
+          </div>
+          <div>
+            <div class="rl">Chiều Hướng</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="db"><div class="dl">Định hướng</div><div class="dv">${IE[m.ieType]||'—'}</div></div>
+              <div class="db"><div class="dl">Lãnh đạo</div><div class="dv">${LL[m.leadStyle]||'—'}</div></div>
+              <div class="db" style="grid-column:span 2"><div class="dl">Dưới áp lực</div><div class="dv">${SL[m.stressBehavior]||'—'}</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div class="rl">💪 Điểm Mạnh</div>
+            ${(STRENGTHS[pr]||[]).map(t=>`<div style="font-size:12px;padding:5px 8px;margin-bottom:5px;background:#f0fdf4;border-left:3px solid #3CB371;border-radius:4px;color:#374151">${t}</div>`).join('')}
+          </div>
+          <div>
+            <div class="rl">🔧 Cần Phát Triển</div>
+            ${(DEVELOPS[pr]||[]).map(t=>`<div style="font-size:12px;padding:5px 8px;margin-bottom:5px;background:#fffbf0;border-left:3px solid #F5A623;border-radius:4px;color:#374151">${t}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="pf">Insights Discovery · ${name} · DHI Co Ltd · ${now}</div>
+    </div>`;
+  }).join('');
+
+  const compatRows=['red','yellow','green','blue'].map(r=>`<tr>
+    <td style="padding:8px 12px;font-weight:600;color:${CH[r]};white-space:nowrap">${CN[r]}</td>
+    ${['red','yellow','green','blue'].map(c=>{
+      const key=`${r}-${c}`, label=COMPAT[key]||'—', cls=COMPAT_CLASS[label]||'';
+      const bg=cls==='cc-strong'?'rgba(60,179,113,.12)':cls==='cc-tension'?'rgba(232,57,42,.1)':'rgba(245,166,35,.08)';
+      return `<td style="padding:7px;text-align:center;background:${bg};border-radius:5px;font-size:11px">${label}</td>`;
+    }).join('')}
+  </tr>`).join('');
+
+  const ldDist={red:0,yellow:0,green:0,blue:0}; teamData.forEach(m=>{if(m.leadStyle)ldDist[m.leadStyle]++;});
+  const stDist={red:0,yellow:0,green:0,blue:0}; teamData.forEach(m=>{if(m.stressBehavior)stDist[m.stressBehavior]++;});
+  const maxLd=Math.max(...Object.values(ldDist),1), maxSt=Math.max(...Object.values(stDist),1);
+  const barChart=(dist,labels,max)=>Object.entries(dist).map(([c,v])=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:11px;color:${CH[c]};font-weight:600;width:140px">${labels[c]||c}</span>
+      <div style="flex:1;height:18px;background:#f1f5f9;border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${Math.round(v/max*100)}%;background:${CH[c]};opacity:.85;display:flex;align-items:center;padding-left:6px">
+          <span style="font-size:10px;color:#fff;font-weight:700">${v} người</span>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const aiHTML=hasAI?`
+    <div class="rp">
+      <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">🤖 AI Insights — Phân Tích Nhóm</div></div>
+      <div style="padding:24px 40px;flex:1">
+        <div style="background:#fffbf0;border:1px solid rgba(245,166,35,.3);border-radius:12px;padding:16px;margin-bottom:16px">
+          ${aiOverviewEl.querySelector('.ai-insights')?.innerHTML||''}
+        </div>
+        <div style="background:#fffbf0;border:1px solid rgba(245,166,35,.3);border-radius:12px;padding:16px">
+          ${aiDynamicsEl.querySelector('.ai-insights')?.innerHTML||''}
+        </div>
+      </div>
+      <div class="pf">Insights Discovery · AI Analysis · DHI Co Ltd · ${now}</div>
+    </div>
+    <div class="rp">
+      <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">📋 Workshop Agenda & Ưu Tiên</div></div>
+      <div style="padding:24px 40px;flex:1">
+        <div style="background:#fffbf0;border:1px solid rgba(245,166,35,.3);border-radius:12px;padding:16px">
+          ${agendaEl.querySelector('.ai-insights')?.innerHTML||'<p style="color:#888">Chưa tạo AI agenda.</p>'}
+        </div>
+      </div>
+      <div class="pf">Insights Discovery · Workshop Agenda · DHI Co Ltd · ${now}</div>
+    </div>`:'';
+
+  const html=`<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+<title>Team Insights Report · ${now}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
+.rp{background:#fff;width:210mm;min-height:297mm;margin:0 auto 20px;box-shadow:0 4px 24px rgba(0,0,0,.12);display:flex;flex-direction:column;page-break-after:always;position:relative}
+.rph{padding:32px 40px 0;border-bottom:3px solid #f0f2f5}
+.rpo{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
+.rpt{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;padding-bottom:20px}
+.pf{padding:12px 40px;font-size:10px;color:#cbd5e1;border-top:1px solid #f1f5f9;text-align:center;flex-shrink:0}
+.rl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #f1f5f9}
+.db{background:#f8fafc;border-radius:8px;padding:10px;border:1px solid #e2e8f0}
+.dl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;margin-bottom:3px}
+.dv{font-size:12px;font-weight:600;color:#334155}
+.insight-list{list-style:none}
+.insight-list li{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.5;padding:5px 0;border-bottom:1px solid #f1f5f9;color:#475569}
+.insight-list li:last-child{border-bottom:none}
+.insight-list li::before{content:'→';color:#c8963e;flex-shrink:0}
+.ai-insights-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8963e;margin-bottom:10px}
+.ai-insights-content p{margin-bottom:8px;font-size:13px;line-height:1.7;color:#475569}
+.print-btn{position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:10px;background:linear-gradient(135deg,#c8963e,#F5A623);color:#0a0e14;border:none;cursor:pointer;font-size:14px;font-weight:700;box-shadow:0 4px 16px rgba(245,166,35,.4);z-index:999;font-family:'DM Sans',sans-serif}
+@media print{body{background:#fff}.rp{box-shadow:none;margin:0;page-break-after:always}.print-btn{display:none!important}}
+</style></head><body>
+<button class="print-btn" onclick="window.print()">🖨️ In / Lưu PDF</button>
+
+<!-- COVER -->
+<div class="rp" style="background:linear-gradient(160deg,#0D1117,#1a2332 50%,#0a1520);color:#fff;justify-content:space-between;padding:60px 50px;overflow:hidden">
+  <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,#F5A623,#E8392A);border-radius:50%;filter:blur(80px);opacity:.12;top:-100px;right:-80px"></div>
+  <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,#2B6CB0,#3CB371);border-radius:50%;filter:blur(80px);opacity:.12;bottom:-60px;left:-60px"></div>
+  <div style="position:relative;z-index:1">
+    <div style="width:72px;height:72px;border-radius:50%;background:conic-gradient(#E8392A 0 90deg,#F5A623 90deg 180deg,#3CB371 180deg 270deg,#2B6CB0 270deg 360deg);margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,.4)"></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Insights Discovery</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;line-height:1.1;margin-bottom:8px">Team <span style="font-style:italic;background:linear-gradient(135deg,#F5A623,#E8392A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Workshop</span><br>Report</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:48px">DHI Co Ltd · ${now}</div>
+    <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;margin-bottom:16px">
+      ${['red','yellow','green','blue'].filter(c=>dist[c]>0).map(c=>`<div style="flex:${dist[c]};background:${CH[c]};border-radius:2px"></div>`).join('')}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${teamData.map(m=>`<div style="padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid ${CH[m.primaryColor||'blue']}44;background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)">${m.name||m.Title||'—'}</div>`).join('')}
+    </div>
+  </div>
+  <div style="position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.1);padding-top:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center">
+    <div><div style="font-size:2rem;font-weight:700;color:#F5A623">${total}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:4px">Thành Viên</div></div>
+    <div><div style="font-size:2rem;font-weight:700;color:#3CB371">${new Set(teamData.map(m=>m.department||m.Department).filter(Boolean)).size}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:4px">Phòng Ban</div></div>
+    <div><div style="font-size:2rem;font-weight:700;color:#E8392A">${Object.entries(dist).sort((a,b)=>b[1]-a[1])[0]?.[1]||0}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:4px">Màu Chủ Đạo</div></div>
+    <div><div style="font-size:2rem;font-weight:700;color:#2B6CB0">${hasAI?'✓':'—'}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:4px">AI Analysis</div></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="rp">
+  <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">📊 Tổng Quan Nhóm</div></div>
+  <div style="padding:24px 40px;flex:1">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+      ${['red','yellow','green','blue'].map(c=>`<div style="border-radius:12px;padding:16px;text-align:center;border:1px solid ${CH[c]}33">
+        <div style="font-size:2rem;font-weight:700;color:${CH[c]}">${dist[c]}</div>
+        <div style="font-size:11px;color:#64748b;margin:4px 0 10px">${CN[c]}</div>
+        <div style="height:4px;background:#e2e8f0;border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.round(dist[c]/total*100)}%;background:${CH[c]};border-radius:99px"></div></div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:5px">${Math.round(dist[c]/total*100)}%</div>
+      </div>`).join('')}
+    </div>
+    <div class="rl" style="margin-bottom:10px">Danh Sách Thành Viên</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead><tr style="background:#f8fafc">
+        ${['Họ Tên','Chức Danh','Phòng Ban','Màu Chính','Màu Phụ','Định Hướng'].map(h=>`<th style="padding:9px 12px;text-align:left;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>${teamData.map((m,i)=>{const pr=m.primaryColor||'blue',sc=m.secondaryColor||'green';return`
+        <tr style="border-bottom:1px solid #f1f5f9;background:${i%2?'#fafbfc':'#fff'}">
+          <td style="padding:9px 12px;font-weight:600">${m.name||m.Title||'—'}</td>
+          <td style="padding:9px 12px;color:#64748b">${m.role||m.EmployeeRole||'—'}</td>
+          <td style="padding:9px 12px;color:#64748b">${m.department||m.Department||'—'}</td>
+          <td style="padding:9px 12px"><span style="padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:${CH[pr]}18;color:${CH[pr]}">${CN[pr]}</span></td>
+          <td style="padding:9px 12px"><span style="padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:${CH[sc]}12;color:${CH[sc]}">${CN[sc]}</span></td>
+          <td style="padding:9px 12px;font-size:12px;color:#64748b">${IE[m.ieType]||'—'}</td>
+        </tr>`;}).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="pf">Insights Discovery · Team Overview · DHI Co Ltd · ${now}</div>
+</div>
+
+<!-- DYNAMICS -->
+<div class="rp">
+  <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">🔗 Team Dynamics</div></div>
+  <div style="padding:24px 40px;flex:1">
+    <div class="rl" style="margin-bottom:12px">Ma Trận Tương Thích Màu Sắc</div>
+    <table style="width:100%;border-collapse:separate;border-spacing:4px;margin-bottom:24px">
+      <tr><td></td>${['red','yellow','green','blue'].map(c=>`<th style="padding:8px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${CH[c]};text-align:center">${CN[c]}</th>`).join('')}</tr>
+      ${compatRows}
+    </table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div><div class="rl" style="margin-bottom:12px">👑 Phong Cách Lãnh Đạo</div>${barChart(ldDist,LL,maxLd)}</div>
+      <div><div class="rl" style="margin-bottom:12px">⚠️ Hành Vi Dưới Áp Lực</div>${barChart(stDist,SL,maxSt)}</div>
+    </div>
+  </div>
+  <div class="pf">Insights Discovery · Team Dynamics · DHI Co Ltd · ${now}</div>
+</div>
+
+${memberPages}
+${aiHTML}
+</body></html>`;
+
+  const w=window.open('','_blank','width=960,height=800,scrollbars=yes');
+  if(!w){toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup.',true);return;}
+  w.document.write(html);
+  w.document.close();
+  toast('✅ Report đã mở — nhấn 🖨️ để lưu PDF');
 }
 </script>
 
