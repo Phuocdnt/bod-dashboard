@@ -284,6 +284,9 @@ const CONFIG = {
     return;
   }
 
+  // Không có ?t= nhưng có ?name= → cho qua, prefillFromInviteLink sẽ xử lý
+  if(params.get('name')) return;
+
   // Token sai / không có → khoá màn hình
   document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('lockedScreen').style.display = 'flex';
@@ -299,7 +302,7 @@ const CONFIG = {
 // ══════════════════════════════════════
 (function prefillFromInviteLink(){
   var tokens = CONFIG.inviteTokens || {};
-  if(Object.keys(tokens).length > 0) return; // token mode đang bật → bỏ qua
+  // Cho phép ?name= hoạt động cả khi token mode bật (admin tạo link prefill)
   var p = new URLSearchParams(location.search);
   var name = p.get('name'), role = p.get('role'), dept = p.get('dept');
   if(!name && !role) return;
