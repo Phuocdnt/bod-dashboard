@@ -1,36 +1,39 @@
 <!DOCTYPE html>
+<!-- saved from url=(0060)https://phuocdnt.github.io/bod-dashboard/insights-admin.html -->
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Insights Discovery – Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+
 <script>
 const CONFIG = {
-flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-flowReadUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8"
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
+  flowReadUrl:  "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8"
 };
 </script>
 <style>
 :root{
---red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
---bg:#0D1117;--sur:#161B22;--sur2:#1C2333;--sur3:#21262D;
---bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.14);
---txt:#E6EDF3;--muted:#8B949E;--muted2:#6E7681;
---ff:'DM Sans',sans-serif;--fd:'Cormorant Garamond',serif;
---sidebar:260px;
+  --red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
+  --bg:#0D1117;--sur:#161B22;--sur2:#1C2333;--sur3:#21262D;
+  --bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.14);
+  --txt:#E6EDF3;--muted:#8B949E;--muted2:#6E7681;
+  --ff:'DM Sans',sans-serif;--fd:'Cormorant Garamond',serif;
+  --sidebar:260px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Topbar */
 .topbar{height:52px;background:var(--sur);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;flex-shrink:0}
 .tb-logo{display:flex;align-items:center;gap:10px}
 .tb-wheel{width:24px;height:24px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);animation:spin 20s linear infinite;flex-shrink:0}
 .tb-logo span{font-weight:600;font-size:14px}
 .tb-logo em{font-style:normal;color:var(--muted);font-weight:400;font-size:13px}
 .tag-admin{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(37,99,235,.2);color:#60a5fa;padding:3px 10px;border-radius:99px;border:1px solid rgba(37,99,235,.3)}
+/* Layout */
 .main-layout{display:flex;flex:1;overflow:hidden}
+/* Sidebar */
 .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--sur);border-right:1px solid var(--bdr);padding:20px 0;overflow-y:auto;display:flex;flex-direction:column;gap:0}
 .sb-sec{padding:0 16px 16px;border-bottom:1px solid var(--bdr)}
 .sb-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:12px 16px 8px;display:block}
@@ -49,7 +52,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .filter-wrap input::placeholder{color:var(--muted)}
 .filter-wrap select option{background:var(--sur2)}
 @media(max-width:720px){.sidebar{display:none}}
+/* Content */
 .content{flex:1;overflow-y:auto;padding:24px}
+/* Table */
 .tbl-wrap{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
 .tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bdr)}
 .tbl-hdr h2{font-size:15px;font-weight:600}
@@ -69,11 +74,13 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 .name-cell{display:flex;flex-direction:column}
 .name-cell .nm{font-weight:600}
 .name-cell .rl{font-size:11px;color:var(--muted)}
+/* Empty/loading */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty .big{font-size:2.5rem;margin-bottom:12px}
 .spinner-row{display:flex;justify-content:center;padding:48px}
 .spinner{width:32px;height:32px;border:3px solid var(--bdr2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 .spin-sm{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+/* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;width:100%;max-width:700px;overflow:hidden;transform:translateY(20px);transition:transform .25s;flex-shrink:0;margin:auto}
@@ -123,178 +130,168 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap;border:1px solid var(--bdr2)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 @media(max-width:480px){.energy-row,.p2col,.dims3{grid-template-columns:1fr}.ai-list{grid-template-columns:1fr}}
-
-/* ── Invite button ── */
-.btn-invite{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:linear-gradient(135deg,rgba(37,99,235,.25),rgba(37,99,235,.12));border:1px solid rgba(37,99,235,.4);color:#60a5fa;cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:600;transition:all .2s}
-.btn-invite:hover{background:linear-gradient(135deg,rgba(37,99,235,.4),rgba(37,99,235,.25));box-shadow:0 3px 12px rgba(37,99,235,.3);transform:translateY(-1px)}
-/* ── Invite Modal ── */
-.inv-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-.inv-overlay.open{opacity:1;pointer-events:all}
-.inv-modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:20px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6);transform:scale(.96);transition:transform .25s}
-.inv-overlay.open .inv-modal{transform:scale(1)}
-.inv-head{padding:24px 28px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:flex-start}
-.inv-head h3{font-size:17px;font-weight:700;margin-bottom:4px}
-.inv-head p{font-size:12px;color:var(--muted)}
-.inv-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0;transition:color .15s}
-.inv-close:hover{color:var(--txt)}
-.inv-body{padding:20px 28px 24px;display:flex;flex-direction:column;gap:14px}
-.inv-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.inv-field{display:flex;flex-direction:column;gap:6px}
-.inv-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.inv-field input,.inv-field select{background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:9px;padding:9px 12px;font-family:var(--ff);font-size:13px;outline:none;transition:border .2s}
-.inv-field input:focus,.inv-field select:focus{border-color:var(--blue)}
-.inv-field input::placeholder{color:var(--muted2)}
-.inv-field select option{background:var(--sur2)}
-.inv-result{background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:16px;display:none;flex-direction:column;gap:10px}
-.inv-result-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:2px}
-.inv-link-url{font-size:11.5px;color:#7dd3fc;background:rgba(125,211,252,.08);border:1px solid rgba(125,211,252,.2);border-radius:7px;padding:9px 12px;word-break:break-all;cursor:pointer;transition:background .15s;font-family:monospace}
-.inv-link-url:hover{background:rgba(125,211,252,.15)}
-.inv-token-snippet{font-size:11.5px;color:#86efac;background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2);border-radius:7px;padding:9px 12px;word-break:break-all;cursor:pointer;transition:background .15s;font-family:monospace}
-.inv-token-snippet:hover{background:rgba(134,239,172,.15)}
-.inv-actions{display:flex;gap:8px;flex-wrap:wrap}
-.ibtn-gen{flex:1;padding:11px 16px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;transition:all .2s}
-.ibtn-gen:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,99,235,.4)}
-.ibtn-copy,.ibtn-mail,.ibtn-open{padding:11px 14px;border-radius:9px;background:var(--sur2);border:1px solid var(--bdr);color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;transition:all .2s}
-.ibtn-copy:hover,.ibtn-mail:hover,.ibtn-open:hover{color:var(--txt);border-color:var(--bdr2)}
-.inv-note{font-size:12px;color:var(--muted);line-height:1.7;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:9px;padding:12px 14px}
-.inv-note code{background:var(--sur3);padding:1px 5px;border-radius:4px;font-size:11px;color:#fbbf24}
 </style>
 </head>
 <body>
 <div class="topbar">
-<div class="tb-logo">
-<div class="tb-wheel"></div>
-<span>Insights Discovery &nbsp;<em>Admin</em></span>
-</div>
-<div style="display:flex;align-items:center;gap:10px">
-<button class="btn-invite" onclick="openInviteModal()">📨 Mời Khảo Sát</button>
-<span class="tag-admin">Admin Only</span>
-</div>
+  <div class="tb-logo">
+    <div class="tb-wheel"></div>
+    <span>Insights Discovery &nbsp;<em>Admin</em></span>
+  </div>
+  <span class="tag-admin">Admin Only</span>
 </div>
 <div class="main-layout">
-<aside class="sidebar">
-<span class="sb-lbl">Tổng Quan</span>
-<div class="sb-sec">
-<div class="stat-grid">
-<div class="stat-box"><div class="sv" id="statTotal">–</div><div class="sl">Phản hồi</div></div>
-<div class="stat-box"><div class="sv" id="statDepts">–</div><div class="sl">Phòng ban</div></div>
-<div class="stat-box"><div class="sv" id="statTop">–</div><div class="sl">Màu chủ đạo</div></div>
-<div class="stat-box"><div class="sv" id="statAvgDays">–</div><div class="sl">Avg/ngày</div></div>
-</div>
-</div>
-<span class="sb-lbl">Phân Bổ Màu</span>
-<div class="color-dist" id="colorDist" style="padding:0 16px 16px"></div>
-<span class="sb-lbl">Lọc &amp; Tìm Kiếm</span>
-<div class="filter-wrap">
-<input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()">
-<select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option></select>
-<select id="fColor" onchange="applyFilter()">
-<option value="">Tất cả màu chính</option>
-<option value="red">🔴 Fiery Red</option>
-<option value="yellow">🟡 Sunshine Yellow</option>
-<option value="green">🟢 Earth Green</option>
-<option value="blue">🔵 Cool Blue</option>
-</select>
-</div>
-</aside>
-<div class="content">
-<div class="tbl-wrap">
-<div class="tbl-hdr">
-<h2 id="tableTitle">Tất cả phản hồi</h2>
-<button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
-<button class="btn-recalc" id="btnRecalc" onclick="recalcAll()" title="Tính lại điểm màu theo weighted IE (×0.5) từ Answers gốc">⚖️ Recalculate All</button>
-</div>
-<div id="tableBody"><div class="spinner-row"><div class="spinner"></div></div></div>
-</div>
-</div>
+  <aside class="sidebar">
+    <span class="sb-lbl">Tổng Quan</span>
+    <div class="sb-sec">
+      <div class="stat-grid">
+        <div class="stat-box"><div class="sv" id="statTotal">4</div><div class="sl">Phản hồi</div></div>
+        <div class="stat-box"><div class="sv" id="statDepts">3</div><div class="sl">Phòng ban</div></div>
+        <div class="stat-box"><div class="sv" id="statTop">🔵</div><div class="sl">Màu chủ đạo</div></div>
+        <div class="stat-box"><div class="sv" id="statAvgDays">2.0</div><div class="sl">Avg/ngày</div></div>
+      </div>
+    </div>
+    <span class="sb-lbl">Phân Bổ Màu</span>
+    <div class="color-dist" id="colorDist" style="padding:0 16px 16px"><div class="cd-row"><span style="font-size:12px;width:20px">🔴</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#E8392A" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟡</span><div class="cd-bg"><div class="cd-fill" style="width:0%;background:#F5A623" data-w="0%"></div></div><span class="cd-val">0</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🟢</span><div class="cd-bg"><div class="cd-fill" style="width:25%;background:#3CB371" data-w="25%"></div></div><span class="cd-val">1</span></div><div class="cd-row"><span style="font-size:12px;width:20px">🔵</span><div class="cd-bg"><div class="cd-fill" style="width:75%;background:#2B6CB0" data-w="75%"></div></div><span class="cd-val">3</span></div></div>
+    <span class="sb-lbl">Lọc &amp; Tìm Kiếm</span>
+    <div class="filter-wrap">
+      <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()">
+      <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option><option value="Ban Giám Đốc">Ban Giám Đốc</option><option value="Kỹ Thuật">Kỹ Thuật</option><option value="Sản Xuất">Sản Xuất</option></select>
+      <select id="fColor" onchange="applyFilter()">
+        <option value="">Tất cả màu chính</option>
+        <option value="red">🔴 Fiery Red</option>
+        <option value="yellow">🟡 Sunshine Yellow</option>
+        <option value="green">🟢 Earth Green</option>
+        <option value="blue">🔵 Cool Blue</option>
+      </select>
+    </div>
+  </aside>
+  <div class="content">
+    <div class="tbl-wrap">
+      <div class="tbl-hdr">
+        <h2 id="tableTitle">Tất cả phản hồi (4)</h2>
+        <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
+        <button class="btn-recalc" id="btnRecalc" onclick="recalcAll()" title="Tính lại điểm màu theo weighted IE (×0.5) từ Answers gốc">⚖️ Recalculate All</button>
+      </div>
+      <div id="tableBody"><table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody><tr onclick="openModal(6)">
+      <td><div class="name-cell"><span class="nm">Nguyễn Lê Thành Lạc</span><span class="rl">QA Manager</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Ban Giám Đốc</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.25" title="Red:7"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:7"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.4642857142857143" title="Blue:13"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
+      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
+    </tr><tr onclick="openModal(7)">
+      <td><div class="name-cell"><span class="nm">Hồ Việt Khánh</span><span class="rl">Nhân viên</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2857142857142857" title="Red:8"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.25" title="Yellow:7"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.2" title="Green:2"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.42857142857142855" title="Blue:12"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
+      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
+    </tr><tr onclick="openModal(8)">
+      <td><div class="name-cell"><span class="nm">BÙI HÀ ĐỨC AN</span><span class="rl">WORKSHOP MANAGER</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
+      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
+      <td><span class="pill" style="background:#3CB37118;color:#3CB371">🟢 Earth Green</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:4"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:2"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:7"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.6071428571428571" title="Blue:17"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Quan Sát (Observer)</td>
+      <td style="color:var(--muted);font-size:12px">18/3/2026</td>
+    </tr><tr onclick="openModal(9)">
+      <td><div class="name-cell"><span class="nm">Tung Nguyen Hoang Thanh</span><span class="rl">OMS</span></div></td>
+      <td style="color:var(--muted);font-size:13px">Sản Xuất</td>
+      <td><span class="pill" style="background:#3CB37122;color:#3CB371">🟢 Earth Green</span></td>
+      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:0"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:0"></div>
+        <div class="score-seg" style="background:var(--green);opacity:0.8571428571428571" title="Green:24"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:0.2" title="Blue:0"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">Người Hỗ Trợ Kiên Định</td>
+      <td style="color:var(--muted);font-size:12px">19/3/2026</td>
+    </tr></tbody></table></div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalBg(event)">
-<div class="modal">
-<div class="modal-hero" id="mHero">
-<button class="modal-close" onclick="closeModal()">✕</button>
-<div class="m-badge" id="mBadge"></div>
-<div class="m-name" id="mName"></div>
-<div class="m-sub" id="mSub"></div>
+  <div class="modal">
+    <div class="modal-hero" id="mHero" style="background: linear-gradient(135deg, rgb(10, 22, 40), rgb(30, 58, 95));">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="m-badge" id="mBadge">🔵 Cool Blue  ·  Chuyên Gia Phân Tích &amp; Chất Lượng</div>
+      <div class="m-name" id="mName">Nguyễn Lê Thành Lạc</div>
+      <div class="m-sub" id="mSub">QA Manager · Ban Giám Đốc · 17/3/2026</div>
+    </div>
+    <div class="modal-tabs">
+      <button class="m-tab" onclick="mTab(&#39;scores&#39;)">📊 Kết quả</button>
+      <button class="m-tab active" onclick="mTab(&#39;profile&#39;)">👤 Profile</button>
+      <button class="m-tab" id="mTabAI" onclick="mTab(&#39;ai&#39;)" style="display:none">🤖 AI Narrative</button>
+    </div>
+    <!-- PANE: Scores -->
+    <div class="m-pane" id="mp-scores">
+      <div class="m-label" style="margin-bottom:10px">Phân Bổ Năng Lượng</div>
+      <div class="energy-row" id="mEnergyRow">
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#E8392A">🔴 Fiery Red</span><span class="e-score">7/28 (25%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 25%; background: rgb(232, 57, 42);" data-w="25%"></div></div></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#F5A623">🟡 Sunshine Yellow</span><span class="e-score">1/28 (4%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 4%; background: rgb(245, 166, 35);" data-w="4%"></div></div></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#3CB371">🟢 Earth Green</span><span class="e-score">7/28 (25%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 25%; background: rgb(60, 179, 113);" data-w="25%"></div></div></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#2B6CB0">🔵 Cool Blue</span><span class="e-score">13/28 (46%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width: 46%; background: rgb(43, 108, 176);" data-w="46%"></div></div></div></div>
+      <div class="dims3" id="mDims">
+    <div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:var(--blue)">🌙 Hướng nội</div></div>
+    <div class="dim-card"><div class="dim-title">👑 Lãnh đạo</div><div class="dim-val">🤝 Lãnh đạo Phục vụ</div></div>
+    <div class="dim-card"><div class="dim-title">⚠️ Stress</div><div class="dim-val">⚔️ Kiểm soát tăng cao</div></div></div>
+      <div id="mWheel" style="display:flex;justify-content:center;margin-bottom:14px"><svg viewBox="0 0 160 160" style="width:160px;height:160px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))"><path d="M68.5194970290473 52.2836140246614L51.681426004983365 11.632914594164788A74 74 0 0 1 108.31857399501665 11.632914594164788L91.4805029709527 52.2836140246614A30 30 0 0 0 68.5194970290473 52.2836140246614Z" fill="#E8392A" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="80" y="28" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">D</text><path d="M91.4805029709527 52.2836140246614L108.31857399501665 11.632914594164788A74 74 0 0 1 148.3670854058352 51.68142600498336L107.7163859753386 68.5194970290473A30 30 0 0 0 91.4805029709527 52.2836140246614Z" fill="#E8823B" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="116.76955262170048" y="43.23044737829953" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">M</text><path d="M107.7163859753386 68.5194970290473L148.3670854058352 51.68142600498336A74 74 0 0 1 148.3670854058352 108.31857399501664L107.7163859753386 91.4805029709527A30 30 0 0 0 107.7163859753386 68.5194970290473Z" fill="#F5A623" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="132" y="80" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">I</text><path d="M107.7163859753386 91.4805029709527L148.3670854058352 108.31857399501664A74 74 0 0 1 108.31857399501665 148.3670854058352L91.4805029709527 107.7163859753386A30 30 0 0 0 107.7163859753386 91.4805029709527Z" fill="#7DB85E" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="116.76955262170048" y="116.76955262170047" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">IH</text><path d="M91.4805029709527 107.7163859753386L108.31857399501665 148.3670854058352A74 74 0 0 1 51.681426004983365 148.3670854058352L68.5194970290473 107.7163859753386A30 30 0 0 0 91.4805029709527 107.7163859753386Z" fill="#3CB371" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="80" y="132" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">Su</text><path d="M68.5194970290473 107.7163859753386L51.681426004983365 148.3670854058352A74 74 0 0 1 11.632914594164788 108.31857399501665L52.2836140246614 91.4805029709527A30 30 0 0 0 68.5194970290473 107.7163859753386Z" fill="#2B96A0" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="43.23044737829953" y="116.76955262170048" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">Co</text><path d="M52.2836140246614 91.4805029709527L11.632914594164788 108.31857399501665A74 74 0 0 1 11.63291459416476 51.68142600498339L52.28361402466139 68.51949702904733A30 30 0 0 0 52.2836140246614 91.4805029709527Z" fill="#2B6CB0" opacity="0.3" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="28" y="80" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="6" font-family="DM Sans" font-weight="400" opacity="0.5">Ob</text><path d="M52.28361402466139 68.51949702904733L11.63291459416476 51.68142600498339A74 74 0 0 1 51.68142600498338 11.632914594164774L68.51949702904732 52.28361402466139A30 30 0 0 0 52.28361402466139 68.51949702904733Z" fill="#9B4CB0" opacity="1" stroke="rgba(255,255,255,.6)" stroke-width="2"></path><text x="43.23044737829952" y="43.23044737829953" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="7" font-family="DM Sans" font-weight="700" opacity="1">Re</text><circle cx="80" cy="80" r="28" fill="var(--sur2)" stroke="rgba(255,255,255,.08)" stroke-width="1"></circle><text x="80" y="80" text-anchor="middle" dominant-baseline="middle" fill="#2B6CB0" font-size="18">●</text></svg></div>
+    </div>
+    <!-- PANE: Profile -->
+    <div class="m-pane active" id="mp-profile">
+      <div id="mProfileContent">
+    <div class="m-label">Màu Phụ &amp; Archetype</div>
+    <div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
+      <span style="font-size:12px;color:var(--muted)">Màu phụ: </span>
+      <span class="pill" style="background:#E8392A20;color:#E8392A">🔴 Fiery Red</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:8px">Nhà Lãnh Đạo Quyết Đoán</span>
+      <div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 Người Cải Cách (Reformer)</div>
+    </div>
+    <div class="m-label">Hồ Sơ Cá Nhân</div>
+    <div class="p2col">
+      <div class="p-box"><h4>💪 Điểm Mạnh</h4><ul><li>Phân tích logic và tư duy hệ thống</li><li>Chú trọng chi tiết và đảm bảo chất lượng cao</li><li>Cẩn thận và chính xác trong từng bước</li><li>Duy trì tiêu chuẩn và quy trình rõ ràng</li></ul></div>
+      <div class="p-box"><h4>🔧 Điểm Cần Phát Triển</h4><ul><li>Phân tích quá lâu, chậm ra quyết định</li><li>Đôi khi quá hoàn hảo chủ nghĩa</li><li>Ít biểu lộ cảm xúc, có vẻ xa cách</li></ul></div>
+    </div>
+    <div class="m-label" style="margin-top:14px">Giao Tiếp &amp; Quản Lý</div>
+    <div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với Lạc</h4><ul><li>Cung cấp tài liệu chi tiết trước họp</li><li>Trình bày bằng dữ liệu và logic</li><li>Tôn trọng thời gian phân tích</li><li>Không ép quyết định nhanh</li></ul></div></div>
+    </div>
+    <!-- PANE: AI Narrative -->
+    <div class="m-pane" id="mp-ai">
+      <div id="mAIContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
+      <button class="btn-close2" onclick="closeModal()">Đóng</button>
+    </div>
+  </div>
 </div>
-<div class="modal-tabs">
-<button class="m-tab active" onclick="mTab('scores')">📊 Kết quả</button>
-<button class="m-tab" onclick="mTab('profile')">👤 Profile</button>
-<button class="m-tab" id="mTabAI" onclick="mTab('ai')" style="display:none">🤖 AI Narrative</button>
-</div>
-<div class="m-pane active" id="mp-scores">
-<div class="m-label" style="margin-bottom:10px">Phân Bổ Năng Lượng</div>
-<div class="energy-row" id="mEnergyRow"></div>
-<div class="dims3" id="mDims"></div>
-<div id="mWheel" style="display:flex;justify-content:center;margin-bottom:14px"></div>
-</div>
-<div class="m-pane" id="mp-profile">
-<div id="mProfileContent"></div>
-</div>
-<div class="m-pane" id="mp-ai">
-<div id="mAIContent"></div>
-</div>
-<div class="modal-footer">
-<button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
-<button class="btn-close2" onclick="closeModal()">Đóng</button>
-</div>
-</div>
-</div>
-
-<!-- INVITE MODAL -->
-<div class="inv-overlay" id="invOverlay" onclick="if(event.target===this)closeInviteModal()">
-<div class="inv-modal">
-<div class="inv-head">
-<div>
-<h3>📨 Mời Tham Gia Khảo Sát</h3>
-<p>Tạo link cá nhân hoá để gửi cho nhân viên</p>
-</div>
-<button class="inv-close" onclick="closeInviteModal()">✕</button>
-</div>
-<div class="inv-body">
-<div class="inv-2col">
-<div class="inv-field"><label>Họ và Tên *</label><input id="invName" placeholder="Nguyễn Văn A"/></div>
-<div class="inv-field"><label>Chức Danh *</label><input id="invRole" placeholder="Manager"/></div>
-</div>
-<div class="inv-field">
-<label>Phòng Ban</label>
-<select id="invDept">
-<option value="">— Chọn phòng ban —</option>
-<option>Ban Giám Đốc</option><option>Sản Xuất</option><option>Kỹ Thuật</option>
-<option>Kinh Doanh &amp; Marketing</option><option>Nhân Sự</option>
-<option>Tài Chính &amp; Kế Toán</option><option>Chuỗi Cung Ứng</option>
-<option>Chất Lượng</option><option>Khác</option>
-</select>
-</div>
-<div class="inv-field"><label>Email Nhân Viên (để gửi mail)</label><input id="invEmail" type="email" placeholder="nhanvien@dhivn.com"/></div>
-<div class="inv-result" id="invResultBox">
-<div>
-<div class="inv-result-label">🔗 Link khảo sát cá nhân hoá</div>
-<div class="inv-link-url" id="invLinkUrl" onclick="copyInvLink()" title="Nhấn để copy"></div>
-</div>
-<div style="padding-top:10px;border-top:1px solid var(--bdr)">
-<div class="inv-result-label">🔐 Token entry (thêm vào inviteTokens trong GitHub để khoá link)</div>
-<div class="inv-token-snippet" id="invTokenSnippet" onclick="copyInvToken()" title="Nhấn để copy token entry"></div>
-</div>
-</div>
-<div class="inv-actions">
-<button class="ibtn-gen" onclick="generateInvite()">⚡ Tạo Link</button>
-<button class="ibtn-copy" id="ibtnCopy" onclick="copyInvLink()" style="display:none">📋 Copy Link</button>
-<button class="ibtn-mail" id="ibtnMail" onclick="sendInvMail()" style="display:none">✉️ Gửi Email</button>
-<button class="ibtn-open" id="ibtnOpen" onclick="openInvLink()" style="display:none">↗ Mở Link</button>
-</div>
-<div class="inv-note" id="invNote" style="display:none">
-💡 <strong>2 cách dùng:</strong><br>
-• <strong>Link đơn giản</strong> — gửi ngay, nhân viên truy cập mà không cần cập nhật GitHub. Form sẽ điền sẵn thông tin.<br>
-• <strong>Token entry</strong> — thêm vào <code>inviteTokens</code> trong <code>insights-employee.html</code> trên GitHub để khoá link (chỉ đúng người mới vào được + chỉ nộp được 1 lần).
-</div>
-</div>
-</div>
-</div>
-
 <div id="printArea" style="display:none;position:fixed;left:-9999px;top:0;z-index:-1"></div>
-<div id="toast"></div>
+<div id="toast" class="" style="background: rgb(30, 41, 59);">⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)</div>
 
 <script>
 const CI={red:{l:'Fiery Red',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
@@ -308,351 +305,315 @@ let allData=[],filtered=[],currentItem=null;
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
 function normalizeItem(raw){
-return{
-ID:raw.ID||raw.id||raw.Id,
-Title:raw.Title||raw.title||raw.name||'',
-EmployeeRole:raw.EmployeeRole||raw.employeeRole||raw.role||'',
-Department:raw.Department||raw.department||'',
-Answers:raw.Answers||raw.answers||'',
-RedScore:Number(raw.RedScore||raw.redScore||0),
-YellowScore:Number(raw.YellowScore||raw.yellowScore||0),
-GreenScore:Number(raw.GreenScore||raw.greenScore||0),
-BlueScore:Number(raw.BlueScore||raw.blueScore||0),
-PrimaryColor:(raw.PrimaryColor||raw.primaryColor||'blue').toLowerCase(),
-SecondaryColor:(raw.SecondaryColor||raw.secondaryColor||'green').toLowerCase(),
-IEType:raw.IEType||raw.ieType||'',
-LeadStyle:(raw.LeadStyle||raw.leadStyle||'').toLowerCase(),
-StressBehavior:(raw.StressBehavior||raw.stressBehavior||'').toLowerCase(),
-Archetype:raw.Archetype||raw.archetype||'',
-AIProfile:raw.AIProfile||raw.aiProfile||null,
-Created:raw.Created||raw.created||''
-};
+  return{
+    ID:raw.ID||raw.id||raw.Id,
+    Title:raw.Title||raw.title||raw.name||'',
+    EmployeeRole:raw.EmployeeRole||raw.employeeRole||raw.role||'',
+    Department:raw.Department||raw.department||'',
+    Answers:raw.Answers||raw.answers||'',
+    RedScore:Number(raw.RedScore||raw.redScore||0),
+    YellowScore:Number(raw.YellowScore||raw.yellowScore||0),
+    GreenScore:Number(raw.GreenScore||raw.greenScore||0),
+    BlueScore:Number(raw.BlueScore||raw.blueScore||0),
+    PrimaryColor:(raw.PrimaryColor||raw.primaryColor||'blue').toLowerCase(),
+    SecondaryColor:(raw.SecondaryColor||raw.secondaryColor||'green').toLowerCase(),
+    IEType:raw.IEType||raw.ieType||'',
+    LeadStyle:(raw.LeadStyle||raw.leadStyle||'').toLowerCase(),
+    StressBehavior:(raw.StressBehavior||raw.stressBehavior||'').toLowerCase(),
+    Archetype:raw.Archetype||raw.archetype||'',
+    AIProfile:raw.AIProfile||raw.aiProfile||null,
+    IEScoreE:Number(raw.IEScoreE||raw.ieScoreE||0),
+    IEScoreI:Number(raw.IEScoreI||raw.ieScoreI||0),
+    Created:raw.Created||raw.created||''
+  };
 }
 
 async function loadData(){
-document.getElementById('tableBody').innerHTML='<div class="spinner-row"><div class="spinner"></div></div>';
-try{
-if(!CONFIG.flowReadUrl||CONFIG.flowReadUrl.includes('PASTE_YOUR'))throw new Error('Chưa cấu hình Read URL');
-const res=await fetch(CONFIG.flowReadUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-if(!res.ok)throw new Error('HTTP '+res.status);
-const json=await res.json();
-const raw=Array.isArray(json)?json:(json.value||json.items||json.d?.results||[]);
-allData=raw.map(normalizeItem).filter(m=>m.Title);
-applyFilter();updateSidebar();
-toast(`✅ Đã tải ${allData.length} phản hồi`);
-}catch(e){showError(e.message);}
+  document.getElementById('tableBody').innerHTML='<div class="spinner-row"><div class="spinner"></div></div>';
+  try{
+    if(!CONFIG.flowReadUrl||CONFIG.flowReadUrl.includes('PASTE_YOUR'))throw new Error('Chưa cấu hình Read URL');
+    const res=await fetch(CONFIG.flowReadUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    const raw=Array.isArray(json)?json:(json.value||json.items||json.d?.results||[]);
+    allData=raw.map(normalizeItem).filter(m=>m.Title);
+    applyFilter();updateSidebar();
+    toast(`✅ Đã tải ${allData.length} phản hồi`);
+  }catch(e){showError(e.message);}
 }
 
 function showError(m){
-document.getElementById('tableBody').innerHTML=`<div class="empty"><div class="big">⚠️</div><p style="color:var(--red);font-weight:600;margin-bottom:8px">Không thể kết nối SharePoint</p><p>${m}</p></div>`;
+  document.getElementById('tableBody').innerHTML=`<div class="empty"><div class="big">⚠️</div><p style="color:var(--red);font-weight:600;margin-bottom:8px">Không thể kết nối SharePoint</p><p>${m}</p></div>`;
 }
 
 function applyFilter(){
-const s=(document.getElementById('fSearch').value||'').toLowerCase();
-const d=document.getElementById('fDept').value;
-const c=document.getElementById('fColor').value;
-filtered=allData.filter(i=>{
-const matchS=!s||((i.Title+i.EmployeeRole).toLowerCase().includes(s));
-const matchD=!d||i.Department===d;
-const matchC=!c||i.PrimaryColor===c;
-return matchS&&matchD&&matchC;
-});
-renderTable();
-document.getElementById('tableTitle').textContent=filtered.length===allData.length?`Tất cả phản hồi (${allData.length})`:`Lọc: ${filtered.length} / ${allData.length}`;
+  const s=(document.getElementById('fSearch').value||'').toLowerCase();
+  const d=document.getElementById('fDept').value;
+  const c=document.getElementById('fColor').value;
+  filtered=allData.filter(i=>{
+    const matchS=!s||((i.Title+i.EmployeeRole).toLowerCase().includes(s));
+    const matchD=!d||i.Department===d;
+    const matchC=!c||i.PrimaryColor===c;
+    return matchS&&matchD&&matchC;
+  });
+  renderTable();
+  document.getElementById('tableTitle').textContent=filtered.length===allData.length?`Tất cả phản hồi (${allData.length})`:`Lọc: ${filtered.length} / ${allData.length}`;
 }
 
 function renderTable(){
-if(!filtered.length){document.getElementById('tableBody').innerHTML='<div class="empty"><div class="big">📭</div><p>Không có dữ liệu phù hợp</p></div>';return;}
-let html=`<table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody>`;
-filtered.forEach(item=>{
-const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
-const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
-const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'–';
-html+=`<tr onclick="openModal(${JSON.stringify(item.ID||'').replace(/"/g,'&quot;')})">
-<td><div class="name-cell"><span class="nm">${item.Title}</span><span class="rl">${item.EmployeeRole||''}</span></div></td>
-<td style="color:var(--muted);font-size:13px">${item.Department||'–'}</td>
-<td><span class="pill" style="background:${p.c}22;color:${p.c}">${p.e} ${p.l}</span></td>
-<td><span class="pill" style="background:${s.c}18;color:${s.c}">${s.e} ${s.l}</span></td>
-<td><div class="score-mini">
-<div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/28)}" title="Red:${r}"></div>
-<div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/28)}" title="Yellow:${y}"></div>
-<div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/28)}" title="Green:${g}"></div>
-<div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/28)}" title="Blue:${b}"></div>
-</div></td>
-<td style="font-size:12px;color:var(--muted)">${item.Archetype||'–'}</td>
-<td style="color:var(--muted);font-size:12px">${date}</td>
-</tr>`;
-});
-document.getElementById('tableBody').innerHTML=html+'</tbody></table>';
+  if(!filtered.length){document.getElementById('tableBody').innerHTML='<div class="empty"><div class="big">📭</div><p>Không có dữ liệu phù hợp</p></div>';return;}
+  let html=`<table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody>`;
+  filtered.forEach(item=>{
+    const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
+    const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
+    const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'–';
+    html+=`<tr onclick="openModal(${JSON.stringify(item.ID||'').replace(/"/g,'&quot;')})">
+      <td><div class="name-cell"><span class="nm">${item.Title}</span><span class="rl">${item.EmployeeRole||''}</span></div></td>
+      <td style="color:var(--muted);font-size:13px">${item.Department||'–'}</td>
+      <td><span class="pill" style="background:${p.c}22;color:${p.c}">${p.e} ${p.l}</span></td>
+      <td><span class="pill" style="background:${s.c}18;color:${s.c}">${s.e} ${s.l}</span></td>
+      <td><div class="score-mini">
+        <div class="score-seg" style="background:var(--red);opacity:${Math.max(.2,r/28)}" title="Red:${r}"></div>
+        <div class="score-seg" style="background:var(--yellow);opacity:${Math.max(.2,y/28)}" title="Yellow:${y}"></div>
+        <div class="score-seg" style="background:var(--green);opacity:${Math.max(.2,g/28)}" title="Green:${g}"></div>
+        <div class="score-seg" style="background:var(--blue);opacity:${Math.max(.2,b/28)}" title="Blue:${b}"></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">${item.Archetype||'–'}</td>
+      <td style="color:var(--muted);font-size:12px">${date}</td>
+    </tr>`;
+  });
+  document.getElementById('tableBody').innerHTML=html+'</tbody></table>';
 }
 
 function updateSidebar(){
-const total=allData.length;
-document.getElementById('statTotal').textContent=total;
-const depts=new Set(allData.map(i=>i.Department).filter(Boolean));
-document.getElementById('statDepts').textContent=depts.size;
-const dSel=document.getElementById('fDept');
-dSel.innerHTML='<option value="">Tất cả phòng ban</option>';
-[...depts].sort().forEach(d=>{dSel.innerHTML+=`<option value="${d}">${d}</option>`;});
-const counts={red:0,yellow:0,green:0,blue:0};
-allData.forEach(i=>{if(counts[i.PrimaryColor]!==undefined)counts[i.PrimaryColor]++;});
-const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
-document.getElementById('statTop').textContent=top?CI[top[0]].e:'–';
-if(total>1){const d=new Date(allData[0]?.Created),d2=new Date(allData[allData.length-1]?.Created);const days=Math.max(1,Math.round(Math.abs(d-d2)/86400000));document.getElementById('statAvgDays').textContent=(total/days).toFixed(1);}
-const dist=document.getElementById('colorDist');dist.innerHTML='';
-[['red','🔴'],['yellow','🟡'],['green','🟢'],['blue','🔵']].forEach(([c,e])=>{
-const pct=total?Math.round(counts[c]/total*100):0;
-dist.innerHTML+=`<div class="cd-row"><span style="font-size:12px;width:20px">${e}</span><div class="cd-bg"><div class="cd-fill" style="width:${pct}%;background:${CI[c].c}" data-w="${pct}%"></div></div><span class="cd-val">${counts[c]}</span></div>`;
-});
-setTimeout(()=>document.querySelectorAll('.cd-fill').forEach(el=>el.style.width=el.dataset.w),100);
+  const total=allData.length;
+  document.getElementById('statTotal').textContent=total;
+  const depts=new Set(allData.map(i=>i.Department).filter(Boolean));
+  document.getElementById('statDepts').textContent=depts.size;
+  const dSel=document.getElementById('fDept');
+  dSel.innerHTML='<option value="">Tất cả phòng ban</option>';
+  [...depts].sort().forEach(d=>{dSel.innerHTML+=`<option value="${d}">${d}</option>`;});
+  const counts={red:0,yellow:0,green:0,blue:0};
+  allData.forEach(i=>{if(counts[i.PrimaryColor]!==undefined)counts[i.PrimaryColor]++;});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('statTop').textContent=top?CI[top[0]].e:'–';
+  if(total>1){const d=new Date(allData[0]?.Created),d2=new Date(allData[allData.length-1]?.Created);const days=Math.max(1,Math.round(Math.abs(d-d2)/86400000));document.getElementById('statAvgDays').textContent=(total/days).toFixed(1);}
+  const dist=document.getElementById('colorDist');dist.innerHTML='';
+  [['red','🔴'],['yellow','🟡'],['green','🟢'],['blue','🔵']].forEach(([c,e])=>{
+    const pct=total?Math.round(counts[c]/total*100):0;
+    dist.innerHTML+=`<div class="cd-row"><span style="font-size:12px;width:20px">${e}</span><div class="cd-bg"><div class="cd-fill" style="width:${pct}%;background:${CI[c].c}" data-w="${pct}%"></div></div><span class="cd-val">${counts[c]}</span></div>`;
+  });
+  setTimeout(()=>document.querySelectorAll('.cd-fill').forEach(el=>el.style.width=el.dataset.w),100);
 }
 
 function buildMiniWheel(pr,sec){
-const cx=80,cy=80,R=74,r=30;
-const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
-const SL=['D','M','I','IH','Su','Co','Ob','Re'];
-const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
-const hl=PM[`${pr}-${sec}`]??0;
-const toR=d=>d*Math.PI/180;const pol=(r2,d)=>[cx+r2*Math.cos(toR(d)),cy+r2*Math.sin(toR(d))];
-let svg='';
-for(let i=0;i<8;i++){
-const isHL=i===hl,s=i*45-90-22.5,e=s+45;
-const [x1,y1]=pol(r,s);const [x2,y2]=pol(R,s);const [x3,y3]=pol(R,e);const [x4,y4]=pol(r,e);
-svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r} ${r} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.3}" stroke="${isHL?'rgba(255,255,255,.6)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2:1}"/>`;
-const [lx,ly]=pol((r+R)/2,i*45-90);
-svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?7:6}" font-family="DM Sans" font-weight="${isHL?700:400}" opacity="${isHL?1:.5}">${SL[i]}</text>`;
-}
-const kc=CI[pr]||CI.blue;
-svg+=`<circle cx="${cx}" cy="${cy}" r="${r-2}" fill="var(--sur2)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
-svg+=`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="${kc.c}" font-size="18">●</text>`;
-return `<svg viewBox="0 0 ${cx*2} ${cy*2}" style="width:160px;height:160px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))">${svg}</svg>`;
+  const cx=80,cy=80,R=74,r=30;
+  const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
+  const SL=['D','M','I','IH','Su','Co','Ob','Re'];
+  const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
+  const hl=PM[`${pr}-${sec}`]??0;
+  const toR=d=>d*Math.PI/180;const pol=(r2,d)=>[cx+r2*Math.cos(toR(d)),cy+r2*Math.sin(toR(d))];
+  let svg='';
+  for(let i=0;i<8;i++){
+    const isHL=i===hl,s=i*45-90-22.5,e=s+45;
+    const [x1,y1]=pol(r,s);const [x2,y2]=pol(R,s);const [x3,y3]=pol(R,e);const [x4,y4]=pol(r,e);
+    svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r} ${r} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.3}" stroke="${isHL?'rgba(255,255,255,.6)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2:1}"/>`;
+    const [lx,ly]=pol((r+R)/2,i*45-90);
+    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?7:6}" font-family="DM Sans" font-weight="${isHL?700:400}" opacity="${isHL?1:.5}">${SL[i]}</text>`;
+  }
+  const kc=CI[pr]||CI.blue;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r-2}" fill="var(--sur2)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
+  svg+=`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="${kc.c}" font-size="18">●</text>`;
+  return `<svg viewBox="0 0 ${cx*2} ${cy*2}" style="width:160px;height:160px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))">${svg}</svg>`;
 }
 
 function openModal(id){
-const item=allData.find(i=>i.ID==id||i.ID===id);if(!item)return;
-currentItem=item;
-const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
-const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
-const pct=v=>Math.round(v/28*100);
-const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
-document.getElementById('mHero').style.background=p.grad;
-document.getElementById('mBadge').textContent=`${p.e} ${p.l} · ${p.tag}`;
-document.getElementById('mName').textContent=item.Title;
-document.getElementById('mSub').textContent=[item.EmployeeRole,item.Department,date].filter(Boolean).join(' · ');
-document.getElementById('mEnergyRow').innerHTML=[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
-<div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/28 (${pct(sc)}%)</span></div>
-<div class="e-bar-bg"><div class="e-bar-fill" style="width:0%;background:${CI[c].c}" data-w="${pct(sc)}%"></div></div></div>`).join('');
-document.getElementById('mDims').innerHTML=`
-<div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:${item.IEType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':item.IEType==='Introvert'?'🌙 Hướng nội':'—'}</div></div>
-<div class="dim-card"><div class="dim-title">👑 Lãnh đạo</div><div class="dim-val">${LL[item.LeadStyle]||'—'}</div></div>
-<div class="dim-card"><div class="dim-title">⚠️ Stress</div><div class="dim-val">${SL[item.StressBehavior]||'—'}</div></div>`;
-document.getElementById('mWheel').innerHTML=buildMiniWheel(item.PrimaryColor,item.SecondaryColor);
-document.getElementById('mProfileContent').innerHTML=`
-<div class="m-label">Màu Phụ & Archetype</div>
-<div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
-<span style="font-size:12px;color:var(--muted)">Màu phụ: </span>
-<span class="pill" style="background:${s.c}20;color:${s.c}">${s.e} ${s.l}</span>
-<span style="font-size:12px;color:var(--muted);margin-left:8px">${s.tag}</span>
-${item.Archetype?`<div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 ${item.Archetype}</div>`:''}
-</div>
-<div class="m-label">Hồ Sơ Cá Nhân</div>
-<div class="p2col">
-<div class="p-box"><h4>💪 Điểm Mạnh</h4><ul>${p.s.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-<div class="p-box"><h4>🔧 Điểm Cần Phát Triển</h4><ul>${p.b.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-</div>
-<div class="m-label" style="margin-top:14px">Giao Tiếp & Quản Lý</div>
-<div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4><ul>${p.t.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
-const tabAI=document.getElementById('mTabAI');
-if(item.AIProfile){tabAI.style.display='';renderAIPane(item.AIProfile);}
-else{tabAI.style.display='none';}
-mTab('scores');
-document.getElementById('modalOverlay').classList.add('open');
-setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
+  const item=allData.find(i=>i.ID==id||i.ID===id);if(!item)return;
+  currentItem=item;
+  const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
+  const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
+  const total=r+y+g+b||96;
+  const pct=v=>Math.round(v/28*100); // max 28: 24 core + 8 IE×0.5
+  const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'';
+  // Hero
+  document.getElementById('mHero').style.background=p.grad;
+  document.getElementById('mBadge').textContent=`${p.e} ${p.l}  ·  ${p.tag}`;
+  document.getElementById('mName').textContent=item.Title;
+  document.getElementById('mSub').textContent=[item.EmployeeRole,item.Department,date].filter(Boolean).join(' · ');
+  // Scores pane
+  document.getElementById('mEnergyRow').innerHTML=[['red',r],['yellow',y],['green',g],['blue',b]].map(([c,sc])=>`
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="e-score">${sc}/28 (${pct(sc)}%)</span></div>
+    <div class="e-bar-bg"><div class="e-bar-fill" style="width:0%;background:${CI[c].c}" data-w="${pct(sc)}%"></div></div></div>`).join('');
+  document.getElementById('mDims').innerHTML=`
+    <div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:${item.IEType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${item.IEType==='Extrovert'?'🌟 Hướng ngoại':item.IEType==='Introvert'?'🌙 Hướng nội':'—'}</div></div>
+    <div class="dim-card"><div class="dim-title">👑 Lãnh đạo</div><div class="dim-val">${LL[item.LeadStyle]||'—'}</div></div>
+    <div class="dim-card"><div class="dim-title">⚠️ Stress</div><div class="dim-val">${SL[item.StressBehavior]||'—'}</div></div>`;
+  document.getElementById('mWheel').innerHTML=buildMiniWheel(item.PrimaryColor,item.SecondaryColor);
+  // Profile pane
+  document.getElementById('mProfileContent').innerHTML=`
+    <div class="m-label">Màu Phụ & Archetype</div>
+    <div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
+      <span style="font-size:12px;color:var(--muted)">Màu phụ: </span>
+      <span class="pill" style="background:${s.c}20;color:${s.c}">${s.e} ${s.l}</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:8px">${s.tag}</span>
+      ${item.Archetype?`<div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 ${item.Archetype}</div>`:''}
+    </div>
+    <div class="m-label">Hồ Sơ Cá Nhân</div>
+    <div class="p2col">
+      <div class="p-box"><h4>💪 Điểm Mạnh</h4><ul>${p.s.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      <div class="p-box"><h4>🔧 Điểm Cần Phát Triển</h4><ul>${p.b.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+    </div>
+    <div class="m-label" style="margin-top:14px">Giao Tiếp & Quản Lý</div>
+    <div class="p-box"><h4>🤝 Cách Làm Việc Hiệu Quả Với ${item.Title?.split(' ').pop()||'Người Này'}</h4><ul>${p.t.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
+  // AI tab
+  const tabAI=document.getElementById('mTabAI');
+  if(item.AIProfile){
+    tabAI.style.display='';
+    renderAIPane(item.AIProfile);
+  } else {
+    tabAI.style.display='none';
+  }
+  // Reset to first tab
+  mTab('scores');
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
 }
 
 function renderAIPane(profile){
-let ai;
-try{ai=typeof profile==='string'?JSON.parse(profile):profile;}catch(e){
-document.getElementById('mAIContent').innerHTML=`<div class="ai-narrative-block"><div class="ai-narrative-title">🤖 AI Profile</div><p class="p-prose">${profile}</p></div>`;return;
-}
-const li=(arr)=>`<ul class="ai-list">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-const paras=(t)=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
-document.getElementById('mAIContent').innerHTML=`
-<div class="ai-narrative-block">
-<div class="ai-narrative-title">🤖 Phong Cách Cá Nhân (AI)</div>
-<div class="p-prose">${paras(ai.personalStyle)}</div>
-</div>
-<div class="m-label">Điểm Mạnh & Phát Triển (AI)</div>
-<div class="p2col" style="margin-bottom:14px">
-<div class="p-box"><h4>💪 Điểm Mạnh</h4>${li(ai.strengths)}</div>
-<div class="p-box"><h4>🔧 Cần Phát Triển</h4>${li(ai.weaknesses)}</div>
-</div>
-<div class="m-label">Giao Tiếp (AI)</div>
-<div class="p2col" style="margin-bottom:14px">
-<div class="p-box"><h4>✅ Hiệu quả</h4>${li(ai.effectiveCommunication)}</div>
-<div class="p-box"><h4>🚫 Rào cản</h4>${li(ai.communicationBarriers)}</div>
-</div>
-${ai.blindSpots?`<div class="m-label">Điểm Mù (AI)</div><div class="p-box" style="margin-bottom:14px"><div class="p-prose">${paras(ai.blindSpots)}</div></div>`:''}
-<div class="p2col">
-<div class="p-box"><h4>🌱 Phát triển</h4>${li(ai.development)}</div>
-<div class="p-box"><h4>💡 Quản lý</h4>${li(ai.managingTips)}</div>
-</div>`;
+  let ai;
+  try{ai=typeof profile==='string'?JSON.parse(profile):profile;}catch(e){
+    document.getElementById('mAIContent').innerHTML=`<div class="ai-narrative-block"><div class="ai-narrative-title">🤖 AI Profile</div><p class="p-prose">${profile}</p></div>`;return;
+  }
+  const li=(arr)=>`<ul class="ai-list">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  const paras=(t)=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
+  document.getElementById('mAIContent').innerHTML=`
+    <div class="ai-narrative-block">
+      <div class="ai-narrative-title">🤖 Phong Cách Cá Nhân (AI)</div>
+      <div class="p-prose">${paras(ai.personalStyle)}</div>
+    </div>
+    <div class="m-label">Điểm Mạnh & Phát Triển (AI)</div>
+    <div class="p2col" style="margin-bottom:14px">
+      <div class="p-box"><h4>💪 Điểm Mạnh</h4>${li(ai.strengths)}</div>
+      <div class="p-box"><h4>🔧 Cần Phát Triển</h4>${li(ai.weaknesses)}</div>
+    </div>
+    <div class="m-label">Giao Tiếp (AI)</div>
+    <div class="p2col" style="margin-bottom:14px">
+      <div class="p-box"><h4>✅ Hiệu quả</h4>${li(ai.effectiveCommunication)}</div>
+      <div class="p-box"><h4>🚫 Rào cản</h4>${li(ai.communicationBarriers)}</div>
+    </div>
+    ${ai.blindSpots?`<div class="m-label">Điểm Mù (AI)</div><div class="p-box" style="margin-bottom:14px"><div class="p-prose">${paras(ai.blindSpots)}</div></div>`:''}
+    <div class="p2col">
+      <div class="p-box"><h4>🌱 Phát triển</h4>${li(ai.development)}</div>
+      <div class="p-box"><h4>💡 Quản lý</h4>${li(ai.managingTips)}</div>
+    </div>`;
 }
 
 function mTab(id){
-document.querySelectorAll('.m-tab').forEach((t,i)=>t.classList.toggle('active',['scores','profile','ai'][i]===id));
-document.querySelectorAll('.m-pane').forEach(p=>p.classList.remove('active'));
-document.getElementById('mp-'+id).classList.add('active');
+  document.querySelectorAll('.m-tab').forEach((t,i)=>t.classList.toggle('active',['scores','profile','ai'][i]===id));
+  document.querySelectorAll('.m-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('mp-'+id).classList.add('active');
 }
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open');currentItem=null;}
 function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
 function exportPDF(){
-if(!currentItem)return;
-const exportItem={...currentItem};
-delete exportItem.AIProfile;
-const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
-const baseUrl='https://phuocdnt.github.io/bod-dashboard/insights-employee.html';
-const url=`${baseUrl}?data=${data}&print=1`;
-const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
-if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
-else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)');
+  if(!currentItem)return;
+  // Strip AIProfile trước khi encode → tránh URL >8000 ký tự bị cắt
+  // Employee popup sẽ tự gen AI rồi lưu ngược về SharePoint
+  const exportItem={...currentItem};
+  delete exportItem.AIProfile;
+  const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
+  const baseUrl=location.origin+location.pathname.replace('insights-admin.html','insights-employee.html');
+  const url=`${baseUrl}?data=${data}&print=1`;
+  const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
+  if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
+  else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)');
 }
 
 document.addEventListener('DOMContentLoaded',loadData);
 
-// ════════════════════════════════════════
-// INVITE FEATURE
-// ════════════════════════════════════════
-const SURVEY_URL='https://phuocdnt.github.io/bod-dashboard/insights-employee.html';
-let _invLink='',_invToken='',_invTokenEntry='';
-
-function openInviteModal(){
-document.getElementById('invOverlay').classList.add('open');
-setTimeout(()=>document.getElementById('invName').focus(),200);
-}
-function closeInviteModal(){
-document.getElementById('invOverlay').classList.remove('open');
-}
-function generateInvite(){
-const name=document.getElementById('invName').value.trim();
-const role=document.getElementById('invRole').value.trim();
-const dept=document.getElementById('invDept').value;
-if(!name){toast('Vui lòng nhập họ tên',true);return;}
-if(!role){toast('Vui lòng nhập chức danh',true);return;}
-const initials=name.split(' ').map(w=>w[0]||'').join('').toLowerCase().replace(/[^a-z]/g,'').slice(0,3)||'dhi';
-_invToken=initials+Date.now().toString(36).slice(-5);
-const params=new URLSearchParams();
-params.set('name',name);params.set('role',role);
-if(dept)params.set('dept',dept);
-_invLink=SURVEY_URL+'?'+params.toString();
-const entry={name,role};if(dept)entry.dept=dept;
-_invTokenEntry=`"${_invToken}": ${JSON.stringify(entry)}`;
-document.getElementById('invLinkUrl').textContent=_invLink;
-document.getElementById('invTokenSnippet').textContent=_invTokenEntry;
-document.getElementById('invResultBox').style.display='flex';
-document.getElementById('invNote').style.display='block';
-['ibtnCopy','ibtnMail','ibtnOpen'].forEach(id=>document.getElementById(id).style.display='');
-toast('✅ Link đã được tạo!');
-}
-async function copyInvLink(){
-if(!_invLink){toast('Tạo link trước',true);return;}
-try{await navigator.clipboard.writeText(_invLink);}
-catch(e){const t=document.createElement('textarea');t.value=_invLink;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
-toast('📋 Đã copy link!');
-}
-async function copyInvToken(){
-if(!_invTokenEntry){toast('Tạo link trước',true);return;}
-try{await navigator.clipboard.writeText(_invTokenEntry);}
-catch(e){const t=document.createElement('textarea');t.value=_invTokenEntry;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
-toast('📋 Đã copy token entry!');
-}
-function sendInvMail(){
-const email=document.getElementById('invEmail').value.trim();
-const name=document.getElementById('invName').value.trim();
-if(!email){toast('Nhập email nhân viên trước',true);return;}
-if(!_invLink){toast('Tạo link trước',true);return;}
-const subject=encodeURIComponent('Mời tham gia khảo sát Insights Discovery – DHI Co Ltd');
-const body=encodeURIComponent(`Kính gửi ${name},\n\nBạn được mời tham gia khảo sát tính cách Insights Discovery của DHI Co Ltd.\n\nVui lòng truy cập link dưới đây để hoàn thành khảo sát (khoảng 10–15 phút):\n\n${_invLink}\n\nTrân trọng,\nHR & Admin Team\nDHI Co Ltd`);
-window.open(`mailto:${email}?subject=${subject}&body=${body}`);
-}
-function openInvLink(){
-if(!_invLink){toast('Tạo link trước',true);return;}
-window.open(_invLink,'_blank');
-}
-
 // ═══════════════════════════════════════
 // RECALCULATE — Tính lại điểm từ Answers
+// Weighted IE (×0.5) theo lý thuyết Jung
 // ═══════════════════════════════════════
 const DIM_MAP={
-ie: new Set([24,25,26,27,28,29,30,31]),
-lead: new Set([32,33,34,35,36,37,38,39]),
-stress: new Set([40,41,42,43,44,45,46,47])
+  // 0–23: Core (×1.0), 24–31: IE (×0.5), 32–39: Lead, 40–47: Stress
+  ie: new Set([24,25,26,27,28,29,30,31]),
+  lead: new Set([32,33,34,35,36,37,38,39]),
+  stress: new Set([40,41,42,43,44,45,46,47])
 };
+const CORE_N_NEW=28; // 24×1 + 8×0.5
 
 function recalcFromAnswers(answersJson){
-let ans;
-try{ ans=JSON.parse(answersJson); }catch(e){ return null; }
-const sc={r:0,y:0,g:0,b:0};
-const ie={E:0,I:0};
-const ld={r:0,y:0,g:0,b:0};
-const st={r:0,y:0,g:0,b:0};
-for(let i=0;i<48;i++){
-const a=ans[i]||ans[String(i)];
-if(!a)continue;
-if(DIM_MAP.ie.has(i)){
-sc[a]=(sc[a]||0)+0.5;
-if(a==='r'||a==='y')ie.E++;else ie.I++;
-} else if(DIM_MAP.lead.has(i)){
-ld[a]=(ld[a]||0)+1;
-} else if(DIM_MAP.stress.has(i)){
-st[a]=(st[a]||0)+1;
-} else {
-sc[a]=(sc[a]||0)+1;
-}
-}
-const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-const pr=sorted[0][0],sec=sorted[1][0];
-const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-const ieType=ie.E>=ie.I?'Extrovert':'Introvert';
-const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
-const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
-return {
-primaryColor:kmap[pr], secondaryColor:kmap[sec],
-redScore:Math.round(sc.r||0), yellowScore:Math.round(sc.y||0),
-greenScore:Math.round(sc.g||0), blueScore:Math.round(sc.b||0),
-ieType, leadStyle:kmap[ls], stressBehavior:kmap[sb]
-};
+  let ans;
+  try{ ans=JSON.parse(answersJson); }catch(e){ return null; }
+  const sc={r:0,y:0,g:0,b:0};
+  const ie={E:0,I:0};
+  const ld={r:0,y:0,g:0,b:0};
+  const st={r:0,y:0,g:0,b:0};
+  for(let i=0;i<48;i++){
+    const a=ans[i]||ans[String(i)];
+    if(!a)continue;
+    if(DIM_MAP.ie.has(i)){
+      sc[a]=(sc[a]||0)+0.5;
+      if(a==='r'||a==='y')ie.E++;else ie.I++;
+    } else if(DIM_MAP.lead.has(i)){
+      ld[a]=(ld[a]||0)+1;
+    } else if(DIM_MAP.stress.has(i)){
+      st[a]=(st[a]||0)+1;
+    } else {
+      sc[a]=(sc[a]||0)+1; // core
+    }
+  }
+  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const pr=sorted[0][0],sec=sorted[1][0];
+  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
+  const pct=k=>Math.round((sc[k]||0)/CORE_N_NEW*100);
+  const ieType=ie.E>=ie.I?'Extrovert':'Introvert';
+  const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
+  const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0]?.[0]||pr;
+  return {
+    primaryColor:kmap[pr], secondaryColor:kmap[sec],
+    redScore:Math.round(sc.r||0), yellowScore:Math.round(sc.y||0),
+    greenScore:Math.round(sc.g||0), blueScore:Math.round(sc.b||0),
+    ieType, leadStyle:kmap[ls], stressBehavior:kmap[sb],
+    pct
+  };
 }
 
 async function recalcAll(){
-const btn=document.getElementById('btnRecalc');
-const items=allData.filter(i=>i.Answers);
-if(!items.length){ toast('⚠️ Không có item nào có Answers để tính lại',true);return; }
-if(!confirm(`Tính lại điểm cho ${items.length} người từ Answers gốc?\n\nThay đổi:\n- RedScore/YellowScore/GreenScore/BlueScore được tính lại\n- Câu IE giờ đóng góp ×0.5 vào điểm màu\n- PrimaryColor & SecondaryColor có thể thay đổi\n\nTiếp tục?`))return;
-btn.disabled=true;
-let done=0,failed=0;
-for(const item of items){
-const result=recalcFromAnswers(item.Answers);
-if(!result){failed++;continue;}
-try{
-await fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-updateMode:true, id:item.ID,
-redScore:result.redScore, yellowScore:result.yellowScore,
-greenScore:result.greenScore, blueScore:result.blueScore,
-primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
-ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior,
-aiProfile:''
-})
-});
-done++;
-toast(`⏳ Đang cập nhật… ${done}/${items.length}`);
-}catch(e){ failed++; }
-}
-btn.disabled=false;
-toast(failed?`✅ Xong ${done}/${items.length} (${failed} lỗi)`:`✅ Đã recalculate ${done} người thành công!`);
-setTimeout(loadData,1500);
+  const btn=document.getElementById('btnRecalc');
+  const items=allData.filter(i=>i.Answers);
+  if(!items.length){ toast('⚠️ Không có item nào có Answers để tính lại',true);return; }
+  if(!confirm(`Tính lại điểm cho ${items.length} người từ Answers gốc?\n\nThay đổi:\n- RedScore/YellowScore/GreenScore/BlueScore được tính lại\n- Câu IE giờ đóng góp ×0.5 vào điểm màu\n- PrimaryColor & SecondaryColor có thể thay đổi\n\nTiếp tục?`))return;
+
+  btn.disabled=true;
+  let done=0,failed=0;
+  for(const item of items){
+    const result=recalcFromAnswers(item.Answers);
+    if(!result){failed++;continue;}
+    // Update SharePoint via Write Flow
+    try{
+      await fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          updateMode:true, id:item.ID,
+          redScore:result.redScore, yellowScore:result.yellowScore,
+          greenScore:result.greenScore, blueScore:result.blueScore,
+          primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
+          ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior,
+          aiProfile:'' // Xóa AIProfile cũ → bắt buộc gen lại AI với điểm mới
+        })
+      });
+      done++;
+      toast(`⏳ Đang cập nhật… ${done}/${items.length}`);
+    }catch(e){ failed++; }
+  }
+  btn.disabled=false;
+  toast(failed?`✅ Xong ${done}/${items.length} (${failed} lỗi)`:`✅ Đã recalculate ${done} người thành công!`);
+  setTimeout(loadData,1500); // refresh table
 }
 </script>
+
+
+
 </body></html>
