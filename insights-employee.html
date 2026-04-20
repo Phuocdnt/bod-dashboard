@@ -1,881 +1,599 @@
 <!DOCTYPE html>
-<!-- saved from url=(0063)https://phuocdnt.github.io/bod-dashboard/insights-employee.html -->
-<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Discovery – Khảo Sát &amp; Profile</title>
-<link href="./insights-employee_Github_files/css2" rel="stylesheet">
+<title>Insights Discovery – Khảo Sát</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   SHAREPOINT CONFIG — Chỉnh sửa 2 dòng này
+═══════════════════════════════════════════════════ */
+
+/* Extended dimension cards */
+.ext-dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:20px}
+.dim-card{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:16px}
+.dim-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.dim-val{font-size:15px;font-weight:600;margin-bottom:10px}
+.dim-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.dim-bar-lbl{font-size:11px;font-weight:700;color:var(--muted);width:16px}
+.dim-bar-bg{flex:1;height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
+</style>
+<script>
+const CONFIG = {
+  // ⚠️ Dán URL từ Power Automate Flow (Write) vào đây
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488"
+};
+</script>
 <style>
 :root{
   --red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
   --red-s:rgba(232,57,42,.12);--yellow-s:rgba(245,166,35,.12);
   --green-s:rgba(60,179,113,.12);--blue-s:rgba(43,108,176,.12);
-  --bg:#0A0E14;--sur:#13181F;--sur2:#1A2130;--bdr:rgba(255,255,255,.07);
-  --txt:#E8EDF3;--muted:#7A8490;
+  --bg:#0D1117;--sur:#161B22;--sur2:#1C2333;--bdr:rgba(255,255,255,.08);
+  --txt:#E6EDF3;--muted:#8B949E;
   --ff:'DM Sans',sans-serif;--fd:'Cormorant Garamond',serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
 .bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.12}
-.orb-r{width:600px;height:600px;background:radial-gradient(circle,var(--yellow),var(--red));top:-15%;left:-10%;animation:drift1 18s ease-in-out infinite alternate}
-.orb-b{width:500px;height:500px;background:radial-gradient(circle,var(--blue),var(--green));bottom:-10%;right:-8%;animation:drift2 22s ease-in-out infinite alternate}
-@keyframes drift1{to{transform:translate(40px,60px)}}
-@keyframes drift2{to{transform:translate(-30px,-50px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-.wrap{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:40px 20px 100px}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.15;animation:drift 12s ease-in-out infinite alternate}
+.orb-r{width:480px;height:480px;background:var(--red);top:-10%;left:-10%;animation-delay:0s}
+.orb-b{width:420px;height:420px;background:var(--blue);bottom:-5%;right:-5%;animation-delay:6s}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(25px,30px)}}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:40px 20px 80px}
+
 /* Header */
-.hdr{text-align:center;margin-bottom:48px}
-.hdr-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:99px;border:1px solid var(--bdr);background:var(--sur);font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
-.hdr h1{font-family:var(--fd);font-size:clamp(2.2rem,5vw,3.6rem);font-weight:300;line-height:1.15;margin-bottom:12px}
-.hdr h1 em{font-style:italic;background:linear-gradient(135deg,var(--yellow),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hdr p{color:var(--muted);font-size:14px;line-height:1.8;max-width:500px;margin:0 auto}
-.wheel-icon{width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 24px;box-shadow:0 0 40px rgba(245,166,35,.3);animation:spin 25s linear infinite}
-/* Color intro */
-.color-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:24px 0}
-.ci{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:var(--sur);border:1px solid var(--bdr)}
-.ci-bar{width:4px;height:40px;border-radius:4px;flex-shrink:0}
-.ci h3{font-size:14px;font-weight:600;margin-bottom:3px}
-.ci p{font-size:12px;color:var(--muted);line-height:1.4}
-@media(max-width:540px){.color-grid{grid-template-columns:1fr}}
+.hdr{text-align:center;margin-bottom:44px}
+.hdr .eye{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.hdr h1{font-family:var(--fd);font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.hdr p{color:var(--muted);font-size:14px;line-height:1.7}
+.wheel{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 20px;animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* Progress */
-.prog-wrap{display:none;margin-bottom:28px}
+.prog-wrap{margin-bottom:28px}
 .prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
 .prog-bg{height:3px;background:var(--bdr);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green),var(--yellow),var(--red));transition:width .4s ease}
+
 /* Steps */
 .step{display:none;animation:fadeUp .35s ease both}
 .step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
 /* Card */
-.card{background:var(--sur);border:1px solid var(--bdr);border-radius:20px;padding:28px;margin-bottom:18px}
-/* Form */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:18px;padding:28px;margin-bottom:18px}
+
+/* Form inputs */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
 .field input,.field select{background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:10px;padding:12px 14px;font-family:var(--ff);font-size:15px;outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus{border-color:rgba(245,166,35,.5);box-shadow:0 0 0 3px rgba(245,166,35,.08)}
+.field input:focus,.field select:focus{border-color:var(--blue)}
 .field input::placeholder{color:var(--muted)}
 .field select option{background:var(--sur2)}
-/* Questions */
-.qcard{background:var(--sur);border:1.5px solid var(--bdr);border-radius:16px;padding:24px;margin-bottom:12px;transition:border-color .25s}
-.qcard.done{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
+
+/* Question card */
+.qcard{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+.qcard.done{border-color:rgba(43,108,176,.4)}
 .qnum{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 .qtxt{font-family:var(--fd);font-size:1.15rem;font-weight:400;margin-bottom:18px;line-height:1.5}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 @media(max-width:540px){.opts{grid-template-columns:1fr}}
-.opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .18s;width:100%;position:relative}
-.opt:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
-.opt.sel{border-color:rgba(255,255,255,.45)!important;background:rgba(255,255,255,.08)!important}
-.opt.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:600}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .2s}
+.opt:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
+.opt.sel-red{border-color:var(--red)!important;background:var(--red-s)!important}
+.opt.sel-yellow{border-color:var(--yellow)!important;background:var(--yellow-s)!important}
+.opt.sel-green{border-color:var(--green)!important;background:var(--green-s)!important}
+.opt.sel-blue{border-color:var(--blue)!important;background:var(--blue-s)!important}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-r{background:var(--red);box-shadow:0 0 7px var(--red)}
+.dot-y{background:var(--yellow);box-shadow:0 0 7px var(--yellow)}
+.dot-g{background:var(--green);box-shadow:0 0 7px var(--green)}
+.dot-b{background:var(--blue);box-shadow:0 0 7px var(--blue)}
 .opt-lbl{font-size:13px;line-height:1.55;color:var(--txt)}
+
 /* Buttons */
 .btn{display:block;width:100%;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;font-family:var(--ff);font-size:15px;font-weight:600;transition:all .2s;margin-top:10px}
-.btn-pri{background:linear-gradient(135deg,#2563EB,#1E40AF);color:#fff;box-shadow:0 4px 24px rgba(37,99,235,.35)}
-.btn-pri:hover{transform:translateY(-1px)}
-.btn-sec{background:var(--sur2);color:var(--muted);border:1px solid var(--bdr)}
-.btn-sec:hover{color:var(--txt)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
-.btn-gold{background:linear-gradient(135deg,#c8963e,#f5a623);color:#0A0E14;font-weight:700}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,166,35,.4)}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-@media(max-width:480px){.btn-row{grid-template-columns:1fr}}
-.batch-info{text-align:center;color:var(--muted);font-size:12px;margin:12px 0 6px}
-/* Profile result */
-.profile-header{text-align:center;padding:36px 0 24px}
-.profile-name{font-family:var(--fd);font-size:2.4rem;font-weight:300;margin-bottom:4px}
-.profile-role{color:var(--muted);font-size:14px;margin-bottom:20px;letter-spacing:.5px}
-.profile-type-badge{display:inline-block;padding:8px 20px;border-radius:99px;font-size:13px;font-weight:600;letter-spacing:.5px}
-.wheel-wrap{margin:28px auto;max-width:320px}
-.wheel-caption{text-align:center;margin-top:12px}
-.wheel-caption .pos-main{font-family:var(--fd);font-size:1.2rem;font-weight:400}
-.wheel-caption .pos-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-.color-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
-.cb{background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:14px}
-.cb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.cb-name{font-size:12px;font-weight:600}
-.cb-pct{font-size:13px;font-weight:700}
-.cb-bar-bg{height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
-.cb-bar-fill{height:100%;border-radius:99px;transition:width .8s ease .3s}
-@media(max-width:480px){.color-bars{grid-template-columns:1fr}}
-.dims-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
-@media(max-width:540px){.dims-grid{grid-template-columns:1fr}}
-.dim-card{background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:14px}
-.dim-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.dim-val{font-size:13px;font-weight:600;line-height:1.4}
-.ps-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.ps-label::after{content:'';display:block;flex:1;height:1px;background:var(--bdr)}
-.ps-content{font-size:14px;line-height:1.85;color:rgba(232,237,243,.85)}
-.ps-content p{margin-bottom:10px}
-.profile-section{margin-bottom:28px}
-.profile-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-@media(max-width:480px){.profile-list{grid-template-columns:1fr}}
-.profile-list li{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.5;color:rgba(232,237,243,.8);padding:8px 10px;background:var(--sur2);border-radius:8px;border:1px solid var(--bdr)}
-.profile-list li::before{content:'↗';font-size:11px;color:var(--yellow);margin-top:1px;flex-shrink:0}
-.profile-list.neg li::before{content:'↘';color:var(--muted)}
-.profile-list.neu li::before{content:'→';color:var(--blue)}
-.ai-loading{text-align:center;padding:48px 20px}
-.spinner-lg{display:inline-block;width:48px;height:48px;border:3px solid var(--bdr);border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px}
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.btn-pri{background:linear-gradient(135deg,#2563EB,#1E40AF);color:#fff;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+.btn-pri:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,99,235,.45)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-sec{background:var(--sur2);color:var(--muted);border:1px solid var(--bdr)!important;margin-top:10px}
+.btn-sec:hover{color:var(--txt);border-color:rgba(255,255,255,.2)!important}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{margin-top:0}
+
+/* Batch info */
+.batch-info{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 6px}
+
+/* Intro color grid */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 24px}
+@media(max-width:500px){.cg{grid-template-columns:1fr}}
+.ci{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:12px;border:1px solid var(--bdr);background:var(--sur2)}
+.ci-bar{width:4px;border-radius:99px;flex-shrink:0;align-self:stretch}
+.ci h3{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.ci p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* Success screen */
+.success{text-align:center;padding:40px 20px}
+.success .big-wheel{width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 24px}
+.success h2{font-family:var(--fd);font-size:2rem;font-weight:300;margin-bottom:12px}
+.success p{color:var(--muted);font-size:14px;line-height:1.7;max-width:400px;margin:0 auto 24px}
+.result-preview{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;margin:0 auto 24px;text-align:left}
+@media(max-width:480px){.result-preview{grid-template-columns:1fr}}
+.rp-box{padding:14px;border-radius:12px;background:var(--sur2);border:1px solid var(--bdr)}
+.rp-box .label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.rp-box .val{font-size:16px;font-weight:600}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap}
 #toast.show{transform:translateX(-50%) translateY(0)}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
-.no-print{}
-.print-footer{display:none}
-@media print{
-  body{background:#fff;color:#111}
-  .bg-orbs,.no-print,#toast{display:none!important}
-  .wrap{padding:0;max-width:100%}
-  .card{border:1px solid #ddd;border-radius:8px;break-inside:avoid;box-shadow:none}
-  .profile-section{break-inside:avoid}
-  :root{--bg:#fff;--sur:#f8f9fa;--sur2:#f0f2f5;--bdr:#e0e0e0;--txt:#111;--muted:#555}
-  .hdr h1 em{-webkit-text-fill-color:initial;color:#c8963e}
-  .ps-content,.profile-list li{color:#333;background:#f5f5f5}
-  .print-footer{display:block;text-align:center;color:#888;font-size:11px;padding:16px}
-}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
 </style>
 </head>
 <body>
-<div class="bg-orbs"><div class="orb orb-r"></div><div class="orb orb-b"></div></div>
+
+<div class="bg-orbs">
+  <div class="orb orb-r"></div>
+  <div class="orb orb-b"></div>
+</div>
+
 <div class="wrap">
-  <!-- TOKEN: Màn hình khoá -->
-  <div id="lockedScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
-    <div style="font-size:3.5rem;margin-bottom:20px">🔒</div>
-    <h2 style="font-family:var(--fd);font-size:1.8rem;font-weight:300;margin-bottom:12px">Liên kết không hợp lệ</h2>
-    <p style="color:var(--muted);font-size:14px;max-width:380px;line-height:1.8">Bạn cần đường dẫn khảo sát cá nhân để truy cập. Vui lòng liên hệ HR để nhận link của bạn.</p>
-  </div>
 
-  <!-- TOKEN: Đã nộp rồi -->
-  <div id="alreadyDoneScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
-    <div style="font-size:3.5rem;margin-bottom:20px">✅</div>
-    <h2 style="font-family:var(--fd);font-size:1.8rem;font-weight:300;margin-bottom:12px">Đã hoàn thành khảo sát</h2>
-    <p style="color:var(--muted);font-size:14px;max-width:380px;line-height:1.8"><strong id="alreadyDoneName" style="color:var(--txt)"></strong> đã nộp khảo sát trên thiết bị này rồi. Kết quả đã được ghi nhận.</p>
-  </div>
-
-  <!-- TOKEN: Banner danh tính -->
-  <div id="identityBanner" style="display:none;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);margin-bottom:20px">
-    <span style="font-size:1.4rem">🔐</span>
-    <div>
-      <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:2px">Khảo sát dành riêng cho</div>
-      <div style="font-size:15px;font-weight:600;color:var(--yellow)" id="bannerName"></div>
-    </div>
-  </div>
-
+  <!-- HEADER -->
   <div class="hdr">
-    <div class="wheel-icon"></div>
-    <div class="hdr-badge">🔍 Insights Discovery</div>
-    <h1>Khám Phá<br><em>Phong Cách</em> Của Bạn</h1>
-    <p>Bộ câu hỏi 48 mục giúp xác định phong cách làm việc, giao tiếp và lãnh đạo theo mô hình Insights Discovery.</p>
+    <div class="wheel"></div>
+    <div class="eye">DHI CO LTD · Khảo Sát Nhân Viên</div>
+    <h1>Insights Discovery<br><em>Khám Phá Bản Thân</em></h1>
+    <p>Bộ câu hỏi 24 mục giúp xác định phong cách làm việc và giao tiếp của bạn.</p>
   </div>
-  <div class="prog-wrap" id="progWrap">
-    <div class="prog-lbl"><span id="progLbl">0 / 48 câu</span><span id="progPct">0%</span></div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap" id="progWrap" style="display:none">
+    <div class="prog-lbl">
+      <span id="progLbl">0 / 24 câu</span>
+      <span id="progPct">0%</span>
+    </div>
     <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
-  <!-- STEP 0: Intro -->
+
+  <!-- ══ STEP 0: INTRO ══ -->
   <div class="step active" id="s0">
     <div class="card">
       <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
-      <div class="color-grid">
-        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">🔴 Fiery Red</h3><p>Quyết đoán, tập trung kết quả, kiểm soát</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">🟡 Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng, sáng tạo</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">🟢 Earth Green</h3><p>Đồng cảm, ổn định, gắn kết, hỗ trợ</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">🔵 Cool Blue</h3><p>Phân tích, cẩn thận, chính xác, có hệ thống</p></div></div>
+      <div class="cg">
+        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">🔴 Fiery Red</h3><p>Quyết đoán, tập trung kết quả</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">🟡 Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">🟢 Earth Green</h3><p>Đồng cảm, ổn định, gắn kết</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">🔵 Cool Blue</h3><p>Phân tích, cẩn thận, chính xác</p></div></div>
       </div>
-    </div>
-    <div class="card">
-      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Thông Tin Của Bạn</p>
-      <div class="field"><label>Họ và Tên *</label><input id="iName" placeholder="Nguyễn Văn A" autocomplete="name"></div>
-      <div class="field"><label>Chức Danh *</label><input id="iRole" placeholder="Production Manager"></div>
-      <div class="field"><label>Phòng / Ban</label>
+
+      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Thông Tin Của Bạn</p>
+      <div class="field"><label>Họ và tên *</label><input id="iName" placeholder="Nguyễn Văn A"/></div>
+      <div class="field"><label>Chức danh *</label><input id="iRole" placeholder="Project Engineer, Sales Manager…"/></div>
+      <div class="field">
+        <label>Phòng ban</label>
         <select id="iDept">
-          <option value="">— Chọn phòng ban —</option>
-          <option>Ban Giám Đốc</option><option>Sản Xuất</option><option>Kỹ Thuật</option>
-          <option>Kinh Doanh &amp; Marketing</option><option>Nhân Sự</option>
-          <option>Tài Chính &amp; Kế Toán</option><option>Chuỗi Cung Ứng</option>
-          <option>Chất Lượng</option><option>Khác</option>
+          <option value="">-- Chọn phòng ban --</option>
+          <option>Kỹ Thuật</option>
+          <option>Kinh Doanh & Sales</option>
+          <option>Dự Án & PMO</option>
+          <option>Tài Chính & Kế Toán</option>
+          <option>Nhân Sự</option>
+          <option>Mua Hàng</option>
+          <option>Vận Hành</option>
+          <option>Marketing</option>
+          <option>Ban Giám Đốc</option>
+          <option>Khác</option>
         </select>
       </div>
+
+      <button class="btn btn-pri" onclick="startQuiz()">Bắt đầu khảo sát — 24 câu hỏi →</button>
+      <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏱ Khoảng 8–10 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
     </div>
-    <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát → 48 câu hỏi</button>
-    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏰ Khoảng 15–20 phút  ·  Không có câu trả lời đúng/sai</p>
   </div>
-  <!-- STEP 1: Questions -->
+
+  <!-- ══ STEP 1: QUESTIONS ══ -->
   <div class="step" id="s1">
-    <div class="card">
-      <div id="stepInfo" class="batch-info"></div>
-      <div id="qContainer"></div>
-    </div>
-    <div class="btn-row no-print">
-      <button class="btn btn-sec" onclick="prevBatch()">← Quay lại</button>
-      <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()">Tiếp theo →</button>
+    <div id="qContainer"></div>
+    <div class="batch-info" id="batchInfo"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" style="flex:0 0 auto;padding:14px 20px" onclick="prevBatch()">← Quay lại</button>
+      <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()" style="flex:1">Tiếp theo →</button>
     </div>
   </div>
-  <!-- STEP 2: Profile -->
+
+  <!-- ══ STEP 2: SUCCESS ══ -->
   <div class="step" id="s2">
-    <div id="profileContainer"></div>
-    <div class="btn-row no-print" id="profileActions" style="display:none">
-      <!-- PDF export removed: only admin can export profiles -->
-      <button class="btn btn-sec" onclick="resetForm()">Làm lại từ đầu</button>
-    </div>
-    <div class="print-footer card" style="margin-top:0">
-      <p id="printFooterTxt" style="font-size:11px;color:var(--muted);text-align:center"></p>
+    <div class="card">
+      <div class="success">
+        <div class="big-wheel"></div>
+        <h2>Khảo sát hoàn thành!</h2>
+        <p>Cảm ơn bạn đã hoàn thành bộ câu hỏi Insights Discovery.<br>Kết quả đã được ghi nhận và Admin sẽ xử lý profile của bạn.</p>
+        <div class="result-preview" id="resultPreview"></div>
+        <div id="extDimensions" class="ext-dims" style="margin-top:16px"></div>
+        <div style="background:var(--sur2);border-radius:12px;padding:16px;border:1px solid var(--bdr);text-align:left;max-width:400px;margin:0 auto">
+          <p style="font-size:12px;color:var(--muted);line-height:1.7">
+            📬 Kết quả của bạn đã được lưu vào hệ thống.<br>
+            Admin sẽ phân tích và chia sẻ báo cáo chi tiết với bạn.
+          </p>
+        </div>
+        <button class="btn btn-sec" onclick="resetForm()" style="max-width:300px;margin:20px auto 0">Điền lại từ đầu</button>
+      </div>
     </div>
   </div>
+
 </div>
+
 <div id="toast"></div>
+
 <script>
-const CONFIG = {
-  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-  // ⚠️ Dán URL Power Automate Claude Proxy Flow vào đây sau khi tạo
-  claudeFlowUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev",
-  // TOKEN SYSTEM: {} = open mode (test). Thêm token: "mã": { name, role, dept }
-  // Link gửi nhân viên: insights-employee.html?t=mã_token
-  inviteTokens: {"txt53v6x": {"name":"Tạ Xuân Thi Thi","role":"Director","dept":"Nhân Sự"},"ttlrimht": {"name":"Trịnh Thị Lý","role":"Housewife","dept":"Ban Giám Đốc"}
-    // "dhi26kh": { name: "Hồ Việt Khánh", role: "QA Manager", dept: "Ban Giám Đốc" },
-    // "dhi26lc": { name: "Nguyễn Lê Thành Lạc", role: "Nhân viên", dept: "Kỹ Thuật" }
-  }
-};
-</script>
-<script>
-// ══════════════════════════════════════
-// TOKEN GATE — chạy trước mọi thứ
-// ══════════════════════════════════════
-(function tokenGate(){
-  var tokens = CONFIG.inviteTokens || {};
-  var params = new URLSearchParams(location.search);
-  if(params.get('data')) return; // admin popup mode, bỏ qua gate
-  if(Object.keys(tokens).length === 0) return; // open mode
-
-  var t = params.get('t');
-
-  // Đã nộp rồi (localStorage)
-  if(t && tokens[t] && localStorage.getItem('ins_done_' + t)){
-    var info = tokens[t];
-    document.addEventListener('DOMContentLoaded', function(){
-      document.getElementById('alreadyDoneScreen').style.display = 'flex';
-      document.getElementById('alreadyDoneName').textContent = info.name || 'Bạn';
-      document.getElementById('s0').style.display = 'none';
-      document.querySelector('.hdr').style.display = 'none';
-      document.getElementById('identityBanner').style.display = 'none';
-    });
-    return;
-  }
-
-  // Token hợp lệ → pre-fill + lock
-  if(t && tokens[t]){
-    var info = tokens[t];
-    window._token = t;
-    document.addEventListener('DOMContentLoaded', function(){
-      var iName = document.getElementById('iName');
-      var iRole = document.getElementById('iRole');
-      var iDept = document.getElementById('iDept');
-      iName.value = info.name || ''; iName.readOnly = true; iName.style.opacity = '.7';
-      iRole.value = info.role || ''; iRole.readOnly = true; iRole.style.opacity = '.7';
-      if(info.dept){
-        for(var i=0; i<iDept.options.length; i++){
-          if(iDept.options[i].text === info.dept || iDept.options[i].value === info.dept){
-            iDept.selectedIndex = i; break;
-          }
-        }
-        iDept.disabled = true; iDept.style.opacity = '.7';
-      }
-      var banner = document.getElementById('identityBanner');
-      banner.style.display = 'flex';
-      document.getElementById('bannerName').textContent = info.name || '';
-    });
-    return;
-  }
-
-  // Không có ?t= nhưng có ?name= → cho qua, prefillFromInviteLink sẽ xử lý
-  if(params.get('name')) return;
-
-  // Token sai / không có → khoá màn hình
-  document.addEventListener('DOMContentLoaded', function(){
-    document.getElementById('lockedScreen').style.display = 'flex';
-    document.getElementById('s0').style.display = 'none';
-    document.querySelector('.hdr').style.display = 'none';
-  });
-})();
-
-// ══════════════════════════════════════
-// PREFILL TỪ INVITE LINK (open mode)
-// Hỗ trợ ?name=...&role=...&dept=...
-// Hoạt động khi inviteTokens = {} (open mode)
-// ══════════════════════════════════════
-(function prefillFromInviteLink(){
-  var tokens = CONFIG.inviteTokens || {};
-  // Cho phép ?name= hoạt động cả khi token mode bật (admin tạo link prefill)
-  var p = new URLSearchParams(location.search);
-  var name = p.get('name'), role = p.get('role'), dept = p.get('dept');
-  if(!name && !role) return;
-  function doFill(){
-    var iName = document.getElementById('iName');
-    var iRole = document.getElementById('iRole');
-    var iDept = document.getElementById('iDept');
-    if(iName && name){ iName.value = name; iName.readOnly = true; iName.style.opacity = '.75'; }
-    if(iRole && role){ iRole.value = role; iRole.readOnly = true; iRole.style.opacity = '.75'; }
-    if(iDept && dept){
-      for(var i=0; i<iDept.options.length; i++){
-        if(iDept.options[i].text === dept || iDept.options[i].value === dept){
-          iDept.selectedIndex = i; iDept.disabled = true; iDept.style.opacity = '.75'; break;
-        }
-      }
-    }
-    // Hiện identity banner
-    var banner = document.getElementById('identityBanner');
-    var bannerName = document.getElementById('bannerName');
-    if(banner && bannerName && name){
-      banner.style.display = 'flex';
-      bannerName.textContent = name;
-    }
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', doFill);
-  else doFill();
-})();
-</script>
-<script>
-// ═══════════════════════════════════════
-// 48 CÂU HỎI
-// ═══════════════════════════════════════
-const QS=[
-  // CORE (1-24)
-  {t:"Trong cuộc họp nhóm, bạn thường:",o:{r:"Dẫn dắt thảo luận và đưa ra quyết định",y:"Đưa ra nhiều ý tưởng sáng tạo và truyền cảm hứng",g:"Lắng nghe và đảm bảo mọi người được lắng nghe",b:"Phân tích và đặt câu hỏi chi tiết để hiểu rõ hơn"}},
-  {t:"Phong cách giao tiếp tự nhiên của bạn:",o:{r:"Trực tiếp, rõ ràng, đi thẳng vào vấn đề",y:"Nhiệt tình, cởi mở, hay kể chuyện để minh họa",g:"Ấm áp, kiên nhẫn, lắng nghe nhiều hơn nói",b:"Có cấu trúc, chi tiết, cân nhắc từng lời"}},
-  {t:"Khi bắt đầu dự án mới, điều đầu tiên bạn làm là:",o:{r:"Xác định mục tiêu và phân công nhiệm vụ ngay",y:"Brainstorm ý tưởng và truyền lửa cho cả nhóm",g:"Hỏi ý kiến mọi người và tìm hiểu nhu cầu từng người",b:"Lập kế hoạch chi tiết và nghiên cứu kỹ trước khi bắt đầu"}},
-  {t:"Bạn làm việc hiệu quả nhất khi:",o:{r:"Có mục tiêu rõ ràng và quyền tự chủ cao",y:"Làm việc với nhiều người và được tự do sáng tạo",g:"Có môi trường hợp tác, ổn định và ít xung đột",b:"Có đủ thời gian để nghiên cứu và làm đúng từ đầu"}},
-  {t:"Khi đưa ra quyết định, bạn thường dựa vào:",o:{r:"Bản năng và kinh nghiệm, quyết định nhanh",y:"Cảm hứng và sự đồng thuận của nhóm",g:"Tác động đến con người và sự hài hòa tập thể",b:"Dữ liệu, phân tích và tiền lệ có cơ sở"}},
-  {t:"Điều bạn coi trọng nhất trong công việc:",o:{r:"Kết quả đo lường được và tác động rõ ràng",y:"Sự sáng tạo, đổi mới và niềm vui trong công việc",g:"Mối quan hệ tốt và sự phát triển của đồng nghiệp",b:"Chất lượng, độ chính xác và tuân thủ quy trình"}},
-  {t:"Khi gặp trở ngại lớn, phản ứng đầu tiên của bạn:",o:{r:"Đối mặt trực tiếp và tìm cách vượt qua ngay",y:"Tìm góc nhìn mới và truyền cảm hứng cho mọi người",g:"Tìm sự hỗ trợ và đảm bảo mọi người ổn",b:"Phân tích nguyên nhân và lên kế hoạch giải quyết hệ thống"}},
-  {t:"Trong nhóm làm việc, vai trò tự nhiên của bạn là:",o:{r:"Người lãnh đạo thúc đẩy tiến độ",y:"Người tạo ý tưởng và giữ năng lượng cho nhóm",g:"Người giữ hòa khí và hỗ trợ mọi thành viên",b:"Người đảm bảo chất lượng và phân tích kỹ lưỡng"}},
-  {t:"Khi nhận phản hồi về công việc của mình:",o:{r:"Lắng nghe nhưng giữ quan điểm nếu đúng",y:"Cởi mở tiếp nhận và nhanh chóng điều chỉnh",g:"Cảm nhận sâu sắc và cần thời gian để tiêu hóa",b:"Phân tích phản hồi cẩn thận trước khi chấp nhận"}},
-  {t:"Bạn thích cách thức làm việc nào nhất:",o:{r:"Hành động nhanh, thử nghiệm và học qua thực tế",y:"Linh hoạt, đa dạng và không lặp lại một chỗ",g:"Ổn định, nhất quán và có thể đoán trước",b:"Có phương pháp, có hệ thống và cẩn thận"}},
-  {t:"Khi có xung đột trong nhóm, bạn thường:",o:{r:"Giải quyết thẳng thắn và dứt khoát",y:"Dùng sự hài hước và năng lượng tích cực để xoa dịu",g:"Làm trung gian, lắng nghe cả hai bên",b:"Tìm hiểu nguyên nhân gốc rễ và đề xuất giải pháp công bằng"}},
-  {t:"Động lực làm việc chính của bạn đến từ:",o:{r:"Thành tích, chiến thắng và được thừa nhận năng lực",y:"Sự hào hứng, kết nối xã hội và được truyền cảm hứng",g:"Giúp đỡ người khác và thấy mọi người phát triển",b:"Hiểu sâu vấn đề, làm đúng và được tôn trọng về chuyên môn"}},
-  {t:"Khi lần đầu gặp người mới, bạn:",o:{r:"Đi thẳng vào vấn đề và đặt câu hỏi mục đích",y:"Chia sẻ câu chuyện cá nhân và tạo không khí vui vẻ",g:"Hỏi về họ và chú ý lắng nghe",b:"Đặt câu hỏi logic để hiểu đối phương"}},
-  {t:"Phong cách làm việc lý tưởng của bạn:",o:{r:"Độc lập, tự chủ với mục tiêu rõ ràng",y:"Hợp tác linh hoạt với nhiều người khác nhau",g:"Làm việc nhóm nhỏ, tin tưởng lẫn nhau",b:"Có không gian riêng để tập trung và nghiên cứu sâu"}},
-  {t:"Khi trình bày ý tưởng, bạn thường:",o:{r:"Đi thẳng vào điểm chính và kết quả mong đợi",y:"Kể câu chuyện hấp dẫn và dùng nhiều ví dụ sinh động",g:"Nhấn mạnh lợi ích cho mọi người và tác động cộng đồng",b:"Trình bày có cấu trúc với số liệu và logic rõ ràng"}},
-  {t:"Bạn xử lý thông tin như thế nào:",o:{r:"Tổng quan nhanh, tập trung vào điều quan trọng nhất",y:"Bức tranh toàn cảnh và khả năng của tương lai",g:"Tác động đến con người và các mối quan hệ",b:"Chi tiết, phân tích từng phần trước khi kết luận"}},
-  {t:"Khi deadline cận kề, bạn:",o:{r:"Tập trung cao độ và đẩy nhanh tiến độ",y:"Vẫn giữ tinh thần tích cực và tìm cách sáng tạo",g:"Lo lắng cho mọi người và cố đảm bảo ai cũng ổn",b:"Làm việc có hệ thống và cẩn thận không để sai sót"}},
-  {t:"Điều bạn không thích nhất trong môi trường làm việc:",o:{r:"Quan liêu, chậm trễ và thiếu quyết đoán",y:"Buồn tẻ, gò bó và thiếu sáng tạo",g:"Xung đột, cạnh tranh gay gắt và thiếu hỗ trợ",b:"Hỗn loạn, thiếu quy trình và sai sót không được sửa"}},
-  {t:"Khi hoàn thành một dự án thành công, bạn cảm thấy:",o:{r:"Tự hào về kết quả và muốn tiếp tục thách thức lớn hơn",y:"Phấn khích và muốn chia sẻ thành công với mọi người",g:"Hài lòng khi thấy mọi người đều vui và phát triển",b:"Hài lòng với chất lượng đạt được và rút ra bài học"}},
-  {t:"Khi cần học kỹ năng mới, bạn:",o:{r:"Học qua thực hành và thử nghiệm nhanh",y:"Học từ người khác và thích môi trường học tập vui vẻ",g:"Học từ từ, cẩn thận và cần người hướng dẫn kiên nhẫn",b:"Nghiên cứu lý thuyết kỹ trước khi thực hành"}},
-  {t:"Phong cách email/báo cáo của bạn:",o:{r:"Ngắn gọn, súc tích, thẳng vào điểm chính",y:"Sôi động, có cá tính và đôi khi dùng emoji",g:"Ấm áp, chu đáo và quan tâm đến người đọc",b:"Có cấu trúc rõ ràng, chi tiết và chuyên nghiệp"}},
-  {t:"Khi không đồng ý với quyết định của cấp trên:",o:{r:"Nói thẳng quan điểm và thách thức nếu cần",y:"Đề xuất ý tưởng thay thế một cách sáng tạo",g:"Chia sẻ lo ngại nhẹ nhàng và cố tìm điểm chung",b:"Chuẩn bị dữ liệu và lập luận có cơ sở trước khi phản biện"}},
-  {t:"Điều mà đồng nghiệp thường nhớ đến bạn nhất:",o:{r:"Sự quyết đoán và khả năng hoàn thành công việc",y:"Năng lượng tích cực và khả năng tạo không khí vui vẻ",g:"Sự quan tâm chân thành và luôn sẵn sàng giúp đỡ",b:"Sự chuyên nghiệp, chính xác và đáng tin cậy"}},
-  {t:"Khi được tự chọn, bạn thích dự án kiểu nào:",o:{r:"Dự án có tác động lớn và cần quyết đoán nhanh",y:"Dự án sáng tạo và có thể cộng tác nhiều người",g:"Dự án giúp đỡ cụ thể một nhóm người",b:"Dự án phức tạp cần nghiên cứu và phân tích sâu"}},
-  // I/E (25-32)
-  {t:"Sau một ngày làm việc nhiều với người khác, bạn:",o:{r:"Vẫn có năng lượng, thích tụ tập thêm",y:"Cảm thấy hứng khởi và muốn gặp gỡ thêm",g:"Hơi mệt nhưng vẫn ổn, cần chút yên tĩnh",b:"Mệt và cần thời gian riêng để nạp lại năng lượng"},d:"ie"},
-  {t:"Bạn thích xử lý ý tưởng như thế nào:",o:{r:"Nói ra và thảo luận trực tiếp",y:"Chia sẻ ngay với nhiều người để nhận phản hồi",g:"Suy nghĩ một lúc rồi mới chia sẻ với người tin tưởng",b:"Suy nghĩ và ghi chép cẩn thận trước khi nói"},d:"ie"},
-  {t:"Khi có vấn đề cần giải quyết, bạn:",o:{r:"Tìm người để trao đổi và hành động ngay",y:"Kể cho nhiều người nghe để nghe nhiều góc nhìn",g:"Chỉ tâm sự với vài người thực sự tin tưởng",b:"Tự suy nghĩ và xử lý trước khi chia sẻ"},d:"ie"},
-  {t:"Thời gian ở một mình đối với bạn:",o:{r:"Cần đôi khi nhưng không thích kéo dài",y:"Hiếm khi cần, thích có người bên cạnh hơn",g:"Cần để tái tạo năng lượng sau khi giao tiếp nhiều",b:"Rất quan trọng và cần nhiều thời gian riêng"},d:"ie"},
-  {t:"Trong bữa tiệc công ty, bạn:",o:{r:"Chủ động kết nối và nói chuyện với nhiều người",y:"Là tâm điểm chú ý, kể chuyện và tạo tiếng cười",g:"Nói chuyện sâu với vài người thân quen",b:"Quan sát nhiều hơn và chỉ nói khi có điều muốn chia sẻ"},d:"ie"},
-  {t:"Khi làm việc nhóm, bạn:",o:{r:"Thích thảo luận mở và ra quyết định nhanh chóng",y:"Thích brainstorm nhóm với nhiều ý tưởng sáng tạo",g:"Cần nghe mọi người trước khi đưa ra ý kiến",b:"Thích chuẩn bị trước và trình bày ý kiến khi đã sẵn sàng"},d:"ie"},
-  {t:"Môi trường làm việc lý tưởng của bạn:",o:{r:"Năng động, nhiều tương tác và áp lực tích cực",y:"Cởi mở, sáng tạo và luôn có người để trao đổi",g:"Yên tĩnh, hợp tác và ít cạnh tranh",b:"Tập trung, có cấu trúc và ít bị làm phiền"},d:"ie"},
-  {t:"Sức mạnh xã hội của bạn đến từ:",o:{r:"Sự tự tin và khả năng ảnh hưởng người khác",y:"Sự nhiệt tình và kết nối rộng rãi",g:"Sự tin tưởng và quan hệ sâu sắc với ít người",b:"Sự lắng nghe cẩn thận và đưa ra nhận xét sắc sảo"},d:"ie"},
-  // LEAD (33-40)
-  {t:"Là trưởng nhóm, bạn phân công công việc bằng cách:",o:{r:"Giao nhiệm vụ rõ ràng với kỳ vọng kết quả cụ thể",y:"Hỏi mọi người muốn làm gì để ai cũng hào hứng",g:"Xét đến năng lực và cảm xúc từng người",b:"Phân tích kỹ rồi phân công tối ưu dựa trên dữ liệu"},d:"lead"},
-  {t:"Khi nhân viên mắc lỗi nghiêm trọng, bạn:",o:{r:"Nói thẳng vấn đề và yêu cầu sửa ngay",y:"Tìm cách nhẹ nhàng và động viên họ cải thiện",g:"Gặp riêng, lắng nghe nguyên nhân và hỗ trợ",b:"Phân tích nguyên nhân hệ thống và cải tiến quy trình"},d:"lead"},
-  {t:"Phong cách lãnh đạo bạn ngưỡng mộ nhất:",o:{r:"Lãnh đạo mạnh mẽ, dám quyết và chịu trách nhiệm",y:"Lãnh đạo truyền cảm hứng, tạo văn hóa tích cực",g:"Lãnh đạo phục vụ, đặt con người lên trên kết quả",b:"Lãnh đạo chiến lược, xây dựng hệ thống bền vững"},d:"lead"},
-  {t:"Khi đội nhóm gặp xung đột nội bộ, bạn:",o:{r:"Ra quyết định dứt khoát để giải quyết nhanh",y:"Tạo không khí nhẹ nhàng và tìm điểm chung",g:"Nghe cả hai bên và tìm giải pháp win-win",b:"Phân tích khách quan và đề xuất giải pháp có cơ sở"},d:"lead"},
-  {t:"Bạn đo lường hiệu quả lãnh đạo bằng:",o:{r:"KPIs và kết quả kinh doanh đạt được",y:"Mức độ hài lòng và gắn kết của nhóm",g:"Sự phát triển của từng cá nhân trong nhóm",b:"Chất lượng quy trình và tính nhất quán"},d:"lead"},
-  {t:"Khi cần thay đổi lớn trong tổ chức, bạn:",o:{r:"Công bố quyết định và triển khai nhanh chóng",y:"Tạo hứng khởi và truyền thông về lợi ích của thay đổi",g:"Tham khảo ý kiến rộng rãi trước khi quyết định",b:"Nghiên cứu kỹ, thí điểm nhỏ rồi mới mở rộng"},d:"lead"},
-  {t:"Điều bạn ưu tiên nhất khi xây dựng đội nhóm:",o:{r:"Người có năng lực cao và tham vọng mạnh",y:"Người có tinh thần tích cực và hợp tác tốt",g:"Sự đa dạng và mỗi người đều được phát huy",b:"Kỹ năng chuyên môn sâu và tính kỷ luật"},d:"lead"},
-  {t:"Khi ra quyết định với tư cách lãnh đạo, bạn:",o:{r:"Quyết đoán nhanh và chịu trách nhiệm hoàn toàn",y:"Tạo sự đồng thuận bằng cách truyền cảm hứng",g:"Tham khảo nhiều bên và đảm bảo mọi người đồng ý",b:"Cân nhắc kỹ lưỡng dựa trên dữ liệu và tiền lệ"},d:"lead"},
-  // STRESS (41-48)
-  {t:"Khi áp lực công việc tăng cao đột ngột, bạn:",o:{r:"Tăng tốc, kiểm soát chặt hơn và thúc đẩy mọi người",y:"Trở nên hời hợt và mất tập trung hơn bình thường",g:"Im lặng chịu đựng và cố tránh xung đột",b:"Thu mình lại, phân tích liên tục nhưng khó hành động"},d:"stress"},
-  {t:"Dấu hiệu rõ nhất khi bạn đang bị stress:",o:{r:"Trở nên nóng nảy và mất kiên nhẫn với người khác",y:"Nói nhiều hơn, phân tán và khó tập trung",g:"Rút lui và trở nên im lặng bất thường",b:"Quá cầu toàn, phân tích quá mức và không thể quyết"},d:"stress"},
-  {t:"Khi bị quá tải với quá nhiều việc, bạn:",o:{r:"Cắt giảm những gì không thiết yếu và ép tiến độ",y:"Tìm người chia sẻ gánh nặng và vẫn cố lạc quan",g:"Cố gánh tất cả một mình để người khác không bị ảnh hưởng",b:"Tạo danh sách ưu tiên rất chi tiết và hệ thống"},d:"stress"},
-  {t:"Cách bạn phục hồi tốt nhất sau giai đoạn stress:",o:{r:"Tập thể thao mạnh hoặc làm gì đó quyết liệt, dứt khoát",y:"Gặp bạn bè, cười đùa và chia sẻ mọi thứ",g:"Nghỉ ngơi yên tĩnh cùng gia đình hoặc người thân",b:"Có thời gian riêng để suy nghĩ và tái cấu trúc bản thân"},d:"stress"},
-  {t:"Khi deadline cận kề và kết quả chưa như mong đợi:",o:{r:"Đẩy nhanh hơn, làm thêm giờ và yêu cầu mọi người tương tự",y:"Cố giữ tinh thần cả nhóm dù bản thân cũng đang lo lắng",g:"Lo lắng thầm nhưng vẫn hỗ trợ và không muốn ai biết",b:"Làm một mình đến tối muộn để đảm bảo từng chi tiết"},d:"stress"},
-  {t:"Khi nhận phản hồi tiêu cực về kết quả công việc:",o:{r:"Phản bác nếu không đồng ý và bảo vệ quyết định",y:"Giải thích và vẫn cố duy trì sự tự tin bên ngoài",g:"Nhận lỗi dù không hoàn toàn là lỗi của mình",b:"Tự trách bản thân và phân tích sâu đến mức quá mức"},d:"stress"},
-  {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",o:{r:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",y:"Coi đó là phiêu lưu thú vị và cảm thấy hứng khởi",g:"Lo lắng về tác động đến mọi người xung quanh",b:"Cần thời gian để xử lý và tìm lại sự trật tự"},d:"stress"},
-  {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",o:{r:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",y:"Môi trường tích cực, được công nhận và tương tác nhiều",g:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",b:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},d:"stress"}
+// ════════════════════════════════════════
+// QUESTIONS DATA
+// ════════════════════════════════════════
+const QS = [
+  // ── BATCH 1: Core color (câu 1–12) ─────────────────────────────
+  {t:"Khi đối mặt với một thách thức mới, bạn thường:",
+   opts:{red:"Lập tức xác định mục tiêu và bắt tay hành động",yellow:"Chia sẻ với người khác và tìm kiếm ý tưởng mới",green:"Cân nhắc kỹ và đảm bảo mọi người cùng sẵn sàng",blue:"Thu thập đầy đủ thông tin trước khi quyết định"}},
+  {t:"Đồng nghiệp thường nhận xét bạn là người:",
+   opts:{red:"Quyết đoán và thẳng thắn",yellow:"Vui vẻ và truyền cảm hứng",green:"Quan tâm và đáng tin cậy",blue:"Cẩn thận và chính xác"}},
+  {t:"Trong cuộc họp nhóm, bạn thường:",
+   opts:{red:"Dẫn dắt thảo luận và đưa ra quyết định",yellow:"Đưa ra nhiều ý tưởng sáng tạo",green:"Lắng nghe và đảm bảo mọi người được lắng nghe",blue:"Phân tích và đặt câu hỏi chi tiết"}},
+  {t:"Khi được giao dự án mới, điều đầu tiên bạn làm là:",
+   opts:{red:"Xác định mục tiêu và phân công ngay",yellow:"Nghĩ đến những cách tiếp cận thú vị",green:"Tìm hiểu xem ai cần hỗ trợ gì",blue:"Lập kế hoạch chi tiết và đánh giá rủi ro"}},
+  {t:"Phong cách giao tiếp của bạn thiên về:",
+   opts:{red:"Trực tiếp, rõ ràng, đi thẳng vào vấn đề",yellow:"Nhiệt tình, cởi mở, hay kể chuyện",green:"Ấm áp, kiên nhẫn, lắng nghe nhiều",blue:"Có cấu trúc, chi tiết, cân nhắc từng lời"}},
+  {t:"Khi ra quyết định quan trọng, bạn tin vào:",
+   opts:{red:"Trực giác và kinh nghiệm bản thân",yellow:"Cảm nhận và phản ứng của mọi người",green:"Sự đồng thuận và tác động tới tập thể",blue:"Dữ liệu và phân tích khách quan"}},
+  {t:"Bạn cảm thấy tự hào nhất khi:",
+   opts:{red:"Đạt được kết quả vượt mục tiêu",yellow:"Truyền cảm hứng cho người xung quanh",green:"Xây dựng được môi trường làm việc hòa hợp",blue:"Tạo ra giải pháp hoàn hảo không có lỗi"}},
+  {t:"Điều bạn không thích nhất trong công việc:",
+   opts:{red:"Làm việc chậm chạp, thiếu hiệu quả",yellow:"Môi trường quá cứng nhắc, thiếu sáng tạo",green:"Xung đột và cạnh tranh không lành mạnh",blue:"Thiếu quy trình rõ ràng và cẩu thả"}},
+  {t:"Khi làm việc nhóm, vai trò bạn thích nhất là:",
+   opts:{red:"Người quyết định hướng đi",yellow:"Người kết nối và tạo năng lượng",green:"Người hỗ trợ và giữ gìn đoàn kết",blue:"Người đảm bảo chất lượng và chuẩn mực"}},
+  {t:"Bạn đánh giá thành công dựa trên:",
+   opts:{red:"Kết quả cụ thể đạt được",yellow:"Sự hài lòng và hào hứng của mọi người",green:"Tất cả mọi người cùng tiến lên",blue:"Sự chính xác và hoàn thiện của sản phẩm"}},
+  {t:"Khi gặp người mới, bạn thường:",
+   opts:{red:"Nhanh chóng tìm hiểu họ có thể giúp ích gì",yellow:"Hào hứng kết bạn và chia sẻ câu chuyện",green:"Lắng nghe và cố gắng hiểu họ",blue:"Quan sát và đánh giá trước khi giao tiếp sâu"}},
+  {t:"Môi trường làm việc lý tưởng của bạn:",
+   opts:{red:"Nhanh, cạnh tranh, nhiều thách thức",yellow:"Sáng tạo, năng động, nhiều tương tác",green:"Ổn định, hòa thuận, có hỗ trợ nhau",blue:"Có cấu trúc, yên tĩnh, chú trọng chất lượng"}},
+  // ── BATCH 2: Core color (câu 13–24) ────────────────────────────
+  {t:"Khi có ý kiến bất đồng trong nhóm, bạn:",
+   opts:{red:"Nói thẳng quan điểm và bảo vệ lập trường",yellow:"Tìm cách hòa giải bằng sự hài hước và sáng tạo",green:"Ưu tiên giữ hòa khí hơn thắng lý lẽ",blue:"Trình bày dữ liệu và lý lẽ logic"}},
+  {t:"Bạn học tốt nhất khi:",
+   opts:{red:"Thực hành thực tế và thấy kết quả ngay",yellow:"Học qua trải nghiệm thú vị và trao đổi",green:"Học trong nhóm với sự hỗ trợ lẫn nhau",blue:"Đọc tài liệu, nghiên cứu kỹ trước khi làm"}},
+  {t:"Điều khiến bạn mất động lực nhất:",
+   opts:{red:"Bị kiểm soát quá chặt hoặc thiếu quyền tự chủ",yellow:"Công việc nhàm chán, lặp đi lặp lại",green:"Cảm thấy bị cô lập hoặc không được trân trọng",blue:"Bị yêu cầu làm ẩu hoặc bỏ qua quy trình"}},
+  {t:"Khi nói chuyện với ai đó, bạn thường:",
+   opts:{red:"Đi thẳng vào vấn đề, không vòng vo",yellow:"Chia sẻ câu chuyện cá nhân và cảm xúc",green:"Hỏi về họ và chú ý lắng nghe",blue:"Đặt câu hỏi logic và kiểm chứng thông tin"}},
+  {t:"Khi bị chỉ trích, phản ứng đầu tiên của bạn là:",
+   opts:{red:"Phản bác nếu thấy không đúng",yellow:"Cố gắng hiểu và duy trì không khí tích cực",green:"Cảm thấy tổn thương nhưng vẫn lắng nghe",blue:"Phân tích xem chỉ trích đó có cơ sở không"}},
+  {t:"Bạn thích làm việc theo kiểu nào hơn:",
+   opts:{red:"Độc lập, tự quyết định",yellow:"Làm với nhiều người, không khí vui vẻ",green:"Trong nhóm nhỏ thân thiết, tin tưởng nhau",blue:"Một mình hoặc với ít người, tập trung"}},
+  {t:"Điểm mạnh lớn nhất của bạn trong mắt người khác:",
+   opts:{red:"Khả năng lãnh đạo và ra quyết định",yellow:"Sự nhiệt tình và khả năng kết nối",green:"Sự quan tâm và đáng tin cậy",blue:"Sự cẩn thận và tư duy phân tích"}},
+  {t:"Khi dự án gặp khó khăn, bạn:",
+   opts:{red:"Tìm ngay giải pháp và hành động",yellow:"Motivate cả nhóm tiếp tục cố gắng",green:"Đảm bảo mọi người vẫn ổn và hỗ trợ nhau",blue:"Phân tích nguyên nhân gốc rễ và đề xuất giải pháp hệ thống"}},
+  {t:"Cách bạn quản lý thời gian:",
+   opts:{red:"Tập trung vào ưu tiên cao nhất, bỏ qua phần dư",yellow:"Linh hoạt, làm những gì hứng thú nhất",green:"Cân bằng giữa công việc và hỗ trợ người khác",blue:"Lập kế hoạch chi tiết và tuân thủ nghiêm ngặt"}},
+  {t:"Khi nhận phản hồi từ cấp trên, bạn muốn được:",
+   opts:{red:"Phản hồi thẳng thắn, tập trung vào kết quả",yellow:"Được khích lệ và công nhận đóng góp",green:"Được lắng nghe và thấu hiểu",blue:"Phản hồi cụ thể, có số liệu và ví dụ rõ ràng"}},
+  {t:"Khi hoàn thành một dự án lớn, bạn cảm thấy:",
+   opts:{red:"Hài lòng vì đạt mục tiêu, sẵn sàng cho thách thức tiếp theo",yellow:"Muốn ăn mừng và chia sẻ thành công với mọi người",green:"Hạnh phúc vì mọi người đều đóng góp được",blue:"Nhìn lại để cải thiện những gì chưa hoàn hảo"}},
+  // ── BATCH 3: Introvert / Extrovert (câu 25–32) ──────────────────
+  {t:"Sau một ngày làm việc dài, bạn nạp năng lượng bằng cách:",
+   opts:{red:"Tập gym hoặc hoạt động thể chất mạnh",yellow:"Gặp bạn bè, ra ngoài, giao lưu",green:"Ở nhà cùng người thân hoặc nhóm nhỏ",blue:"Đọc sách, nghe nhạc, tận hưởng sự yên tĩnh"},dim:"ie"},
+  {t:"Trong bữa tiệc lớn có nhiều người xa lạ, bạn thường:",
+   opts:{red:"Chủ động gặp gỡ và kết nối nhiều người",yellow:"Là trung tâm sự chú ý, tạo không khí vui",green:"Nói chuyện sâu với vài người quen",blue:"Cảm thấy mệt sau một lúc và muốn về sớm"},dim:"ie"},
+  {t:"Bạn suy nghĩ rõ ràng nhất khi:",
+   opts:{red:"Nói ra và thảo luận với người khác",yellow:"Trong không khí sôi động, nhiều kích thích",green:"Ở không gian yên tĩnh với ít người",blue:"Một mình, hoàn toàn tập trung"},dim:"ie"},
+  {t:"Khi cần đưa ra quyết định phức tạp, bạn:",
+   opts:{red:"Bàn luận với nhiều người trước",yellow:"Thảo luận nhanh rồi quyết luôn",green:"Suy nghĩ một mình trong thời gian dài",blue:"Nghiên cứu kỹ một mình rồi mới quyết"},dim:"ie"},
+  {t:"Trong cuộc họp đông người, bạn:",
+   opts:{red:"Chủ động phát biểu, không ngại đám đông",yellow:"Hào hứng chia sẻ và tương tác",green:"Nói khi cần thiết, không thích spotlight",blue:"Lắng nghe và chỉ nói khi có điểm thực sự quan trọng"},dim:"ie"},
+  {t:"Bạn thích không gian làm việc:",
+   opts:{red:"Văn phòng mở, năng động, có người xung quanh",yellow:"Không gian chung vui, nhiều tương tác tự nhiên",green:"Văn phòng nhỏ hoặc làm remote gần gũi",blue:"Phòng riêng hoặc góc yên tĩnh ít bị làm phiền"},dim:"ie"},
+  {t:"Khi có vấn đề cần giải quyết, bạn:",
+   opts:{red:"Tìm người để trao đổi và hành động ngay",yellow:"Kể cho nhiều người nghe để nghe nhiều góc nhìn",green:"Chỉ tâm sự với vài người thực sự tin tưởng",blue:"Tự suy nghĩ và xử lý trước khi chia sẻ"},dim:"ie"},
+  {t:"Thời gian ở một mình đối với bạn:",
+   opts:{red:"Cần đôi khi nhưng không thích kéo dài",yellow:"Hiếm khi cần, thích có người bên cạnh hơn",green:"Cần để tái tạo năng lượng sau khi giao tiếp nhiều",blue:"Rất quan trọng và cần nhiều thời gian một mình"},dim:"ie"},
+  // ── BATCH 4: Leadership style (câu 33–40) ───────────────────────
+  {t:"Là trưởng nhóm, bạn phân công công việc bằng cách:",
+   opts:{red:"Giao nhiệm vụ rõ ràng, kỳ vọng kết quả cụ thể",yellow:"Hỏi mọi người muốn làm gì để ai cũng hào hứng",green:"Xét đến năng lực và cảm xúc từng người",blue:"Phân tích kỹ từng người rồi phân công tối ưu nhất"},dim:"lead"},
+  {t:"Khi nhân viên mắc lỗi nghiêm trọng, bạn:",
+   opts:{red:"Nói thẳng vấn đề và yêu cầu sửa ngay",yellow:"Tìm cách nhẹ nhàng và động viên họ cải thiện",green:"Gặp riêng, lắng nghe nguyên nhân và hỗ trợ",blue:"Phân tích nguyên nhân hệ thống và cải tiến quy trình"},dim:"lead"},
+  {t:"Phong cách lãnh đạo bạn ngưỡng mộ nhất:",
+   opts:{red:"Lãnh đạo mạnh mẽ, dám quyết và chịu trách nhiệm",yellow:"Lãnh đạo truyền cảm hứng, tạo văn hóa tích cực",green:"Lãnh đạo phục vụ, đặt con người lên trên kết quả",blue:"Lãnh đạo chiến lược, xây dựng hệ thống bền vững"},dim:"lead"},
+  {t:"Khi đội nhóm gặp xung đột nội bộ, bạn:",
+   opts:{red:"Ra quyết định dứt khoát để giải quyết nhanh",yellow:"Tạo không khí nhẹ nhàng và tìm điểm chung",green:"Nghe cả hai bên và tìm giải pháp win-win",blue:"Phân tích khách quan và đề xuất giải pháp có cơ sở"},dim:"lead"},
+  {t:"Bạn đo lường hiệu quả lãnh đạo bằng:",
+   opts:{red:"KPIs và kết quả kinh doanh đạt được",yellow:"Mức độ hài lòng và gắn kết của nhóm",green:"Sự phát triển của từng cá nhân trong nhóm",blue:"Chất lượng quy trình và tính nhất quán"},dim:"lead"},
+  {t:"Khi cần thay đổi lớn trong tổ chức, bạn:",
+   opts:{red:"Công bố quyết định và triển khai nhanh chóng",yellow:"Tạo buzz, hype up mọi người về sự thay đổi",green:"Tham khảo ý kiến rộng rãi trước khi quyết định",blue:"Nghiên cứu kỹ, thí điểm nhỏ rồi mới mở rộng"},dim:"lead"},
+  {t:"Điều bạn ưu tiên nhất khi xây dựng đội nhóm:",
+   opts:{red:"Người có năng lực cao và tham vọng mạnh",yellow:"Người có tinh thần tích cực và hợp tác tốt",green:"Sự đa dạng và mỗi người đều được phát huy",blue:"Kỹ năng chuyên môn sâu và tính kỷ luật"},dim:"lead"},
+  {t:"Khi ra quyết định với tư cách lãnh đạo, bạn:",
+   opts:{red:"Quyết đoán nhanh và chịu trách nhiệm hoàn toàn",yellow:"Tạo sự đồng thuận bằng cách truyền cảm hứng",green:"Tham khảo nhiều bên và đảm bảo mọi người đồng ý",blue:"Cân nhắc kỹ lưỡng dựa trên dữ liệu và tiền lệ"},dim:"lead"},
+  // ── BATCH 5: Stress behavior (câu 41–48) ────────────────────────
+  {t:"Khi áp lực công việc tăng cao đột ngột, bạn:",
+   opts:{red:"Tăng tốc, kiểm soát chặt hơn và thúc đẩy mọi người",yellow:"Trở nên hời hợt và mất tập trung dễ hơn",green:"Im lặng chịu đựng và cố tránh xung đột",blue:"Thu mình lại, phân tích liên tục nhưng khó hành động"},dim:"stress"},
+  {t:"Dấu hiệu rõ nhất khi bạn đang bị stress:",
+   opts:{red:"Trở nên nóng nảy và mất kiên nhẫn với người khác",yellow:"Nói nhiều hơn, phân tán và khó tập trung",green:"Rút lui và trở nên im lặng bất thường",blue:"Quá cầu toàn, phân tích quá mức và không thể quyết"},dim:"stress"},
+  {t:"Khi bị quá tải với quá nhiều việc, bạn:",
+   opts:{red:"Cắt giảm những gì không thiết yếu và ép tiến độ",yellow:"Tìm người chia sẻ gánh nặng và vẫn cố lạc quan",green:"Cố gánh tất cả một mình để người khác không bị ảnh hưởng",blue:"Tạo danh sách ưu tiên rất chi tiết và hệ thống"},dim:"stress"},
+  {t:"Cách bạn phục hồi tốt nhất sau giai đoạn stress:",
+   opts:{red:"Tập thể thao mạnh hoặc làm gì đó quyết liệt, dứt khoát",yellow:"Gặp bạn bè, cười đùa và chia sẻ mọi thứ",green:"Nghỉ ngơi yên tĩnh cùng gia đình hoặc người thân",blue:"Có thời gian riêng để suy nghĩ và tái cấu trúc bản thân"},dim:"stress"},
+  {t:"Khi deadline cận kề và kết quả chưa như mong đợi:",
+   opts:{red:"Đẩy nhanh hơn, làm thêm giờ và yêu cầu mọi người tương tự",yellow:"Cố giữ tinh thần cả nhóm dù bản thân cũng đang lo lắng",green:"Lo lắng thầm nhưng vẫn hỗ trợ và không muốn ai biết",blue:"Làm một mình đến tối muộn để đảm bảo từng chi tiết"},dim:"stress"},
+  {t:"Khi nhận phản hồi tiêu cực về kết quả công việc:",
+   opts:{red:"Phản bác nếu không đồng ý và bảo vệ quyết định",yellow:"Giải thích và vẫn cố duy trì sự tự tin bên ngoài",green:"Nhận lỗi dù không hoàn toàn là lỗi của mình",blue:"Tự trách bản thân và phân tích sâu đến mức quá mức"},dim:"stress"},
+  {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",
+   opts:{red:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",yellow:"Coi đó là phiêu lưu thú vị và hứng khởi",green:"Lo lắng về tác động đến mọi người xung quanh",blue:"Cần thời gian để xử lý và tìm lại sự trật tự"},dim:"stress"},
+  {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",
+   opts:{red:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",yellow:"Môi trường tích cực, được công nhận và tương tác nhiều",green:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",blue:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},dim:"stress"}
 ];
-const CI={r:{l:'Fiery Red',e:'🔴',c:'#E8392A'},y:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623'},g:{l:'Earth Green',e:'🟢',c:'#3CB371'},b:{l:'Cool Blue',e:'🔵',c:'#2B6CB0'}};
-const CIMAP={red:CI.r,yellow:CI.y,green:CI.g,blue:CI.b};
-const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)','red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)','yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'};
-let ANS={},BATCH_IDX=0;
-const BSIZE=6;
-const CORE_N=28; // 24 câu core + 8 câu IE × 0.5 trọng số (IE là phần của type theo Jung)
-function show(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
-function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-function startQuiz(){
-  const n=document.getElementById('iName').value.trim(),r=document.getElementById('iRole').value.trim();
-  if(!n)return toast('Vui lòng nhập họ tên',true);
-  if(!r)return toast('Vui lòng nhập chức danh',true);
-  document.getElementById('progWrap').style.display='block';
-  BATCH_IDX=0;ANS={};renderBatch();show(1);
+
+const COLOR_INFO = {
+  red:    {label:'Fiery Red',    emoji:'🔴', color:'#E8392A'},
+  yellow: {label:'Sunshine Yellow', emoji:'🟡', color:'#F5A623'},
+  green:  {label:'Earth Green', emoji:'🟢', color:'#3CB371'},
+  blue:   {label:'Cool Blue',   emoji:'🔵', color:'#2B6CB0'}
+};
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let answers = {}, currentBatch = 0;
+const BATCH = 4;
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+function show(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function toast(msg, isErr=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=isErr?'#7f1d1d':'#1e293b';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function getSiteUrl(){
+  if(CONFIG.siteUrl) return CONFIG.siteUrl.replace(/\/$/,'');
+  try{ return window._spPageContextInfo?.webAbsoluteUrl?.replace(/\/$/,'') || window.location.origin; }
+  catch(e){ return window.location.origin; }
+}
+
+// ════════════════════════════════════════
+// QUIZ LOGIC
+// ════════════════════════════════════════
+function startQuiz(){
+  const name=document.getElementById('iName').value.trim();
+  const role=document.getElementById('iRole').value.trim();
+  if(!name) return toast('Vui lòng nhập họ tên',true);
+  if(!role) return toast('Vui lòng nhập chức danh',true);
+  document.getElementById('progWrap').style.display='block';
+  currentBatch=0; answers={};
+  renderBatch();
+  show(1);
+}
+
 function renderBatch(){
-  const s=BATCH_IDX*BSIZE,e2=Math.min(s+BSIZE,QS.length);
-  const c=document.getElementById('qContainer');c.innerHTML='';
-  for(let i=s;i<e2;i++){
-    const q=QS[i],d=document.createElement('div');
-    d.className='qcard'+(ANS[i]?' done':'');d.id='qc'+i;
-    const keys=['r','y','g','b'],order=shuffle([...keys],i);
-    let oh='';order.forEach(k=>{const sel=ANS[i]===k?'sel':'';oh+=`<button class="opt ${sel}" onclick="pick(${i},'${k}',this)"><span class="opt-lbl">${q.o[k]}</span></button>`;});
-    d.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div><div class="qtxt">${q.t}</div><div class="opts">${oh}</div>`;
-    c.appendChild(d);
+  const start=currentBatch*BATCH, end=Math.min(start+BATCH,QS.length);
+  const c=document.getElementById('qContainer'); c.innerHTML='';
+  for(let i=start;i<end;i++){
+    const q=QS[i];
+    const div=document.createElement('div');
+    div.className='qcard'+(answers[i]?' done':'');
+    div.id='qc'+i;
+    const order=shuffleOpts(['red','yellow','green','blue'],i);
+    let optsHtml='';
+    order.forEach(clr=>{
+      const sel=answers[i]===clr?`sel-${clr}`:'';
+      optsHtml+=`<button class="opt ${sel}" onclick="pick(${i},'${clr}',this)">
+        <span class="dot dot-${clr[0]}"></span>
+        <span class="opt-lbl">${q.opts[clr]}</span>
+      </button>`;
+    });
+    div.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div>
+      <div class="qtxt">${q.t}</div>
+      <div class="opts">${optsHtml}</div>`;
+    c.appendChild(div);
   }
   updateProg();
-  document.getElementById('nextBtn').textContent=e2>=QS.length?'Hoàn thành & Tạo Profile ✓':'Tiếp theo →';
-  document.getElementById('stepInfo').textContent=`Nhóm ${BATCH_IDX+1} / ${Math.ceil(QS.length/BSIZE)}`;
+  const isLast=end>=QS.length;
+  document.getElementById('nextBtn').textContent=isLast?'Nộp kết quả ✓':'Tiếp theo →';
+  document.getElementById('batchInfo').textContent=`Nhóm câu hỏi ${currentBatch+1} / ${Math.ceil(QS.length/BATCH)}`;
 }
-function shuffle(a,seed){for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
-function pick(i,k,btn){ANS[i]=k;const c=document.getElementById('qc'+i);c.classList.add('done');c.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');updateProg();}
-function updateProg(){const d=Object.keys(ANS).length,t=QS.length,p=Math.round(d/t*100);document.getElementById('progFill').style.width=p+'%';document.getElementById('progLbl').textContent=`${d} / ${t} câu`;document.getElementById('progPct').textContent=p+'%';}
-function prevBatch(){if(BATCH_IDX===0){show(0);return;}BATCH_IDX--;renderBatch();window.scrollTo({top:0,behavior:'smooth'});}
+
+function shuffleOpts(arr, seed){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function pick(idx,clr,btn){
+  answers[idx]=clr;
+  const card=document.getElementById('qc'+idx);
+  card.classList.add('done');
+  card.querySelectorAll('.opt').forEach(b=>{b.className='opt'});
+  btn.classList.add('sel-'+clr);
+  updateProg();
+}
+
+function updateProg(){
+  const done=Object.keys(answers).length, total=QS.length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=`${done} / ${total} câu`;
+  document.getElementById('progPct').textContent=pct+'%';
+}
+
+function prevBatch(){
+  if(currentBatch===0){show(0);return;}
+  currentBatch--; renderBatch();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 async function nextBatch(){
-  const s=BATCH_IDX*BSIZE,e2=Math.min(s+BSIZE,QS.length);
-  for(let i=s;i<e2;i++){if(ANS[i]===undefined){toast(`Vui lòng trả lời câu ${i+1}`,true);document.getElementById('qc'+i).scrollIntoView({behavior:'smooth',block:'center'});return;}}
-  if(e2>=QS.length){await submitResults();return;}
-  BATCH_IDX++;renderBatch();window.scrollTo({top:0,behavior:'smooth'});
-}
-function calcScores(){
-  const sc={r:0,y:0,g:0,b:0},ie={E:0,I:0},ld={r:0,y:0,g:0,b:0},st={r:0,y:0,g:0,b:0};
-  // IE (trọng số 0.5): vừa đóng góp vào điểm màu (vì IE là phần của type theo Jung)
-  // vừa track riêng để hiển thị % E/I độc lập
-  // Lead & Stress: chỉ track riêng, KHÔNG cộng vào màu (đo hành vi học được, không đo type)
-  QS.forEach((q,i)=>{
-    const a=ANS[i];if(!a)return;
-    if(!q.d){
-      sc[a]++;                          // Core: trọng số 1.0
-    } else if(q.d==='ie'){
-      sc[a]+=0.5;                       // IE: trọng số 0.5 → tính vào màu
-      if(a==='r'||a==='y')ie.E++;else ie.I++;  // đồng thời track E/I
-    } else if(q.d==='lead'){
-      ld[a]++;                          // Lead: chỉ track, không tính vào màu
-    } else if(q.d==='stress'){
-      st[a]++;                          // Stress: chỉ track, không tính vào màu
+  const start=currentBatch*BATCH, end=Math.min(start+BATCH,QS.length);
+  for(let i=start;i<end;i++){
+    if(answers[i]===undefined){
+      toast(`Vui lòng trả lời câu ${i+1}`,true);
+      document.getElementById('qc'+i).scrollIntoView({behavior:'smooth',block:'center'});
+      return;
     }
-  });
-  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-  const pr=sorted[0][0],sec=sorted[1][0];
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const pPr=kmap[pr],pSec=kmap[sec];
-  const pct=k=>Math.round(sc[k]/CORE_N*100);
-  const ieT=ie.E+ie.I||1,ieType=ie.E>=ie.I?'Extrovert':'Introvert',ieExtPct=Math.round(ie.E/ieT*100);
-  const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0][0];
-  const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0][0];
-  const arch=ARCH[`${pPr}-${pSec}`]||`${CI[pr].l} + ${CI[sec].l}`;
-  return {sc,pr,sec,pPr,pSec,pct,ieType,ieExtPct,leadStyle:ls,stressBehavior:sb,arch,ie,ld,st};
+  }
+  if(end>=QS.length){ await submitResults(); return; }
+  currentBatch++; renderBatch();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// ════════════════════════════════════════
+// SUBMIT VIA POWER AUTOMATE
+// ════════════════════════════════════════
 async function submitResults(){
-  const name=document.getElementById('iName').value.trim(),role=document.getElementById('iRole').value.trim(),dept=document.getElementById('iDept').value;
-  const d=calcScores();
-  document.getElementById('nextBtn').disabled=true;
-  document.getElementById('nextBtn').innerHTML='<span class="spinner"></span>Đang xử lý…';
-  show(2);
-  document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile cá nhân hóa…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  // Lưu token đã dùng (chống nộp 2 lần)
-  if(window._token){ localStorage.setItem('ins_done_'+window._token,'1'); }
-  // Save to SharePoint (fire and forget)
-  if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
-    fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      name,role,department:dept,answers:JSON.stringify(ANS),
-      redScore:d.sc.r,yellowScore:d.sc.y,greenScore:d.sc.g,blueScore:d.sc.b,
-      primaryColor:d.pPr,secondaryColor:d.pSec,archetype:d.arch,
-      ieType:d.ieType,leadStyle:kmap[d.leadStyle],stressBehavior:kmap[d.stressBehavior],
-      ieScoreE:d.ie.E,ieScoreI:d.ie.I
-    })}).catch(()=>{});
-  }
-  const narrative=await genAIProfile(name,role,dept,d);
-  renderProfile(name,role,dept,d,narrative);
-}
-async function genAIProfile(name,role,dept,d){
-  const LL={r:'Lãnh đạo Kết quả (ra quyết định nhanh, thúc đẩy kết quả)',y:'Lãnh đạo Truyền cảm hứng (tạo hứng khởi, kéo người theo tầm nhìn)',g:'Lãnh đạo Phụng sự (đặt con người lên trên, xây dựng tin tưởng)',b:'Lãnh đạo Chiến lược (phân tích sâu, xây dựng hệ thống bền vững)'};
-  const SL={r:'Kiểm soát tăng cao — trở nên áp đặt, nóng nảy, vi quản lý',y:'Phân tán, hời hợt — mất tập trung, nói nhiều, thiếu follow-through',g:'Thu mình, im lặng — né tránh xung đột, gánh chịu một mình',b:'Phân tích quá mức — tê liệt vì hoàn hảo chủ nghĩa, không thể ra quyết định'};
-  const IE_DESC=d.ieType==='Extrovert'
-    ? `Hướng ngoại rõ rệt (${d.ieExtPct}% E) — nạp năng lượng từ tương tác xã hội, suy nghĩ bằng cách nói ra, cần được nghe và phản hồi ngay`
-    : `Hướng nội (${100-d.ieExtPct}% I) — nạp năng lượng từ thời gian một mình, suy nghĩ trước khi nói, cần không gian để xử lý thông tin sâu`;
-  const dominant=(d.pct(d.pr)>60)?'Thiên về màu chính rõ rệt (>60%)':'Cân bằng tương đối giữa các màu';
-  const tension=(()=>{
-    if((d.pr==='r'&&d.sec==='b')||(d.pr==='b'&&d.sec==='r')) return 'Căng thẳng nội tâm giữa hành động nhanh (Red) và phân tích kỹ (Blue)';
-    if((d.pr==='r'&&d.sec==='g')||(d.pr==='g'&&d.sec==='r')) return 'Mâu thuẫn giữa quyết đoán (Red) và hài hòa (Green)';
-    if((d.pr==='y'&&d.sec==='b')||(d.pr==='b'&&d.sec==='y')) return 'Mâu thuẫn giữa sáng tạo bốc đồng (Yellow) và cẩn thận chi tiết (Blue)';
-    return 'Hai màu chính hỗ trợ lẫn nhau, ít căng thẳng nội tâm';
-  })();
-  const prompt=`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery cấp cao. Tạo hồ sơ CÁ NHÂN HÓA SÂU — KHÔNG dùng mô tả chung chung của màu sắc.
+  const name=document.getElementById('iName').value.trim();
+  const role=document.getElementById('iRole').value.trim();
+  const dept=document.getElementById('iDept').value;
 
-DỮ LIỆU: Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
-Điểm số: Red ${d.pct('r')}% / Yellow ${d.pct('y')}% / Green ${d.pct('g')}% / Blue ${d.pct('b')}%
-Màu chính: ${CI[d.pr].l} (${d.pct(d.pr)}%) | Màu phụ: ${CI[d.sec].l} (${d.pct(d.sec)}%) | ${dominant}
-Archetype: ${d.arch} | Nội tâm: ${tension}
-Định hướng: ${IE_DESC}
-Lãnh đạo: ${LL[d.leadStyle]}
-Stress: ${SL[d.stressBehavior]}
+  const scores={red:0,yellow:0,green:0,blue:0};
+  const ieScore={E:0,I:0}; // Extrovert vs Introvert
+  const leadScore={red:0,yellow:0,green:0,blue:0};
+  const stressScore={red:0,yellow:0,green:0,blue:0};
 
-YÊU CẦU BẮT BUỘC:
-1. Gọi tên "${name}" trực tiếp trong mỗi mục, không dùng "người này"
-2. Mỗi điểm mạnh/yếu phải gắn rõ: do màu nào + IE type + hoặc stress behavior tạo ra
-3. Nêu tình huống làm việc cụ thể (họp nhóm, deadline, feedback, xung đột...)
-4. Đoạn 2 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
-5. Viết hoàn toàn bằng tiếng Việt — KHÔNG dùng từ tiếng Anh (không viết: follow-up, follow-through, agenda, check-in, brainstorm, mindset, feedback, timeline, deadline, sprint, KPI, burnout, mentor, coaching, access, format, update... Thay bằng từ thuần Việt)
-6. QUAN TRỌNG — Giới hạn độ dài: mỗi item trong array tối đa 55 từ tiếng Việt. blindSpots mỗi đoạn tối đa 100 từ. personalStyle mỗi đoạn tối đa 100 từ. Súc tích và cụ thể, không lặp ý.
+  QS.forEach((q,i)=>{
+    const ans=answers[i];
+    if(!ans) return;
+    if(!q.dim){ scores[ans]++; }
+    else if(q.dim==='ie'){
+      // red/yellow = Extrovert, green/blue = Introvert
+      if(ans==='red'||ans==='yellow') ieScore.E++;
+      else ieScore.I++;
+    } else if(q.dim==='lead'){ leadScore[ans]++; }
+    else if(q.dim==='stress'){ stressScore[ans]++; }
+  });
 
-Trả về JSON thuần (không markdown):\n{"personalStyle":"3 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n: (1) tổng quan màu+archetype+IE+điểm số thực, (2) phong cách lãnh đạo và stress behavior thực tế, (3) điểm khác biệt so với người cùng màu chính — ví dụ tình huống","strengths":["7 điểm — màu nguồn gốc + tình huống cụ thể, tối đa 55 từ/điểm"],"weaknesses":["5 điểm — stress behavior + ví dụ tình huống, tối đa 55 từ/điểm"],"valueToTeam":["5 đóng góp gắn với role ${role}, tối đa 45 từ/điểm"],"effectiveCommunication":["5 cách actionable dựa trên IE+màu, tối đa 45 từ/cách"],"communicationBarriers":["4 điều tránh + lý do, tối đa 45 từ/điểm"],"blindSpots":"2 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n — mỗi đoạn 1 điểm mù đặc thù có ví dụ tình huống, tối đa 100 từ/đoạn","development":["5 gợi ý cụ thể và có thể thực hiện ngay — phát triển chiều yếu, tối đa 45 từ/gợi ý"],"idealEnvironment":["4 môi trường cụ thể, tối đa 40 từ/môi trường"],"managingTips":["5 cách quản lý có ví dụ câu nói/hành động cụ thể, tối đa 55 từ/cách"]}'
-`;
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const primary=sorted[0][0], secondary=sorted[1][0];
+  const ieType=ieScore.E>=ieScore.I?'Extrovert':'Introvert';
+  const leadSorted=Object.entries(leadScore).sort((a,b)=>b[1]-a[1]);
+  const leadStyle=leadSorted[0][0];
+  const stressSorted=Object.entries(stressScore).sort((a,b)=>b[1]-a[1]);
+  const stressBehavior=stressSorted[0][0];
+
+  const btn=document.getElementById('nextBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Đang lưu…';
+
+  const payload={
+    name, role,
+    department: dept,
+    answers: JSON.stringify(answers),
+    redScore:    scores.red,
+    yellowScore: scores.yellow,
+    greenScore:  scores.green,
+    blueScore:   scores.blue,
+    primaryColor:   primary,
+    secondaryColor: secondary,
+    ieType,
+    leadStyle,
+    stressBehavior,
+    ieScoreE: ieScore.E,
+    ieScoreI: ieScore.I
+  };
+
   try{
-    // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
-    if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    const claudePayload={model:'claude-haiku-4-5-20251001',max_tokens:8192,messages:[{role:'user',content:prompt}]};
-    const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
-    if(!res.ok){
-      const errTxt=await res.text().catch(()=>'');
-      throw new Error('Worker HTTP '+res.status+(errTxt?' — '+errTxt.slice(0,120):'')+'. Kiểm tra CORS headers trong Worker.');
+    if(!CONFIG.flowWriteUrl || CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
+      throw new Error('Chưa cấu hình Flow URL');
     }
-    const data=await res.json();
-    // Worker trả về Claude API response chuẩn: {content:[{type:'text',text:'...'}]}
-    let raw='';
-    if(data.content&&Array.isArray(data.content)){
-      raw=data.content.map(b=>b.text||'').join('').trim();
-    } else if(typeof data.text==='string'){
-      raw=data.text.trim();
-    } else if(typeof data==='string'){
-      raw=data.trim();
-    }
-    if(!raw)throw new Error('Worker trả về response rỗng');
-
-    // ── DIAGNOSTIC LOGGING ──
-    const inputTk  = data.usage?.input_tokens  || 0;
-    const outputTk = data.usage?.output_tokens || 0;
-    console.log(`[AI] model:${data.model||'?'} | stop_reason:${data.stop_reason||'?'} | input_tokens:${inputTk} | output_tokens:${outputTk} | raw_chars:${raw.length}`);
-    if(data.stop_reason==='max_tokens'){
-      console.error(`[AI] TRUNCATED at ${outputTk} output tokens (max_tokens sent: ${claudePayload.max_tokens}). Raw tail: ...${raw.slice(-200)}`);
-      throw new Error(`AI bị cắt ở ${outputTk} tokens (giới hạn ${claudePayload.max_tokens}). Vui lòng thử lại.`);
-    }
-
-    // Hàm repair JSON hoàn chỉnh:
-    // - Escape literal newline/tab trong string values
-    // - Xử lý backslash đứng trước newline (\\n thật) → \\n escaped
-    // - Bỏ qua escape sequences hợp lệ
-    function repairJSON(s){
-      let inStr=false, i=0, result='';
-      while(i<s.length){
-        const c=s[i];
-        if(!inStr){
-          if(c==='"') inStr=true;
-          result+=c; i++; continue;
-        }
-        // Trong string
-        if(c==='\\'){
-          const nx=s[i+1];
-          if(nx==='\n'||nx==='\r'){
-            // Backslash trước newline thật → đổi thành \n
-            result+='\\n';
-            i+=2;
-            if(nx==='\r'&&s[i]==='\n') i++; // skip \r\n
-          } else if('\"\\\/bfnrtu'.indexOf(nx)>=0){
-            // Escape sequence hợp lệ → giữ nguyên
-            result+=c+nx; i+=2;
-          } else {
-            // Backslash đứng lẻ (invalid) → escape thành \\
-            result+='\\\\'; i++;
-          }
-        } else if(c==='"'){
-          inStr=false; result+=c; i++;
-        } else if(c==='\n'){
-          result+='\\n'; i++;
-        } else if(c==='\r'){
-          result+='\\r'; i++;
-        } else if(c==='\t'){
-          result+='\\t'; i++;
-        } else {
-          result+=c; i++;
-        }
-      }
-      return result;
-    }
-
-    // Tìm JSON object từ raw (bỏ markdown fence nếu có)
-    const i0=raw.indexOf('{'), i1=raw.lastIndexOf('}');
-    if(i0>=0&&i1>i0){
-      const candidate=raw.slice(i0,i1+1);
-      // Thử 1: parse thẳng
-      try{
-        const p=JSON.parse(candidate);
-        if(p.personalStyle||p.strengths) return p;
-      }catch(e2){}
-      // Thử 2: repair rồi parse (xử lý newline thật trong strings)
-      try{
-        const p=JSON.parse(repairJSON(candidate));
-        if(p.personalStyle||p.strengths) return p;
-      }catch(e3){
-        console.warn('[AI] repairJSON failed:', e3.message, '| sample:', candidate.slice(0,300));
-      }
-    }
-
-    console.error('[AI] All parse attempts failed. raw[:500]:', raw.slice(0,500));
-    throw new Error('Không parse được JSON. raw[:200]: ' + raw.slice(0,200));
-  }catch(e){
-    console.error('AI Error:',e?.message||e);
-    if(e instanceof TypeError&&String(e.message).toLowerCase().includes('fetch')){
-      console.error('CORS/Network error. Worker cần header: Access-Control-Allow-Origin: * và xử lý OPTIONS preflight.');
-    }
-    return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);
+    const res=await fetch(CONFIG.flowWriteUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    showSuccess(name,scores,primary,secondary,null,ieType,leadStyle,stressBehavior,ieScore);
+  } catch(err){
+    console.error('Flow error:', err);
+    showSuccess(name,scores,primary,secondary,err.message,ieType,leadStyle,stressBehavior,ieScore);
   }
 }
-function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
-  const CI_LABEL={r:'Fiery Red',y:'Sunshine Yellow',g:'Earth Green',b:'Cool Blue'};
-  const F={
-    r:{
-      s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt hiệu quả trong tình huống khó','Không ngại thách thức và áp lực cao','Trực tiếp, tiết kiệm thời gian','Chịu trách nhiệm cá nhân cao'],
-      desc:'quyết đoán và tập trung kết quả, luôn hướng đến hành động cụ thể'
-    },
-    y:{
-      s:['Truyền cảm hứng và tạo động lực tự nhiên','Sáng tạo và luôn có ý tưởng mới','Giao tiếp cởi mở, xây dựng quan hệ tốt','Linh hoạt và thích nghi nhanh','Nhìn thấy tiềm năng trong mọi người','Tạo không khí tích cực cho nhóm'],
-      desc:'nhiệt tình và truyền cảm hứng, luôn mang năng lượng tích cực đến nhóm'
-    },
-    g:{
-      s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn và tạo sự ổn định','Đảm bảo hòa hợp trong nhóm','Hỗ trợ đồng nghiệp chân thành','Trung gian hòa giải hiệu quả'],
-      desc:'đồng cảm và ổn định, là người kết nối và hỗ trợ đội nhóm'
-    },
-    b:{
-      s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và đảm bảo chất lượng','Cẩn thận, chính xác trong công việc','Duy trì tiêu chuẩn cao','Lập kế hoạch tỉ mỉ và có hệ thống','Tư duy phản biện và đáng tin cậy về chuyên môn'],
-      desc:'phân tích và chú trọng chất lượng, đảm bảo công việc được thực hiện đúng'
-    }
-  };
-  const f=F[pr]||F.b;
-  const secInfo=F[sec]||F.y;
-  const prLabel=CI_LABEL[pr]||pr;
-  const secLabel=CI_LABEL[sec]||sec;
-  const ieDesc=ieType==='Extrovert'
-    ?'hướng ngoại — nạp năng lượng từ tương tác, thích suy nghĩ bằng cách nói ra và phản hồi trực tiếp'
-    :'hướng nội — nạp năng lượng từ thời gian riêng, suy nghĩ chín chắn trước khi chia sẻ';
-  const LL_FB={r:'định hướng kết quả rõ ràng và thúc đẩy hiệu suất',y:'truyền cảm hứng và kéo người theo tầm nhìn',g:'đặt con người lên trên và xây dựng sự tin tưởng',b:'phân tích sâu và xây dựng hệ thống bền vững'};
-  const SL_FB={r:'có xu hướng kiểm soát và vi quản lý khi áp lực tăng',y:'dễ phân tán và mất tập trung khi quá tải',g:'thường thu mình và im lặng thay vì nói lên khó khăn',b:'có thể bị tê liệt bởi hoàn hảo chủ nghĩa khi stress'};
-  const TENSION={
-    'r-b':`Sự kết hợp ${prLabel}+${secLabel} tạo ra căng thẳng nội tâm thú vị: ${name} vừa muốn hành động nhanh (Red) vừa muốn phân tích kỹ (Blue)`,
-    'b-r':`Sự kết hợp ${prLabel}+${secLabel} tạo ra căng thẳng giữa phân tích cẩn thận (Blue) và quyết đoán nhanh (Red)`,
-    'r-g':`Sự kết hợp ${prLabel}+${secLabel} tạo ra mâu thuẫn giữa quyết đoán (Red) và mong muốn hài hòa (Green)`,
-    'y-b':`Sự kết hợp ${prLabel}+${secLabel} tạo ra nội tâm phức tạp: sáng tạo bốc đồng (Yellow) gặp cẩn thận chi tiết (Blue)`,
-    'b-y':`Sự kết hợp ${prLabel}+${secLabel} — Blue chiếm ưu thế nhưng Yellow bổ sung sự linh hoạt và khả năng kết nối người`,
-    'g-b':`Sự kết hợp ${prLabel}+${secLabel} tạo nên người vừa quan tâm đến con người (Green) vừa chú trọng chất lượng (Blue)`,
-    'y-r':`Sự kết hợp ${prLabel}+${secLabel} tạo nên người vừa truyền cảm hứng (Yellow) vừa hành động quyết đoán (Red)`
-  };
-  const tensionNote=TENSION[pr+'-'+sec]||`Sự kết hợp ${prLabel}+${secLabel} của ${name} tạo ra phong cách làm việc đặc biệt và đáng giá`;
 
-  return {
-    personalStyle:`${name} là ${arch||prLabel+' + '+secLabel} — ${f.desc}, đồng thời có thêm chiều sâu từ ${secLabel} (${secInfo.desc}). Đây là sự kết hợp có giá trị cao trong môi trường đòi hỏi cả chuyên môn lẫn kết nối con người.\n\n${name} là người ${ieDesc}. ${tensionNote}, điều này phân biệt ${name} với những người chỉ có màu chính ${prLabel} đơn thuần.`,
-    strengths:f.s,
-    weaknesses:[
-      `${(SL_FB[stressBehavior]||'hành vi dưới áp lực cần được nhận biết sớm').replace(/^./,c=>c.toUpperCase())}`,
-      `Đôi khi khó cân bằng giữa ${prLabel} và ${secLabel} — hai màu có thể kéo theo hướng khác nhau`,
-      'Cần chú ý không để điểm mạnh trở thành điểm yếu khi dùng quá mức',
-      'Học cách ủy quyền và tin tưởng đội nhóm nhiều hơn'
-    ],
-    valueToTeam:[
-      `Kết hợp ${f.s[0].toLowerCase()} với ${secInfo.s[0].toLowerCase()} — bộ kỹ năng hiếm gặp`,
-      `Đóng góp theo archetype ${arch}: cầu nối giữa phân tích và hành động`,
-      'Duy trì tiêu chuẩn làm việc ổn định và đáng tin cậy',
-      'Đưa ra góc nhìn đa chiều khi nhóm cần quyết định quan trọng'
-    ],
-    effectiveCommunication:ieType==='Extrovert'
-      ?['Cho phép chia sẻ ý kiến trực tiếp trong cuộc họp','Phản hồi nhanh và cởi mở','Tạo cơ hội thảo luận nhóm','Công nhận đóng góp công khai và kịp thời']
-      :['Chia sẻ agenda/thông tin trước cuộc họp để chuẩn bị','Không ép trả lời ngay tức thì','Tạo không gian trao đổi 1-1 riêng tư','Tôn trọng thời gian tập trung của họ'],
-    communicationBarriers:[
-      `Tránh các tình huống kích hoạt stress: ${SL_FB[stressBehavior]}`,
-      'Không vi quản lý hoặc kiểm tra từng bước nhỏ',
-      'Tránh thay đổi ưu tiên đột ngột không có lý do'
-    ],
-    blindSpots:`${name} có thể chưa nhận ra rằng "${SL_FB[stressBehavior]}" đang ảnh hưởng đến người xung quanh nhiều hơn bản thân nhận thức được.\n\n${tensionNote} — đây vừa là điểm mạnh vừa là điểm mù: khi không có ý thức, ${name} có thể áp dụng màu mạnh nhất một cách mặc định thay vì chọn đúng màu phù hợp với tình huống.`,
-    development:[
-      `Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và cho người khác không gian':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm lớn'}`,
-      `Nhận biết sớm dấu hiệu stress và điều chỉnh hành vi: "${SL_FB[stressBehavior]}"`,
-      'Phát triển kỹ năng coaching — giúp người khác trưởng thành thay vì làm thay',
-      `Cân bằng có ý thức giữa ${prLabel} và ${secLabel} tùy theo yêu cầu tình huống`
-    ],
-    idealEnvironment:[
-      `Môi trường ${ieType==='Extrovert'?'năng động, nhiều tương tác và phản hồi thường xuyên':'có không gian tập trung, ít bị ngắt quãng'}`,
-      `Được giao việc rõ ràng với ${leadStyle==='r'?'quyền tự chủ cao':'mục tiêu và kỳ vọng cụ thể'}`,
-      'Văn hóa trân trọng cả chất lượng lẫn sự phát triển con người'
-    ],
-    managingTips:[
-      `Giao việc rõ ràng, ${leadStyle==='r'?'trao quyền tự chủ và tránh vi quản lý':'đảm bảo đủ thông tin và thời gian chuẩn bị'}`,
-      `Nhận biết sớm khi ${name} đang stress: "${SL_FB[stressBehavior]}" — can thiệp sớm hiệu quả hơn sau`,
-      'Công nhận đóng góp cụ thể và kịp thời, không chỉ khi có kết quả lớn',
-      'Phản hồi thường xuyên, xây dựng và có căn cứ rõ ràng — tránh mơ hồ'
-    ]
-  };
-}
-function buildWheel(pr,sec,pct){
-  const cx=160,cy=160,R=150,r2=62;
-  const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
-  const SL=['Director','Motivator','Inspirer','Insp.Helper','Supporter','Coordinator','Observer','Reformer'];
-  const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const hl=PM[`${kmap[pr]}-${kmap[sec]}`]??0;
-  const toR=d=>d*Math.PI/180;
-  const pol=(rd,deg)=>[cx+rd*Math.cos(toR(deg)),cy+rd*Math.sin(toR(deg))];
-  let svg='';
-  for(let i=0;i<8;i++){
-    const isHL=i===hl,s=i*45-90-22.5,e=s+45;
-    const [x1,y1]=pol(r2,s);const [x2,y2]=pol(R,s);const [x3,y3]=pol(R,e);const [x4,y4]=pol(r2,e);
-    svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r2} ${r2} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.4}" stroke="${isHL?'rgba(255,255,255,.7)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2.5:1}"/>`;
-    const [lx,ly]=pol((r2+R)/2,i*45-90);
-    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?9:7.5}" font-family="DM Sans,sans-serif" font-weight="${isHL?700:400}" opacity="${isHL?1:.6}">${SL[i]}</text>`;
-  }
-  const kc=CI[pr],ks=CI[sec];
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${r2-2}" fill="var(--sur)" stroke="rgba(255,255,255,.1)" stroke-width="1"/>`;
-  svg+=`<text x="${cx}" y="${cy-16}" text-anchor="middle" fill="${kc.c}" font-size="20">●</text>`;
-  svg+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans" font-weight="600">${kc.l.split(' ')[0]}</text>`;
-  svg+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" fill="${kc.c}" font-size="13" font-family="DM Sans" font-weight="700">${pct(pr)}%</text>`;
-  svg+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${ks.c}" font-size="10" font-family="DM Sans" opacity=".85">+${ks.l.split(' ')[0]} ${pct(sec)}%</text>`;
-  return `<svg viewBox="0 0 ${cx*2} ${cy*2}" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 8px 32px rgba(0,0,0,.5))">${svg}</svg>`;
-}
-function renderProfile(name,role,dept,d,n){
-  const {pr,sec,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch}=d;
-  const kc=CI[pr],ks=CI[sec];
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const LL={r:'🎯 Lãnh đạo Kết quả',y:'⚡ Truyền cảm hứng',g:'🤝 Lãnh đạo Phục vụ',b:'📊 Lãnh đạo Chiến lược'};
-  const SL={r:'⚔️ Kiểm soát tăng cao',y:'🌀 Phân tán, hời hợt',g:'🐢 Thu mình, im lặng',b:'🔍 Phân tích quá mức'};
-  const bars=['r','y','g','b'].map(k=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[k].c}">${CI[k].e} ${CI[k].l}</span><span class="cb-pct" style="color:${CI[k].c}">${pct(k)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${pct(k)}%;background:${CI[k].c}"></div></div></div>`).join('');
-  const list=(arr,cls='')=>`<ul class="profile-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-  const paras=t=>(t||'').split(/\\n|\n/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
-  const sec2=(ic,title,body)=>`<div class="profile-section"><div class="ps-label">${ic} ${title}</div><div class="ps-content">${body}</div></div>`;
-  document.getElementById('profileContainer').innerHTML=`
-    <div class="card">
-      <div class="profile-header">
-        <div class="profile-name">${name}</div>
-        <div class="profile-role">${role}${dept?' · '+dept:''}</div>
-        <div class="profile-type-badge" style="background:${kc.c}22;color:${kc.c};border:1px solid ${kc.c}55">${kc.e} ${arch}</div>
-      </div>
-      <div class="wheel-wrap">${buildWheel(pr,sec,pct)}</div>
-      <div class="wheel-caption"><div class="pos-main">${kc.e} ${kc.l} + ${ks.e} ${ks.l}</div><div class="pos-sub">${arch}</div></div>
-      <div class="color-bars">${bars}</div>
-      <div class="dims-grid">
-        <div class="dim-card"><div class="dim-title">🔋 Định hướng năng lượng</div><div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}${(ieExtPct>0||d.ie.E>0||d.ie.I>0)?`<br><span style="font-size:11px;font-weight:400;color:var(--muted)">${ieExtPct}% E · ${100-ieExtPct}% I</span>`:''}</div></div>
-        <div class="dim-card"><div class="dim-title">👑 Phong cách lãnh đạo</div><div class="dim-val">${LL[leadStyle]||LL[leadStyle[0]]||'—'}</div></div>
-        <div class="dim-card"><div class="dim-title">⚠️ Hành vi dưới áp lực</div><div class="dim-val">${SL[stressBehavior]||SL[stressBehavior[0]]||'—'}</div></div>
-      </div>
+function showSuccess(name, scores, primary, secondary, errMsg=null, ieType='', leadStyle='', stressBehavior='', ieScore={E:0,I:0}){
+  const pi=COLOR_INFO[primary], si=COLOR_INFO[secondary];
+  const pct=c=>Math.round(scores[c]/QS.length*100);
+  document.getElementById('resultPreview').innerHTML=`
+    <div class="rp-box">
+      <div class="label">Màu Chính</div>
+      <div class="val" style="color:${pi.color}">${pi.emoji} ${pi.label}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${pct(primary)}%</div>
     </div>
-    <div class="card">
-      ${sec2('👤','Tổng Quan Phong Cách Cá Nhân',paras(n.personalStyle))}
-      ${sec2('💪','Điểm Mạnh Nổi Bật',list(n.strengths))}
-      ${sec2('🔧','Điểm Cần Phát Triển',list(n.weaknesses,'neg'))}
-      ${sec2('🤝','Đóng Góp Cho Nhóm',list(n.valueToTeam,'neu'))}
-    </div>
-    <div class="card">
-      ${sec2('💬','Giao Tiếp Hiệu Quả','<p style="font-size:12px;color:var(--muted);margin-bottom:10px">Để giao tiếp tốt với '+name+':</p>'+list(n.effectiveCommunication))}
-      ${sec2('🚫','Rào Cản Giao Tiếp','<p style="font-size:12px;color:var(--muted);margin-bottom:10px">Tránh những điều sau:</p>'+list(n.communicationBarriers,'neg'))}
-    </div>
-    <div class="card">
-      ${sec2('🔍','Điểm Mù Tiềm Ẩn',paras(n.blindSpots))}
-      ${sec2('🌱','Gợi Ý Phát Triển',list(n.development))}
-    </div>
-    <div class="card">
-      ${sec2('🏡','Môi Trường Làm Việc Lý Tưởng',list(n.idealEnvironment,'neu'))}
-      ${sec2('💡','Cách Quản Lý & Tạo Động Lực',list(n.managingTips))}
+    <div class="rp-box">
+      <div class="label">Màu Phụ</div>
+      <div class="val" style="color:${si.color}">${si.emoji} ${si.label}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${pct(secondary)}%</div>
     </div>`;
-  document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
-  document.getElementById('profileActions').style.display='grid';
-  toast('✅ Profile của bạn đã được tạo thành công!');
-  // Nếu đang ở chế độ print (admin popup) → trigger print sau khi render xong
-  const _params=new URLSearchParams(location.search);
-  if(_params.get('print')==='1' && !window._printTriggered){
-    window._printTriggered=true;
-    setTimeout(()=>window.print(),3000);
+
+  // Show extended dimensions
+  const LEAD_LABELS={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Lãnh đạo Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
+  const STRESS_LABELS={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
+  const ieTotal = ieScore.E + ieScore.I || 1;
+  const extPct = Math.round(ieScore.E/ieTotal*100);
+  const intPct = 100-extPct;
+  const extDiv = document.getElementById('extDimensions');
+  if(extDiv && ieType){
+    extDiv.innerHTML = `
+      <div class="dim-card">
+        <div class="dim-title">🔋 Năng lượng xã hội</div>
+        <div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">
+          ${ieType==='Extrovert'?'🌟 Hướng ngoại (Extrovert)':'🌙 Hướng nội (Introvert)'}
+        </div>
+        <div class="dim-bar-wrap">
+          <span class="dim-bar-lbl">E</span>
+          <div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${extPct}%;background:var(--yellow)"></div></div>
+          <span class="dim-bar-lbl">${extPct}%</span>
+        </div>
+        <div class="dim-bar-wrap">
+          <span class="dim-bar-lbl">I</span>
+          <div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${intPct}%;background:var(--blue)"></div></div>
+          <span class="dim-bar-lbl">${intPct}%</span>
+        </div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-title">👑 Phong cách lãnh đạo</div>
+        <div class="dim-val" style="color:var(--${leadStyle})">${LEAD_LABELS[leadStyle]||'—'}</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-title">⚠️ Hành vi dưới áp lực</div>
+        <div class="dim-val" style="color:var(--${stressBehavior})">${STRESS_LABELS[stressBehavior]||'—'}</div>
+      </div>`;
   }
+  if(errMsg){
+    toast('⚠ Chưa kết nối – kết quả hiển thị local',true);
+  } else {
+    toast('✅ Đã lưu kết quả thành công!');
+  }
+  show(2);
 }
+
 function resetForm(){
-  ANS={};BATCH_IDX=0;
-  // Chỉ xóa fields khi không ở token mode (token mode: fields đã bị lock)
-  if(!window._token){
-    ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('iDept').value='';
-  }
-  // Re-enable nút Next (có thể bị disable sau lần submit trước)
-  const nb=document.getElementById('nextBtn');
-  nb.disabled=false;nb.innerHTML='Tiếp theo →';
+  answers={}; currentBatch=0;
+  ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iDept').value='';
   document.getElementById('progFill').style.width='0%';
   document.getElementById('progWrap').style.display='none';
-  document.getElementById('profileActions').style.display='none';
-  document.getElementById('profileContainer').innerHTML='';
   show(0);
 }
-
-// ── Admin popup mode: load profile directly from URL param ──
-(function initFromURL(){
-  const params=new URLSearchParams(location.search);
-  const raw=params.get('data');
-  const autoPrint=params.get('print')==='1';
-  if(!raw)return;
-  try{
-    // FIX 1: Decode UTF-8 tiếng Việt đúng cách
-    const b64=raw.replace(/ /g,'+');
-    const item=JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-    const name=item.Title||item.name||'';
-    const role=item.EmployeeRole||item.role||'';
-    const dept=item.Department||item.department||'';
-    const kmap={red:'r',yellow:'y',green:'g',blue:'b'};
-    const pr=kmap[item.PrimaryColor]||'y';
-    const sec=kmap[item.SecondaryColor]||'g';
-    const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
-    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/28*100); // max 28: 24 core + 8 IE×0.5
-    const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
-    const ieTotal=ieE+ieI||1;
-    const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
-    const ieExtPct=Math.round(ieE/ieTotal*100);
-    const lkmap={red:'r',yellow:'y',green:'g',blue:'b'};
-    const leadStyle=lkmap[item.LeadStyle]||item.LeadStyle||pr;
-    const stressBehavior=lkmap[item.StressBehavior]||item.StressBehavior||sec;
-    const arch=item.Archetype||`${CI[pr]?.l||''} + ${CI[sec]?.l||''}`;
-    const d={sc:{r:rs,y:ys,g:gs,b:bs},pr,sec,pPr:item.PrimaryColor,pSec:item.SecondaryColor,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch,ie:{E:ieE,I:ieI}};
-
-    // Parse AI narrative
-    let narrative=null;
-    if(item.AIProfile){
-      try{narrative=typeof item.AIProfile==='string'?JSON.parse(item.AIProfile):item.AIProfile;}catch(e){}
-    }
-
-    // FIX 2: Kiểm tra readyState thay vì dùng DOMContentLoaded
-    // Tránh timing bug khi popup load xong DOM trước khi script đăng ký listener
-    function saveAIProfileToSharePoint(itemId,aiJson){
-      // Lưu AIProfile về SharePoint để lần sau không cần gen lại
-      if(!CONFIG.flowWriteUrl||CONFIG.flowWriteUrl.includes('PASTE_YOUR'))return;
-      if(!itemId)return;
-      fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({updateMode:true,id:itemId,aiProfile:JSON.stringify(aiJson)})
-      }).catch(()=>{});
-    }
-
-    function doInit(){
-      show(2);
-      if(narrative){
-        renderProfile(name,role,dept,d,narrative);
-        if(autoPrint) setTimeout(()=>window.print(),3000);
-      } else {
-        document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
-        genAIProfile(name,role,dept,d).then(n=>{
-          renderProfile(name,role,dept,d,n);
-          // Lưu ngược về SharePoint để lần sau load sẵn, không gen lại
-          saveAIProfileToSharePoint(item.ID,n);
-          // Print trigger nằm trong renderProfile khi autoPrint=true
-        });
-      }
-    }
-    if(document.readyState==='loading'){
-      document.addEventListener('DOMContentLoaded',doInit);
-    } else {
-      doInit();
-    }
-
-  }catch(e){
-    console.error('Admin popup init error:',e);
-    function showErr(){
-      show(2);
-      document.getElementById('profileContainer').innerHTML=
-        `<div class="card" style="text-align:center;padding:40px">
-          <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
-          <p style="color:var(--red);font-weight:600;margin-bottom:8px">Lỗi tải profile</p>
-          <p style="color:var(--muted);font-size:13px">${e.message}</p>
-        </div>`;
-    }
-    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',showErr);}else{showErr();}
-  }
-})();
 </script>
-
-
-
-
-</body></html>
+</body>
+</html>
