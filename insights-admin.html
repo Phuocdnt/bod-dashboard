@@ -512,8 +512,8 @@ if(!currentItem)return;
 const i=currentItem;
 const p=new URLSearchParams({
   name: i.Title||'',
-  role: i.Role||'',
-  dept: i.Dept||'',
+  role: i.EmployeeRole||'',
+  dept: i.Department||'',
   primary: i.PrimaryColor||'blue',
   secondary: i.SecondaryColor||'green',
   r: i.RedScore||0,
