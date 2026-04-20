@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0063)https://phuocdnt.github.io/bod-dashboard/insights-employee.html -->
-<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Discovery – Khảo Sát &amp; Profile</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<title>Insights Discovery – Khảo Sát & Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
@@ -58,15 +58,22 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .field select option{background:var(--sur2)}
 /* Questions */
 .qcard{background:var(--sur);border:1.5px solid var(--bdr);border-radius:16px;padding:24px;margin-bottom:12px;transition:border-color .25s}
-.qcard.done{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
+.qcard.done{border-color:rgba(43,108,176,.35);background:rgba(43,108,176,.04)}
 .qnum{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 .qtxt{font-family:var(--fd);font-size:1.15rem;font-weight:400;margin-bottom:18px;line-height:1.5}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 @media(max-width:540px){.opts{grid-template-columns:1fr}}
-.opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .18s;width:100%;position:relative}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .18s;width:100%}
 .opt:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
-.opt.sel{border-color:rgba(255,255,255,.45)!important;background:rgba(255,255,255,.08)!important}
-.opt.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:600}
+.opt.sel-red{border-color:var(--red)!important;background:var(--red-s)!important}
+.opt.sel-yellow{border-color:var(--yellow)!important;background:var(--yellow-s)!important}
+.opt.sel-green{border-color:var(--green)!important;background:var(--green-s)!important}
+.opt.sel-blue{border-color:var(--blue)!important;background:var(--blue-s)!important}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-r{background:var(--red);box-shadow:0 0 8px var(--red)}
+.dot-y{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.dot-g{background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot-b{background:var(--blue);box-shadow:0 0 8px var(--blue)}
 .opt-lbl{font-size:13px;line-height:1.55;color:var(--txt)}
 /* Buttons */
 .btn{display:block;width:100%;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;font-family:var(--ff);font-size:15px;font-weight:600;transition:all .2s;margin-top:10px}
@@ -136,32 +143,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 <body>
 <div class="bg-orbs"><div class="orb orb-r"></div><div class="orb orb-b"></div></div>
 <div class="wrap">
-  <!-- TOKEN: Màn hình khoá -->
-  <div id="lockedScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
-    <div style="font-size:3.5rem;margin-bottom:20px">🔒</div>
-    <h2 style="font-family:var(--fd);font-size:1.8rem;font-weight:300;margin-bottom:12px">Liên kết không hợp lệ</h2>
-    <p style="color:var(--muted);font-size:14px;max-width:380px;line-height:1.8">Bạn cần đường dẫn khảo sát cá nhân để truy cập. Vui lòng liên hệ HR để nhận link của bạn.</p>
-  </div>
-
-  <!-- TOKEN: Đã nộp rồi -->
-  <div id="alreadyDoneScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
-    <div style="font-size:3.5rem;margin-bottom:20px">✅</div>
-    <h2 style="font-family:var(--fd);font-size:1.8rem;font-weight:300;margin-bottom:12px">Đã hoàn thành khảo sát</h2>
-    <p style="color:var(--muted);font-size:14px;max-width:380px;line-height:1.8"><strong id="alreadyDoneName" style="color:var(--txt)"></strong> đã nộp khảo sát trên thiết bị này rồi. Kết quả đã được ghi nhận.</p>
-  </div>
-
-  <!-- TOKEN: Banner danh tính -->
-  <div id="identityBanner" style="display:none;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);margin-bottom:20px">
-    <span style="font-size:1.4rem">🔐</span>
-    <div>
-      <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:2px">Khảo sát dành riêng cho</div>
-      <div style="font-size:15px;font-weight:600;color:var(--yellow)" id="bannerName"></div>
-    </div>
-  </div>
-
   <div class="hdr">
     <div class="wheel-icon"></div>
-    <div class="hdr-badge">🔍 Insights Discovery</div>
+    <div class="hdr-badge">&#128269; Insights Discovery</div>
     <h1>Khám Phá<br><em>Phong Cách</em> Của Bạn</h1>
     <p>Bộ câu hỏi 48 mục giúp xác định phong cách làm việc, giao tiếp và lãnh đạo theo mô hình Insights Discovery.</p>
   </div>
@@ -174,10 +158,10 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="card">
       <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
       <div class="color-grid">
-        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">🔴 Fiery Red</h3><p>Quyết đoán, tập trung kết quả, kiểm soát</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">🟡 Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng, sáng tạo</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">🟢 Earth Green</h3><p>Đồng cảm, ổn định, gắn kết, hỗ trợ</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">🔵 Cool Blue</h3><p>Phân tích, cẩn thận, chính xác, có hệ thống</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">&#128308; Fiery Red</h3><p>Quyết đoán, tập trung kết quả, kiểm soát</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">&#128993; Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng, sáng tạo</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">&#128994; Earth Green</h3><p>Đồng cảm, ổn định, gắn kết, hỗ trợ</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">&#128309; Cool Blue</h3><p>Phân tích, cẩn thận, chính xác, có hệ thống</p></div></div>
       </div>
     </div>
     <div class="card">
@@ -194,8 +178,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         </select>
       </div>
     </div>
-    <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát → 48 câu hỏi</button>
-    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">⏰ Khoảng 15–20 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
+    <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát &#8594; 48 câu hỏi</button>
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">&#9200; Khoảng 15–20 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
   </div>
   <!-- STEP 1: Questions -->
   <div class="step" id="s1">
@@ -204,8 +188,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       <div id="qContainer"></div>
     </div>
     <div class="btn-row no-print">
-      <button class="btn btn-sec" onclick="prevBatch()">← Quay lại</button>
-      <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()">Tiếp theo →</button>
+      <button class="btn btn-sec" onclick="prevBatch()">&#8592; Quay lại</button>
+      <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()">Tiếp theo &#8594;</button>
     </div>
   </div>
   <!-- STEP 2: Profile -->
@@ -225,72 +209,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 const CONFIG = {
   flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
   // ⚠️ Dán URL Power Automate Claude Proxy Flow vào đây sau khi tạo
-  claudeFlowUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev",
-  // TOKEN SYSTEM: {} = open mode (test). Thêm token: "mã": { name, role, dept }
-  // Link gửi nhân viên: insights-employee.html?t=mã_token
-  inviteTokens: {
-    // "dhi26kh": { name: "Hồ Việt Khánh", role: "QA Manager", dept: "Ban Giám Đốc" },
-    // "dhi26lc": { name: "Nguyễn Lê Thành Lạc", role: "Nhân viên", dept: "Kỹ Thuật" }
-  }
+  claudeFlowUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev"
 };
-</script>
-<script>
-// ══════════════════════════════════════
-// TOKEN GATE — chạy trước mọi thứ
-// ══════════════════════════════════════
-(function tokenGate(){
-  var tokens = CONFIG.inviteTokens || {};
-  var params = new URLSearchParams(location.search);
-  if(params.get('data')) return; // admin popup mode, bỏ qua gate
-  if(Object.keys(tokens).length === 0) return; // open mode
-
-  var t = params.get('t');
-
-  // Đã nộp rồi (localStorage)
-  if(t && tokens[t] && localStorage.getItem('ins_done_' + t)){
-    var info = tokens[t];
-    document.addEventListener('DOMContentLoaded', function(){
-      document.getElementById('alreadyDoneScreen').style.display = 'flex';
-      document.getElementById('alreadyDoneName').textContent = info.name || 'Bạn';
-      document.getElementById('s0').style.display = 'none';
-      document.querySelector('.hdr').style.display = 'none';
-      document.getElementById('identityBanner').style.display = 'none';
-    });
-    return;
-  }
-
-  // Token hợp lệ → pre-fill + lock
-  if(t && tokens[t]){
-    var info = tokens[t];
-    window._token = t;
-    document.addEventListener('DOMContentLoaded', function(){
-      var iName = document.getElementById('iName');
-      var iRole = document.getElementById('iRole');
-      var iDept = document.getElementById('iDept');
-      iName.value = info.name || ''; iName.readOnly = true; iName.style.opacity = '.7';
-      iRole.value = info.role || ''; iRole.readOnly = true; iRole.style.opacity = '.7';
-      if(info.dept){
-        for(var i=0; i<iDept.options.length; i++){
-          if(iDept.options[i].text === info.dept || iDept.options[i].value === info.dept){
-            iDept.selectedIndex = i; break;
-          }
-        }
-        iDept.disabled = true; iDept.style.opacity = '.7';
-      }
-      var banner = document.getElementById('identityBanner');
-      banner.style.display = 'flex';
-      document.getElementById('bannerName').textContent = info.name || '';
-    });
-    return;
-  }
-
-  // Token sai / không có → khoá màn hình
-  document.addEventListener('DOMContentLoaded', function(){
-    document.getElementById('lockedScreen').style.display = 'flex';
-    document.getElementById('s0').style.display = 'none';
-    document.querySelector('.hdr').style.display = 'none';
-  });
-})();
 </script>
 <script>
 // ═══════════════════════════════════════
@@ -355,7 +275,7 @@ const CIMAP={red:CI.r,yellow:CI.y,green:CI.g,blue:CI.b};
 const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)','red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)','yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'};
 let ANS={},BATCH_IDX=0;
 const BSIZE=6;
-const CORE_N=28; // 24 câu core + 8 câu IE × 0.5 trọng số (IE là phần của type theo Jung)
+const CORE_N=24;
 function show(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 function startQuiz(){
@@ -372,7 +292,7 @@ function renderBatch(){
     const q=QS[i],d=document.createElement('div');
     d.className='qcard'+(ANS[i]?' done':'');d.id='qc'+i;
     const keys=['r','y','g','b'],order=shuffle([...keys],i);
-    let oh='';order.forEach(k=>{const sel=ANS[i]===k?'sel':'';oh+=`<button class="opt ${sel}" onclick="pick(${i},'${k}',this)"><span class="opt-lbl">${q.o[k]}</span></button>`;});
+    let oh='';order.forEach(k=>{const sel=ANS[i]===k?'sel-'+{r:'red',y:'yellow',g:'green',b:'blue'}[k]:'';oh+=`<button class="opt ${sel}" onclick="pick(${i},'${k}',this)"><span class="dot dot-${k}"></span><span class="opt-lbl">${q.o[k]}</span></button>`;});
     d.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div><div class="qtxt">${q.t}</div><div class="opts">${oh}</div>`;
     c.appendChild(d);
   }
@@ -381,7 +301,7 @@ function renderBatch(){
   document.getElementById('stepInfo').textContent=`Nhóm ${BATCH_IDX+1} / ${Math.ceil(QS.length/BSIZE)}`;
 }
 function shuffle(a,seed){for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
-function pick(i,k,btn){ANS[i]=k;const c=document.getElementById('qc'+i);c.classList.add('done');c.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');updateProg();}
+function pick(i,k,btn){ANS[i]=k;const c=document.getElementById('qc'+i);c.classList.add('done');c.querySelectorAll('.opt').forEach(b=>b.className='opt');btn.classList.add('sel-'+{r:'red',y:'yellow',g:'green',b:'blue'}[k]);updateProg();}
 function updateProg(){const d=Object.keys(ANS).length,t=QS.length,p=Math.round(d/t*100);document.getElementById('progFill').style.width=p+'%';document.getElementById('progLbl').textContent=`${d} / ${t} câu`;document.getElementById('progPct').textContent=p+'%';}
 function prevBatch(){if(BATCH_IDX===0){show(0);return;}BATCH_IDX--;renderBatch();window.scrollTo({top:0,behavior:'smooth'});}
 async function nextBatch(){
@@ -392,22 +312,7 @@ async function nextBatch(){
 }
 function calcScores(){
   const sc={r:0,y:0,g:0,b:0},ie={E:0,I:0},ld={r:0,y:0,g:0,b:0},st={r:0,y:0,g:0,b:0};
-  // IE (trọng số 0.5): vừa đóng góp vào điểm màu (vì IE là phần của type theo Jung)
-  // vừa track riêng để hiển thị % E/I độc lập
-  // Lead & Stress: chỉ track riêng, KHÔNG cộng vào màu (đo hành vi học được, không đo type)
-  QS.forEach((q,i)=>{
-    const a=ANS[i];if(!a)return;
-    if(!q.d){
-      sc[a]++;                          // Core: trọng số 1.0
-    } else if(q.d==='ie'){
-      sc[a]+=0.5;                       // IE: trọng số 0.5 → tính vào màu
-      if(a==='r'||a==='y')ie.E++;else ie.I++;  // đồng thời track E/I
-    } else if(q.d==='lead'){
-      ld[a]++;                          // Lead: chỉ track, không tính vào màu
-    } else if(q.d==='stress'){
-      st[a]++;                          // Stress: chỉ track, không tính vào màu
-    }
-  });
+  QS.forEach((q,i)=>{const a=ANS[i];if(!a)return;if(!q.d)sc[a]++;else if(q.d==='ie'){if(a==='r'||a==='y')ie.E++;else ie.I++;}else if(q.d==='lead')ld[a]++;else if(q.d==='stress')st[a]++;});
   const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
   const pr=sorted[0][0],sec=sorted[1][0];
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
@@ -427,8 +332,6 @@ async function submitResults(){
   show(2);
   document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile cá nhân hóa…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  // Lưu token đã dùng (chống nộp 2 lần)
-  if(window._token){ localStorage.setItem('ins_done_'+window._token,'1'); }
   // Save to SharePoint (fire and forget)
   if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
     fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
@@ -472,105 +375,22 @@ YÊU CẦU BẮT BUỘC:
 4. Đoạn 4 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
 
-Trả về JSON thuần (không markdown):\n{"personalStyle":"4 đoạn, KHÔNG dùng newline thật, ngăn cách bằng \\\\n (backslash-n): (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn (KHÔNG dùng newline thật, ngăn cách bằng \\\\n), mô tả điểm mù đặc thù của sự kết hợp màu+archetype+IE này","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}'
-`;
+Trả về JSON thuần (không markdown):
+{"personalStyle":"4 đoạn cách nhau \n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính","strengths":["8 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["6 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["6 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["6 cách dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — gắn với hành vi stress"],"blindSpots":"2-3 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \n","development":["6 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp IE và stress"],"managingTips":["5 cách quản lý ${name} — cụ thể và actionable"]}`;
   try{
-    // Gọi qua Cloudflare Worker proxy — API key lưu an toàn trong Worker, không lộ trong HTML
-    if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-    const claudePayload={model:'claude-sonnet-4-5',max_tokens:8000,messages:[{role:'user',content:prompt}]};
-    const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
-    if(!res.ok){
-      const errTxt=await res.text().catch(()=>'');
-      throw new Error('Worker HTTP '+res.status+(errTxt?' — '+errTxt.slice(0,120):'')+'. Kiểm tra CORS headers trong Worker.');
-    }
+    // Gọi qua Power Automate proxy — API key lưu an toàn trong PA, không lộ trong HTML
+  if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
+  // Gửi full Claude API payload — PA chỉ cần forward thẳng đến api.anthropic.com
+  const claudePayload={model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]};
+  const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
+    if(!res.ok)throw new Error('PA Flow '+res.status);
     const data=await res.json();
-    // Worker trả về Claude API response chuẩn: {content:[{type:'text',text:'...'}]}
-    let raw='';
-    if(data.content&&Array.isArray(data.content)){
-      raw=data.content.map(b=>b.text||'').join('').trim();
-    } else if(typeof data.text==='string'){
-      raw=data.text.trim();
-    } else if(typeof data==='string'){
-      raw=data.trim();
-    }
-    if(!raw)throw new Error('Worker trả về response rỗng');
-
-    // Kiểm tra stop_reason — nếu max_tokens thì JSON có thể bị cắt
-    if(data.stop_reason==='max_tokens'){
-      console.error('[AI] TRUNCATED! stop_reason=max_tokens. Tăng max_tokens hoặc rút gọn prompt.');
-      throw new Error('AI response bị cắt (stop_reason=max_tokens). Vui lòng thử lại.');
-    }
-    console.log('[AI] raw length:', raw.length, '| stop_reason:', data.stop_reason||'unknown', '| first 100:', raw.slice(0,100));
-
-    // Hàm repair JSON hoàn chỉnh:
-    // - Escape literal newline/tab trong string values
-    // - Xử lý backslash đứng trước newline (\\n thật) → \\n escaped
-    // - Bỏ qua escape sequences hợp lệ
-    function repairJSON(s){
-      let inStr=false, i=0, result='';
-      while(i<s.length){
-        const c=s[i];
-        if(!inStr){
-          if(c==='"') inStr=true;
-          result+=c; i++; continue;
-        }
-        // Trong string
-        if(c==='\\'){
-          const nx=s[i+1];
-          if(nx==='\n'||nx==='\r'){
-            // Backslash trước newline thật → đổi thành \n
-            result+='\\n';
-            i+=2;
-            if(nx==='\r'&&s[i]==='\n') i++; // skip \r\n
-          } else if('\"\\\/bfnrtu'.indexOf(nx)>=0){
-            // Escape sequence hợp lệ → giữ nguyên
-            result+=c+nx; i+=2;
-          } else {
-            // Backslash đứng lẻ (invalid) → escape thành \\
-            result+='\\\\'; i++;
-          }
-        } else if(c==='"'){
-          inStr=false; result+=c; i++;
-        } else if(c==='\n'){
-          result+='\\n'; i++;
-        } else if(c==='\r'){
-          result+='\\r'; i++;
-        } else if(c==='\t'){
-          result+='\\t'; i++;
-        } else {
-          result+=c; i++;
-        }
-      }
-      return result;
-    }
-
-    // Tìm JSON object từ raw (bỏ markdown fence nếu có)
-    const i0=raw.indexOf('{'), i1=raw.lastIndexOf('}');
-    if(i0>=0&&i1>i0){
-      const candidate=raw.slice(i0,i1+1);
-      // Thử 1: parse thẳng
-      try{
-        const p=JSON.parse(candidate);
-        if(p.personalStyle||p.strengths) return p;
-      }catch(e2){}
-      // Thử 2: repair rồi parse (xử lý newline thật trong strings)
-      try{
-        const p=JSON.parse(repairJSON(candidate));
-        if(p.personalStyle||p.strengths) return p;
-      }catch(e3){
-        console.warn('[AI] repairJSON failed:', e3.message, '| sample:', candidate.slice(0,300));
-      }
-    }
-
-    console.error('[AI] All parse attempts failed. raw[:500]:', raw.slice(0,500));
-    throw new Error('Không parse được JSON. raw[:200]: ' + raw.slice(0,200));
-  }catch(e){
-    console.error('AI Error:',e?.message||e);
-    if(e instanceof TypeError&&String(e.message).toLowerCase().includes('fetch')){
-      console.error('CORS/Network error. Worker cần header: Access-Control-Allow-Origin: * và xử lý OPTIONS preflight.');
-    }
-    return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);
-  }
+    // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
+    // PA trả về Claude API response nguyên vẹn
+    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
+    if(!txt)throw new Error('Empty response from PA');
+    return JSON.parse(txt);
+  }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
 function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
   const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Fiery Red chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
@@ -642,6 +462,8 @@ function renderProfile(name,role,dept,d,n){
   const list=(arr,cls='')=>`<ul class="profile-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
   const paras=t=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
   const sec2=(ic,title,body)=>`<div class="profile-section"><div class="ps-label">${ic} ${title}</div><div class="ps-content">${body}</div></div>`;
+  const lsKey=Object.keys({r:'',y:'',g:'',b:''}).includes(leadStyle)?leadStyle:leadStyle[0];
+  const sbKey=Object.keys({r:'',y:'',g:'',b:''}).includes(stressBehavior)?stressBehavior:stressBehavior[0];
   document.getElementById('profileContainer').innerHTML=`
     <div class="card">
       <div class="profile-header">
@@ -688,14 +510,8 @@ function renderProfile(name,role,dept,d,n){
 }
 function resetForm(){
   ANS={};BATCH_IDX=0;
-  // Chỉ xóa fields khi không ở token mode (token mode: fields đã bị lock)
-  if(!window._token){
-    ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('iDept').value='';
-  }
-  // Re-enable nút Next (có thể bị disable sau lần submit trước)
-  const nb=document.getElementById('nextBtn');
-  nb.disabled=false;nb.innerHTML='Tiếp theo →';
+  ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iDept').value='';
   document.getElementById('progFill').style.width='0%';
   document.getElementById('progWrap').style.display='none';
   document.getElementById('profileActions').style.display='none';
@@ -720,7 +536,8 @@ function resetForm(){
     const pr=kmap[item.PrimaryColor]||'y';
     const sec=kmap[item.SecondaryColor]||'g';
     const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
-    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/28*100); // max 28: 24 core + 8 IE×0.5
+    const total=rs+ys+gs+bs||1;
+    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/24*100);
     const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
     const ieTotal=ieE+ieI||1;
     const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
@@ -739,28 +556,18 @@ function resetForm(){
 
     // FIX 2: Kiểm tra readyState thay vì dùng DOMContentLoaded
     // Tránh timing bug khi popup load xong DOM trước khi script đăng ký listener
-    function saveAIProfileToSharePoint(itemId,aiJson){
-      // Lưu AIProfile về SharePoint để lần sau không cần gen lại
-      if(!CONFIG.flowWriteUrl||CONFIG.flowWriteUrl.includes('PASTE_YOUR'))return;
-      if(!itemId)return;
-      fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({updateMode:true,id:itemId,aiProfile:JSON.stringify(aiJson)})
-      }).catch(()=>{});
-    }
-
     function doInit(){
       show(2);
       if(narrative){
         renderProfile(name,role,dept,d,narrative);
-        if(autoPrint) setTimeout(()=>window.print(),3000);
       } else {
         document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
-        genAIProfile(name,role,dept,d).then(n=>{
-          renderProfile(name,role,dept,d,n);
-          // Lưu ngược về SharePoint để lần sau load sẵn, không gen lại
-          saveAIProfileToSharePoint(item.ID,n);
-          // Print trigger nằm trong renderProfile khi autoPrint=true
-        });
+        genAIProfile(name,role,dept,d).then(n=>renderProfile(name,role,dept,d,n));
+      }
+      if(autoPrint){
+        // Nếu có narrative sẵn → print sau 1.5s
+        // Nếu cần gen AI → renderProfile sẽ trigger print
+        if(narrative) setTimeout(()=>window.print(),3000);
       }
     }
     if(document.readyState==='loading'){
@@ -784,9 +591,5 @@ function resetForm(){
   }
 })();
 </script>
-
-
-
-
-
-</body></html>
+</body>
+</html>
