@@ -523,7 +523,7 @@ function exportPDF(){
   const exportItem={...currentItem};
   delete exportItem.AIProfile;
   const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
-  const baseUrl=location.origin+location.pathname.replace('insights-admin.html','insights-employee.html');
+  const baseUrl=location.origin+location.pathname.replace(/[^/]+$/, 'insights-employee.html');
   const url=`${baseUrl}?data=${data}&print=1`;
   const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
   if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
