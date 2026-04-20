@@ -840,7 +840,9 @@ async function main(){
     if(!res.ok) throw new Error('API '+res.status);
     const apiData = await res.json();
     const rawText = apiData.content.map(b=>b.text||'').join('').trim();
-    const text = rawText.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+    let text = rawText.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+    const lastBrace = text.lastIndexOf('}');
+    if(lastBrace !== -1) text = text.substring(0, lastBrace + 1);
     profileData = JSON.parse(text);
   }catch(err){
     console.error('AI error:',err);
