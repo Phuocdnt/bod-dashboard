@@ -509,27 +509,14 @@ function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))c
 
 function exportPDF(){
 if(!currentItem)return;
-const i=currentItem;
-const p=new URLSearchParams({
-  name: i.Title||'',
-  role: i.EmployeeRole||'',
-  dept: i.Department||'',
-  primary: i.PrimaryColor||'blue',
-  secondary: i.SecondaryColor||'green',
-  r: i.RedScore||0,
-  y: i.YellowScore||0,
-  g: i.GreenScore||0,
-  b: i.BlueScore||0,
-  ie: i.IEType||'',
-  lead: i.LeadStyle||'',
-  stress: i.StressBehavior||'',
-  arch: i.Archetype||''
-});
-const baseUrl=location.origin+location.pathname.replace('insights-admin.html','insights-profile.html');
-const url=`${baseUrl}?${p.toString()}`;
-const popup=window.open(url,'_blank','width=900,height=750,scrollbars=yes,resizable=yes');
+const exportItem={...currentItem};
+delete exportItem.AIProfile;
+const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
+const baseUrl=location.origin+location.pathname.replace('insights-admin.html','insights-employee.html');
+const url=`${baseUrl}?data=${data}&print=1`;
+const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
 if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
-else toast('⏳ Đang mở AI Profile… (~20–30 giây)');
+else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)');
 }
 
 document.addEventListener('DOMContentLoaded',loadData);
