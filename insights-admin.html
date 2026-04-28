@@ -518,10 +518,25 @@ function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))c
 
 function exportPDF(){
   if(!currentItem)return;
-  // Strip AIProfile trước khi encode → tránh URL >8000 ký tự bị cắt
-  // Employee popup sẽ tự gen AI rồi lưu ngược về SharePoint
   const exportItem={...currentItem};
   delete exportItem.AIProfile;
+  // Nếu thiếu điểm (version cũ) → recalculate từ Answers trước khi pass sang employee
+  const totalSc=(exportItem.RedScore||0)+(exportItem.YellowScore||0)+(exportItem.GreenScore||0)+(exportItem.BlueScore||0);
+  if(totalSc===0 && exportItem.Answers){
+    const rc=recalcFromAnswers(exportItem.Answers);
+    if(rc){
+      exportItem.RedScore=rc.redScore;
+      exportItem.YellowScore=rc.yellowScore;
+      exportItem.GreenScore=rc.greenScore;
+      exportItem.BlueScore=rc.blueScore;
+      exportItem.PrimaryColor=rc.primaryColor;
+      exportItem.SecondaryColor=rc.secondaryColor;
+      exportItem.IEType=rc.ieType;
+      exportItem.LeadStyle=rc.leadStyle;
+      exportItem.StressBehavior=rc.stressBehavior;
+      toast('ℹ️ Điểm được tính lại từ Answers (version cũ)');
+    }
+  }
   const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
   const baseUrl=location.origin+location.pathname.replace(/[^/]+$/, 'insights-employee.html');
   const url=`${baseUrl}?data=${data}&print=1`;
