@@ -611,7 +611,7 @@ async function genAdminProfile(type,id){
 
   const data_line=`Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}\nRed ${pct(r)}% | Yellow ${pct(y)}% | Green ${pct(g)}% | Blue ${pct(b)}%\nMàu chính: ${CI[pr]?.l||pr} (${pct(r||y||g||b)}%) | Màu phụ: ${CI[sec]?.l||sec} | Archetype: ${arch}\nIE: ${ieDesc} | Lãnh đạo: ${LLABELS[lead]||lead} | Stress: ${SLABELS[stress]||stress}`;
 
-  const empPrompt=`${data_line}\n\nYÊU CẦU: Gọi tên "${name}" trực tiếp. Mỗi điểm gắn rõ nguồn gốc màu/IE/stress. Tình huống cụ thể. Đoạn 4 personalStyle giải thích ${name} KHÁC GÌ so với người cùng màu ${CI[pr]?.l||pr}. Viết CHO nhân viên tự đọc — ấm áp.\n\nJSON thuần:\n{"personalStyle":"4 đoạn ngăn bằng \\n: (1) archetype+màu, (2) IE tương tác, (3) lãnh đạo thực tế, (4) điểm khác biệt","strengths":["8 điểm — nguồn gốc rõ, tình huống cụ thể"],"weaknesses":["6 điểm — gắn stress/shadow, tác động thực tế"],"valueToTeam":["6 đóng góp cụ thể cho vai trò ${role}"],"communication":{"do":["6 cách giao tiếp hiệu quả"],"avoid":["5 điều tránh — gắn stress"]},"blindSpots":"2-3 đoạn ngăn bằng \\n — đặc thù kết hợp màu+IE+archetype","development":["6 gợi ý có timeframe — ưu tiên chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp"],"managingTips":["5 cách cộng tác hiệu quả nhất — actionable"]}`;
+  const empPrompt=`${data_line}\n\nYÊU CẦU: Gọi tên "${name}" trực tiếp. Mỗi điểm gắn rõ nguồn gốc màu/IE/stress. Tình huống cụ thể. Đoạn 4 personalStyle giải thích ${name} KHÁC GÌ so với người cùng màu ${CI[pr]?.l||pr}. Viết CHO nhân viên tự đọc — ấm áp.\n\nJSON thuần:\n{"personalStyle":"3 đoạn ngăn bằng \\n: (1) archetype+màu+IE, (2) phong cách lãnh đạo thực tế, (3) điểm khác biệt so với người cùng màu","strengths":["6 điểm — nguồn gốc rõ, tình huống cụ thể"],"weaknesses":["5 điểm — gắn stress/shadow, tác động thực tế"],"valueToTeam":["5 đóng góp cụ thể cho vai trò ${role}"],"communication":{"do":["4 cách giao tiếp hiệu quả"],"avoid":["4 điều tránh — gắn stress"]},"blindSpots":"2 đoạn ngăn bằng \\n — đặc thù kết hợp màu+IE","development":["5 gợi ý có timeframe — ưu tiên chiều còn yếu"],"idealEnvironment":["4 môi trường phù hợp"],"managingTips":["4 cách cộng tác hiệu quả nhất — actionable"]}`;
 
   const mgrPrompt=`${data_line}\n\nQUY TẮC: Gọi tên "${name}" ít nhất 4 lần. KHÔNG lặp ý. Mỗi điểm yếu nêu hậu quả cụ thể. managerSnapshot đủ để hành động ngay. failureScenario cụ thể cho vai trò ${role}. Tiếng Việt, trực tiếp, không sáo rỗng.\n\nJSON thuần:\n{"managerSnapshot":{"thisWeek":["3 việc tuần này — động từ + đối tượng + kết quả"],"biggestRisk":"1 rủi ro 30-60 ngày — cụ thể + hậu quả","bestUse":"cách triển khai ${name} tốt nhất — 1-2 câu","warningSignals":["2 dấu hiệu hành vi quan sát được"]},"summary":"2 câu — ai trong làm việc + điều cần theo dõi","strengths":["5 điểm — quan sát/đo lường được"],"weaknesses":["4 điểm — hậu quả cụ thể với công việc/nhóm"],"communication":{"do":["4 cách"],"avoid":["3 điều tránh + lý do"]},"stressBehavior":"3 câu: phản ứng → tác động nhóm → dấu hiệu sớm","leadershipStyle":"2 câu: cách lãnh đạo thực tế + điều kiện phát huy","development":["4 hành động — thực hiện 90 ngày"],"managingTips":["5 tips — 2 đầu trong 24-72h, 3 dài hạn"],"performancePositioning":"2-3 câu — bối cảnh tốt nhất + nên tránh","failureScenario":"3 câu — tình huống → hành vi → dấu hiệu sớm"}`;
 
@@ -626,7 +626,16 @@ async function genAdminProfile(type,id){
     let text=(data.content||[]).map(b=>b.text||'').join('').trim();
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
-    const json=JSON.parse(text);
+    let json;
+    try{ json=JSON.parse(text); }catch(e1){
+      let recovered=false;
+      for(let i=text.length-1;i>100;i--){
+        if(text[i]==='}'){
+          try{ json=JSON.parse(text.substring(0,i+1)); recovered=true; break; }catch(e2){}
+        }
+      }
+      if(!recovered) throw e1;
+    }
     if(!aiCache[id]) aiCache[id]={};
     aiCache[id][type]=json;
     contentEl.innerHTML=type==='employee'?renderEmpHTML(json,item):renderMgrHTML(json,item);
