@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Discovery – Khảo Sát & Profile</title>
+<title>Insights Discovery – Profile Cá Nhân</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+const CONFIG = {
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488"
+};
+</script>
 <style>
 :root{
   --red:#E8392A;--yellow:#F5A623;--green:#3CB371;--blue:#2B6CB0;
@@ -23,40 +28,33 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 @keyframes drift1{to{transform:translate(40px,60px)}}
 @keyframes drift2{to{transform:translate(-30px,-50px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .wrap{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:40px 20px 100px}
-/* Header */
 .hdr{text-align:center;margin-bottom:48px}
 .hdr-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:99px;border:1px solid var(--bdr);background:var(--sur);font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
 .hdr h1{font-family:var(--fd);font-size:clamp(2.2rem,5vw,3.6rem);font-weight:300;line-height:1.15;margin-bottom:12px}
 .hdr h1 em{font-style:italic;background:linear-gradient(135deg,var(--yellow),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hdr p{color:var(--muted);font-size:14px;line-height:1.8;max-width:500px;margin:0 auto}
 .wheel-icon{width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--red) 0 90deg,var(--yellow) 90deg 180deg,var(--green) 180deg 270deg,var(--blue) 270deg 360deg);margin:0 auto 24px;box-shadow:0 0 40px rgba(245,166,35,.3);animation:spin 25s linear infinite}
-/* Color intro */
 .color-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:24px 0}
 .ci{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:var(--sur);border:1px solid var(--bdr)}
 .ci-bar{width:4px;height:40px;border-radius:4px;flex-shrink:0}
 .ci h3{font-size:14px;font-weight:600;margin-bottom:3px}
 .ci p{font-size:12px;color:var(--muted);line-height:1.4}
 @media(max-width:540px){.color-grid{grid-template-columns:1fr}}
-/* Progress */
 .prog-wrap{display:none;margin-bottom:28px}
 .prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
 .prog-bg{height:3px;background:var(--bdr);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green),var(--yellow),var(--red));transition:width .4s ease}
-/* Steps */
 .step{display:none;animation:fadeUp .35s ease both}
 .step.active{display:block}
-/* Card */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .card{background:var(--sur);border:1px solid var(--bdr);border-radius:20px;padding:28px;margin-bottom:18px}
-/* Form */
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
 .field input,.field select{background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:10px;padding:12px 14px;font-family:var(--ff);font-size:15px;outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus{border-color:rgba(245,166,35,.5);box-shadow:0 0 0 3px rgba(245,166,35,.08)}
+.field input:focus,.field select:focus{border-color:rgba(245,166,35,.5)}
 .field input::placeholder{color:var(--muted)}
 .field select option{background:var(--sur2)}
-/* Questions */
 .qcard{background:var(--sur);border:1.5px solid var(--bdr);border-radius:16px;padding:24px;margin-bottom:12px;transition:border-color .25s}
 .qcard.done{border-color:rgba(43,108,176,.35);background:rgba(43,108,176,.04)}
 .qnum{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
@@ -69,40 +67,40 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .opt.sel-yellow{border-color:var(--yellow)!important;background:var(--yellow-s)!important}
 .opt.sel-green{border-color:var(--green)!important;background:var(--green-s)!important}
 .opt.sel-blue{border-color:var(--blue)!important;background:var(--blue-s)!important}
-.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;background:var(--muted);opacity:.35;transition:all .18s}
-.opt.sel-red .dot-r{background:var(--red);box-shadow:0 0 8px var(--red);opacity:1}
-.opt.sel-yellow .dot-y{background:var(--yellow);box-shadow:0 0 8px var(--yellow);opacity:1}
-.opt.sel-green .dot-g{background:var(--green);box-shadow:0 0 8px var(--green);opacity:1}
-.opt.sel-blue .dot-b{background:var(--blue);box-shadow:0 0 8px var(--blue);opacity:1}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-r{background:var(--red);box-shadow:0 0 8px var(--red)}
+.dot-y{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.dot-g{background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot-b{background:var(--blue);box-shadow:0 0 8px var(--blue)}
 .opt-lbl{font-size:13px;line-height:1.55;color:var(--txt)}
-/* Buttons */
 .btn{display:block;width:100%;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;font-family:var(--ff);font-size:15px;font-weight:600;transition:all .2s;margin-top:10px}
 .btn-pri{background:linear-gradient(135deg,#2563EB,#1E40AF);color:#fff;box-shadow:0 4px 24px rgba(37,99,235,.35)}
 .btn-pri:hover{transform:translateY(-1px)}
 .btn-sec{background:var(--sur2);color:var(--muted);border:1px solid var(--bdr)}
 .btn-sec:hover{color:var(--txt)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-gold{background:linear-gradient(135deg,#c8963e,#f5a623);color:#0A0E14;font-weight:700}
 .btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,166,35,.4)}
+.btn-print{background:linear-gradient(135deg,#1a5c2a,#3CB371);color:#fff}
+.btn-print:hover{transform:translateY(-1px)}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 @media(max-width:480px){.btn-row{grid-template-columns:1fr}}
 .batch-info{text-align:center;color:var(--muted);font-size:12px;margin:12px 0 6px}
-/* Profile result */
 .profile-header{text-align:center;padding:36px 0 24px}
 .profile-name{font-family:var(--fd);font-size:2.4rem;font-weight:300;margin-bottom:4px}
 .profile-role{color:var(--muted);font-size:14px;margin-bottom:20px;letter-spacing:.5px}
 .profile-type-badge{display:inline-block;padding:8px 20px;border-radius:99px;font-size:13px;font-weight:600;letter-spacing:.5px}
-.wheel-wrap{margin:28px auto;max-width:320px}
+.wheel-wrap{margin:28px auto;max-width:320px;position:relative}
 .wheel-caption{text-align:center;margin-top:12px}
 .wheel-caption .pos-main{font-family:var(--fd);font-size:1.2rem;font-weight:400}
 .wheel-caption .pos-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .color-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
 .cb{background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:14px}
 .cb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.cb-name{font-size:12px;font-weight:600}
+.cb-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
 .cb-pct{font-size:13px;font-weight:700}
 .cb-bar-bg{height:6px;background:var(--bdr);border-radius:99px;overflow:hidden}
-.cb-bar-fill{height:100%;border-radius:99px;transition:width .8s ease .3s}
+.cb-bar-fill{height:100%;border-radius:99px;transition:width .8s ease .2s}
 @media(max-width:480px){.color-bars{grid-template-columns:1fr}}
 .dims-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
 @media(max-width:540px){.dims-grid{grid-template-columns:1fr}}
@@ -122,11 +120,10 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .profile-list.neu li::before{content:'→';color:var(--blue)}
 .ai-loading{text-align:center;padding:48px 20px}
 .spinner-lg{display:inline-block;width:48px;height:48px;border:3px solid var(--bdr);border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px}
+.no-print{}.print-footer{display:none}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;transition:transform .3s ease;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
-.no-print{}
-.print-footer{display:none}
 @media print{
   body{background:#fff;color:#111}
   .bg-orbs,.no-print,#toast{display:none!important}
@@ -135,111 +132,10 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
   .profile-section{break-inside:avoid}
   :root{--bg:#fff;--sur:#f8f9fa;--sur2:#f0f2f5;--bdr:#e0e0e0;--txt:#111;--muted:#555}
   .hdr h1 em{-webkit-text-fill-color:initial;color:#c8963e}
-  .ps-content,.profile-list li{color:#333;background:#f5f5f5}
-  .print-footer{display:block;text-align:center;color:#888;font-size:11px;padding:16px}
+  .ps-content,.profile-list li{color:#333}
+  .profile-name{color:#111}
+  .print-footer{display:block;text-align:center;color:#888;font-size:11px;margin-top:24px;padding:16px}
 }
-
-/* ── MANAGER SNAPSHOT (admin print only) ── */
-.snap-section{
-  border:1px solid rgba(232,57,42,.25);border-radius:14px;
-  overflow:hidden;background:rgba(232,57,42,.04);margin-bottom:20px;
-}
-.snap-head{
-  display:flex;align-items:center;gap:12px;
-  background:rgba(232,57,42,.08);border-bottom:1px solid rgba(232,57,42,.18);
-  padding:16px 20px;
-}
-.snap-icon{
-  width:36px;height:36px;border-radius:8px;
-  background:rgba(232,57,42,.15);display:flex;align-items:center;
-  justify-content:center;font-size:18px;flex-shrink:0;
-}
-.snap-title{font-size:14px;font-weight:700;color:#ff6b5e}
-.snap-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.snap-badge{
-  margin-left:auto;font-size:9px;font-weight:800;letter-spacing:1.5px;
-  text-transform:uppercase;background:rgba(232,57,42,.18);color:#ff6b5e;
-  padding:3px 10px;border-radius:99px;border:1px solid rgba(232,57,42,.3);
-  white-space:nowrap;flex-shrink:0;
-}
-.snap-grid{display:grid;grid-template-columns:1fr 1fr}
-.snap-grid+.snap-grid{border-top:1px solid rgba(232,57,42,.12)}
-.snap-card{padding:16px 20px}
-.snap-card+.snap-card{border-left:1px solid rgba(232,57,42,.12)}
-.snap-label{
-  font-size:9px;font-weight:800;letter-spacing:1.5px;
-  text-transform:uppercase;margin-bottom:10px;
-}
-.snap-urgent .snap-label,.snap-risk .snap-label{color:#ff6b5e}
-.snap-use .snap-label{color:#5fd68a}
-.snap-watch .snap-label{color:#f5c842}
-.snap-card p{font-size:12px;line-height:1.7;color:rgba(232,237,243,.82);margin:0}
-.snap-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
-.snap-list li{font-size:12px;line-height:1.6;color:rgba(232,237,243,.82);padding-left:14px;position:relative}
-.snap-urgent .snap-list li::before,.snap-risk .snap-list li::before{content:'→';position:absolute;left:0;color:#ff6b5e}
-.snap-use .snap-list li::before{content:'✓';position:absolute;left:0;color:#5fd68a}
-.snap-watch .snap-list li::before{content:'!';position:absolute;left:0;color:#f5c842;font-weight:700}
-@media(max-width:600px){
-  .snap-grid{grid-template-columns:1fr}
-  .snap-card+.snap-card{border-left:none;border-top:1px solid rgba(232,57,42,.12)}
-}
-/* ── PERFORMANCE POSITIONING ── */
-.perf-wrap{display:flex;align-items:flex-start;gap:14px}
-.perf-badge{
-  flex-shrink:0;padding:8px 14px;border-radius:8px;
-  font-size:11px;font-weight:800;letter-spacing:1px;
-  text-transform:uppercase;white-space:nowrap;
-}
-.perf-above{background:rgba(60,179,113,.15);color:#5fd68a;border:1px solid rgba(60,179,113,.3)}
-.perf-at{background:rgba(245,166,35,.12);color:#f5c842;border:1px solid rgba(245,166,35,.3)}
-.perf-below{background:rgba(232,57,42,.12);color:#ff6b5e;border:1px solid rgba(232,57,42,.3)}
-/* ── FAILURE SCENARIO ── */
-.failure-card{
-  border:1px solid rgba(232,57,42,.2);border-radius:14px;
-  overflow:hidden;background:rgba(232,57,42,.03);
-  padding:16px 20px;margin-top:12px;
-}
-.failure-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-top:12px}
-@media(max-width:600px){.failure-grid{grid-template-columns:1fr}}
-.failure-col{padding:12px 14px}
-.failure-col+.failure-col{border-left:1px solid rgba(232,57,42,.1)}
-@media(max-width:600px){.failure-col+.failure-col{border-left:none;border-top:1px solid rgba(232,57,42,.1)}}
-.failure-col-label{
-  font-size:9px;font-weight:800;letter-spacing:2px;
-  text-transform:uppercase;color:rgba(232,57,42,.7);margin-bottom:8px;
-}
-.failure-col p{font-size:12px;line-height:1.7;color:rgba(232,237,243,.78);margin:0}
-
-/* ── QUICK PROFILE ── */
-.qp-wrap{border-radius:14px;overflow:hidden;background:var(--sur);border:1px solid var(--bdr);margin-bottom:8px}
-.qp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 24px 16px}
-.qp-name{font-family:var(--fd);font-size:1.6rem;font-weight:600;color:var(--txt);line-height:1.2}
-.qp-role{font-size:13px;color:var(--muted);margin-top:4px}
-.qp-arch{font-size:11px;font-weight:700;letter-spacing:1px;padding:5px 12px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-top:2px}
-.color-bars{padding:0 24px}
-.qp-insights{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bdr)}
-.qp-col{padding:18px 24px}
-.qp-col+.qp-col{border-left:1px solid var(--bdr)}
-.qp-col-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
-.qp-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-.qp-list li{font-size:13px;line-height:1.6;color:rgba(232,237,243,.85);padding-left:14px;position:relative}
-.qp-list li::before{content:'✓';position:absolute;left:0;color:#5fd68a}
-.qp-risk li::before{content:'→';color:#ff6b5e}
-.qp-ai-bar{display:flex;align-items:center;gap:10px;padding:12px 24px;background:rgba(245,166,35,.05);border-top:1px solid var(--bdr);font-size:12px;color:var(--muted)}
-/* ── MODE TOGGLE ── */
-.qp-toggle{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bdr)}
-.mode-btn{padding:14px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;letter-spacing:.3px}
-.mode-btn:hover:not(:disabled){color:var(--txt);background:rgba(255,255,255,.04)}
-.mode-btn:disabled{opacity:.45;cursor:not-allowed}
-.mode-btn.mode-on{color:var(--txt);background:rgba(245,166,35,.08);border-bottom:2px solid var(--yellow)}
-.mode-btn+.mode-btn{border-left:1px solid var(--bdr)}
-.deep-badge{font-size:10px;font-weight:700;color:#5fd68a}
-@media(max-width:600px){
-  .qp-insights{grid-template-columns:1fr}
-  .qp-col+.qp-col{border-left:none;border-top:1px solid var(--bdr)}
-}
-/* ── WHAT TO DO NOW ── */
-.wtn-card{border-color:rgba(245,166,35,.25);background:rgba(245,166,35,.04)}
 </style>
 </head>
 <body>
@@ -255,7 +151,6 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="prog-lbl"><span id="progLbl">0 / 48 câu</span><span id="progPct">0%</span></div>
     <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
-  <!-- STEP 0: Intro -->
   <div class="step active" id="s0">
     <div class="card">
       <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
@@ -280,541 +175,445 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         </select>
       </div>
     </div>
-    <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát &#8594; 48 câu hỏi</button>
+    <button class="btn btn-gold" onclick="startQuiz()">Bắt đầu khảo sát — 48 câu hỏi &#8594;</button>
     <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">&#9200; Khoảng 15–20 phút &nbsp;·&nbsp; Không có câu trả lời đúng/sai</p>
   </div>
-  <!-- STEP 1: Questions -->
   <div class="step" id="s1">
     <div class="card">
       <div id="stepInfo" class="batch-info"></div>
       <div id="qContainer"></div>
     </div>
-    <div class="btn-row no-print">
+    <div class="btn-row">
       <button class="btn btn-sec" onclick="prevBatch()">&#8592; Quay lại</button>
       <button class="btn btn-pri" id="nextBtn" onclick="nextBatch()">Tiếp theo &#8594;</button>
     </div>
   </div>
-  <!-- STEP 2: Profile -->
   <div class="step" id="s2">
     <div id="profileContainer"></div>
     <div class="btn-row no-print" id="profileActions" style="display:none">
-      <!-- PDF export removed: only admin can export profiles -->
+      <button class="btn btn-print" onclick="window.print()">&#128424; Xuất PDF Profile</button>
       <button class="btn btn-sec" onclick="resetForm()">Làm lại từ đầu</button>
-    </div>
-    <div class="print-footer card" style="margin-top:0">
-      <p id="printFooterTxt" style="font-size:11px;color:var(--muted);text-align:center"></p>
     </div>
   </div>
 </div>
 <div id="toast"></div>
+
 <script>
 const CONFIG = {
-  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-  // ⚠️ Dán URL Power Automate Claude Proxy Flow vào đây sau khi tạo
-  claudeFlowUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev"
+  flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488"
 };
-</script>
-<script>
-// ═══════════════════════════════════════
-// 48 CÂU HỎI
-// ═══════════════════════════════════════
-const QS=[
-  // CORE (1-24)
-  {t:"Trong cuộc họp nhóm, bạn thường:",o:{r:"Dẫn dắt thảo luận và đưa ra quyết định",y:"Đưa ra nhiều ý tưởng sáng tạo và truyền cảm hứng",g:"Lắng nghe và đảm bảo mọi người được lắng nghe",b:"Phân tích và đặt câu hỏi chi tiết để hiểu rõ hơn"}},
-  {t:"Phong cách giao tiếp tự nhiên của bạn:",o:{r:"Trực tiếp, rõ ràng, đi thẳng vào vấn đề",y:"Nhiệt tình, cởi mở, hay kể chuyện để minh họa",g:"Ấm áp, kiên nhẫn, lắng nghe nhiều hơn nói",b:"Có cấu trúc, chi tiết, cân nhắc từng lời"}},
-  {t:"Khi bắt đầu dự án mới, điều đầu tiên bạn làm là:",o:{r:"Xác định mục tiêu và phân công nhiệm vụ ngay",y:"Brainstorm ý tưởng và truyền lửa cho cả nhóm",g:"Hỏi ý kiến mọi người và tìm hiểu nhu cầu từng người",b:"Lập kế hoạch chi tiết và nghiên cứu kỹ trước khi bắt đầu"}},
-  {t:"Bạn làm việc hiệu quả nhất khi:",o:{r:"Có mục tiêu rõ ràng và quyền tự chủ cao",y:"Làm việc với nhiều người và được tự do sáng tạo",g:"Có môi trường hợp tác, ổn định và ít xung đột",b:"Có đủ thời gian để nghiên cứu và làm đúng từ đầu"}},
-  {t:"Khi đưa ra quyết định, bạn thường dựa vào:",o:{r:"Bản năng và kinh nghiệm, quyết định nhanh",y:"Cảm hứng và sự đồng thuận của nhóm",g:"Tác động đến con người và sự hài hòa tập thể",b:"Dữ liệu, phân tích và tiền lệ có cơ sở"}},
-  {t:"Điều bạn coi trọng nhất trong công việc:",o:{r:"Kết quả đo lường được và tác động rõ ràng",y:"Sự sáng tạo, đổi mới và niềm vui trong công việc",g:"Mối quan hệ tốt và sự phát triển của đồng nghiệp",b:"Chất lượng, độ chính xác và tuân thủ quy trình"}},
-  {t:"Khi gặp trở ngại lớn, phản ứng đầu tiên của bạn:",o:{r:"Đối mặt trực tiếp và tìm cách vượt qua ngay",y:"Tìm góc nhìn mới và truyền cảm hứng cho mọi người",g:"Tìm sự hỗ trợ và đảm bảo mọi người ổn",b:"Phân tích nguyên nhân và lên kế hoạch giải quyết hệ thống"}},
-  {t:"Trong nhóm làm việc, vai trò tự nhiên của bạn là:",o:{r:"Người lãnh đạo thúc đẩy tiến độ",y:"Người tạo ý tưởng và giữ năng lượng cho nhóm",g:"Người giữ hòa khí và hỗ trợ mọi thành viên",b:"Người đảm bảo chất lượng và phân tích kỹ lưỡng"}},
-  {t:"Khi nhận phản hồi về công việc của mình:",o:{r:"Lắng nghe nhưng giữ quan điểm nếu đúng",y:"Cởi mở tiếp nhận và nhanh chóng điều chỉnh",g:"Cảm nhận sâu sắc và cần thời gian để tiêu hóa",b:"Phân tích phản hồi cẩn thận trước khi chấp nhận"}},
-  {t:"Bạn thích cách thức làm việc nào nhất:",o:{r:"Hành động nhanh, thử nghiệm và học qua thực tế",y:"Linh hoạt, đa dạng và không lặp lại một chỗ",g:"Ổn định, nhất quán và có thể đoán trước",b:"Có phương pháp, có hệ thống và cẩn thận"}},
-  {t:"Khi có xung đột trong nhóm, bạn thường:",o:{r:"Giải quyết thẳng thắn và dứt khoát",y:"Dùng sự hài hước và năng lượng tích cực để xoa dịu",g:"Làm trung gian, lắng nghe cả hai bên",b:"Tìm hiểu nguyên nhân gốc rễ và đề xuất giải pháp công bằng"}},
-  {t:"Động lực làm việc chính của bạn đến từ:",o:{r:"Thành tích, chiến thắng và được thừa nhận năng lực",y:"Sự hào hứng, kết nối xã hội và được truyền cảm hứng",g:"Giúp đỡ người khác và thấy mọi người phát triển",b:"Hiểu sâu vấn đề, làm đúng và được tôn trọng về chuyên môn"}},
-  {t:"Khi lần đầu gặp người mới, bạn:",o:{r:"Đi thẳng vào vấn đề và đặt câu hỏi mục đích",y:"Chia sẻ câu chuyện cá nhân và tạo không khí vui vẻ",g:"Hỏi về họ và chú ý lắng nghe",b:"Đặt câu hỏi logic để hiểu đối phương"}},
-  {t:"Phong cách làm việc lý tưởng của bạn:",o:{r:"Độc lập, tự chủ với mục tiêu rõ ràng",y:"Hợp tác linh hoạt với nhiều người khác nhau",g:"Làm việc nhóm nhỏ, tin tưởng lẫn nhau",b:"Có không gian riêng để tập trung và nghiên cứu sâu"}},
-  {t:"Khi trình bày ý tưởng, bạn thường:",o:{r:"Đi thẳng vào điểm chính và kết quả mong đợi",y:"Kể câu chuyện hấp dẫn và dùng nhiều ví dụ sinh động",g:"Nhấn mạnh lợi ích cho mọi người và tác động cộng đồng",b:"Trình bày có cấu trúc với số liệu và logic rõ ràng"}},
-  {t:"Bạn xử lý thông tin như thế nào:",o:{r:"Tổng quan nhanh, tập trung vào điều quan trọng nhất",y:"Bức tranh toàn cảnh và khả năng của tương lai",g:"Tác động đến con người và các mối quan hệ",b:"Chi tiết, phân tích từng phần trước khi kết luận"}},
-  {t:"Khi deadline cận kề, bạn:",o:{r:"Tập trung cao độ và đẩy nhanh tiến độ",y:"Vẫn giữ tinh thần tích cực và tìm cách sáng tạo",g:"Lo lắng cho mọi người và cố đảm bảo ai cũng ổn",b:"Làm việc có hệ thống và cẩn thận không để sai sót"}},
-  {t:"Điều bạn không thích nhất trong môi trường làm việc:",o:{r:"Quan liêu, chậm trễ và thiếu quyết đoán",y:"Buồn tẻ, gò bó và thiếu sáng tạo",g:"Xung đột, cạnh tranh gay gắt và thiếu hỗ trợ",b:"Hỗn loạn, thiếu quy trình và sai sót không được sửa"}},
-  {t:"Khi hoàn thành một dự án thành công, bạn cảm thấy:",o:{r:"Tự hào về kết quả và muốn tiếp tục thách thức lớn hơn",y:"Phấn khích và muốn chia sẻ thành công với mọi người",g:"Hài lòng khi thấy mọi người đều vui và phát triển",b:"Hài lòng với chất lượng đạt được và rút ra bài học"}},
-  {t:"Khi cần học kỹ năng mới, bạn:",o:{r:"Học qua thực hành và thử nghiệm nhanh",y:"Học từ người khác và thích môi trường học tập vui vẻ",g:"Học từ từ, cẩn thận và cần người hướng dẫn kiên nhẫn",b:"Nghiên cứu lý thuyết kỹ trước khi thực hành"}},
-  {t:"Phong cách email/báo cáo của bạn:",o:{r:"Ngắn gọn, súc tích, thẳng vào điểm chính",y:"Sôi động, có cá tính và đôi khi dùng emoji",g:"Ấm áp, chu đáo và quan tâm đến người đọc",b:"Có cấu trúc rõ ràng, chi tiết và chuyên nghiệp"}},
-  {t:"Khi không đồng ý với quyết định của cấp trên:",o:{r:"Nói thẳng quan điểm và thách thức nếu cần",y:"Đề xuất ý tưởng thay thế một cách sáng tạo",g:"Chia sẻ lo ngại nhẹ nhàng và cố tìm điểm chung",b:"Chuẩn bị dữ liệu và lập luận có cơ sở trước khi phản biện"}},
-  {t:"Điều mà đồng nghiệp thường nhớ đến bạn nhất:",o:{r:"Sự quyết đoán và khả năng hoàn thành công việc",y:"Năng lượng tích cực và khả năng tạo không khí vui vẻ",g:"Sự quan tâm chân thành và luôn sẵn sàng giúp đỡ",b:"Sự chuyên nghiệp, chính xác và đáng tin cậy"}},
-  {t:"Khi được tự chọn, bạn thích dự án kiểu nào:",o:{r:"Dự án có tác động lớn và cần quyết đoán nhanh",y:"Dự án sáng tạo và có thể cộng tác nhiều người",g:"Dự án giúp đỡ cụ thể một nhóm người",b:"Dự án phức tạp cần nghiên cứu và phân tích sâu"}},
-  // I/E (25-32)
-  {t:"Sau một ngày làm việc nhiều với người khác, bạn:",o:{r:"Vẫn có năng lượng, thích tụ tập thêm",y:"Cảm thấy hứng khởi và muốn gặp gỡ thêm",g:"Hơi mệt nhưng vẫn ổn, cần chút yên tĩnh",b:"Mệt và cần thời gian riêng để nạp lại năng lượng"},d:"ie"},
-  {t:"Bạn thích xử lý ý tưởng như thế nào:",o:{r:"Nói ra và thảo luận trực tiếp",y:"Chia sẻ ngay với nhiều người để nhận phản hồi",g:"Suy nghĩ một lúc rồi mới chia sẻ với người tin tưởng",b:"Suy nghĩ và ghi chép cẩn thận trước khi nói"},d:"ie"},
-  {t:"Khi có vấn đề cần giải quyết, bạn:",o:{r:"Tìm người để trao đổi và hành động ngay",y:"Kể cho nhiều người nghe để nghe nhiều góc nhìn",g:"Chỉ tâm sự với vài người thực sự tin tưởng",b:"Tự suy nghĩ và xử lý trước khi chia sẻ"},d:"ie"},
-  {t:"Thời gian ở một mình đối với bạn:",o:{r:"Cần đôi khi nhưng không thích kéo dài",y:"Hiếm khi cần, thích có người bên cạnh hơn",g:"Cần để tái tạo năng lượng sau khi giao tiếp nhiều",b:"Rất quan trọng và cần nhiều thời gian riêng"},d:"ie"},
-  {t:"Trong bữa tiệc công ty, bạn:",o:{r:"Chủ động kết nối và nói chuyện với nhiều người",y:"Là tâm điểm chú ý, kể chuyện và tạo tiếng cười",g:"Nói chuyện sâu với vài người thân quen",b:"Quan sát nhiều hơn và chỉ nói khi có điều muốn chia sẻ"},d:"ie"},
-  {t:"Khi làm việc nhóm, bạn:",o:{r:"Thích thảo luận mở và ra quyết định nhanh chóng",y:"Thích brainstorm nhóm với nhiều ý tưởng sáng tạo",g:"Cần nghe mọi người trước khi đưa ra ý kiến",b:"Thích chuẩn bị trước và trình bày ý kiến khi đã sẵn sàng"},d:"ie"},
-  {t:"Môi trường làm việc lý tưởng của bạn:",o:{r:"Năng động, nhiều tương tác và áp lực tích cực",y:"Cởi mở, sáng tạo và luôn có người để trao đổi",g:"Yên tĩnh, hợp tác và ít cạnh tranh",b:"Tập trung, có cấu trúc và ít bị làm phiền"},d:"ie"},
-  {t:"Sức mạnh xã hội của bạn đến từ:",o:{r:"Sự tự tin và khả năng ảnh hưởng người khác",y:"Sự nhiệt tình và kết nối rộng rãi",g:"Sự tin tưởng và quan hệ sâu sắc với ít người",b:"Sự lắng nghe cẩn thận và đưa ra nhận xét sắc sảo"},d:"ie"},
-  // LEAD (33-40)
-  {t:"Là trưởng nhóm, bạn phân công công việc bằng cách:",o:{r:"Giao nhiệm vụ rõ ràng với kỳ vọng kết quả cụ thể",y:"Hỏi mọi người muốn làm gì để ai cũng hào hứng",g:"Xét đến năng lực và cảm xúc từng người",b:"Phân tích kỹ rồi phân công tối ưu dựa trên dữ liệu"},d:"lead"},
-  {t:"Khi nhân viên mắc lỗi nghiêm trọng, bạn:",o:{r:"Nói thẳng vấn đề và yêu cầu sửa ngay",y:"Tìm cách nhẹ nhàng và động viên họ cải thiện",g:"Gặp riêng, lắng nghe nguyên nhân và hỗ trợ",b:"Phân tích nguyên nhân hệ thống và cải tiến quy trình"},d:"lead"},
-  {t:"Phong cách lãnh đạo bạn ngưỡng mộ nhất:",o:{r:"Lãnh đạo mạnh mẽ, dám quyết và chịu trách nhiệm",y:"Lãnh đạo truyền cảm hứng, tạo văn hóa tích cực",g:"Lãnh đạo phục vụ, đặt con người lên trên kết quả",b:"Lãnh đạo chiến lược, xây dựng hệ thống bền vững"},d:"lead"},
-  {t:"Khi đội nhóm gặp xung đột nội bộ, bạn:",o:{r:"Ra quyết định dứt khoát để giải quyết nhanh",y:"Tạo không khí nhẹ nhàng và tìm điểm chung",g:"Nghe cả hai bên và tìm giải pháp win-win",b:"Phân tích khách quan và đề xuất giải pháp có cơ sở"},d:"lead"},
-  {t:"Bạn đo lường hiệu quả lãnh đạo bằng:",o:{r:"KPIs và kết quả kinh doanh đạt được",y:"Mức độ hài lòng và gắn kết của nhóm",g:"Sự phát triển của từng cá nhân trong nhóm",b:"Chất lượng quy trình và tính nhất quán"},d:"lead"},
-  {t:"Khi cần thay đổi lớn trong tổ chức, bạn:",o:{r:"Công bố quyết định và triển khai nhanh chóng",y:"Tạo hứng khởi và truyền thông về lợi ích của thay đổi",g:"Tham khảo ý kiến rộng rãi trước khi quyết định",b:"Nghiên cứu kỹ, thí điểm nhỏ rồi mới mở rộng"},d:"lead"},
-  {t:"Điều bạn ưu tiên nhất khi xây dựng đội nhóm:",o:{r:"Người có năng lực cao và tham vọng mạnh",y:"Người có tinh thần tích cực và hợp tác tốt",g:"Sự đa dạng và mỗi người đều được phát huy",b:"Kỹ năng chuyên môn sâu và tính kỷ luật"},d:"lead"},
-  {t:"Khi ra quyết định với tư cách lãnh đạo, bạn:",o:{r:"Quyết đoán nhanh và chịu trách nhiệm hoàn toàn",y:"Tạo sự đồng thuận bằng cách truyền cảm hứng",g:"Tham khảo nhiều bên và đảm bảo mọi người đồng ý",b:"Cân nhắc kỹ lưỡng dựa trên dữ liệu và tiền lệ"},d:"lead"},
-  // STRESS (41-48)
-  {t:"Khi áp lực công việc tăng cao đột ngột, bạn:",o:{r:"Tăng tốc, kiểm soát chặt hơn và thúc đẩy mọi người",y:"Trở nên hời hợt và mất tập trung hơn bình thường",g:"Im lặng chịu đựng và cố tránh xung đột",b:"Thu mình lại, phân tích liên tục nhưng khó hành động"},d:"stress"},
-  {t:"Dấu hiệu rõ nhất khi bạn đang bị stress:",o:{r:"Trở nên nóng nảy và mất kiên nhẫn với người khác",y:"Nói nhiều hơn, phân tán và khó tập trung",g:"Rút lui và trở nên im lặng bất thường",b:"Quá cầu toàn, phân tích quá mức và không thể quyết"},d:"stress"},
-  {t:"Khi bị quá tải với quá nhiều việc, bạn:",o:{r:"Cắt giảm những gì không thiết yếu và ép tiến độ",y:"Tìm người chia sẻ gánh nặng và vẫn cố lạc quan",g:"Cố gánh tất cả một mình để người khác không bị ảnh hưởng",b:"Tạo danh sách ưu tiên rất chi tiết và hệ thống"},d:"stress"},
-  {t:"Cách bạn phục hồi tốt nhất sau giai đoạn stress:",o:{r:"Tập thể thao mạnh hoặc làm gì đó quyết liệt, dứt khoát",y:"Gặp bạn bè, cười đùa và chia sẻ mọi thứ",g:"Nghỉ ngơi yên tĩnh cùng gia đình hoặc người thân",b:"Có thời gian riêng để suy nghĩ và tái cấu trúc bản thân"},d:"stress"},
-  {t:"Khi deadline cận kề và kết quả chưa như mong đợi:",o:{r:"Đẩy nhanh hơn, làm thêm giờ và yêu cầu mọi người tương tự",y:"Cố giữ tinh thần cả nhóm dù bản thân cũng đang lo lắng",g:"Lo lắng thầm nhưng vẫn hỗ trợ và không muốn ai biết",b:"Làm một mình đến tối muộn để đảm bảo từng chi tiết"},d:"stress"},
-  {t:"Khi nhận phản hồi tiêu cực về kết quả công việc:",o:{r:"Phản bác nếu không đồng ý và bảo vệ quyết định",y:"Giải thích và vẫn cố duy trì sự tự tin bên ngoài",g:"Nhận lỗi dù không hoàn toàn là lỗi của mình",b:"Tự trách bản thân và phân tích sâu đến mức quá mức"},d:"stress"},
-  {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",o:{r:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",y:"Coi đó là phiêu lưu thú vị và cảm thấy hứng khởi",g:"Lo lắng về tác động đến mọi người xung quanh",b:"Cần thời gian để xử lý và tìm lại sự trật tự"},d:"stress"},
-  {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",o:{r:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",y:"Môi trường tích cực, được công nhận và tương tác nhiều",g:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",b:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},d:"stress"}
+
+const QS = [
+  {t:"Trong cuộc họp nhóm, bạn thường:",opts:{red:"Dẫn dắt thảo luận và đưa ra quyết định",yellow:"Đưa ra nhiều ý tưởng sáng tạo và truyền cảm hứng",green:"Lắng nghe và đảm bảo mọi người được lắng nghe",blue:"Phân tích và đặt câu hỏi chi tiết để hiểu rõ hơn"}},
+  {t:"Phong cách giao tiếp tự nhiên của bạn:",opts:{red:"Trực tiếp, rõ ràng, đi thẳng vào vấn đề",yellow:"Nhiệt tình, cởi mở, hay kể chuyện để minh họa",green:"Ấm áp, kiên nhẫn, lắng nghe nhiều hơn nói",blue:"Có cấu trúc, chi tiết, cân nhắc từng lời"}},
+  {t:"Khi bắt đầu dự án mới, điều đầu tiên bạn làm là:",opts:{red:"Xác định mục tiêu và phân công nhiệm vụ ngay",yellow:"Brainstorm ý tưởng và truyền lửa cho cả nhóm",green:"Hỏi ý kiến mọi người và tìm hiểu nhu cầu từng người",blue:"Lập kế hoạch chi tiết và nghiên cứu kỹ trước khi bắt đầu"}},
+  {t:"Bạn làm việc hiệu quả nhất khi:",opts:{red:"Có mục tiêu rõ ràng và quyền tự chủ cao",yellow:"Làm việc với nhiều người và được tự do sáng tạo",green:"Có môi trường hợp tác, ổn định và ít xung đột",blue:"Có đủ thời gian để nghiên cứu và làm đúng từ đầu"}},
+  {t:"Khi đưa ra quyết định, bạn thường dựa vào:",opts:{red:"Bản năng và kinh nghiệm, quyết định nhanh",yellow:"Cảm hứng và sự đồng thuận của nhóm",green:"Tác động đến con người và sự hài hòa tập thể",blue:"Dữ liệu, phân tích và tiền lệ có cơ sở"}},
+  {t:"Điều bạn coi trọng nhất trong công việc:",opts:{red:"Kết quả đo lường được và tác động rõ ràng",yellow:"Sự sáng tạo, đổi mới và niềm vui trong công việc",green:"Mối quan hệ tốt và sự phát triển của đồng nghiệp",blue:"Chất lượng, độ chính xác và tuân thủ quy trình"}},
+  {t:"Khi gặp trở ngại lớn, phản ứng đầu tiên của bạn:",opts:{red:"Đối mặt trực tiếp và tìm cách vượt qua ngay",yellow:"Tìm góc nhìn mới và truyền cảm hứng cho mọi người",green:"Tìm sự hỗ trợ và đảm bảo mọi người ổn",blue:"Phân tích nguyên nhân và lên kế hoạch giải quyết hệ thống"}},
+  {t:"Trong nhóm làm việc, vai trò tự nhiên của bạn là:",opts:{red:"Người lãnh đạo thúc đẩy tiến độ",yellow:"Người tạo ý tưởng và giữ năng lượng cho nhóm",green:"Người giữ hòa khí và hỗ trợ mọi thành viên",blue:"Người đảm bảo chất lượng và phân tích kỹ lưỡng"}},
+  {t:"Khi nhận phản hồi về công việc của mình:",opts:{red:"Lắng nghe nhưng giữ quan điểm nếu đúng",yellow:"Cởi mở tiếp nhận và nhanh chóng điều chỉnh",green:"Cảm nhận sâu sắc và cần thời gian để tiêu hóa",blue:"Phân tích phản hồi cẩn thận trước khi chấp nhận"}},
+  {t:"Bạn thích cách thức làm việc nào nhất:",opts:{red:"Hành động nhanh, thử nghiệm và học qua thực tế",yellow:"Linh hoạt, đa dạng và không lặp lại một chỗ",green:"Ổn định, nhất quán và có thể đoán trước",blue:"Có phương pháp, có hệ thống và cẩn thận"}},
+  {t:"Khi có xung đột trong nhóm, bạn thường:",opts:{red:"Giải quyết thẳng thắn và dứt khoát",yellow:"Dùng sự hài hước và năng lượng tích cực để xoa dịu",green:"Làm trung gian, lắng nghe cả hai bên",blue:"Tìm hiểu nguyên nhân gốc rễ và đề xuất giải pháp công bằng"}},
+  {t:"Động lực làm việc chính của bạn đến từ:",opts:{red:"Thành tích, chiến thắng và được thừa nhận năng lực",yellow:"Sự hào hứng, kết nối xã hội và được truyền cảm hứng",green:"Giúp đỡ người khác và thấy mọi người phát triển",blue:"Hiểu sâu vấn đề, làm đúng và được tôn trọng về chuyên môn"}},
+  {t:"Khi lần đầu gặp người mới, bạn:",opts:{red:"Đi thẳng vào vấn đề và đặt câu hỏi mục đích",yellow:"Chia sẻ câu chuyện cá nhân và tạo không khí vui vẻ",green:"Hỏi về họ và chú ý lắng nghe",blue:"Đặt câu hỏi logic để hiểu đối phương"}},
+  {t:"Phong cách làm việc lý tưởng của bạn:",opts:{red:"Độc lập, tự chủ với mục tiêu rõ ràng",yellow:"Hợp tác linh hoạt với nhiều người khác nhau",green:"Làm việc nhóm nhỏ, tin tưởng lẫn nhau",blue:"Có không gian riêng để tập trung và nghiên cứu sâu"}},
+  {t:"Khi trình bày ý tưởng, bạn thường:",opts:{red:"Đi thẳng vào điểm chính và kết quả mong đợi",yellow:"Kể câu chuyện hấp dẫn và dùng nhiều ví dụ sinh động",green:"Nhấn mạnh lợi ích cho mọi người và tác động cộng đồng",blue:"Trình bày có cấu trúc với số liệu và logic rõ ràng"}},
+  {t:"Bạn xử lý thông tin như thế nào:",opts:{red:"Tổng quan nhanh, tập trung vào điều quan trọng nhất",yellow:"Bức tranh toàn cảnh và khả năng của tương lai",green:"Tác động đến con người và các mối quan hệ",blue:"Chi tiết, phân tích từng phần trước khi kết luận"}},
+  {t:"Khi deadline cận kề, bạn:",opts:{red:"Tập trung cao độ và đẩy nhanh tiến độ",yellow:"Vẫn giữ tinh thần tích cực và tìm cách sáng tạo",green:"Lo lắng cho mọi người và cố đảm bảo ai cũng ổn",blue:"Làm việc có hệ thống và cẩn thận không để sai sót"}},
+  {t:"Điều bạn không thích nhất trong môi trường làm việc:",opts:{red:"Quan liêu, chậm trễ và thiếu quyết đoán",yellow:"Buồn tẻ, gò bó và thiếu sáng tạo",green:"Xung đột, cạnh tranh gay gắt và thiếu hỗ trợ",blue:"Hỗn loạn, thiếu quy trình và sai sót không được sửa"}},
+  {t:"Khi hoàn thành một dự án thành công, bạn cảm thấy:",opts:{red:"Tự hào về kết quả và muốn tiếp tục thách thức lớn hơn",yellow:"Phấn khích và muốn chia sẻ thành công với mọi người",green:"Hài lòng khi thấy mọi người đều vui và phát triển",blue:"Hài lòng với chất lượng đạt được và rút ra bài học"}},
+  {t:"Khi cần học kỹ năng mới, bạn:",opts:{red:"Học qua thực hành và thử nghiệm nhanh",yellow:"Học từ người khác và thích môi trường học tập vui vẻ",green:"Học từ từ, cẩn thận và cần người hướng dẫn kiên nhẫn",blue:"Nghiên cứu lý thuyết kỹ trước khi thực hành"}},
+  {t:"Phong cách email/báo cáo của bạn:",opts:{red:"Ngắn gọn, súc tích, thẳng vào điểm chính",yellow:"Sôi động, có cá tính và đôi khi dùng emoji",green:"Ấm áp, chu đáo và quan tâm đến người đọc",blue:"Có cấu trúc rõ ràng, chi tiết và chuyên nghiệp"}},
+  {t:"Khi không đồng ý với quyết định của cấp trên:",opts:{red:"Nói thẳng quan điểm và thách thức nếu cần",yellow:"Đề xuất ý tưởng thay thế một cách sáng tạo",green:"Chia sẻ lo ngại nhẹ nhàng và cố tìm điểm chung",blue:"Chuẩn bị dữ liệu và lập luận có cơ sở trước khi phản biện"}},
+  {t:"Điều mà đồng nghiệp thường nhớ đến bạn nhất:",opts:{red:"Sự quyết đoán và khả năng hoàn thành công việc",yellow:"Năng lượng tích cực và khả năng tạo không khí vui vẻ",green:"Sự quan tâm chân thành và luôn sẵn sàng giúp đỡ",blue:"Sự chuyên nghiệp, chính xác và đáng tin cậy"}},
+  {t:"Khi được tự chọn, bạn thích dự án kiểu nào:",opts:{red:"Dự án có tác động lớn và cần quyết đoán nhanh",yellow:"Dự án sáng tạo và có thể cộng tác nhiều người",green:"Dự án giúp đỡ cụ thể một nhóm người",blue:"Dự án phức tạp cần nghiên cứu và phân tích sâu"}},
+  {t:"Sau một ngày làm việc nhiều với người khác, bạn:",opts:{red:"Vẫn có năng lượng, thích tụ tập thêm",yellow:"Cảm thấy hứng khởi và muốn gặp gỡ thêm",green:"Hơi mệt nhưng vẫn ổn, cần chút yên tĩnh",blue:"Mệt và cần thời gian riêng để nạp lại năng lượng"},dim:"ie"},
+  {t:"Bạn thích xử lý ý tưởng như thế nào:",opts:{red:"Nói ra và thảo luận trực tiếp",yellow:"Chia sẻ ngay với nhiều người để nhận phản hồi",green:"Suy nghĩ một lúc rồi mới chia sẻ với người tin tưởng",blue:"Suy nghĩ và ghi chép cẩn thận trước khi nói"},dim:"ie"},
+  {t:"Khi có vấn đề cần giải quyết, bạn:",opts:{red:"Tìm người để trao đổi và hành động ngay",yellow:"Kể cho nhiều người nghe để nghe nhiều góc nhìn",green:"Chỉ tâm sự với vài người thực sự tin tưởng",blue:"Tự suy nghĩ và xử lý trước khi chia sẻ"},dim:"ie"},
+  {t:"Thời gian ở một mình đối với bạn:",opts:{red:"Cần đôi khi nhưng không thích kéo dài",yellow:"Hiếm khi cần, thích có người bên cạnh hơn",green:"Cần để tái tạo năng lượng sau khi giao tiếp nhiều",blue:"Rất quan trọng và cần nhiều thời gian riêng"},dim:"ie"},
+  {t:"Trong bữa tiệc công ty, bạn:",opts:{red:"Chủ động kết nối và nói chuyện với nhiều người",yellow:"Là tâm điểm chú ý, kể chuyện và tạo tiếng cười",green:"Nói chuyện sâu với vài người thân quen",blue:"Quan sát nhiều hơn và chỉ nói khi có điều thực sự muốn chia sẻ"},dim:"ie"},
+  {t:"Khi làm việc nhóm, bạn:",opts:{red:"Thích thảo luận mở và ra quyết định nhanh chóng",yellow:"Thích brainstorm nhóm với nhiều ý tưởng sáng tạo",green:"Cần nghe mọi người trước khi đưa ra ý kiến",blue:"Thích chuẩn bị trước và trình bày ý kiến khi đã sẵn sàng"},dim:"ie"},
+  {t:"Môi trường làm việc lý tưởng của bạn:",opts:{red:"Năng động, nhiều tương tác và áp lực tích cực",yellow:"Cởi mở, sáng tạo và luôn có người để trao đổi",green:"Yên tĩnh, hợp tác và ít cạnh tranh",blue:"Tập trung, có cấu trúc và ít bị làm phiền"},dim:"ie"},
+  {t:"Sức mạnh xã hội của bạn đến từ:",opts:{red:"Sự tự tin và khả năng ảnh hưởng người khác",yellow:"Sự nhiệt tình và kết nối rộng rãi",green:"Sự tin tưởng và quan hệ sâu sắc với ít người",blue:"Sự lắng nghe cẩn thận và đưa ra nhận xét sắc sảo"},dim:"ie"},
+  {t:"Là trưởng nhóm, bạn phân công công việc bằng cách:",opts:{red:"Giao nhiệm vụ rõ ràng với kỳ vọng kết quả cụ thể",yellow:"Hỏi mọi người muốn làm gì để ai cũng hào hứng",green:"Xét đến năng lực và cảm xúc từng người",blue:"Phân tích kỹ rồi phân công tối ưu dựa trên dữ liệu"},dim:"lead"},
+  {t:"Khi nhân viên mắc lỗi nghiêm trọng, bạn:",opts:{red:"Nói thẳng vấn đề và yêu cầu sửa ngay",yellow:"Tìm cách nhẹ nhàng và động viên họ cải thiện",green:"Gặp riêng, lắng nghe nguyên nhân và hỗ trợ",blue:"Phân tích nguyên nhân hệ thống và cải tiến quy trình"},dim:"lead"},
+  {t:"Phong cách lãnh đạo bạn ngưỡng mộ nhất:",opts:{red:"Lãnh đạo mạnh mẽ, dám quyết và chịu trách nhiệm",yellow:"Lãnh đạo truyền cảm hứng, tạo văn hóa tích cực",green:"Lãnh đạo phục vụ, đặt con người lên trên kết quả",blue:"Lãnh đạo chiến lược, xây dựng hệ thống bền vững"},dim:"lead"},
+  {t:"Khi đội nhóm gặp xung đột nội bộ, bạn:",opts:{red:"Ra quyết định dứt khoát để giải quyết nhanh",yellow:"Tạo không khí nhẹ nhàng và tìm điểm chung",green:"Nghe cả hai bên và tìm giải pháp win-win",blue:"Phân tích khách quan và đề xuất giải pháp có cơ sở"},dim:"lead"},
+  {t:"Bạn đo lường hiệu quả lãnh đạo bằng:",opts:{red:"KPIs và kết quả kinh doanh đạt được",yellow:"Mức độ hài lòng và gắn kết của nhóm",green:"Sự phát triển của từng cá nhân trong nhóm",blue:"Chất lượng quy trình và tính nhất quán"},dim:"lead"},
+  {t:"Khi cần thay đổi lớn trong tổ chức, bạn:",opts:{red:"Công bố quyết định và triển khai nhanh chóng",yellow:"Tạo hứng khởi và truyền thông về lợi ích của thay đổi",green:"Tham khảo ý kiến rộng rãi trước khi quyết định",blue:"Nghiên cứu kỹ, thí điểm nhỏ rồi mới mở rộng"},dim:"lead"},
+  {t:"Điều bạn ưu tiên nhất khi xây dựng đội nhóm:",opts:{red:"Người có năng lực cao và tham vọng mạnh",yellow:"Người có tinh thần tích cực và hợp tác tốt",green:"Sự đa dạng và mỗi người đều được phát huy",blue:"Kỹ năng chuyên môn sâu và tính kỷ luật"},dim:"lead"},
+  {t:"Khi ra quyết định với tư cách lãnh đạo, bạn:",opts:{red:"Quyết đoán nhanh và chịu trách nhiệm hoàn toàn",yellow:"Tạo sự đồng thuận bằng cách truyền cảm hứng",green:"Tham khảo nhiều bên và đảm bảo mọi người đồng ý",blue:"Cân nhắc kỹ lưỡng dựa trên dữ liệu và tiền lệ"},dim:"lead"},
+  {t:"Khi áp lực công việc tăng cao đột ngột, bạn:",opts:{red:"Tăng tốc, kiểm soát chặt hơn và thúc đẩy mọi người",yellow:"Trở nên hời hợt và mất tập trung hơn bình thường",green:"Im lặng chịu đựng và cố tránh xung đột",blue:"Thu mình lại, phân tích liên tục nhưng khó hành động"},dim:"stress"},
+  {t:"Dấu hiệu rõ nhất khi bạn đang bị stress:",opts:{red:"Trở nên nóng nảy và mất kiên nhẫn với người khác",yellow:"Nói nhiều hơn, phân tán và khó tập trung",green:"Rút lui và trở nên im lặng bất thường",blue:"Quá cầu toàn, phân tích quá mức và không thể quyết"},dim:"stress"},
+  {t:"Khi bị quá tải với quá nhiều việc, bạn:",opts:{red:"Cắt giảm những gì không thiết yếu và ép tiến độ",yellow:"Tìm người chia sẻ gánh nặng và vẫn cố lạc quan",green:"Cố gánh tất cả một mình để người khác không bị ảnh hưởng",blue:"Tạo danh sách ưu tiên rất chi tiết và hệ thống"},dim:"stress"},
+  {t:"Cách bạn phục hồi tốt nhất sau giai đoạn stress:",opts:{red:"Tập thể thao mạnh hoặc làm gì đó quyết liệt, dứt khoát",yellow:"Gặp bạn bè, cười đùa và chia sẻ mọi thứ",green:"Nghỉ ngơi yên tĩnh cùng gia đình hoặc người thân",blue:"Có thời gian riêng để suy nghĩ và tái cấu trúc bản thân"},dim:"stress"},
+  {t:"Khi deadline cận kề và kết quả chưa như mong đợi:",opts:{red:"Đẩy nhanh hơn, làm thêm giờ và yêu cầu mọi người tương tự",yellow:"Cố giữ tinh thần cả nhóm dù bản thân cũng đang lo lắng",green:"Lo lắng thầm nhưng vẫn hỗ trợ và không muốn ai biết",blue:"Làm một mình đến tối muộn để đảm bảo từng chi tiết"},dim:"stress"},
+  {t:"Khi nhận phản hồi tiêu cực về kết quả công việc:",opts:{red:"Phản bác nếu không đồng ý và bảo vệ quyết định",yellow:"Giải thích và vẫn cố duy trì sự tự tin bên ngoài",green:"Nhận lỗi dù không hoàn toàn là lỗi của mình",blue:"Tự trách bản thân và phân tích sâu đến mức quá mức"},dim:"stress"},
+  {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",opts:{red:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",yellow:"Môi trường tích cực, được công nhận và tương tác nhiều",green:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",blue:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},dim:"stress"},
+  {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",opts:{red:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",yellow:"Coi đó là phiêu lưu thú vị và cảm thấy hứng khởi",green:"Lo lắng về tác động đến mọi người xung quanh",blue:"Cần thời gian để xử lý và tìm lại sự trật tự"},dim:"stress"}
 ];
-const CI={r:{l:'Fiery Red',e:'🔴',c:'#E8392A'},y:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623'},g:{l:'Earth Green',e:'🟢',c:'#3CB371'},b:{l:'Cool Blue',e:'🔵',c:'#2B6CB0'}};
-const CIMAP={red:CI.r,yellow:CI.y,green:CI.g,blue:CI.b};
-const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)','red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)','yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'};
-let ANS={},BATCH_IDX=0;
-const BSIZE=6;
-const CORE_N=24;
+
+const CI = {
+  red:{l:'Fiery Red',e:'🔴',c:'#E8392A'},
+  yellow:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623'},
+  green:{l:'Earth Green',e:'🟢',c:'#3CB371'},
+  blue:{l:'Cool Blue',e:'🔵',c:'#2B6CB0'}
+};
+const ARCHETYPES = {
+  'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)',
+  'red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)',
+  'yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo',
+  'green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)',
+  'green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)',
+  'blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'
+};
+
+let answers={},currentBatch=0;
+const BATCH=6;
+
 function show(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
-function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+function toast(msg,isErr=false){const t=document.getElementById('toast');t.textContent=msg;t.style.background=isErr?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
 function startQuiz(){
-  const n=document.getElementById('iName').value.trim(),r=document.getElementById('iRole').value.trim();
-  if(!n)return toast('Vui lòng nhập họ tên',true);
-  if(!r)return toast('Vui lòng nhập chức danh',true);
+  const name=document.getElementById('iName').value.trim(),role=document.getElementById('iRole').value.trim();
+  if(!name)return toast('Vui lòng nhập họ tên',true);
+  if(!role)return toast('Vui lòng nhập chức danh',true);
   document.getElementById('progWrap').style.display='block';
-  BATCH_IDX=0;ANS={};renderBatch();show(1);
+  currentBatch=0;answers={};renderBatch();show(1);
 }
+
 function renderBatch(){
-  const s=BATCH_IDX*BSIZE,e2=Math.min(s+BSIZE,QS.length);
+  const start=currentBatch*BATCH,end=Math.min(start+BATCH,QS.length);
   const c=document.getElementById('qContainer');c.innerHTML='';
-  for(let i=s;i<e2;i++){
-    const q=QS[i],d=document.createElement('div');
-    d.className='qcard'+(ANS[i]?' done':'');d.id='qc'+i;
-    const keys=['r','y','g','b'],order=shuffle([...keys],i);
-    let oh='';order.forEach(k=>{const sel=ANS[i]===k?'sel-'+{r:'red',y:'yellow',g:'green',b:'blue'}[k]:'';oh+=`<button class="opt ${sel}" onclick="pick(${i},'${k}',this)"><span class="dot dot-${k}"></span><span class="opt-lbl">${q.o[k]}</span></button>`;});
-    d.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div><div class="qtxt">${q.t}</div><div class="opts">${oh}</div>`;
-    c.appendChild(d);
+  for(let i=start;i<end;i++){
+    const q=QS[i],div=document.createElement('div');
+    div.className='qcard'+(answers[i]?' done':'');div.id='qc'+i;
+    const order=shuffleOpts(['red','yellow','green','blue'],i);
+    let oh='';
+    order.forEach(clr=>{
+      const sel=answers[i]===clr?`sel-${clr}`:'';
+      oh+=`<button class="opt ${sel}" onclick="pick(${i},'${clr}',this)"><span class="dot dot-${clr[0]}"></span><span class="opt-lbl">${q.opts[clr]}</span></button>`;
+    });
+    div.innerHTML=`<div class="qnum">Câu ${i+1} / ${QS.length}</div><div class="qtxt">${q.t}</div><div class="opts">${oh}</div>`;
+    c.appendChild(div);
   }
   updateProg();
-  document.getElementById('nextBtn').textContent=e2>=QS.length?'Hoàn thành & Tạo Profile ✓':'Tiếp theo →';
-  document.getElementById('stepInfo').textContent=`Nhóm ${BATCH_IDX+1} / ${Math.ceil(QS.length/BSIZE)}`;
+  document.getElementById('nextBtn').textContent=end>=QS.length?'Hoàn thành & Tạo Profile ✓':'Tiếp theo →';
+  document.getElementById('stepInfo').textContent=`Nhóm ${currentBatch+1} / ${Math.ceil(QS.length/BATCH)}`;
 }
-function shuffle(a,seed){for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
-function pick(i,k,btn){ANS[i]=k;const c=document.getElementById('qc'+i);c.classList.add('done');c.querySelectorAll('.opt').forEach(b=>b.className='opt');btn.classList.add('sel-'+{r:'red',y:'yellow',g:'green',b:'blue'}[k]);updateProg();}
-function updateProg(){const d=Object.keys(ANS).length,t=QS.length,p=Math.round(d/t*100);document.getElementById('progFill').style.width=p+'%';document.getElementById('progLbl').textContent=`${d} / ${t} câu`;document.getElementById('progPct').textContent=p+'%';}
-function prevBatch(){if(BATCH_IDX===0){show(0);return;}BATCH_IDX--;renderBatch();window.scrollTo({top:0,behavior:'smooth'});}
+function shuffleOpts(arr,seed){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=(seed*7+i*3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(idx,clr,btn){answers[idx]=clr;const card=document.getElementById('qc'+idx);card.classList.add('done');card.querySelectorAll('.opt').forEach(b=>{b.className='opt'});btn.classList.add('sel-'+clr);updateProg();}
+function updateProg(){const done=Object.keys(answers).length,total=QS.length,pct=Math.round(done/total*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLbl').textContent=`${done} / ${total} câu`;document.getElementById('progPct').textContent=pct+'%';}
+function prevBatch(){if(currentBatch===0){show(0);return;}currentBatch--;renderBatch();window.scrollTo({top:0,behavior:'smooth'});}
+
 async function nextBatch(){
-  const s=BATCH_IDX*BSIZE,e2=Math.min(s+BSIZE,QS.length);
-  for(let i=s;i<e2;i++){if(ANS[i]===undefined){toast(`Vui lòng trả lời câu ${i+1}`,true);document.getElementById('qc'+i).scrollIntoView({behavior:'smooth',block:'center'});return;}}
-  if(e2>=QS.length){await submitResults();return;}
-  BATCH_IDX++;renderBatch();window.scrollTo({top:0,behavior:'smooth'});
+  const start=currentBatch*BATCH,end=Math.min(start+BATCH,QS.length);
+  for(let i=start;i<end;i++){if(answers[i]===undefined){toast(`Vui lòng trả lời câu ${i+1}`,true);document.getElementById('qc'+i).scrollIntoView({behavior:'smooth',block:'center'});return;}}
+  if(end>=QS.length){await submitResults();return;}
+  currentBatch++;renderBatch();window.scrollTo({top:0,behavior:'smooth'});
 }
+
 function calcScores(){
-  const sc={r:0,y:0,g:0,b:0},ie={E:0,I:0},ld={r:0,y:0,g:0,b:0},st={r:0,y:0,g:0,b:0};
-  QS.forEach((q,i)=>{const a=ANS[i];if(!a)return;if(!q.d)sc[a]++;else if(q.d==='ie'){if(a==='r'||a==='y')ie.E++;else ie.I++;}else if(q.d==='lead')ld[a]++;else if(q.d==='stress')st[a]++;});
+  const sc={red:0,yellow:0,green:0,blue:0},ie={E:0,I:0},ld={red:0,yellow:0,green:0,blue:0},st={red:0,yellow:0,green:0,blue:0};
+  QS.forEach((q,i)=>{
+    const a=answers[i];if(!a)return;
+    if(!q.dim)sc[a]++;
+    else if(q.dim==='ie'){if(a==='red'||a==='yellow')ie.E++;else ie.I++;}
+    else if(q.dim==='lead')ld[a]++;
+    else if(q.dim==='stress')st[a]++;
+  });
   const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
   const pr=sorted[0][0],sec=sorted[1][0];
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const pPr=kmap[pr],pSec=kmap[sec];
-  const pct=k=>Math.round(sc[k]/CORE_N*100);
-  const ieT=ie.E+ie.I||1,ieType=ie.E>=ie.I?'Extrovert':'Introvert',ieExtPct=Math.round(ie.E/ieT*100);
-  const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0][0];
-  const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0][0];
-  const arch=ARCH[`${pPr}-${pSec}`]||`${CI[pr].l} + ${CI[sec].l}`;
-  return {sc,pr,sec,pPr,pSec,pct,ieType,ieExtPct,leadStyle:ls,stressBehavior:sb,arch,ie,ld,st};
+  const coreN=QS.filter(q=>!q.dim).length||24;
+  const pct=c=>Math.round(sc[c]/coreN*100);
+  const ieTotal=ie.E+ie.I||1,ieType=ie.E>=ie.I?'Extrovert':'Introvert',ieExtPct=Math.round(ie.E/ieTotal*100);
+  const leadStyle=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0][0];
+  const stressBehavior=Object.entries(st).sort((a,b)=>b[1]-a[1])[0][0];
+  const archetype=ARCHETYPES[`${pr}-${sec}`]||`${CI[pr].l} + ${CI[sec].l}`;
+  return {sc,pr,sec,pct,ieType,ieExtPct,leadStyle,stressBehavior,archetype,ie,ld,st};
 }
+
 async function submitResults(){
   const name=document.getElementById('iName').value.trim(),role=document.getElementById('iRole').value.trim(),dept=document.getElementById('iDept').value;
   const d=calcScores();
   document.getElementById('nextBtn').disabled=true;
   document.getElementById('nextBtn').innerHTML='<span class="spinner"></span>Đang xử lý…';
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  // Lưu SharePoint (fire and forget) — KHÔNG gọi AI ở đây
-  if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
-    fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      name,role,department:dept,answers:JSON.stringify(ANS),
-      redScore:d.sc.r,yellowScore:d.sc.y,greenScore:d.sc.g,blueScore:d.sc.b,
-      primaryColor:d.pPr,secondaryColor:d.pSec,archetype:d.arch,
-      ieType:d.ieType,leadStyle:kmap[d.leadStyle],stressBehavior:kmap[d.stressBehavior],
-      ieScoreE:d.ie.E,ieScoreI:d.ie.I
-    })}).catch(()=>{});
-  }
-  // Hiện màn hình cảm ơn — AI profile chỉ được tạo khi admin xuất PDF
   show(2);
-  // Quick profile từ rule-based — KHÔNG gọi AI (chỉ admin mới gọi AI qua ?print=1)
-  showQuickProfile(name, role, dept, d);
-}
-
-// ════ QUICK PROFILE + MODE TOGGLE ════
-let _qpArgs=null;
-window._dpData=null;
-window._aiLoading=false;
-window._profileMode='executive';
-
-function showQuickProfile(name,role,dept,d){
-  _qpArgs={name,role,dept,d};
-  window._profileMode='executive';
-  window._aiLoading=true;
-  window._dpData=null;
-  const kc=CI[d.pr],ks=CI[d.sec];
-  const STR={
-    r:['Quyết đoán, ra quyết định nhanh và dứt khoát khi cần','Thúc đẩy kết quả — không chấp nhận trì hoãn không cần thiết','Lãnh đạo hiệu quả trong tình huống áp lực và khủng hoảng'],
-    y:['Truyền cảm hứng tự nhiên và kéo người theo tầm nhìn','Xây dựng quan hệ và mạng lưới rộng một cách tự nhiên','Sáng tạo, linh hoạt và thích nghi nhanh với thay đổi'],
-    g:['Lắng nghe sâu và đồng cảm thực sự với người khác','Xây dựng niềm tin bền vững và quan hệ lâu dài','Giữ ổn định và hài hòa trong môi trường nhiều áp lực'],
-    b:['Phân tích logic và tư duy hệ thống chính xác','Duy trì tiêu chuẩn chất lượng cao và nhất quán','Lập kế hoạch tỉ mỉ và đảm bảo thực thi đúng']
-  };
-  const RSK={
-    r:['Có thể quá quyết đoán — thiếu lắng nghe khi áp lực tăng','Kiểm soát tăng cao dưới stress — micromanage mà không nhận ra'],
-    y:['Dễ mất tập trung, thiếu follow-through khi có quá nhiều ý tưởng','Tránh đưa ra quyết định khó hoặc feedback tiêu cực trực tiếp'],
-    g:['Tránh xung đột cần thiết — gánh chịu thầm thay vì nói thẳng','Thu mình và im lặng khi bị áp lực — team không đọc được'],
-    b:['Phân tích quá mức — chậm quyết định khi thiếu dữ liệu hoàn hảo','Cứng nhắc với quy trình khi tình huống cần linh hoạt']
-  };
-  const str=STR[d.pr]||STR.b, rsk=RSK[d.pr]||RSK.b;
-  const bars=['r','y','g','b'].map(k=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[k].c}">${CI[k].e} ${CI[k].l}</span><span class="cb-pct" style="color:${CI[k].c}">${d.pct(k)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${d.pct(k)}%;background:${CI[k].c}"></div></div></div>`).join('');
-  document.getElementById('profileContainer').innerHTML=`
-    <div class="qp-wrap">
-      <div class="qp-header">
-        <div>
-          <div class="qp-name">${name}</div>
-          <div class="qp-role">${role}${dept?' · '+dept:''}</div>
-        </div>
-        <div class="qp-arch" style="background:${kc.c}20;color:${kc.c};border:1px solid ${kc.c}44">${kc.e} ${d.arch}</div>
-      </div>
-      <div class="color-bars" style="margin-bottom:20px">${bars}</div>
-      <div class="qp-insights">
-        <div class="qp-col">
-          <div class="qp-col-lbl" style="color:#5fd68a">💪 Điểm mạnh cốt lõi</div>
-          <ul class="qp-list">${str.map(s=>`<li>${s}</li>`).join('')}</ul>
-        </div>
-        <div class="qp-col">
-          <div class="qp-col-lbl" style="color:#ff6b5e">⚠️ Rủi ro cần chú ý</div>
-          <ul class="qp-list qp-risk">${rsk.map(r=>`<li>${r}</li>`).join('')}</ul>
-        </div>
-      </div>
-      <div class="qp-ai-bar">
-        <span style="font-size:1rem">📋</span>
-        <span>Kết quả đã được ghi nhận. Admin/HR sẽ gửi profile đầy đủ sớm nhất.</span>
-      </div>
-    </div>`;
-  document.getElementById('profileActions').style.display='grid';
-}
-
-function setMode(mode){
-  window._profileMode=mode;
-  const be=document.getElementById('btnExec'),bd=document.getElementById('btnDeep');
-  if(be) be.classList.toggle('mode-on', mode==='executive');
-  if(bd) bd.classList.toggle('mode-on', mode==='deep');
-  if(mode==='deep'){
-    if(window._dpData) renderProfile(_qpArgs.name,_qpArgs.role,_qpArgs.dept,_qpArgs.d,window._dpData.n);
-    else document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p>AI vẫn đang phân tích… vui lòng chờ thêm.</p></div>';
-  } else {
-    showQuickProfile(_qpArgs.name,_qpArgs.role,_qpArgs.dept,_qpArgs.d);
-    if(window._dpData){
-      const bd2=document.getElementById('btnDeep'); if(bd2) bd2.removeAttribute('disabled');
-      const bg=document.getElementById('deepBadge'); if(bg) bg.style.display='inline';
+  document.getElementById('profileContainer').innerHTML=`<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang phân tích hồ sơ của bạn…</strong><br>Đang tạo profile cá nhân hóa. Vui lòng chờ 20–30 giây.</p></div>`;
+  try{
+    if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
+      fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,role,department:dept,answers:JSON.stringify(answers),redScore:d.sc.red,yellowScore:d.sc.yellow,greenScore:d.sc.green,blueScore:d.sc.blue,primaryColor:d.pr,secondaryColor:d.sec,ieType:d.ieType,leadStyle:d.leadStyle,stressBehavior:d.stressBehavior,archetype:d.archetype,ieScoreE:d.ie.E,ieScoreI:d.ie.I})}).catch(()=>{});
     }
-  }
+  }catch(e){}
+  const narrative=await genAIProfile(name,role,dept,d);
+  renderProfile(name,role,dept,d,narrative);
 }
 
 async function genAIProfile(name,role,dept,d){
-  const LL={r:'Lãnh đạo Kết quả (ra quyết định nhanh, thúc đẩy kết quả)',y:'Lãnh đạo Truyền cảm hứng (tạo hứng khởi, kéo người theo tầm nhìn)',g:'Lãnh đạo Phụng sự (đặt con người lên trên, xây dựng tin tưởng)',b:'Lãnh đạo Chiến lược (phân tích sâu, xây dựng hệ thống bền vững)'};
-  const SL={r:'Kiểm soát tăng cao — trở nên áp đặt, nóng nảy, vi quản lý',y:'Phân tán, hời hợt — mất tập trung, nói nhiều, thiếu follow-through',g:'Thu mình, im lặng — né tránh xung đột, gánh chịu một mình',b:'Phân tích quá mức — tê liệt vì hoàn hảo chủ nghĩa, không thể ra quyết định'};
-  const IE_DESC=d.ieType==='Extrovert'
-    ? `Hướng ngoại rõ rệt (${d.ieExtPct}% E) — nạp năng lượng từ tương tác xã hội, suy nghĩ bằng cách nói ra, cần được nghe và phản hồi ngay`
-    : `Hướng nội (${100-d.ieExtPct}% I) — nạp năng lượng từ thời gian một mình, suy nghĩ trước khi nói, cần không gian để xử lý thông tin sâu`;
-  const dominant=(d.pct(d.pr)>60)?'Thiên về màu chính rõ rệt (>60%)':'Cân bằng tương đối giữa các màu';
-  const tension=(()=>{
-    if((d.pr==='r'&&d.sec==='b')||(d.pr==='b'&&d.sec==='r')) return 'Căng thẳng nội tâm giữa hành động nhanh (Red) và phân tích kỹ (Blue)';
-    if((d.pr==='r'&&d.sec==='g')||(d.pr==='g'&&d.sec==='r')) return 'Mâu thuẫn giữa quyết đoán (Red) và hài hòa (Green)';
-    if((d.pr==='y'&&d.sec==='b')||(d.pr==='b'&&d.sec==='y')) return 'Mâu thuẫn giữa sáng tạo bốc đồng (Yellow) và cẩn thận chi tiết (Blue)';
-    return 'Hai màu chính hỗ trợ lẫn nhau, ít căng thẳng nội tâm';
-  })();
-  const prompt=`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery cấp cao. Tạo hồ sơ CÁ NHÂN HÓA SÂU — KHÔNG dùng mô tả chung chung của màu sắc.
+  const LLABELS={red:'Lãnh đạo Kết quả (thúc đẩy, ra quyết định nhanh)',yellow:'Lãnh đạo Truyền cảm hứng (kết nối, tạo sự hứng khởi)',green:'Lãnh đạo Phục vụ (hỗ trợ, xây dựng đồng thuận)',blue:'Lãnh đạo Chiến lược (phân tích, hệ thống hóa)'};
+  const SLABELS={red:'Kiểm soát tăng cao — trở nên nóng nảy, áp đặt, mất kiên nhẫn với đồng nghiệp',yellow:'Phân tán, hời hợt — nói nhiều, khó tập trung, bỏ dở công việc dang dở',green:'Thu mình, im lặng — gánh một mình, không nói ra vấn đề, tránh mọi xung đột',blue:'Phân tích quá mức — tê liệt quyết định, perfectionism cực đoan, trì hoãn hành động'};
+  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Nhiệm vụ: tạo hồ sơ quản lý THỰC CHIẾN, không lý thuyết. Mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam.`;
+  const prompt=`DỮ LIỆU ĐẦU VÀO:
+Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
+Màu chính: ${CI[d.pr].l} (${d.pct(d.pr)}%) | Màu phụ: ${CI[d.sec].l} (${d.pct(d.sec)}%)
+Red ${d.pct('red')}% | Yellow ${d.pct('yellow')}% | Green ${d.pct('green')}% | Blue ${d.pct('blue')}%
+Archetype: ${d.archetype} | Năng lượng: ${d.ieType==='Extrovert'?'Hướng ngoại':'Hướng nội'} (${d.ieExtPct}% E / ${100-d.ieExtPct}% I)
+Phong cách lãnh đạo: ${LLABELS[d.leadStyle]}
+Hành vi dưới stress: ${SLABELS[d.stressBehavior]}
 
-DỮ LIỆU: Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
-Điểm số: Red ${d.pct('r')}% / Yellow ${d.pct('y')}% / Green ${d.pct('g')}% / Blue ${d.pct('b')}%
-Màu chính: ${CI[d.pr].l} (${d.pct(d.pr)}%) | Màu phụ: ${CI[d.sec].l} (${d.pct(d.sec)}%) | ${dominant}
-Archetype: ${d.arch} | Nội tâm: ${tension}
-Định hướng: ${IE_DESC}
-Lãnh đạo: ${LL[d.leadStyle]}
-Stress: ${SL[d.stressBehavior]}
+QUY TẮC NGHIÊM NGẶT (vi phạm = output vô dụng):
+1. Tiếng Việt, trực tiếp, kinh doanh — KHÔNG dùng ngôn ngữ động lực sáo rỗng
+2. Gọi tên "${name}" ít nhất 4 lần trong toàn bộ output
+3. KHÔNG lặp ý giữa các section — mỗi section phải bổ sung thông tin mới
+4. Mỗi điểm yếu PHẢI nêu hậu quả cụ thể với công việc hoặc đồng nghiệp
+5. managerSnapshot phải đủ để manager hành động ngay không cần đọc phần còn lại
+6. failureScenario phải là kịch bản thực tế dành riêng cho vai trò ${role}
+7. Mỗi bullet tối đa 20 từ — súc tích, không vòng vo
+8. stressBehavior và leadershipStyle phải liên kết trực tiếp với điểm mạnh/yếu đã nêu
 
-YÊU CẦU BẮT BUỘC:
-1. Gọi tên "${name}" trực tiếp trong mỗi mục, không dùng "người này"
-2. Mỗi điểm mạnh/yếu phải gắn rõ: do màu nào + IE type + hoặc stress behavior tạo ra
-3. Nêu tình huống làm việc cụ thể (họp nhóm, deadline, feedback, xung đột...)
-4. Đoạn 4 trong personalStyle: giải thích ${name} KHÁC GÌ so với người khác cùng màu chính ${CI[d.pr].l}
-6. conflictStyle và leadershipJourney phải gắn trực tiếp với archetype, IE type và stress behavior của ${name}
-5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
-
-Trả về JSON thuần (không markdown):
-{"personalStyle":"6 đoạn cách nhau \\n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính ${CI[d.pr].l}, (5) cách ${name} ra quyết định và xử lý thông tin, (6) vai trò tự nhiên trong nhóm","strengths":["10 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["8 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["8 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["8 cách dựa trên IE type và màu chính"],"communicationBarriers":["6 điều tránh — gắn với hành vi stress"],"blindSpots":"3-4 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \\n","conflictStyle":["6 điểm — cách ${name} tiếp cận và xử lý xung đột trong nhóm, gắn với màu chính và IE"],"development":["8 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["6 môi trường phù hợp IE và stress"],"leadershipJourney":"3-4 đoạn về hành trình phát triển lãnh đạo của ${name}: điểm xuất phát, thách thức, tiềm năng lớn nhất và bước tiếp theo — cách nhau \\n","managingTips":["7 cách quản lý ${name} — cụ thể và actionable"],"colorInteractions":{"withRed":"3-4 câu: cách ${name} tương tác với người Fiery Red — điểm hợp, điểm xung đột, tips cụ thể","withYellow":"3-4 câu: cách ${name} tương tác với người Sunshine Yellow","withGreen":"3-4 câu: cách ${name} tương tác với người Earth Green","withBlue":"3-4 câu: cách ${name} tương tác với người Cool Blue"},"actionPlan90":{"week1_2":["3 hành động cụ thể trong 2 tuần đầu để ${name} phát huy điểm mạnh ngay"],"month1":["3 mục tiêu trong tháng đầu — gắn với leadStyle và điểm yếu cần cải thiện"],"month2_3":["3 mục tiêu tháng 2-3 — hướng đến phát triển chiều còn yếu và quản lý stress tốt hơn"],"longterm":["2-3 câu định hướng dài hạn cho ${name} dựa trên archetype và tiềm năng"]},"managerSnapshot":{"immediateActions":["3 hành động manager PHẢI làm TUẦN NÀY với ${name} — cụ thể, thực hiện được ngay"],"biggestRisk":"điều gì sẽ xảy ra trong 30-60 ngày nếu manager không can thiệp — cụ thể và có thể đo được","howToUseBest":["3 cách dùng ${name} đạt hiệu suất cao nhất theo đúng điểm mạnh thực tế"],"watchSignals":["3 dấu hiệu quan sát được từ bên ngoài cho thấy ${name} đang đi sai hướng"]},"performancePositioning":{"level":"Above average / At average / Below average — so với manager cùng cấp trong vai trò tương tự","explanation":"2-3 câu giải thích cụ thể tại sao — dựa trên điểm mạnh và rủi ro thực tế của ${name}, không chung chung"},"failureScenario":{"trigger":"tình huống cụ thể kích hoạt thất bại của ${name} — ai làm gì, trong bối cảnh nào","whatHappens":"chuỗi hành động và phản ứng cụ thể khi thất bại xảy ra","businessImpact":"tác động kinh doanh thực tế và có thể đo được"},"whatToDoNow":["5 hành động cụ thể manager của ${name} làm NGAY HÔM NAY — mỗi hành động thực hiện được trong 24 giờ, cụ thể theo màu và behavioral pattern của ${name}, không chung chung"]}}}` ;
+Trả về JSON thuần, không markdown, không backtick, bắt đầu bằng { và kết thúc bằng }:
+{
+  "managerSnapshot": {
+    "thisWeek": ["hành động cụ thể manager nên làm trong 7 ngày tới #1 (động từ + đối tượng + kết quả mong đợi)","#2 tương tự","#3 tương tự"],
+    "biggestRisk": "Rủi ro lớn nhất với ${name} trong 30-60 ngày tới nếu không can thiệp — 1 câu cụ thể, ghi rõ hậu quả",
+    "bestUse": "Vai trò/bối cảnh cụ thể giúp ${name} phát huy tối đa — 1-2 câu, có thể triển khai ngay",
+    "warningSignals": ["dấu hiệu hành vi quan sát được khi ${name} đang có vấn đề #1","#2 — khác hoàn toàn #1"]
+  },
+  "summary": "Mô tả ${name} trong 2 câu tối đa: câu 1 là ai trong môi trường làm việc, câu 2 là rủi ro hoặc điều cần theo dõi — không sáo rỗng",
+  "strengths": ["điểm mạnh quan sát/đo lường được #1 — 15-20 từ","#2","#3","#4","#5"],
+  "weaknesses": ["điểm yếu + hậu quả cụ thể với công việc hoặc nhóm #1 — 15-20 từ","#2","#3","#4"],
+  "communication": {
+    "do": ["cách tiếp cận hiệu quả khi làm việc với ${name} #1","#2","#3","#4"],
+    "avoid": ["hành vi/cách nói gây phản ứng tiêu cực từ ${name} #1 — giải thích tại sao","#2","#3"]
+  },
+  "stressBehavior": "Mô tả cụ thể: (1) ${name} phản ứng thế nào khi áp lực tăng, (2) tác động đến hiệu suất nhóm ra sao, (3) dấu hiệu nhận biết sớm nhất là gì — 3 câu ngắn gọn, không trùng với weaknesses",
+  "leadershipStyle": "Mô tả cụ thể: (1) ${name} lãnh đạo người khác như thế nào trong thực tế, (2) điều kiện phát huy mạnh nhất — 2 câu, liên kết trực tiếp với màu ${CI[d.pr].l}",
+  "development": ["hành động phát triển cụ thể + có thể thực hiện trong 90 ngày #1","#2","#3","#4"],
+  "managingTips": ["hành động quản lý có thể làm trong 24-72h #1 — cụ thể với ${name}","#2 — thực hiện tuần này","tip dài hạn #3","#4","#5"],
+  "performancePositioning": "Bối cảnh cụ thể giúp ${name} đạt hiệu suất cao nhất (loại nhiệm vụ, cấu trúc nhóm, mức autonomy) và bối cảnh nào nên tránh — 2-3 câu, không trùng managerSnapshot",
+  "failureScenario": "Kịch bản thất bại cụ thể và thực tế nhất với ${name} ở vị trí ${role}: mô tả tình huống → hành vi dẫn đến thất bại → hậu quả → dấu hiệu cảnh báo sớm — 3 câu, không chung chung"
+}`;
   try{
-    // Gọi qua Power Automate proxy — API key lưu an toàn trong PA, không lộ trong HTML
-  if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
-  // Gửi full Claude API payload — PA chỉ cần forward thẳng đến api.anthropic.com
-  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức và tư vấn lãnh đạo cấp cao. Bạn KHÔNG phải content writer. Nhiệm vụ: phân tích hành vi lãnh đạo cá nhân dựa trên dữ liệu Insights Discovery.
-
-QUY TẮC BẮT BUỘC:
-1. Ưu tiên: Behavioral patterns > biểu hiện thực tế > lý thuyết màu sắc
-2. KHÔNG mô tả tính cách trừu tượng — luôn dịch sang hành vi cụ thể trong cuộc họp, quyết định, xung đột, thực thi dưới áp lực
-3. Mỗi insight phải ảnh hưởng ít nhất 2 trong 3 góc: cá nhân / manager / team
-4. Bắt buộc xác định: ít nhất 1 mâu thuẫn nội tại cụ thể, 1 rủi ro ẩn không hiển thị, 1 điểm nghẽn hiệu suất dưới áp lực
-5. Output chỉ mô tả mà không có hành động → SAI. Output chung chung không đặc thù người này → SAI.
-6. stressBehavior và leadStyle phải phản ánh trong mọi section liên quan — không tách biệt.
-PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown.`;
-  const claudePayload={model:'claude-sonnet-4-20250514',max_tokens:6000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
-  const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
-    if(!res.ok)throw new Error('PA Flow '+res.status);
+    const proxyUrl='https://claude-proxy.donguyenthai-phuoc.workers.dev';
+    const res=await fetch(proxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:6000,
+      system:SYSTEM,
+      messages:[{role:'user',content:prompt}]
+    })});
+    if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
-    // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
-    // PA trả về Claude API response nguyên vẹn
-    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
-    if(!txt)throw new Error('Empty response from PA');
-    // Thử parse trực tiếp
-    try{ return JSON.parse(txt); }catch(e1){
-      // Recovery: JSON bị truncate do max_tokens → tìm } cuối hợp lệ và đóng
-      console.warn('JSON truncated, attempting recovery...');
-      try{
-        // Quét từ cuối lùi về — thử từng vị trí } cho đến khi parse được
-        for(let i=txt.length-1;i>200;i--){
-          if(txt[i]==='}'){
-            try{
-              const partial=JSON.parse(txt.substring(0,i+1));
-              console.warn('JSON recovery succeeded at pos',i);
-              return partial;
-            }catch(e3){/* tiếp tục */}
-          }
-        }
-        console.warn('Recovery exhausted — no valid JSON found');
-      }catch(e2){console.warn('Recovery failed:',e2?.message);}
-      throw e1;
-    }
-  }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
+    if(data.error) throw new Error(data.error);
+    let text=(data.content||[]).map(b=>b.text||'').join('').trim();
+    text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+    if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
+    return JSON.parse(text);
+  }catch(e){
+    console.error('AI profile failed:',e);
+    // Color-aware fallback — structured to match new schema
+    const clrData={
+      red:{
+        sumLine:`${name} hành động nhanh, kết quả cao — nhưng có thể gây căng thẳng cho nhóm nếu không kiểm soát được tốc độ.`,
+        str:['Ra quyết định nhanh và chịu trách nhiệm trong tình huống áp lực cao','Thúc đẩy tiến độ dự án khi nhóm chậm hoặc mất đà','Không ngại đối mặt trực tiếp với vấn đề khó','Tập trung cao vào kết quả đo lường được','Dẫn dắt nhóm trong bối cảnh thay đổi và bất định'],
+        wk:['Thiếu kiên nhẫn với quy trình chậm — gây áp lực không cần thiết lên đồng nghiệp','Có thể bỏ qua góc nhìn người khác khi tự tin vào quyết định của mình','Tốc độ hành động nhanh đôi khi bỏ sót chi tiết quan trọng','Phong cách trực tiếp có thể bị hiểu là thiếu tôn trọng'],
+        commDo:['Đi thẳng vào vấn đề, không vòng vo — nêu kết quả mong đợi trước','Đặt câu hỏi về mục tiêu và tiến độ, không về quy trình','Phản hồi ngắn gọn, rõ ràng, có số liệu cụ thể','Trao quyền và để tự quyết trong phạm vi đã thỏa thuận'],
+        commAvoid:['Không giải thích dài dòng hoặc đặt quá nhiều điều kiện — gây mất kiên nhẫn','Tránh phê bình trước đám đông — phản ứng phòng thủ mạnh','Không can thiệp quá mức vào cách thực hiện nếu kết quả đúng hướng'],
+        stress:`${name} dưới áp lực sẽ tăng tốc kiểm soát, trở nên nóng nảy và áp đặt lên người khác. Nhóm có thể bị "freeze" khi bị thúc ép liên tục. Dấu hiệu sớm: ngắt lời nhiều hơn, email/tin nhắn ngày càng ngắn và cụt.`,
+        lead:`${name} lãnh đạo bằng cách đặt mục tiêu cao và kỳ vọng rõ ràng, thúc đẩy bằng kết quả hơn là quan hệ. Phát huy mạnh nhất khi nhóm cần tốc độ và định hướng rõ ràng.`,
+        dev:['Thực hành lắng nghe trọn vẹn trong 3 cuộc họp tiếp theo trước khi đưa ra ý kiến','Tập đặt câu hỏi thay vì đưa ra giải pháp ngay khi đồng nghiệp báo cáo vấn đề','Yêu cầu phản hồi 360° từ 2 thành viên nhóm mỗi quý','Học 1 kỹ thuật quản lý xung đột có cấu trúc trong 30 ngày tới'],
+        tips:['Tuần này: đặt lịch 1-1 ngắn 15 phút với '+name+' để align kỳ vọng cụ thể','Tuần này: giao 1 dự án có deadline rõ và không can thiệp vào cách thực hiện','Dài hạn: cho phép tự quyết trong phạm vi đã thỏa thuận — giảm micromanagement','Dài hạn: công nhận thành tích bằng thách thức mới, không chỉ khen ngợi','Dài hạn: tránh họp dài — thay bằng brief + action items rõ ràng'],
+        pos:`${name} phát huy tốt nhất trong vai trò cần ra quyết định nhanh, dẫn dắt nhóm trong bối cảnh áp lực hoặc chuyển đổi. Tránh đặt vào vai trò hỗ trợ thuần túy hoặc công việc lặp đi lặp lại không có thách thức.`,
+        fail:`${name} dễ thất bại nhất khi bị đặt vào môi trường quá nhiều sự đồng thuận hoặc quy trình cứng nhắc: áp lực bộc phát thành xung đột với đồng nghiệp, dẫn đến mất uy tín nhóm. Dấu hiệu sớm: phàn nàn về "chậm quá" hoặc bypass quy trình bắt đầu xuất hiện.`,
+        snap:{tw:['Đặt 1-1 với '+name+' trong tuần này, hỏi về 1 việc đang bị chặn và tháo ngay','Giao 1 nhiệm vụ thách thức với kết quả đo lường được trong 2 tuần','Quan sát tần suất ngắt lời trong họp — nếu tăng, check workload ngay'],risk:'Nếu '+name+' không có đủ thách thức và autonomy trong 30 ngày tới, nguy cơ chủ động nghỉ hoặc gây xung đột nội bộ cao.',use:'Triển khai '+name+' vào vị trí cần tốc độ và quyết đoán: PM, lead nhóm nhỏ, hoặc xử lý khủng hoảng ngắn hạn.',warn:['Hay phàn nàn về tốc độ làm việc của người khác','Email/tin nhắn trở nên ngắn, thẳng thắn bất thường — dấu hiệu căng thẳng tích tụ']}
+      },
+      yellow:{
+        sumLine:`${name} tạo ra năng lượng và kết nối trong nhóm — nhưng cần cấu trúc rõ để không phân tán.`,
+        str:['Truyền cảm hứng và tạo động lực trong nhóm một cách tự nhiên','Kết nối nhanh với người mới, xây dựng quan hệ rộng','Tư duy sáng tạo — đặc biệt tốt trong brainstorm và ý tưởng mới','Duy trì không khí tích cực trong nhóm kể cả lúc căng thẳng','Linh hoạt và thích nghi tốt với thay đổi'],
+        wk:['Phân tán nhiệm vụ — khó duy trì tập trung khi có nhiều việc cùng lúc','Ưu tiên quan hệ có thể làm trì hoãn quyết định khó cần thiết','Thiếu theo dõi sát sao chi tiết — dễ bỏ sót deadline nhỏ','Lạc quan quá mức đôi khi che giấu rủi ro thực sự với cấp trên'],
+        commDo:['Bắt đầu bằng cách kết nối cá nhân trước khi vào vấn đề chính','Chia sẻ bức tranh lớn và tầm nhìn — '+name+' cần thấy ý nghĩa của công việc','Công nhận đóng góp cụ thể trước khi đưa ra phản hồi phát triển','Cho phép chia sẻ ý tưởng trước, sau đó mới cùng filter và ưu tiên'],
+        commAvoid:['Không vào thẳng chỉ trích mà không có bối cảnh tích cực trước — mất động lực ngay','Tránh họp thuần túy về số liệu và quy trình không có con người trong đó','Không giao việc đơn điệu dài hạn mà không có yếu tố sáng tạo hoặc tương tác'],
+        stress:`${name} dưới áp lực sẽ nói nhiều hơn, dễ bị phân tán và nhảy từ vấn đề này sang vấn đề khác. Nhóm bị ảnh hưởng vì thiếu quyết định rõ ràng từ người lẽ ra phải dẫn dắt. Dấu hiệu sớm: họp kéo dài không ra kết luận, nhiều ý tưởng mới nhưng ít follow-through.`,
+        lead:`${name} lãnh đạo bằng sức hút cá nhân và khả năng truyền cảm hứng, tạo ra sự tham gia tự nguyện. Phát huy mạnh nhất khi nhóm cần được motivate và cần sự sáng tạo để giải quyết vấn đề mới.`,
+        dev:['Áp dụng quy tắc "2 phút" — quyết định ngay những việc nhỏ thay vì để tồn đọng','Dùng checklist cuối ngày để đảm bảo không bỏ sót follow-up đã hứa','Thực hành viết tóm tắt họp trong 5 phút ngay sau khi kết thúc','Mỗi tuần chọn 1 nhiệm vụ "deep work" không bị interrupt để rèn tập trung'],
+        tips:['Tuần này: giao deadline cụ thể cho 1 dự án '+name+' đang làm và check-in giữa kỳ','Tuần này: yêu cầu update dạng bullet — kết quả, vướng mắc, bước tiếp theo','Dài hạn: pair '+name+' với người Blue/Green để cân bằng tốc độ và chi tiết','Dài hạn: công nhận công khai — '+name+' rất đáp ứng với recognition từ cấp trên và đồng nghiệp','Dài hạn: tạo cơ hội trình bày/pitch để phát huy điểm mạnh trước khán giả'],
+        pos:`${name} phát huy tốt nhất trong vai trò cần kết nối, thuyết phục, và tạo sự hứng khởi: sales, project lead, PR, hoặc culture champion nội bộ. Tránh vai trò cần kiểm soát chi tiết độc lập, hoặc làm việc một mình dài ngày.`,
+        fail:`${name} dễ thất bại nhất khi có quá nhiều deadline song song mà không có người hỗ trợ prioritize: bắt đầu nhiều thứ rồi bỏ dở, mất uy tín với đồng nghiệp và cấp trên. Dấu hiệu sớm: xin gia hạn liên tục, hoặc chủ đề "tôi đang bận quá" xuất hiện thường xuyên.`,
+        snap:{tw:['Đặt lịch 1-1 với '+name+' — hỏi đang hứng thú với gì nhất, align vào mục tiêu team','Review workload hiện tại với '+name+', ưu tiên lại top 3 việc cần hoàn thành tuần này','Tạo 1 cơ hội để '+name+' trình bày ý tưởng/update trước nhóm nhỏ trong tuần'],risk:'Nếu '+name+' không được công nhận hoặc cảm thấy bị cô lập trong 30 ngày tới, nguy cơ mất kết nối tâm lý với công việc và tìm kiếm cơ hội khác.',use:'Triển khai '+name+' vào việc cần thuyết phục, truyền thông, hoặc tạo sự gắn kết: đại diện nhóm, kick-off dự án, onboarding người mới.',warn:['Số lượng deadline bị trễ tăng mà không có cảnh báo trước','Trở nên im lặng trong họp — không còn đưa ra ý tưởng như bình thường']}
+      },
+      green:{
+        sumLine:`${name} là trụ cột ổn định của nhóm — nhưng sự im lặng khi gặp vấn đề là rủi ro quản lý cần theo dõi.`,
+        str:['Xây dựng lòng tin và quan hệ bền vững trong nhóm một cách tự nhiên','Lắng nghe chủ động và giúp mọi người cảm thấy được nghe','Ổn định và đáng tin cậy trong giai đoạn biến động','Hỗ trợ đồng nghiệp một cách chân thành không vụ lợi','Tạo môi trường làm việc hòa hợp, giảm xung đột nhóm'],
+        wk:['Tránh xung đột trực tiếp dẫn đến tích tụ vấn đề — ảnh hưởng chất lượng đầu ra','Khó nói không — nhận quá nhiều việc hỗ trợ người khác, ảnh hưởng công việc chính','Ra quyết định chậm khi thiếu đồng thuận — trở thành bottleneck trong nhóm','Giữ im lặng khi bất đồng — người khác không biết vấn đề tồn tại'],
+        commDo:['Tạo không gian an toàn — bắt đầu bằng cách hỏi về cảm nhận trước khi hỏi về kết quả','Thông báo thay đổi trước, cho thời gian thích nghi thay vì áp đặt ngay','Phản hồi 1-1 thay vì trước nhóm — '+name+' xử lý sâu hơn trong môi trường riêng tư','Hỏi trực tiếp "Em đang nghĩ gì về việc này?" — không để '+name+' tự giữ lại'],
+        commAvoid:['Không áp deadline đột ngột mà không báo trước — gây lo lắng và mất hiệu suất','Tránh phong cách giao tiếp thẳng thắn đến mức thiếu ấm áp — '+name+' đóng cửa lại ngay','Không bỏ qua khi '+name+' im lặng — im lặng thường là dấu hiệu có vấn đề, không phải đồng ý'],
+        stress:`${name} dưới áp lực sẽ thu mình, gánh việc một mình và không báo hiệu khi vấn đề vượt tầm kiểm soát. Nhóm có thể không biết có vấn đề cho đến khi đã quá trễ để can thiệp. Dấu hiệu sớm: ít tham gia hơn trong họp, trả lời "ổn" khi được hỏi thay vì chi tiết cụ thể.`,
+        lead:`${name} lãnh đạo bằng uy tín cá nhân và sự quan tâm chân thành đến từng thành viên, xây dựng đồng thuận trước khi hành động. Phát huy mạnh nhất khi nhóm cần sự ổn định và gắn kết lâu dài.`,
+        dev:['Thực hành nói "Tôi không đồng ý vì..." ít nhất 1 lần/tuần trong môi trường an toàn','Học kỹ thuật từ chối khéo: "Tôi muốn giúp nhưng hiện tại tôi đang ưu tiên X — mình hoãn lại được không?"','Đặt deadline tự cam kết cho bản thân trước khi ai yêu cầu — giảm phụ thuộc vào sự thúc đẩy từ bên ngoài','Tham gia 1 tình huống cần đưa ra ý kiến phản biện có cấu trúc trong 30 ngày tới'],
+        tips:['Tuần này: hỏi trực tiếp "+name+' đang gặp vướng mắc gì nhất" — không hỏi chung chung','Tuần này: assign 1 việc với deadline rõ và confirm '+name+' hiểu priority','Dài hạn: tạo 1-1 định kỳ để '+name+' có không gian nói thật về vấn đề','Dài hạn: protect khỏi overload — kiểm tra xem '+name+' đang gánh bao nhiêu "nhờ vả" từ đồng nghiệp','Dài hạn: giao vai trò dẫn dắt một nhóm nhỏ — phát triển sự tự tin lãnh đạo theo thời gian'],
+        pos:`${name} phát huy tốt nhất trong vai trò cần xây dựng quan hệ, hỗ trợ, và duy trì sự gắn kết lâu dài: team lead, HR, project coordinator, hoặc mentor. Tránh vai trò cần ra quyết định nhanh dưới áp lực cao hoặc môi trường cạnh tranh gay gắt.`,
+        fail:`${name} dễ thất bại nhất khi bị đặt vào tình huống phải đưa ra quyết định khó mà ảnh hưởng đến người khác: trì hoãn đến khi vấn đề leo thang, bị nhìn nhận là thiếu quyết đoán trong vai trò lãnh đạo. Dấu hiệu sớm: hay hỏi "mọi người nghĩ sao?" thay vì đưa ra hướng đi rõ ràng.`,
+        snap:{tw:['1-1 với '+name+' trong tuần — hỏi "Đang gánh việc gì ngoài công việc chính không?"','Xác nhận lại priority top 3 của '+name+' tuần này — đảm bảo không bị lệch vì nhờ vả từ người khác','Quan sát mức độ tham gia trong cuộc họp nhóm tiếp theo'],risk:'Nếu '+name+' đang gánh quá nhiều mà không nói ra, nguy cơ burnout âm thầm cao — không có warning rõ ràng cho đến khi ảnh hưởng hiệu suất.',use:'Triển khai '+name+' vào vai trò xây dựng đội nhóm, mentoring người mới, hoặc giữ ổn định trong giai đoạn nhóm có nhiều thay đổi.',warn:['Trả lời "ổn" hoặc "bình thường" liên tục khi được hỏi — thường che giấu vấn đề thực','Im lặng trong họp hoặc tránh cuộc trò chuyện trực tiếp — dấu hiệu đang có căng thẳng']}
+      },
+      blue:{
+        sumLine:`${name} đảm bảo chất lượng và tư duy hệ thống — nhưng có thể trở thành bottleneck nếu perfectionism không được quản lý.`,
+        str:['Phát hiện rủi ro và lỗ hổng trước khi chúng trở thành vấn đề nghiêm trọng','Xây dựng quy trình và hệ thống bền vững, có thể mở rộng','Tư duy phân tích giúp đưa ra quyết định dựa trên dữ liệu thay vì cảm tính','Duy trì tiêu chuẩn chất lượng cao ngay cả dưới áp lực','Đáng tin cậy về tính chính xác và sự tuân thủ quy trình'],
+        wk:['Perfectionism có thể trì hoãn deliverable — chi phí cơ hội cao với nhóm','Khó chia sẻ công việc vì lo chất lượng giảm — tạo bottleneck không cần thiết','Ra quyết định chậm khi thiếu đủ dữ liệu — trở thành điểm nghẽn trong môi trường nhanh','Giao tiếp quá chi tiết đôi khi mất đi ý chính với người nghe không chuyên'],
+        commDo:['Cung cấp context đầy đủ và data trước khi yêu cầu hành động — '+name+' cần hiểu "tại sao"','Cho thời gian chuẩn bị trước cuộc họp quan trọng — không hỏi quyết định ngay tại chỗ','Phản hồi bằng dữ liệu và ví dụ cụ thể, không phán xét cảm tính','Tôn trọng chuyên môn — đặt câu hỏi thay vì phủ nhận phân tích của '+name],
+        commAvoid:['Không ép quyết định ngay lập tức trong bối cảnh phức tạp — chất lượng sẽ giảm mạnh','Tránh thay đổi quy trình đột ngột mà không giải thích lý do — '+name+' cần logic, không chỉ chỉ đạo','Không bác bỏ phân tích mà không có cơ sở — làm giảm động lực đóng góp chuyên môn'],
+        stress:`${name} dưới áp lực sẽ phân tích liên tục mà không đến quyết định, tìm thêm dữ liệu thay vì hành động. Nhóm bị ảnh hưởng vì thiếu deliverable đúng hạn từ người được giao việc quan trọng. Dấu hiệu sớm: yêu cầu thêm thông tin, thêm review cycle, hoặc nêu nhiều rủi ro mà không đề xuất giải pháp.`,
+        lead:`${name} lãnh đạo bằng chuyên môn và tính nhất quán, xây dựng uy tín qua thời gian dài hơn là qua sức hút cá nhân. Phát huy mạnh nhất khi nhóm cần định hướng chiến lược dựa trên phân tích và cần người giữ tiêu chuẩn.`,
+        dev:['Thực hành "good enough decision" — đặt mức 80% đủ tốt để hành động, không cần 100%','Delegate 1 task cụ thể mỗi tuần cho người khác mà không review lại từng bước','Trình bày tóm tắt 2 phút thay vì báo cáo đầy đủ trong update nhanh hàng ngày','Yêu cầu feedback về giao tiếp từ 1 đồng nghiệp mỗi tháng — cụ thể về sự rõ ràng và ngắn gọn'],
+        tips:['Tuần này: đặt deadline rõ cho '+name+' và confirm "đây là đủ tốt — không cần thêm"','Tuần này: yêu cầu '+name+' gửi recommendation trong 24h với dữ liệu đang có — không chờ hoàn chỉnh','Dài hạn: tạo "decision framework" rõ ràng để '+name+' biết khi nào đủ thông tin để quyết định','Dài hạn: assign vai trò quality reviewer chính thức — phát huy điểm mạnh có cấu trúc','Dài hạn: pair với người Red hoặc Yellow để cân bằng tốc độ và độ chính xác'],
+        pos:`${name} phát huy tốt nhất trong vai trò cần độ chính xác cao, phân tích rủi ro, hoặc xây dựng hệ thống: QA, analyst, technical lead, hoặc compliance. Tránh vai trò cần ra quyết định trực giác nhanh hoặc phụ trách quan hệ khách hàng chính.`,
+        fail:`${name} dễ thất bại nhất khi bị đặt vào tình huống phải ra quyết định lớn với dữ liệu không đầy đủ và deadline gấp: phân tích song song với thực thi, dẫn đến trễ tiến độ và mâu thuẫn với nhóm. Dấu hiệu sớm: số lượng câu hỏi làm rõ tăng bất thường, hoặc tái cấu trúc kế hoạch đã được duyệt.`,
+        snap:{tw:['Đặt 1-1 với '+name+' — clarify priority và "đây là ngưỡng đủ tốt" cho 3 việc đang làm','Yêu cầu update dạng "3 bullets: đã làm, vướng mắc, bước tiếp theo" — tránh báo cáo dài','Kiểm tra xem '+name+' có đang hold quyết định nào chờ thêm data không'],risk:'Nếu '+name+' không được định nghĩa rõ "đủ tốt là gì", nguy cơ tạo bottleneck cho cả nhóm trong 30-60 ngày tới khi workload tăng.',use:'Triển khai '+name+' vào nhiệm vụ phân tích, xây dựng quy trình, hoặc đảm bảo chất lượng — đây là nơi tạo ra giá trị không ai thay thế được.',warn:['Yêu cầu thêm dữ liệu hoặc thêm review cycle liên tục trước khi hành động','Giải thích quá chi tiết trong email hoặc họp — thường che giấu lo lắng về sai sót']}
+      }
+    };
+    const cd=clrData[d.pr]||clrData.blue;
+    return {
+      managerSnapshot:{thisWeek:cd.snap.tw,biggestRisk:cd.snap.risk,bestUse:cd.snap.use,warningSignals:cd.snap.warn},
+      summary:cd.sumLine,
+      strengths:cd.str,
+      weaknesses:cd.wk,
+      communication:{do:cd.commDo,avoid:cd.commAvoid},
+      stressBehavior:cd.stress,
+      leadershipStyle:cd.lead,
+      development:cd.dev,
+      managingTips:cd.tips,
+      performancePositioning:cd.pos,
+      failureScenario:cd.fail
+    };
+  }
 }
-function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
-  const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Fiery Red chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
-  y:{s:['Truyền cảm hứng và tạo động lực','Sáng tạo và luôn có ý tưởng mới','Giao tiếp tự nhiên, xây dựng quan hệ tốt','Linh hoạt và thích nghi nhanh','Nhìn thấy tiềm năng trong mọi người','Tạo không khí tích cực','Nhiệt tình và đam mê','Tư duy rộng'],p:`${name} mang năng lượng Sunshine Yellow đặc trưng — nhiệt tình, sáng tạo và truyền cảm hứng tự nhiên cho mọi người xung quanh.\n\nPhong cách làm việc của ${name} linh hoạt, cởi mở và luôn hướng đến sự đổi mới và kết nối con người.`},
-  g:{s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn và ổn định','Đảm bảo hòa hợp nhóm','Hỗ trợ đồng nghiệp chân thành','Trung thành và đáng tin cậy','Trung gian hòa giải hiệu quả','Quan tâm sự phát triển của người khác'],p:`${name} là trái tim kết nối của đội nhóm. Với màu Earth Green chiếm ưu thế, ${name} mang đến sự đồng cảm, ổn định và luôn sẵn sàng hỗ trợ mọi người.\n\nPhong cách làm việc của ${name} hướng đến sự hài hòa, tin tưởng lẫn nhau và đảm bảo mọi người đều được lắng nghe.`},
-  b:{s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và chất lượng','Cẩn thận và chính xác','Duy trì tiêu chuẩn cao','Lập kế hoạch tỉ mỉ','Tư duy phản biện tốt','Đáng tin cậy về chuyên môn','Kiên định với nguyên tắc'],p:`${name} là chuyên gia phân tích và chất lượng của nhóm. Với Cool Blue chiếm ưu thế, ${name} đảm bảo mọi việc được thực hiện đúng và có căn cứ rõ ràng.\n\nPhong cách làm việc của ${name} có hệ thống, cẩn thận và luôn đặt chất lượng lên hàng đầu.`}};
-  const f=F[pr]||F.y;
-  const secInfo=F[sec]||F.b;
-  const ieDesc=ieType==='Extrovert'?'hướng ngoại, nạp năng lượng từ tương tác và thích suy nghĩ bằng cách nói ra':'hướng nội, cần thời gian riêng để nạp lại năng lượng và suy nghĩ chín chắn trước khi chia sẻ';
-  const LL_FB={r:'định hướng kết quả rõ ràng',y:'truyền cảm hứng và kéo người theo tầm nhìn',g:'đặt con người lên trên và xây dựng tin tưởng',b:'phân tích sâu và xây dựng hệ thống bền vững'};
-  const SL_FB={r:'có xu hướng kiểm soát và vi quản lý khi áp lực tăng',y:'dễ phân tán và mất tập trung khi quá tải',g:'thường thu mình và im lặng thay vì nói lên khó khăn',b:'có thể bị tê liệt bởi hoàn hảo chủ nghĩa khi stress'};
-  const secWeakness={'r-b':'Căng thẳng nội tâm giữa hành động nhanh và phân tích kỹ đôi khi gây do dự','b-r':'Sức kéo giữa Blue và Red khiến khó cân bằng tốc độ và chất lượng','r-g':'Mâu thuẫn giữa quyết đoán và mong muốn hài hòa đôi khi làm chậm quyết định','y-b':'Sáng tạo bốc đồng và cẩn thận chi tiết tạo nên nội tâm phức tạp'};
-  const tensionNote=secWeakness[pr+'-'+sec]||`Sự kết hợp ${f.s[0]?.split(' ')[0]||'đặc trưng'} của ${name} tạo ra phong cách làm việc độc đáo`;
-  return {
-    personalStyle:`${name} là ${arch||f.s[0]} — sự kết hợp của ${F[pr]?.s[0]||'năng lực phân tích'} và ${secInfo.s[0]||'khả năng hành động'}. Đây là một trong những archetype hiếm gặp và có giá trị cao trong môi trường làm việc đòi hỏi cả chất lượng lẫn kết quả.
 
-Về định hướng năng lượng, ${name} là người ${ieDesc}. Điều này ảnh hưởng trực tiếp đến cách ${name} đóng góp trong các cuộc họp và xử lý thông tin phức tạp.
-
-Về phong cách lãnh đạo, ${name} có xu hướng ${LL_FB[leadStyle]||LL_FB.b}. Đây là điểm mạnh quan trọng giúp ${name} tạo ra tác động bền vững trong nhóm.
-
-${tensionNote}. Điều này phân biệt ${name} với những người chỉ có màu chính tương tự.`,
-    strengths:[...f.s, `${name} biết cách kết hợp ${F[pr]?.s[0]||'điểm mạnh chính'} với sự nhạy cảm tình huống`, `Khả năng thích nghi linh hoạt trong môi trường thay đổi`],
-    weaknesses:[(SL_FB[stressBehavior]||'Cần quản lý stress tốt hơn').replace(/^./,c=>c.toUpperCase()),tensionNote,'Đôi khi cần linh hoạt hơn trong cách tiếp cận','Cần chú ý đến góc nhìn đa dạng','Cân bằng giữa tốc độ và chất lượng','Học cách ủy quyền hiệu quả hơn'],
-    valueToTeam:[`Đảm bảo chất lượng theo chuẩn ${arch||'chuyên môn cao'}`,`Kết hợp ${F[pr]?.s[0]||'phân tích'} và ${secInfo.s[0]||'hành động'} hiệu quả`,'Đưa ra góc nhìn đa chiều khi nhóm cần quyết định','Duy trì tiêu chuẩn làm việc ổn định','Hỗ trợ đồng nghiệp với chuyên môn sâu','Là người đáng tin cậy trong các tình huống phức tạp'],
-    effectiveCommunication:ieType==='Extrovert'?['Cho phép chia sẻ ý kiến ngay trong cuộc họp','Phản hồi nhanh và trực tiếp','Tạo cơ hội thảo luận nhóm','Công nhận đóng góp công khai','Chia sẻ thông tin sớm','Tương tác thường xuyên']:['Cho thời gian chuẩn bị trước cuộc họp','Chia sẻ agenda trước','Không ép trả lời ngay tức thì','Tạo không gian trao đổi 1-1','Giao tiếp qua văn bản khi cần suy nghĩ','Tôn trọng thời gian làm việc tập trung'],
-    communicationBarriers:[(SL_FB[stressBehavior]||'Tránh tạo áp lực quá mức').replace(/^./,c=>c.toUpperCase()),'Không vi quản lý hoặc kiểm tra chi tiết từng bước','Tránh thay đổi ưu tiên đột ngột','Không bỏ qua cảm xúc và nhu cầu cá nhân','Tránh ra quyết định thiếu căn cứ'],
-    blindSpots:`${name} có thể chưa nhận ra rằng ${(SL_FB[stressBehavior]||'hành vi dưới áp lực').replace(/^./,c=>c.toUpperCase())} đang ảnh hưởng đến người xung quanh nhiều hơn bản thân nhận thức.
-
-${tensionNote} — đây vừa là điểm mạnh vừa là điểm mù cần được khai thác có ý thức.
-
-Việc phát triển nhận thức về điểm mù này sẽ giúp ${name} trở thành một cộng tác viên và nhà lãnh đạo hiệu quả hơn đáng kể.`,
-    development:[`Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và kiên nhẫn':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm'}`,`Học cách nhận biết và kiểm soát hành vi dưới áp lực sớm hơn: ${SL_FB[stressBehavior]||'quản lý stress'}`,'Xây dựng kỹ năng coaching và phát triển người khác','Cân bằng giữa hoàn hảo chủ nghĩa và tốc độ thực thi','Phát triển tư duy chiến lược dài hạn','Học cách ủy quyền hiệu quả và tin tưởng đội nhóm'],
-    idealEnvironment:[`Môi trường ${ieType==='Extrovert'?'năng động với nhiều tương tác và trao đổi':'có không gian tập trung và ít bị ngắt quãng'}`,`Được giao việc rõ ràng với ${leadStyle==='r'?'quyền tự chủ cao':'mục tiêu và kỳ vọng cụ thể'}`,'Văn hóa trân trọng chất lượng và sự cẩn thận','Ít xung đột không cần thiết và được hỗ trợ khi cần','Cơ hội phát triển chuyên môn liên tục'],
-    conflictStyle:[`${name} có xu hướng ${ieType==='Extrovert'?'đối mặt trực tiếp và muốn giải quyết ngay':'cần thời gian xử lý trước khi phản hồi'} khi xung đột xảy ra`,`Dưới áp lực: ${SL_FB[stressBehavior]||'hành vi thay đổi'}`,`Hiệu quả nhất khi xung đột được giải quyết ${leadStyle==='g'?'qua đối thoại cởi mở':'qua dữ liệu và sự kiện cụ thể'}`,`Tránh tình huống khiến ${name} cảm thấy bị công kích cá nhân`,'Cần không gian để trình bày quan điểm một cách có cấu trúc','Sau xung đột, cần thời gian để phục hồi và tái kết nối'],
-    development:[`Phát triển ${ieType==='Extrovert'?'kỹ năng lắng nghe sâu và kiên nhẫn':'kỹ năng thể hiện ý kiến tự tin hơn trong nhóm'}`,`Học cách nhận biết và kiểm soát hành vi dưới áp lực sớm hơn: ${SL_FB[stressBehavior]||'quản lý stress'}`,'Xây dựng kỹ năng coaching và phát triển người khác','Cân bằng giữa hoàn hảo chủ nghĩa và tốc độ thực thi','Phát triển tư duy chiến lược dài hạn','Học cách ủy quyền hiệu quả và tin tưởng đội nhóm','Rèn luyện sự linh hoạt trong cách tiếp cận khi bối cảnh thay đổi','Phát triển trí tuệ cảm xúc trong các tình huống xung đột'],
-    idealEnvironment:[`Môi trường ${ieType==='Extrovert'?'năng động với nhiều tương tác và trao đổi':'có không gian tập trung và ít bị ngắt quãng'}`,`Được giao việc rõ ràng với ${leadStyle==='r'?'quyền tự chủ cao':'mục tiêu và kỳ vọng cụ thể'}`,'Văn hóa trân trọng chất lượng và sự cẩn thận','Ít xung đột không cần thiết và được hỗ trợ khi cần','Cơ hội phát triển chuyên môn liên tục','Được đóng góp ý kiến vào các quyết định quan trọng'],
-    leadershipJourney:`${name} đang ở giai đoạn xây dựng bản sắc lãnh đạo dựa trên nền tảng ${arch||'archetype đặc trưng'} — kết hợp sức mạnh của ${F[pr]?.s[0]||'màu chính'} với chiều sâu của ${secInfo.s[0]||'màu phụ'}.\n\nThách thức lớn nhất trên hành trình này là học cách ${ieType==='Extrovert'?'lắng nghe sâu hơn và tạo không gian cho người khác dẫn dắt':'tự tin bước ra phía trước và chia sẻ tầm nhìn rộng hơn với nhóm'}. Đây cũng là điểm phân biệt nhà lãnh đạo trung bình và nhà lãnh đạo xuất sắc với archetype này.\n\nTiềm năng lớn nhất của ${name} nằm ở khả năng ${LL_FB[leadStyle]||'tạo ảnh hưởng bền vững'} — khi được phát triển đúng hướng, đây sẽ là đòn bẩy mạnh nhất trong sự nghiệp.\n\nBước tiếp theo: tập trung vào việc nhận diện và chủ động kiểm soát ${SL_FB[stressBehavior]||'hành vi dưới áp lực'} sớm hơn — đây là cửa ngõ để ${name} bước lên level lãnh đạo tiếp theo.`,
-    managingTips:[`Giao việc với kết quả rõ ràng, ${leadStyle==='r'?'tránh vi quản lý':'cho đủ thời gian chuẩn bị'}`,`Khi ${name} stress, nhận ra dấu hiệu sớm: ${(SL_FB[stressBehavior]||'thay đổi hành vi bất thường')}`,'Công nhận đóng góp cụ thể và kịp thời','Tạo môi trường an toàn để chia sẻ lo ngại','Phản hồi thường xuyên, xây dựng và có căn cứ rõ ràng',`Tôn trọng phong cách xử lý xung đột của ${name} — không ép phải phản hồi ngay lập tức`,`Tạo cơ hội cho ${name} đóng góp vào chiến lược và quyết định lớn của nhóm`]
-  };
-}
 function buildWheel(pr,sec,pct){
-  const cx=160,cy=160,R=150,r2=62;
-  const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
-  const SL=['Director','Motivator','Inspirer','Insp.Helper','Supporter','Coordinator','Observer','Reformer'];
-  const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const hl=PM[`${kmap[pr]}-${kmap[sec]}`]??0;
-  const toR=d=>d*Math.PI/180;
-  const pol=(rd,deg)=>[cx+rd*Math.cos(toR(deg)),cy+rd*Math.sin(toR(deg))];
+  const cx=160,cy=160,R=150,r=60;
+  const SEG_COLORS=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
+  const SEG_LABELS=['Director','Motivator','Inspirer','Insp. Helper','Supporter','Coordinator','Observer','Reformer'];
+  const posMap={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
+  const hl=posMap[`${pr}-${sec}`]??0;
+  const toRad=d=>d*Math.PI/180;
+  const polar=(r2,deg)=>[cx+r2*Math.cos(toRad(deg)),cy+r2*Math.sin(toRad(deg))];
   let svg='';
   for(let i=0;i<8;i++){
-    const isHL=i===hl,s=i*45-90-22.5,e=s+45;
-    const [x1,y1]=pol(r2,s);const [x2,y2]=pol(R,s);const [x3,y3]=pol(R,e);const [x4,y4]=pol(r2,e);
-    svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r2} ${r2} 0 0 0 ${x1} ${y1}Z" fill="${SC[i]}" opacity="${isHL?1:.4}" stroke="${isHL?'rgba(255,255,255,.7)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2.5:1}"/>`;
-    const [lx,ly]=pol((r2+R)/2,i*45-90);
-    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?9:7.5}" font-family="DM Sans,sans-serif" font-weight="${isHL?700:400}" opacity="${isHL?1:.6}">${SL[i]}</text>`;
+    const isHL=i===hl;
+    const s=i*45-90-22.5,e=s+45;
+    const [x1,y1]=polar(r,s);const [x2,y2]=polar(R,s);const [x3,y3]=polar(R,e);const [x4,y4]=polar(r,e);
+    svg+=`<path d="M${x1} ${y1}L${x2} ${y2}A${R} ${R} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r} ${r} 0 0 0 ${x1} ${y1}Z" fill="${SEG_COLORS[i]}" opacity="${isHL?1:.4}" stroke="${isHL?'rgba(255,255,255,.7)':'rgba(0,0,0,.2)'}" stroke-width="${isHL?2.5:1}"/>`;
+    const [lx,ly]=polar((r+R)/2,i*45-90);
+    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="${isHL?9:8}" font-family="DM Sans,sans-serif" font-weight="${isHL?700:400}" opacity="${isHL?1:.65}">${SEG_LABELS[i]}</text>`;
   }
-  const kc=CI[pr],ks=CI[sec];
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${r2-2}" fill="var(--sur)" stroke="rgba(255,255,255,.1)" stroke-width="1"/>`;
-  svg+=`<text x="${cx}" y="${cy-16}" text-anchor="middle" fill="${kc.c}" font-size="20">●</text>`;
-  svg+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans" font-weight="600">${kc.l.split(' ')[0]}</text>`;
-  svg+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" fill="${kc.c}" font-size="13" font-family="DM Sans" font-weight="700">${pct(pr)}%</text>`;
-  svg+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${ks.c}" font-size="10" font-family="DM Sans" opacity=".85">+${ks.l.split(' ')[0]} ${pct(sec)}%</text>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r-2}" fill="#0A0E14" stroke="rgba(255,255,255,.1)" stroke-width="1"/>`;
+  svg+=`<text x="${cx}" y="${cy-16}" text-anchor="middle" fill="${CI[pr].c}" font-size="20" font-family="DM Sans">●</text>`;
+  svg+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans" font-weight="600">${CI[pr].l.split(' ')[0]}</text>`;
+  svg+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" fill="${CI[pr].c}" font-size="13" font-family="DM Sans" font-weight="700">${pct(pr)}%</text>`;
+  svg+=`<text x="${cx}" y="${cy+32}" text-anchor="middle" fill="${CI[sec].c}" font-size="10" font-family="DM Sans" opacity=".85">+${CI[sec].l.split(' ')[0]} ${pct(sec)}%</text>`;
   return `<svg viewBox="0 0 ${cx*2} ${cy*2}" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 8px 32px rgba(0,0,0,.5))">${svg}</svg>`;
 }
+
 function renderProfile(name,role,dept,d,n){
-  const {pr,sec,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch}=d;
-  const kc=CI[pr],ks=CI[sec];
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const LL={r:'🎯 Lãnh đạo Kết quả',y:'⚡ Truyền cảm hứng',g:'🤝 Lãnh đạo Phục vụ',b:'📊 Lãnh đạo Chiến lược'};
-  const SL={r:'⚔️ Kiểm soát tăng cao',y:'🌀 Phân tán, hời hợt',g:'🐢 Thu mình, im lặng',b:'🔍 Phân tích quá mức'};
-  const bars=['r','y','g','b'].map(k=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[k].c}">${CI[k].e} ${CI[k].l}</span><span class="cb-pct" style="color:${CI[k].c}">${pct(k)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${pct(k)}%;background:${CI[k].c}"></div></div></div>`).join('');
+  const {pr,sec,pct,ieType,ieExtPct,leadStyle,stressBehavior,archetype}=d;
+  const LLABELS={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
+  const SLABELS={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
+  const ms=n.managerSnapshot||{thisWeek:[],biggestRisk:'—',bestUse:'—',warningSignals:[]};
+  const comm=n.communication||{do:[],avoid:[]};
+  const bars=['red','yellow','green','blue'].map(c=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="cb-pct" style="color:${CI[c].c}">${pct(c)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${pct(c)}%;background:${CI[c].c}"></div></div></div>`).join('');
   const list=(arr,cls='')=>`<ul class="profile-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-  const paras=t=>(t||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
-  const sec2=(ic,title,body)=>`<div class="profile-section"><div class="ps-label">${ic} ${title}</div><div class="ps-content">${body}</div></div>`;
-  const lsKey=Object.keys({r:'',y:'',g:'',b:''}).includes(leadStyle)?leadStyle:leadStyle[0];
-  const sbKey=Object.keys({r:'',y:'',g:'',b:''}).includes(stressBehavior)?stressBehavior:stressBehavior[0];
-  const isPrint=new URLSearchParams(location.search).get('print')==='1';
+  const paras=(txt)=>{if(!txt)return'<p>—</p>';const lines=String(txt).split(/\\n|\n/).filter(p=>p.trim());return lines.length>1?lines.map(p=>`<p>${p}</p>`).join(''):`<p>${txt}</p>`;};
+  const sec2=(icon,title,body)=>`<div class="profile-section"><div class="ps-label">${icon} ${title}</div><div class="ps-content">${body}</div></div>`;
   document.getElementById('profileContainer').innerHTML=`
-    ${isPrint?`
-    <div class="snap-section">
-      <div class="snap-head">
-        <div class="snap-icon">⚡</div>
-        <div>
-          <div class="snap-title">Manager Snapshot</div>
-          <div class="snap-sub">Hành động ngay · Rủi ro 30–60 ngày · Cách dùng người tốt nhất</div>
-        </div>
-        <div class="snap-badge">Chỉ Admin</div>
-      </div>
-      <div class="snap-grid">
-        <div class="snap-card snap-urgent">
-          <div class="snap-label">🎯 Hành động — Tuần này</div>
-          <ul class="snap-list">${(n.managerSnapshot?.immediateActions||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
-        </div>
-        <div class="snap-card snap-risk">
-          <div class="snap-label">🔴 Rủi ro nếu bỏ qua — 30–60 ngày</div>
-          <p>${n.managerSnapshot?.biggestRisk||''}</p>
-        </div>
-      </div>
-      <div class="snap-grid">
-        <div class="snap-card snap-use">
-          <div class="snap-label">✅ Cách dùng người này tốt nhất</div>
-          <ul class="snap-list">${(n.managerSnapshot?.howToUseBest||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
-        </div>
-        <div class="snap-card snap-watch">
-          <div class="snap-label">⚠️ Watch Signals</div>
-          <ul class="snap-list">${(n.managerSnapshot?.watchSignals||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
-        </div>
-      </div>
-    </div>`:''}
+
+    <!-- ── Wheel + Scores Card ── -->
     <div class="card">
       <div class="profile-header">
         <div class="profile-name">${name}</div>
         <div class="profile-role">${role}${dept?' · '+dept:''}</div>
-        <div class="profile-type-badge" style="background:${kc.c}22;color:${kc.c};border:1px solid ${kc.c}55">${kc.e} ${arch}</div>
+        <div class="profile-type-badge" style="background:${CI[pr].c}22;color:${CI[pr].c};border:1px solid ${CI[pr].c}55">${CI[pr].e} ${archetype}</div>
       </div>
       <div class="wheel-wrap">${buildWheel(pr,sec,pct)}</div>
-      <div class="wheel-caption"><div class="pos-main">${kc.e} ${kc.l} + ${ks.e} ${ks.l}</div><div class="pos-sub">${arch}</div></div>
+      <div class="wheel-caption"><div class="pos-main">${CI[pr].e} ${CI[pr].l} + ${CI[sec].e} ${CI[sec].l}</div><div class="pos-sub">${archetype}</div></div>
       <div class="color-bars">${bars}</div>
       <div class="dims-grid">
-        <div class="dim-card"><div class="dim-title">🔋 Định hướng năng lượng</div><div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}${(ieExtPct>0||d.ie.E>0||d.ie.I>0)?`<br><span style="font-size:11px;font-weight:400;color:var(--muted)">${ieExtPct}% E · ${100-ieExtPct}% I</span>`:''}</div></div>
-        <div class="dim-card"><div class="dim-title">👑 Phong cách lãnh đạo</div><div class="dim-val">${LL[leadStyle]||LL[leadStyle[0]]||'—'}</div></div>
-        <div class="dim-card"><div class="dim-title">⚠️ Hành vi dưới áp lực</div><div class="dim-val">${SL[stressBehavior]||SL[stressBehavior[0]]||'—'}</div></div>
+        <div class="dim-card"><div class="dim-title">🔋 Định hướng năng lượng</div><div class="dim-val" style="color:${ieType==='Extrovert'?'var(--yellow)':'var(--blue)'}">${ieType==='Extrovert'?'🌟 Hướng ngoại':'🌙 Hướng nội'}<br><span style="font-size:11px;font-weight:400;color:var(--muted)">${ieExtPct}% E · ${100-ieExtPct}% I</span></div></div>
+        <div class="dim-card"><div class="dim-title">👑 Phong cách lãnh đạo</div><div class="dim-val" style="color:var(--${leadStyle})">${LLABELS[leadStyle]}</div></div>
+        <div class="dim-card"><div class="dim-title">⚠️ Hành vi dưới áp lực</div><div class="dim-val" style="color:var(--${stressBehavior})">${SLABELS[stressBehavior]}</div></div>
       </div>
     </div>
+
+    <!-- ── Manager Snapshot — Decision-First ── -->
+    <div class="card" style="border:1px solid rgba(245,166,35,.25);background:linear-gradient(135deg,rgba(245,166,35,.04) 0%,var(--sur) 60%)">
+      <div class="ps-label" style="color:var(--yellow);margin-bottom:16px;font-size:11px;letter-spacing:2px">⚡ MANAGER SNAPSHOT — ĐỌC TRƯỚC, HÀNH ĐỘNG NGAY</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(245,166,35,.15)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">📋 3 VIỆC PHẢI LÀM TUẦN NÀY</div>
+          ${list(ms.thisWeek)}
+        </div>
+        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(232,57,42,.2)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">🚨 RỦI RO LỚN NHẤT (30–60 NGÀY)</div>
+          <p style="font-size:13px;line-height:1.65;color:var(--txt)">${ms.biggestRisk}</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(60,179,113,.15)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px">🎯 TRIỂN KHAI TỐT NHẤT</div>
+          <p style="font-size:13px;line-height:1.65;color:var(--txt)">${ms.bestUse}</p>
+        </div>
+        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(43,108,176,.2)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px">👁️ DẤU HIỆU CẢNH BÁO</div>
+          ${list(ms.warningSignals,'neg')}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Profile Core ── -->
     <div class="card">
-      ${sec2('👤','Tổng Quan Phong Cách Cá Nhân',paras(n.personalStyle))}
-      ${sec2('💪','Điểm Mạnh Nổi Bật',list(n.strengths))}
+      ${sec2('👤','Tổng Quan',`<p>${n.summary||'—'}</p>`)}
+      ${sec2('💪','Điểm Mạnh',list(n.strengths))}
       ${sec2('🔧','Điểm Cần Phát Triển',list(n.weaknesses,'neg'))}
-      ${sec2('🤝','Đóng Góp Cho Nhóm',list(n.valueToTeam,'neu'))}
     </div>
+
+    <!-- ── Communication ── -->
     <div class="card">
-      ${sec2('💬','Giao Tiếp Hiệu Quả','<p style="font-size:12px;color:var(--muted);margin-bottom:10px">Để giao tiếp tốt với '+name+':</p>'+list(n.effectiveCommunication))}
-      ${sec2('🚫','Rào Cản Giao Tiếp','<p style="font-size:12px;color:var(--muted);margin-bottom:10px">Tránh những điều sau:</p>'+list(n.communicationBarriers,'neg'))}
+      <div class="profile-section">
+        <div class="ps-label">💬 Giao Tiếp</div>
+        <div class="ps-content">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px">✅ NÊN LÀM</div>
+          ${list(comm.do)}
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin:14px 0 8px">🚫 TRÁNH</div>
+          ${list(comm.avoid,'neg')}
+        </div>
+      </div>
     </div>
+
+    <!-- ── Behavioral Depth ── -->
     <div class="card">
-      ${sec2('🔍','Điểm Mù Tiềm Ẩn',paras(n.blindSpots))}
-      ${n.conflictStyle?sec2('⚡','Phong Cách Xử Lý Xung Đột',list(n.conflictStyle)):''}
+      ${sec2('⚠️','Hành Vi Dưới Áp Lực & Stress',paras(n.stressBehavior))}
+      ${sec2('👑','Phong Cách Lãnh Đạo Thực Tế',paras(n.leadershipStyle))}
     </div>
+
+    <!-- ── Positioning & Risk ── -->
     <div class="card">
-      ${sec2('🌱','Gợi Ý Phát Triển',list(n.development))}
-      ${sec2('🏡','Môi Trường Làm Việc Lý Tưởng',list(n.idealEnvironment,'neu'))}
+      ${sec2('🎯','Vị Trí Phù Hợp — Hiệu Suất Cao Nhất',paras(n.performancePositioning))}
+      <div style="height:1px;background:rgba(232,57,42,.2);margin:4px 0 18px"></div>
+      ${sec2('🚨','Kịch Bản Thất Bại Nguy Hiểm Nhất',paras(n.failureScenario))}
     </div>
+
+    <!-- ── Development & Managing ── -->
     <div class="card">
-      ${n.leadershipJourney?sec2('🚀','Hành Trình Lãnh Đạo',paras(n.leadershipJourney)):''}
+      ${sec2('🌱','Gợi Ý Phát Triển (90 Ngày)',list(n.development))}
       ${sec2('💡','Cách Quản Lý & Tạo Động Lực',list(n.managingTips))}
     </div>
-    ${isPrint&&n.whatToDoNow?`
-    <div class="card wtn-card">
-      <div class="profile-section">
-        <div class="ps-label" style="color:var(--yellow)">⚡ What To Do Now — Hành động ngay hôm nay</div>
-        <div class="ps-content">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">5 việc manager cần làm với ${name} trong 24 giờ tới</div>
-          ${list(n.whatToDoNow,'neu')}
-        </div>
-      </div>
-    </div>`:''}
-    ${n.colorInteractions?`
-    <div class="card">
-      <div class="profile-section">
-        <div class="ps-label">🎨 Tương Tác Với Các Màu Khác</div>
-        <div class="ps-content">
-          ${[['🔴','Fiery Red','withRed','#E8392A'],['🟡','Sunshine Yellow','withYellow','#F5A623'],['🟢','Earth Green','withGreen','#3CB371'],['🔵','Cool Blue','withBlue','#2B6CB0']].map(([e,l,k,c])=>n.colorInteractions[k]?`
-          <div style="margin-bottom:16px;padding:14px;background:var(--sur2);border-radius:12px;border-left:3px solid ${c}">
-            <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${c};margin-bottom:6px">${e} ${l}</div>
-            <div style="font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.colorInteractions[k]}</div>
-          </div>`:'').join('')}
-        </div>
-      </div>
-    </div>`:''}
-    ${n.actionPlan90?`
-    <div class="card">
-      <div class="profile-section">
-        <div class="ps-label">🗓️ Kế Hoạch Hành Động 90 Ngày</div>
-        <div class="ps-content">
-          ${[['⚡','2 Tuần Đầu — Phát Huy Ngay','week1_2'],['📅','Tháng 1 — Xây Nền Tảng','month1'],['📈','Tháng 2–3 — Phát Triển Chiều Mới','month2_3']].map(([ic,title,k])=>`
-          <div style="margin-bottom:14px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${ic} ${title}</div>
-            ${list(n.actionPlan90[k],'neu')}
-          </div>`).join('')}
-          ${n.actionPlan90.longterm?`
-          <div style="margin-top:8px;padding:14px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:10px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:6px">🌟 Định Hướng Dài Hạn</div>
-            <div style="font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.actionPlan90.longterm}</div>
-          </div>`:''}
-        </div>
-      </div>
-    </div>`:''}
-    ${isPrint&&n.performancePositioning?`
-    <div class="card">
-      <div class="profile-section">
-        <div class="ps-label">📊 Performance Positioning</div>
-        <div class="ps-content">
-          <div class="perf-wrap">
-            <div class="perf-badge ${(n.performancePositioning.level||'').toLowerCase().includes('above')?'perf-above':(n.performancePositioning.level||'').toLowerCase().includes('below')?'perf-below':'perf-at'}">${n.performancePositioning.level||'—'}</div>
-            <p style="margin:0;font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.performancePositioning.explanation||''}</p>
-          </div>
-        </div>
-      </div>
-    </div>`:''}
-    ${isPrint&&n.failureScenario?`
-    <div class="failure-card">
-      <div class="ps-label" style="color:#ff6b5e">💀 Failure Scenario</div>
-      <div class="failure-grid">
-        <div class="failure-col"><div class="failure-col-label">⚡ Trigger</div><p>${n.failureScenario.trigger||''}</p></div>
-        <div class="failure-col"><div class="failure-col-label">🔥 Diễn biến</div><p>${n.failureScenario.whatHappens||''}</p></div>
-        <div class="failure-col"><div class="failure-col-label">💥 Business Impact</div><p>${n.failureScenario.businessImpact||''}</p></div>
-      </div>
-    </div>`:''}`;
-  document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
+
+    <div class="card print-footer" style="text-align:center;padding:16px">
+      <p style="font-size:11px;color:var(--muted)">Insights Discovery Profile · ${name} · ${new Date().toLocaleDateString('vi-VN')}<br>Được tạo bởi Insights Discovery Tool nội bộ · DHI Co Ltd</p>
+    </div>`;
   document.getElementById('profileActions').style.display='grid';
-  toast('✅ Profile của bạn đã được tạo thành công!');
-  // Nếu đang ở chế độ print (admin popup) → trigger print sau khi render xong
-  const _params=new URLSearchParams(location.search);
-  if(_params.get('print')==='1' && !window._printTriggered){
-    window._printTriggered=true;
-    setTimeout(()=>window.print(),3000);
-  }
+  toast('✅ Hồ sơ AI đã được tạo thành công!');
 }
+
 function resetForm(){
-  ANS={};BATCH_IDX=0;
+  answers={};currentBatch=0;
   ['iName','iRole'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('iDept').value='';
   document.getElementById('progFill').style.width='0%';
@@ -823,82 +622,6 @@ function resetForm(){
   document.getElementById('profileContainer').innerHTML='';
   show(0);
 }
-
-// ── Admin popup mode: load profile directly from URL param ──
-(function initFromURL(){
-  const params=new URLSearchParams(location.search);
-  const raw=params.get('data');
-  const autoPrint=params.get('print')==='1';
-  if(!raw)return;
-  try{
-    // FIX 1: Decode UTF-8 tiếng Việt đúng cách
-    const b64=raw.replace(/ /g,'+');
-    const item=JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-    const name=item.Title||item.name||'';
-    const role=item.EmployeeRole||item.role||'';
-    const dept=item.Department||item.department||'';
-    const kmap={red:'r',yellow:'y',green:'g',blue:'b'};
-    const pr=kmap[item.PrimaryColor]||'y';
-    const sec=kmap[item.SecondaryColor]||'g';
-    const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
-    const total=rs+ys+gs+bs||1;
-    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/24*100);
-    const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
-    const ieTotal=ieE+ieI||1;
-    const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
-    const ieExtPct=Math.round(ieE/ieTotal*100);
-    const lkmap={red:'r',yellow:'y',green:'g',blue:'b'};
-    const leadStyle=lkmap[item.LeadStyle]||item.LeadStyle||pr;
-    const stressBehavior=lkmap[item.StressBehavior]||item.StressBehavior||sec;
-    const arch=item.Archetype||`${CI[pr]?.l||''} + ${CI[sec]?.l||''}`;
-    const d={sc:{r:rs,y:ys,g:gs,b:bs},pr,sec,pPr:item.PrimaryColor,pSec:item.SecondaryColor,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch,ie:{E:ieE,I:ieI}};
-
-    // Parse AI narrative
-    let narrative=null;
-    if(item.AIProfile){
-      try{narrative=typeof item.AIProfile==='string'?JSON.parse(item.AIProfile):item.AIProfile;}catch(e){}
-    }
-
-    // FIX 2: Kiểm tra readyState thay vì dùng DOMContentLoaded
-    // Tránh timing bug khi popup load xong DOM trước khi script đăng ký listener
-    function doInit(){
-      show(2);
-      if(narrative){
-        renderProfile(name,role,dept,d,narrative);
-      } else if(autoPrint){
-        // Chỉ gọi AI khi admin mở với ?print=1
-        document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang tạo profile…</strong><br>Vui lòng chờ 20–30 giây.</p></div>';
-        genAIProfile(name,role,dept,d).then(n=>renderProfile(name,role,dept,d,n));
-      } else {
-        // Có ?data= nhưng không có ?print=1 → quick profile, không gọi AI
-        showQuickProfile(name,role,dept,d);
-      }
-      if(autoPrint){
-        // Nếu có narrative sẵn → print sau 1.5s
-        // Nếu cần gen AI → renderProfile sẽ trigger print
-        if(narrative) setTimeout(()=>window.print(),3000);
-      }
-    }
-    if(document.readyState==='loading'){
-      document.addEventListener('DOMContentLoaded',doInit);
-    } else {
-      doInit();
-    }
-
-  }catch(e){
-    console.error('Admin popup init error:',e);
-    function showErr(){
-      show(2);
-      document.getElementById('profileContainer').innerHTML=
-        `<div class="card" style="text-align:center;padding:40px">
-          <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
-          <p style="color:var(--red);font-weight:600;margin-bottom:8px">Lỗi tải profile</p>
-          <p style="color:var(--muted);font-size:13px">${e.message}</p>
-        </div>`;
-    }
-    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',showErr);}else{showErr();}
-  }
-})();
 </script>
 </body>
 </html>
