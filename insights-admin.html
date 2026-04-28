@@ -606,8 +606,8 @@ async function genAdminProfile(type,id){
   contentEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;color:var(--muted)"><div style="width:28px;height:28px;border:2.5px solid rgba(255,255,255,.2);border-top-color:${type==='employee'?'var(--green)':'var(--yellow)'};border-radius:50%;animation:spin .7s linear infinite"></div><span style="font-size:13px">Đang tạo ${type==='employee'?'Profile Nhân Viên':'Profile Quản Lý'}…</span></div>`;
 
   const SYSTEM=type==='employee'
-    ?`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng.`
-    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam.`;
+    ?`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`
+    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`;
 
   const data_line=`Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}\nRed ${pct(r)}% | Yellow ${pct(y)}% | Green ${pct(g)}% | Blue ${pct(b)}%\nMàu chính: ${CI[pr]?.l||pr} (${pct(r||y||g||b)}%) | Màu phụ: ${CI[sec]?.l||sec} | Archetype: ${arch}\nIE: ${ieDesc} | Lãnh đạo: ${LLABELS[lead]||lead} | Stress: ${SLABELS[stress]||stress}`;
 
@@ -626,15 +626,42 @@ async function genAdminProfile(type,id){
     let text=(data.content||[]).map(b=>b.text||'').join('').trim();
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
-    let json;
-    try{ json=JSON.parse(text); }catch(e1){
-      let recovered=false;
-      for(let i=text.length-1;i>100;i--){
-        if(text[i]==='}'){
-          try{ json=JSON.parse(text.substring(0,i+1)); recovered=true; break; }catch(e2){}
+
+    // ── JSON repair: fix common Haiku output issues ──
+    function repairJSON(s){
+      // 1. Remove literal control characters inside strings (unescaped \n \r \t)
+      // Replace raw newlines inside JSON string values with \\n
+      let out='', inStr=false, esc=false;
+      for(let i=0;i<s.length;i++){
+        const c=s[i];
+        if(esc){ out+=c; esc=false; continue; }
+        if(c==='\\'){ out+=c; esc=true; continue; }
+        if(c==='"'){ inStr=!inStr; out+=c; continue; }
+        if(inStr){
+          if(c==='\n'){ out+='\\n'; continue; }
+          if(c==='\r'){ continue; }
+          if(c==='\t'){ out+='\\t'; continue; }
         }
+        out+=c;
       }
-      if(!recovered) throw e1;
+      return out;
+    }
+
+    let json;
+    // Pass 1: try direct parse
+    try{ json=JSON.parse(text); }catch(e1){
+      // Pass 2: repair then parse
+      try{ json=JSON.parse(repairJSON(text)); }catch(e2){
+        // Pass 3: truncation recovery — scan backward for last valid }
+        let recovered=false;
+        const repaired=repairJSON(text);
+        for(let i=repaired.length-1;i>100;i--){
+          if(repaired[i]==='}'){
+            try{ json=JSON.parse(repaired.substring(0,i+1)); recovered=true; break; }catch(e3){}
+          }
+        }
+        if(!recovered) throw e1;
+      }
     }
     if(!aiCache[id]) aiCache[id]={};
     aiCache[id][type]=json;
