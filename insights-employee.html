@@ -839,31 +839,6 @@ function resetForm(){
   try{
     // FIX 1: Decode UTF-8 tiếng Việt đúng cách
     const b64=raw.replace(/ /g,'+');
-// ════ RECALC FROM RAW ANSWERS (convert old version data) ════
-function recalcFromAnswers(answersObj){
-  const sc={r:0,y:0,g:0,b:0},ie={E:0,I:0},ld={r:0,y:0,g:0,b:0},st={r:0,y:0,g:0,b:0};
-  QS.forEach((q,i)=>{
-    const a=answersObj[i]||answersObj[String(i)];
-    if(!a)return;
-    if(!q.d)sc[a]++;
-    else if(q.d==='ie'){if(a==='r'||a==='y')ie.E++;else ie.I++;}
-    else if(q.d==='lead')ld[a]++;
-    else if(q.d==='stress')st[a]++;
-  });
-  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-  const pr=sorted[0][0],sec=sorted[1][0];
-  const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
-  const pPr=kmap[pr],pSec=kmap[sec];
-  const pct=k=>Math.round(sc[k]/CORE_N*100);
-  const ieT=ie.E+ie.I||1;
-  const ieType=ie.E>=ie.I?'Extrovert':'Introvert';
-  const ieExtPct=Math.round(ie.E/ieT*100);
-  const ls=Object.entries(ld).sort((a,b)=>b[1]-a[1])[0][0];
-  const sb=Object.entries(st).sort((a,b)=>b[1]-a[1])[0][0];
-  const arch=ARCH[`${pPr}-${pSec}`]||`${CI[pr].l} + ${CI[sec].l}`;
-  return {sc,pr,sec,pPr,pSec,pct,ieType,ieExtPct,leadStyle:ls,stressBehavior:sb,arch,ie,ld,st};
-}
-
     const item=JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     const name=item.Title||item.name||'';
     const role=item.EmployeeRole||item.role||'';
@@ -871,32 +846,18 @@ function recalcFromAnswers(answersObj){
     const kmap={red:'r',yellow:'y',green:'g',blue:'b'};
     const pr=kmap[item.PrimaryColor]||'y';
     const sec=kmap[item.SecondaryColor]||'g';
-    let rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
-    let pr2=kmap[item.PrimaryColor]||'y',sec2=kmap[item.SecondaryColor]||'g';
-    let ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
-    let ieType2=item.IEType||'Extrovert';
-    let leadStyle2=({red:'r',yellow:'y',green:'g',blue:'b'})[item.LeadStyle]||item.LeadStyle||pr2;
-    let stressBehavior2=({red:'r',yellow:'y',green:'g',blue:'b'})[item.StressBehavior]||item.StressBehavior||sec2;
-    let arch2=item.Archetype||`${CI[pr2]?.l||''} + ${CI[sec2]?.l||''}`;
-
-    // Version cũ: có Answers nhưng thiếu điểm → recalculate
-    if((rs+ys+gs+bs===0) && item.Answers){
-      try{
-        const raw=typeof item.Answers==='string'?JSON.parse(item.Answers):item.Answers;
-        const rc=recalcFromAnswers(raw);
-        rs=rc.sc.r;ys=rc.sc.y;gs=rc.sc.g;bs=rc.sc.b;
-        pr2=rc.pr;sec2=rc.sec;
-        ieE=rc.ie.E;ieI=rc.ie.I;
-        ieType2=rc.ieType;
-        leadStyle2=rc.leadStyle;stressBehavior2=rc.stressBehavior;
-        arch2=rc.arch;
-        console.info('Scores recalculated from Answers (old version data)');
-      }catch(e){console.warn('Recalc from Answers failed:',e);}
-    }
-
-    const ieExtPct=Math.round(ieE/(ieE+ieI||1)*100);
-    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/CORE_N*100);
-    const d={sc:{r:rs,y:ys,g:gs,b:bs},pr:pr2,sec:sec2,pPr:item.PrimaryColor||({r:'red',y:'yellow',g:'green',b:'blue'})[pr2],pSec:item.SecondaryColor||({r:'red',y:'yellow',g:'green',b:'blue'})[sec2],pct,ieType:ieType2,ieExtPct,leadStyle:leadStyle2,stressBehavior:stressBehavior2,arch:arch2,ie:{E:ieE,I:ieI}};
+    const rs=item.RedScore||0,ys=item.YellowScore||0,gs=item.GreenScore||0,bs=item.BlueScore||0;
+    const total=rs+ys+gs+bs||1;
+    const pct=k=>Math.round({r:rs,y:ys,g:gs,b:bs}[k]/24*100);
+    const ieE=item.IEScoreE||0,ieI=item.IEScoreI||0;
+    const ieTotal=ieE+ieI||1;
+    const ieType=item.IEType||(ieE>=ieI?'Extrovert':'Introvert');
+    const ieExtPct=Math.round(ieE/ieTotal*100);
+    const lkmap={red:'r',yellow:'y',green:'g',blue:'b'};
+    const leadStyle=lkmap[item.LeadStyle]||item.LeadStyle||pr;
+    const stressBehavior=lkmap[item.StressBehavior]||item.StressBehavior||sec;
+    const arch=item.Archetype||`${CI[pr]?.l||''} + ${CI[sec]?.l||''}`;
+    const d={sc:{r:rs,y:ys,g:gs,b:bs},pr,sec,pPr:item.PrimaryColor,pSec:item.SecondaryColor,pct,ieType,ieExtPct,leadStyle,stressBehavior,arch,ie:{E:ieE,I:ieI}};
 
     // Parse AI narrative
     let narrative=null;
