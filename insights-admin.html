@@ -9,7 +9,8 @@
 <script>
 const CONFIG = {
   flowWriteUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/82969079c6df4c4290991cd79c989ad9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=govcNl7OF4iA_yKAr1L-sP9EaOLax5fICs56ge3a488",
-  flowReadUrl:  "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8"
+  flowReadUrl:  "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8",
+  claudeProxyUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev"
 };
 </script>
 <style>
@@ -243,6 +244,8 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
       <button class="m-tab" onclick="mTab(&#39;scores&#39;)">📊 Kết quả</button>
       <button class="m-tab active" onclick="mTab(&#39;profile&#39;)">👤 Profile</button>
       <button class="m-tab" id="mTabAI" onclick="mTab(&#39;ai&#39;)" style="display:none">🤖 AI Narrative</button>
+      <button class="m-tab" onclick="mTab(&#39;employee&#39;)">🧑 Profile Nhân Viên</button>
+      <button class="m-tab" onclick="mTab(&#39;manager&#39;)">📋 Profile Quản Lý</button>
     </div>
     <!-- PANE: Scores -->
     <div class="m-pane" id="mp-scores">
@@ -284,6 +287,10 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <div class="m-pane" id="mp-ai">
       <div id="mAIContent"></div>
     </div>
+    <!-- PANE: Employee AI Profile -->
+    <div class="m-pane" id="mp-employee"><div id="mEmpContent"></div></div>
+    <!-- PANE: Manager AI Profile -->
+    <div class="m-pane" id="mp-manager"><div id="mMgrContent"></div></div>
     <div class="modal-footer">
       <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
       <button class="btn-close2" onclick="closeModal()">Đóng</button>
@@ -301,6 +308,7 @@ blue:{l:'Cool Blue',e:'🔵',c:'#2B6CB0',tag:'Chuyên Gia Phân Tích & Chất L
 const LL={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
 const SL={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
 let allData=[],filtered=[],currentItem=null;
+const aiCache={}; // keyed by item.ID → {employee:null|json, manager:null|json}
 
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
@@ -492,6 +500,16 @@ function openModal(id){
     tabAI.style.display='none';
   }
   // Reset to first tab
+  // Initialize AI profile tabs
+  const empCache=aiCache[id]?.employee;
+  document.getElementById('mEmpContent').innerHTML=empCache
+    ?renderEmpHTML(empCache,item)
+    :`<button class="ai-gen-btn" onclick="genAdminProfile('employee',${id})">🤖 Tạo Profile Nhân Viên (AI)</button><p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px">Cá nhân hóa sâu — viết cho nhân viên tự đọc về bản thân</p>`;
+  const mgrCache=aiCache[id]?.manager;
+  document.getElementById('mMgrContent').innerHTML=mgrCache
+    ?renderMgrHTML(mgrCache,item)
+    :`<button class="ai-gen-btn mgr" onclick="genAdminProfile('manager',${id})">📋 Tạo Profile Quản Lý (AI)</button><p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px">Manager snapshot + rủi ro + kịch bản thất bại</p>`;
+
   mTab('scores');
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(()=>document.querySelectorAll('.e-bar-fill').forEach(el=>el.style.width=el.dataset.w),100);
@@ -527,7 +545,7 @@ function renderAIPane(profile){
 }
 
 function mTab(id){
-  document.querySelectorAll('.m-tab').forEach((t,i)=>t.classList.toggle('active',['scores','profile','ai'][i]===id));
+  document.querySelectorAll('.m-tab').forEach((t,i)=>t.classList.toggle('active',['scores','profile','ai','employee','manager'][i]===id));
   document.querySelectorAll('.m-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('mp-'+id).classList.add('active');
 }
@@ -561,6 +579,120 @@ function exportPDF(){
   const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
   if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
   else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)');
+}
+// ────────────────────────────────────────
+// AI GENERATION CSS + FUNCTIONS
+// ────────────────────────────────────────
+(function injectCSS(){
+  const s=document.createElement('style');
+  s.textContent=`.ai-gen-btn{width:100%;padding:14px;border-radius:10px;border:1px dashed rgba(255,255,255,.15);background:var(--sur2);color:var(--muted);cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:500;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}.ai-gen-btn:hover{border-color:var(--green);color:var(--green);background:rgba(60,179,113,.08)}.ai-gen-btn.mgr:hover{border-color:var(--yellow);color:var(--yellow);background:rgba(245,166,35,.06)}.ais{margin-bottom:16px}.ais-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}.ais-text{font-size:13px;line-height:1.7;color:rgba(255,255,255,.8)}.ais-text p{margin-bottom:8px}.ais-list{list-style:none;display:flex;flex-direction:column;gap:5px}.ais-list li{font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.8);padding-left:13px;position:relative}.ais-list li::before{content:'·';position:absolute;left:0;color:var(--green);font-weight:700;font-size:14px;line-height:1.3}.ais-list.neg li::before{color:var(--red)}.ais-list.blu li::before{color:var(--blue)}.ais-list.ylw li::before{color:var(--yellow)}.ais-comm{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ais-snap{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.ais-snap-box{background:var(--sur2);border-radius:9px;padding:12px 13px}.ais-snap-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}.ais-snap-box p{font-size:12px;line-height:1.6;color:rgba(255,255,255,.8)}.ais-risk-bar{height:2px;background:linear-gradient(90deg,var(--red),rgba(232,57,42,.1));border-radius:99px;margin:8px 0 14px}`;
+  document.head.appendChild(s);
+})();
+
+async function genAdminProfile(type,id){
+  const item=allData.find(i=>i.ID==id||i.ID===id);if(!item)return;
+  const name=item.Title||'?',role=item.EmployeeRole||'',dept=item.Department||'';
+  const r=item.RedScore||0,y=item.YellowScore||0,g=item.GreenScore||0,b=item.BlueScore||0;
+  const tot=r+y+g+b||28,pct=v=>Math.round(v/28*100);
+  const pr=item.PrimaryColor||'blue',sec=item.SecondaryColor||'green';
+  const arch=item.Archetype||`${CI[pr]?.l||pr}+${CI[sec]?.l||sec}`;
+  const LLABELS={red:'Lãnh đạo Kết quả',yellow:'Lãnh đạo Truyền cảm hứng',green:'Lãnh đạo Phục vụ',blue:'Lãnh đạo Chiến lược'};
+  const SLABELS={red:'Kiểm soát tăng cao, nóng nảy',yellow:'Phân tán, hời hợt',green:'Thu mình, im lặng',blue:'Phân tích quá mức'};
+  const ie=item.IEType||'',lead=item.LeadStyle||pr,stress=item.StressBehavior||pr;
+  const ieDesc=ie==='Extrovert'?'Hướng ngoại — nạp năng lượng từ tương tác':'Hướng nội — nạp năng lượng từ thời gian một mình';
+
+  const paneEl=document.getElementById('mp-'+type);
+  const contentEl=document.getElementById(type==='employee'?'mEmpContent':'mMgrContent');
+  contentEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;color:var(--muted)"><div style="width:28px;height:28px;border:2.5px solid rgba(255,255,255,.2);border-top-color:${type==='employee'?'var(--green)':'var(--yellow)'};border-radius:50%;animation:spin .7s linear infinite"></div><span style="font-size:13px">Đang tạo ${type==='employee'?'Profile Nhân Viên':'Profile Quản Lý'}…</span></div>`;
+
+  const SYSTEM=type==='employee'
+    ?`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng.`
+    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam.`;
+
+  const data_line=`Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}\nRed ${pct(r)}% | Yellow ${pct(y)}% | Green ${pct(g)}% | Blue ${pct(b)}%\nMàu chính: ${CI[pr]?.l||pr} (${pct(r||y||g||b)}%) | Màu phụ: ${CI[sec]?.l||sec} | Archetype: ${arch}\nIE: ${ieDesc} | Lãnh đạo: ${LLABELS[lead]||lead} | Stress: ${SLABELS[stress]||stress}`;
+
+  const empPrompt=`${data_line}\n\nYÊU CẦU: Gọi tên "${name}" trực tiếp. Mỗi điểm gắn rõ nguồn gốc màu/IE/stress. Tình huống cụ thể. Đoạn 4 personalStyle giải thích ${name} KHÁC GÌ so với người cùng màu ${CI[pr]?.l||pr}. Viết CHO nhân viên tự đọc — ấm áp.\n\nJSON thuần:\n{"personalStyle":"4 đoạn ngăn bằng \\n: (1) archetype+màu, (2) IE tương tác, (3) lãnh đạo thực tế, (4) điểm khác biệt","strengths":["8 điểm — nguồn gốc rõ, tình huống cụ thể"],"weaknesses":["6 điểm — gắn stress/shadow, tác động thực tế"],"valueToTeam":["6 đóng góp cụ thể cho vai trò ${role}"],"communication":{"do":["6 cách giao tiếp hiệu quả"],"avoid":["5 điều tránh — gắn stress"]},"blindSpots":"2-3 đoạn ngăn bằng \\n — đặc thù kết hợp màu+IE+archetype","development":["6 gợi ý có timeframe — ưu tiên chiều còn yếu"],"idealEnvironment":["5 môi trường phù hợp"],"managingTips":["5 cách cộng tác hiệu quả nhất — actionable"]}`;
+
+  const mgrPrompt=`${data_line}\n\nQUY TẮC: Gọi tên "${name}" ít nhất 4 lần. KHÔNG lặp ý. Mỗi điểm yếu nêu hậu quả cụ thể. managerSnapshot đủ để hành động ngay. failureScenario cụ thể cho vai trò ${role}. Tiếng Việt, trực tiếp, không sáo rỗng.\n\nJSON thuần:\n{"managerSnapshot":{"thisWeek":["3 việc tuần này — động từ + đối tượng + kết quả"],"biggestRisk":"1 rủi ro 30-60 ngày — cụ thể + hậu quả","bestUse":"cách triển khai ${name} tốt nhất — 1-2 câu","warningSignals":["2 dấu hiệu hành vi quan sát được"]},"summary":"2 câu — ai trong làm việc + điều cần theo dõi","strengths":["5 điểm — quan sát/đo lường được"],"weaknesses":["4 điểm — hậu quả cụ thể với công việc/nhóm"],"communication":{"do":["4 cách"],"avoid":["3 điều tránh + lý do"]},"stressBehavior":"3 câu: phản ứng → tác động nhóm → dấu hiệu sớm","leadershipStyle":"2 câu: cách lãnh đạo thực tế + điều kiện phát huy","development":["4 hành động — thực hiện 90 ngày"],"managingTips":["5 tips — 2 đầu trong 24-72h, 3 dài hạn"],"performancePositioning":"2-3 câu — bối cảnh tốt nhất + nên tránh","failureScenario":"3 câu — tình huống → hành vi → dấu hiệu sớm"}`;
+
+  try{
+    const res=await fetch(CONFIG.claudeProxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',max_tokens:6000,system:SYSTEM,
+      messages:[{role:'user',content:type==='employee'?empPrompt:mgrPrompt}]
+    })});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.error) throw new Error(JSON.stringify(data.error));
+    let text=(data.content||[]).map(b=>b.text||'').join('').trim();
+    text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+    if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
+    const json=JSON.parse(text);
+    if(!aiCache[id]) aiCache[id]={};
+    aiCache[id][type]=json;
+    contentEl.innerHTML=type==='employee'?renderEmpHTML(json,item):renderMgrHTML(json,item);
+    toast('✅ Đã tạo '+(type==='employee'?'Profile Nhân Viên':'Profile Quản Lý')+' thành công!');
+  }catch(e){
+    console.error('Admin AI failed:',e);
+    contentEl.innerHTML=`<div style="text-align:center;padding:32px;color:var(--red)">❌ Lỗi: ${e.message}<br><button class="ai-gen-btn" onclick="genAdminProfile('${type}',${id})" style="margin-top:12px">🔄 Thử lại</button></div>`;
+  }
+}
+
+function renderEmpHTML(n,item){
+  const li=(arr,cls='')=>`<ul class="ais-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  const para=(t)=>String(t||'').split(/\\n|\n/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
+  const s=(lbl,body)=>`<div class="ais"><div class="ais-label">${lbl}</div><div class="ais-text">${body}</div></div>`;
+  const comm=n.communication||{do:[],avoid:[]};
+  return `<div style="padding:4px 0 10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <span style="font-size:11px;color:var(--green);font-weight:600">🧑 Profile Nhân Viên — Viết cho ${item.Title||'nhân viên'} tự đọc</span>
+    <button onclick="genAdminProfile('employee',${item.ID})" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff)">🔄 Tạo lại</button>
+  </div>
+  ${s('👤 Phong Cách Cá Nhân', para(n.personalStyle))}
+  ${s('💪 Điểm Mạnh', li(n.strengths))}
+  ${s('🔧 Điểm Cần Phát Triển', li(n.weaknesses,'neg'))}
+  ${s('🤝 Đóng Góp Cho Nhóm', li(n.valueToTeam,'blu'))}
+  <div class="ais"><div class="ais-label">💬 Giao Tiếp</div><div class="ais-comm">
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:6px">✅ NÊN LÀM</div>${li(comm.do)}</div>
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:6px">🚫 TRÁNH</div>${li(comm.avoid,'neg')}</div>
+  </div></div>
+  ${s('🔍 Điểm Mù Tiềm Ẩn', para(n.blindSpots))}
+  ${s('🌱 Gợi Ý Phát Triển', li(n.development,'ylw'))}
+  ${s('🏡 Môi Trường Lý Tưởng', li(n.idealEnvironment,'blu'))}
+  ${s('💡 Cách Cộng Tác Hiệu Quả', li(n.managingTips))}`;
+}
+
+function renderMgrHTML(n,item){
+  const li=(arr,cls='')=>`<ul class="ais-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  const para=(t)=>String(t||'').split(/\\n|\n/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||'<p>—</p>';
+  const s=(lbl,body)=>`<div class="ais"><div class="ais-label">${lbl}</div><div class="ais-text">${body}</div></div>`;
+  const ms=n.managerSnapshot||{thisWeek:[],biggestRisk:'—',bestUse:'—',warningSignals:[]};
+  const comm=n.communication||{do:[],avoid:[]};
+  return `<div style="padding:4px 0 10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <span style="font-size:11px;color:var(--yellow);font-weight:600">📋 Profile Quản Lý — Manager snapshot + rủi ro + kịch bản thất bại</span>
+    <button onclick="genAdminProfile('manager',${item.ID})" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff)">🔄 Tạo lại</button>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(245,166,35,.06),var(--sur2));border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid rgba(245,166,35,.15)">
+    <div class="ais-label" style="color:var(--yellow);margin-bottom:12px">⚡ MANAGER SNAPSHOT</div>
+    <div class="ais-snap">
+      <div class="ais-snap-box" style="border:1px solid rgba(245,166,35,.15)"><div class="ais-snap-lbl" style="color:var(--yellow)">📋 3 VIỆC TUẦN NÀY</div>${li(ms.thisWeek,'ylw')}</div>
+      <div class="ais-snap-box" style="border:1px solid rgba(232,57,42,.2)"><div class="ais-snap-lbl" style="color:var(--red)">🚨 RỦI RO LỚN NHẤT</div><p>${ms.biggestRisk}</p></div>
+      <div class="ais-snap-box" style="border:1px solid rgba(60,179,113,.15)"><div class="ais-snap-lbl" style="color:var(--green)">🎯 TRIỂN KHAI TỐT NHẤT</div><p>${ms.bestUse}</p></div>
+      <div class="ais-snap-box" style="border:1px solid rgba(43,108,176,.2)"><div class="ais-snap-lbl" style="color:var(--blue)">👁️ DẤU HIỆU CẢNH BÁO</div>${li(ms.warningSignals,'neg')}</div>
+    </div>
+  </div>
+  ${s('👤 Tổng Quan', `<p>${n.summary||'—'}</p>`)}
+  ${s('💪 Điểm Mạnh', li(n.strengths))}
+  ${s('🔧 Điểm Yếu + Hậu Quả', li(n.weaknesses,'neg'))}
+  <div class="ais"><div class="ais-label">💬 Giao Tiếp</div><div class="ais-comm">
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:6px">✅ NÊN LÀM</div>${li(comm.do)}</div>
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:6px">🚫 TRÁNH</div>${li(comm.avoid,'neg')}</div>
+  </div></div>
+  ${s('⚠️ Hành Vi Dưới Stress', para(n.stressBehavior))}
+  ${s('👑 Phong Cách Lãnh Đạo Thực Tế', para(n.leadershipStyle))}
+  <div class="ais-risk-bar"></div>
+  ${s('🎯 Vị Trí Phù Hợp', para(n.performancePositioning))}
+  ${s('🚨 Kịch Bản Thất Bại Nguy Hiểm Nhất', para(n.failureScenario))}
+  ${s('🌱 Phát Triển 90 Ngày', li(n.development,'ylw'))}
+  ${s('💡 Cách Quản Lý & Tạo Động Lực', li(n.managingTips))}`;
 }
 
 document.addEventListener('DOMContentLoaded',loadData);
