@@ -138,6 +138,108 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
   .ps-content,.profile-list li{color:#333;background:#f5f5f5}
   .print-footer{display:block;text-align:center;color:#888;font-size:11px;padding:16px}
 }
+
+/* ── MANAGER SNAPSHOT (admin print only) ── */
+.snap-section{
+  border:1px solid rgba(232,57,42,.25);border-radius:14px;
+  overflow:hidden;background:rgba(232,57,42,.04);margin-bottom:20px;
+}
+.snap-head{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(232,57,42,.08);border-bottom:1px solid rgba(232,57,42,.18);
+  padding:16px 20px;
+}
+.snap-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(232,57,42,.15);display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0;
+}
+.snap-title{font-size:14px;font-weight:700;color:#ff6b5e}
+.snap-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.snap-badge{
+  margin-left:auto;font-size:9px;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;background:rgba(232,57,42,.18);color:#ff6b5e;
+  padding:3px 10px;border-radius:99px;border:1px solid rgba(232,57,42,.3);
+  white-space:nowrap;flex-shrink:0;
+}
+.snap-grid{display:grid;grid-template-columns:1fr 1fr}
+.snap-grid+.snap-grid{border-top:1px solid rgba(232,57,42,.12)}
+.snap-card{padding:16px 20px}
+.snap-card+.snap-card{border-left:1px solid rgba(232,57,42,.12)}
+.snap-label{
+  font-size:9px;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.snap-urgent .snap-label,.snap-risk .snap-label{color:#ff6b5e}
+.snap-use .snap-label{color:#5fd68a}
+.snap-watch .snap-label{color:#f5c842}
+.snap-card p{font-size:12px;line-height:1.7;color:rgba(232,237,243,.82);margin:0}
+.snap-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
+.snap-list li{font-size:12px;line-height:1.6;color:rgba(232,237,243,.82);padding-left:14px;position:relative}
+.snap-urgent .snap-list li::before,.snap-risk .snap-list li::before{content:'→';position:absolute;left:0;color:#ff6b5e}
+.snap-use .snap-list li::before{content:'✓';position:absolute;left:0;color:#5fd68a}
+.snap-watch .snap-list li::before{content:'!';position:absolute;left:0;color:#f5c842;font-weight:700}
+@media(max-width:600px){
+  .snap-grid{grid-template-columns:1fr}
+  .snap-card+.snap-card{border-left:none;border-top:1px solid rgba(232,57,42,.12)}
+}
+/* ── PERFORMANCE POSITIONING ── */
+.perf-wrap{display:flex;align-items:flex-start;gap:14px}
+.perf-badge{
+  flex-shrink:0;padding:8px 14px;border-radius:8px;
+  font-size:11px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.perf-above{background:rgba(60,179,113,.15);color:#5fd68a;border:1px solid rgba(60,179,113,.3)}
+.perf-at{background:rgba(245,166,35,.12);color:#f5c842;border:1px solid rgba(245,166,35,.3)}
+.perf-below{background:rgba(232,57,42,.12);color:#ff6b5e;border:1px solid rgba(232,57,42,.3)}
+/* ── FAILURE SCENARIO ── */
+.failure-card{
+  border:1px solid rgba(232,57,42,.2);border-radius:14px;
+  overflow:hidden;background:rgba(232,57,42,.03);
+  padding:16px 20px;margin-top:12px;
+}
+.failure-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-top:12px}
+@media(max-width:600px){.failure-grid{grid-template-columns:1fr}}
+.failure-col{padding:12px 14px}
+.failure-col+.failure-col{border-left:1px solid rgba(232,57,42,.1)}
+@media(max-width:600px){.failure-col+.failure-col{border-left:none;border-top:1px solid rgba(232,57,42,.1)}}
+.failure-col-label{
+  font-size:9px;font-weight:800;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(232,57,42,.7);margin-bottom:8px;
+}
+.failure-col p{font-size:12px;line-height:1.7;color:rgba(232,237,243,.78);margin:0}
+
+/* ── QUICK PROFILE ── */
+.qp-wrap{border-radius:14px;overflow:hidden;background:var(--sur);border:1px solid var(--bdr);margin-bottom:8px}
+.qp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 24px 16px}
+.qp-name{font-family:var(--fd);font-size:1.6rem;font-weight:600;color:var(--txt);line-height:1.2}
+.qp-role{font-size:13px;color:var(--muted);margin-top:4px}
+.qp-arch{font-size:11px;font-weight:700;letter-spacing:1px;padding:5px 12px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.color-bars{padding:0 24px}
+.qp-insights{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bdr)}
+.qp-col{padding:18px 24px}
+.qp-col+.qp-col{border-left:1px solid var(--bdr)}
+.qp-col-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.qp-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.qp-list li{font-size:13px;line-height:1.6;color:rgba(232,237,243,.85);padding-left:14px;position:relative}
+.qp-list li::before{content:'✓';position:absolute;left:0;color:#5fd68a}
+.qp-risk li::before{content:'→';color:#ff6b5e}
+.qp-ai-bar{display:flex;align-items:center;gap:10px;padding:12px 24px;background:rgba(245,166,35,.05);border-top:1px solid var(--bdr);font-size:12px;color:var(--muted)}
+/* ── MODE TOGGLE ── */
+.qp-toggle{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bdr)}
+.mode-btn{padding:14px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;letter-spacing:.3px}
+.mode-btn:hover:not(:disabled){color:var(--txt);background:rgba(255,255,255,.04)}
+.mode-btn:disabled{opacity:.45;cursor:not-allowed}
+.mode-btn.mode-on{color:var(--txt);background:rgba(245,166,35,.08);border-bottom:2px solid var(--yellow)}
+.mode-btn+.mode-btn{border-left:1px solid var(--bdr)}
+.deep-badge{font-size:10px;font-weight:700;color:#5fd68a}
+@media(max-width:600px){
+  .qp-insights{grid-template-columns:1fr}
+  .qp-col+.qp-col{border-left:none;border-top:1px solid var(--bdr)}
+}
+/* ── WHAT TO DO NOW ── */
+.wtn-card{border-color:rgba(245,166,35,.25);background:rgba(245,166,35,.04)}
 </style>
 </head>
 <body>
@@ -342,25 +444,79 @@ async function submitResults(){
   }
   // Hiện màn hình cảm ơn — AI profile chỉ được tạo khi admin xuất PDF
   show(2);
-  document.getElementById('profileActions').style.display='none';
+  // Quick profile từ rule-based — KHÔNG gọi AI (chỉ admin mới gọi AI qua ?print=1)
+  showQuickProfile(name, role, dept, d);
+}
+
+// ════ QUICK PROFILE + MODE TOGGLE ════
+let _qpArgs=null;
+window._dpData=null;
+window._aiLoading=false;
+window._profileMode='executive';
+
+function showQuickProfile(name,role,dept,d){
+  _qpArgs={name,role,dept,d};
+  window._profileMode='executive';
+  window._aiLoading=true;
+  window._dpData=null;
+  const kc=CI[d.pr],ks=CI[d.sec];
+  const STR={
+    r:['Quyết đoán, ra quyết định nhanh và dứt khoát khi cần','Thúc đẩy kết quả — không chấp nhận trì hoãn không cần thiết','Lãnh đạo hiệu quả trong tình huống áp lực và khủng hoảng'],
+    y:['Truyền cảm hứng tự nhiên và kéo người theo tầm nhìn','Xây dựng quan hệ và mạng lưới rộng một cách tự nhiên','Sáng tạo, linh hoạt và thích nghi nhanh với thay đổi'],
+    g:['Lắng nghe sâu và đồng cảm thực sự với người khác','Xây dựng niềm tin bền vững và quan hệ lâu dài','Giữ ổn định và hài hòa trong môi trường nhiều áp lực'],
+    b:['Phân tích logic và tư duy hệ thống chính xác','Duy trì tiêu chuẩn chất lượng cao và nhất quán','Lập kế hoạch tỉ mỉ và đảm bảo thực thi đúng']
+  };
+  const RSK={
+    r:['Có thể quá quyết đoán — thiếu lắng nghe khi áp lực tăng','Kiểm soát tăng cao dưới stress — micromanage mà không nhận ra'],
+    y:['Dễ mất tập trung, thiếu follow-through khi có quá nhiều ý tưởng','Tránh đưa ra quyết định khó hoặc feedback tiêu cực trực tiếp'],
+    g:['Tránh xung đột cần thiết — gánh chịu thầm thay vì nói thẳng','Thu mình và im lặng khi bị áp lực — team không đọc được'],
+    b:['Phân tích quá mức — chậm quyết định khi thiếu dữ liệu hoàn hảo','Cứng nhắc với quy trình khi tình huống cần linh hoạt']
+  };
+  const str=STR[d.pr]||STR.b, rsk=RSK[d.pr]||RSK.b;
+  const bars=['r','y','g','b'].map(k=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[k].c}">${CI[k].e} ${CI[k].l}</span><span class="cb-pct" style="color:${CI[k].c}">${d.pct(k)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${d.pct(k)}%;background:${CI[k].c}"></div></div></div>`).join('');
   document.getElementById('profileContainer').innerHTML=`
-    <div class="card" style="text-align:center;padding:48px 28px">
-      <div style="font-size:3.5rem;margin-bottom:20px">🎉</div>
-      <div style="font-family:var(--fd);font-size:1.8rem;font-weight:300;margin-bottom:12px">Cảm ơn, ${name}!</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.8;max-width:420px;margin:0 auto 24px">
-        Bạn đã hoàn thành khảo sát Insights Discovery.<br>
-        Kết quả đã được ghi nhận thành công.
-      </p>
-      <div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:16px 20px;max-width:420px;margin:0 auto;display:flex;align-items:flex-start;gap:12px;text-align:left">
-        <span style="font-size:1.4rem;flex-shrink:0">📋</span>
+    <div class="qp-wrap">
+      <div class="qp-header">
         <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:4px">Bước tiếp theo</div>
-          <div style="font-size:13px;color:rgba(232,237,243,.8);line-height:1.7">
-            Admin/HR sẽ phân tích kết quả và gửi profile cá nhân hóa đến bạn trong thời gian sớm nhất.
-          </div>
+          <div class="qp-name">${name}</div>
+          <div class="qp-role">${role}${dept?' · '+dept:''}</div>
+        </div>
+        <div class="qp-arch" style="background:${kc.c}20;color:${kc.c};border:1px solid ${kc.c}44">${kc.e} ${d.arch}</div>
+      </div>
+      <div class="color-bars" style="margin-bottom:20px">${bars}</div>
+      <div class="qp-insights">
+        <div class="qp-col">
+          <div class="qp-col-lbl" style="color:#5fd68a">💪 Điểm mạnh cốt lõi</div>
+          <ul class="qp-list">${str.map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div class="qp-col">
+          <div class="qp-col-lbl" style="color:#ff6b5e">⚠️ Rủi ro cần chú ý</div>
+          <ul class="qp-list qp-risk">${rsk.map(r=>`<li>${r}</li>`).join('')}</ul>
         </div>
       </div>
+      <div class="qp-ai-bar">
+        <span style="font-size:1rem">📋</span>
+        <span>Kết quả đã được ghi nhận. Admin/HR sẽ gửi profile đầy đủ sớm nhất.</span>
+      </div>
     </div>`;
+  document.getElementById('profileActions').style.display='grid';
+}
+
+function setMode(mode){
+  window._profileMode=mode;
+  const be=document.getElementById('btnExec'),bd=document.getElementById('btnDeep');
+  if(be) be.classList.toggle('mode-on', mode==='executive');
+  if(bd) bd.classList.toggle('mode-on', mode==='deep');
+  if(mode==='deep'){
+    if(window._dpData) renderProfile(_qpArgs.name,_qpArgs.role,_qpArgs.dept,_qpArgs.d,window._dpData.n);
+    else document.getElementById('profileContainer').innerHTML='<div class="card ai-loading"><div class="spinner-lg"></div><p>AI vẫn đang phân tích… vui lòng chờ thêm.</p></div>';
+  } else {
+    showQuickProfile(_qpArgs.name,_qpArgs.role,_qpArgs.dept,_qpArgs.d);
+    if(window._dpData){
+      const bd2=document.getElementById('btnDeep'); if(bd2) bd2.removeAttribute('disabled');
+      const bg=document.getElementById('deepBadge'); if(bg) bg.style.display='inline';
+    }
+  }
 }
 
 async function genAIProfile(name,role,dept,d){
@@ -395,28 +551,30 @@ YÊU CẦU BẮT BUỘC:
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
 
 Trả về JSON thuần (không markdown):
-{"personalStyle":"6 đoạn cách nhau \\n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính ${CI[d.pr].l}, (5) cách ${name} ra quyết định và xử lý thông tin, (6) vai trò tự nhiên trong nhóm","strengths":["10 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["8 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["8 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["8 cách dựa trên IE type và màu chính"],"communicationBarriers":["6 điều tránh — gắn với hành vi stress"],"blindSpots":"3-4 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \\n","conflictStyle":["6 điểm — cách ${name} tiếp cận và xử lý xung đột trong nhóm, gắn với màu chính và IE"],"development":["8 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["6 môi trường phù hợp IE và stress"],"leadershipJourney":"3-4 đoạn về hành trình phát triển lãnh đạo của ${name}: điểm xuất phát, thách thức, tiềm năng lớn nhất và bước tiếp theo — cách nhau \\n","managingTips":["7 cách quản lý ${name} — cụ thể và actionable"],"colorInteractions":{"withRed":"3-4 câu: cách ${name} tương tác với người Fiery Red — điểm hợp, điểm xung đột, tips cụ thể","withYellow":"3-4 câu: cách ${name} tương tác với người Sunshine Yellow","withGreen":"3-4 câu: cách ${name} tương tác với người Earth Green","withBlue":"3-4 câu: cách ${name} tương tác với người Cool Blue"},"actionPlan90":{"week1_2":["3 hành động cụ thể trong 2 tuần đầu để ${name} phát huy điểm mạnh ngay"],"month1":["3 mục tiêu trong tháng đầu — gắn với leadStyle và điểm yếu cần cải thiện"],"month2_3":["3 mục tiêu tháng 2-3 — hướng đến phát triển chiều còn yếu và quản lý stress tốt hơn"],"longterm":["2-3 câu định hướng dài hạn cho ${name} dựa trên archetype và tiềm năng"]}}}`;
+{"personalStyle":"6 đoạn cách nhau \\n: (1) tổng quan kết hợp màu+archetype, (2) cách ${name} tương tác dựa trên IE, (3) phong cách lãnh đạo thực tế, (4) điểm khác biệt so với người cùng màu chính ${CI[d.pr].l}, (5) cách ${name} ra quyết định và xử lý thông tin, (6) vai trò tự nhiên trong nhóm","strengths":["10 điểm — mỗi điểm nêu rõ nguồn gốc từ chiều nào"],"weaknesses":["8 điểm — gắn với stress/shadow side cụ thể"],"valueToTeam":["8 đóng góp cụ thể cho role và nhóm"],"effectiveCommunication":["8 cách dựa trên IE type và màu chính"],"communicationBarriers":["6 điều tránh — gắn với hành vi stress"],"blindSpots":"3-4 đoạn về điểm mù đặc thù của sự kết hợp này, cách nhau \\n","conflictStyle":["6 điểm — cách ${name} tiếp cận và xử lý xung đột trong nhóm, gắn với màu chính và IE"],"development":["8 gợi ý — ưu tiên phát triển chiều còn yếu"],"idealEnvironment":["6 môi trường phù hợp IE và stress"],"leadershipJourney":"3-4 đoạn về hành trình phát triển lãnh đạo của ${name}: điểm xuất phát, thách thức, tiềm năng lớn nhất và bước tiếp theo — cách nhau \\n","managingTips":["7 cách quản lý ${name} — cụ thể và actionable"],"colorInteractions":{"withRed":"3-4 câu: cách ${name} tương tác với người Fiery Red — điểm hợp, điểm xung đột, tips cụ thể","withYellow":"3-4 câu: cách ${name} tương tác với người Sunshine Yellow","withGreen":"3-4 câu: cách ${name} tương tác với người Earth Green","withBlue":"3-4 câu: cách ${name} tương tác với người Cool Blue"},"actionPlan90":{"week1_2":["3 hành động cụ thể trong 2 tuần đầu để ${name} phát huy điểm mạnh ngay"],"month1":["3 mục tiêu trong tháng đầu — gắn với leadStyle và điểm yếu cần cải thiện"],"month2_3":["3 mục tiêu tháng 2-3 — hướng đến phát triển chiều còn yếu và quản lý stress tốt hơn"],"longterm":["2-3 câu định hướng dài hạn cho ${name} dựa trên archetype và tiềm năng"]},"managerSnapshot":{"immediateActions":["3 hành động manager PHẢI làm TUẦN NÀY với ${name} — cụ thể, thực hiện được ngay"],"biggestRisk":"điều gì sẽ xảy ra trong 30-60 ngày nếu manager không can thiệp — cụ thể và có thể đo được","howToUseBest":["3 cách dùng ${name} đạt hiệu suất cao nhất theo đúng điểm mạnh thực tế"],"watchSignals":["3 dấu hiệu quan sát được từ bên ngoài cho thấy ${name} đang đi sai hướng"]},"performancePositioning":{"level":"Above average / At average / Below average — so với manager cùng cấp trong vai trò tương tự","explanation":"2-3 câu giải thích cụ thể tại sao — dựa trên điểm mạnh và rủi ro thực tế của ${name}, không chung chung"},"failureScenario":{"trigger":"tình huống cụ thể kích hoạt thất bại của ${name} — ai làm gì, trong bối cảnh nào","whatHappens":"chuỗi hành động và phản ứng cụ thể khi thất bại xảy ra","businessImpact":"tác động kinh doanh thực tế và có thể đo được"},"whatToDoNow":["5 hành động cụ thể manager của ${name} làm NGAY HÔM NAY — mỗi hành động thực hiện được trong 24 giờ, cụ thể theo màu và behavioral pattern của ${name}, không chung chung"]}}}` ;
   try{
     // Gọi qua Power Automate proxy — API key lưu an toàn trong PA, không lộ trong HTML
   if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
   // Gửi full Claude API payload — PA chỉ cần forward thẳng đến api.anthropic.com
-  const claudePayload={model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]};
+  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức và tư vấn lãnh đạo cấp cao. Bạn KHÔNG phải content writer. Nhiệm vụ: phân tích hành vi lãnh đạo cá nhân dựa trên dữ liệu Insights Discovery.
+
+QUY TẮC BẮT BUỘC:
+1. Ưu tiên: Behavioral patterns > biểu hiện thực tế > lý thuyết màu sắc
+2. KHÔNG mô tả tính cách trừu tượng — luôn dịch sang hành vi cụ thể trong cuộc họp, quyết định, xung đột, thực thi dưới áp lực
+3. Mỗi insight phải ảnh hưởng ít nhất 2 trong 3 góc: cá nhân / manager / team
+4. Bắt buộc xác định: ít nhất 1 mâu thuẫn nội tại cụ thể, 1 rủi ro ẩn không hiển thị, 1 điểm nghẽn hiệu suất dưới áp lực
+5. Output chỉ mô tả mà không có hành động → SAI. Output chung chung không đặc thù người này → SAI.
+6. stressBehavior và leadStyle phải phản ánh trong mọi section liên quan — không tách biệt.
+PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown.`;
+  const claudePayload={model:'claude-sonnet-4-20250514',max_tokens:6000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
   const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok)throw new Error('PA Flow '+res.status);
     const data=await res.json();
     // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
     // PA trả về Claude API response nguyên vẹn
-    let txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/```json\n?|```/g,'').trim();
+    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
     if(!txt)throw new Error('Empty response from PA');
-    // Fix: AI đôi khi trả literal newline (0x0A) bên trong JSON string values
-    // → thay thế chỉ trong string values, giữ nguyên cấu trúc JSON
-    txt=txt.replace(/"((?:[^"\\]|\\.)*)"/gs,(m,c)=>'"'+c.replace(/\n/g,'\\n').replace(/\r/g,'\\r').replace(/\t/g,'\\t')+'"');
-    try{return JSON.parse(txt);}
-    catch(e2){
-      // Fallback: strip control chars còn sót, thử lại
-      const cleaned=txt.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
-      return JSON.parse(cleaned);
-    }
+    return JSON.parse(txt);
   }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
 function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
@@ -495,7 +653,39 @@ function renderProfile(name,role,dept,d,n){
   const sec2=(ic,title,body)=>`<div class="profile-section"><div class="ps-label">${ic} ${title}</div><div class="ps-content">${body}</div></div>`;
   const lsKey=Object.keys({r:'',y:'',g:'',b:''}).includes(leadStyle)?leadStyle:leadStyle[0];
   const sbKey=Object.keys({r:'',y:'',g:'',b:''}).includes(stressBehavior)?stressBehavior:stressBehavior[0];
+  const isPrint=new URLSearchParams(location.search).get('print')==='1';
   document.getElementById('profileContainer').innerHTML=`
+    ${isPrint?`
+    <div class="snap-section">
+      <div class="snap-head">
+        <div class="snap-icon">⚡</div>
+        <div>
+          <div class="snap-title">Manager Snapshot</div>
+          <div class="snap-sub">Hành động ngay · Rủi ro 30–60 ngày · Cách dùng người tốt nhất</div>
+        </div>
+        <div class="snap-badge">Chỉ Admin</div>
+      </div>
+      <div class="snap-grid">
+        <div class="snap-card snap-urgent">
+          <div class="snap-label">🎯 Hành động — Tuần này</div>
+          <ul class="snap-list">${(n.managerSnapshot?.immediateActions||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+        </div>
+        <div class="snap-card snap-risk">
+          <div class="snap-label">🔴 Rủi ro nếu bỏ qua — 30–60 ngày</div>
+          <p>${n.managerSnapshot?.biggestRisk||''}</p>
+        </div>
+      </div>
+      <div class="snap-grid">
+        <div class="snap-card snap-use">
+          <div class="snap-label">✅ Cách dùng người này tốt nhất</div>
+          <ul class="snap-list">${(n.managerSnapshot?.howToUseBest||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+        </div>
+        <div class="snap-card snap-watch">
+          <div class="snap-label">⚠️ Watch Signals</div>
+          <ul class="snap-list">${(n.managerSnapshot?.watchSignals||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </div>`:''}
     <div class="card">
       <div class="profile-header">
         <div class="profile-name">${name}</div>
@@ -533,6 +723,16 @@ function renderProfile(name,role,dept,d,n){
       ${n.leadershipJourney?sec2('🚀','Hành Trình Lãnh Đạo',paras(n.leadershipJourney)):''}
       ${sec2('💡','Cách Quản Lý & Tạo Động Lực',list(n.managingTips))}
     </div>
+    ${isPrint&&n.whatToDoNow?`
+    <div class="card wtn-card">
+      <div class="profile-section">
+        <div class="ps-label" style="color:var(--yellow)">⚡ What To Do Now — Hành động ngay hôm nay</div>
+        <div class="ps-content">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">5 việc manager cần làm với ${name} trong 24 giờ tới</div>
+          ${list(n.whatToDoNow,'neu')}
+        </div>
+      </div>
+    </div>`:''}
     ${n.colorInteractions?`
     <div class="card">
       <div class="profile-section">
@@ -562,6 +762,27 @@ function renderProfile(name,role,dept,d,n){
             <div style="font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.actionPlan90.longterm}</div>
           </div>`:''}
         </div>
+      </div>
+    </div>`:''}
+    ${isPrint&&n.performancePositioning?`
+    <div class="card">
+      <div class="profile-section">
+        <div class="ps-label">📊 Performance Positioning</div>
+        <div class="ps-content">
+          <div class="perf-wrap">
+            <div class="perf-badge ${(n.performancePositioning.level||'').toLowerCase().includes('above')?'perf-above':(n.performancePositioning.level||'').toLowerCase().includes('below')?'perf-below':'perf-at'}">${n.performancePositioning.level||'—'}</div>
+            <p style="margin:0;font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.performancePositioning.explanation||''}</p>
+          </div>
+        </div>
+      </div>
+    </div>`:''}
+    ${isPrint&&n.failureScenario?`
+    <div class="failure-card">
+      <div class="ps-label" style="color:#ff6b5e">💀 Failure Scenario</div>
+      <div class="failure-grid">
+        <div class="failure-col"><div class="failure-col-label">⚡ Trigger</div><p>${n.failureScenario.trigger||''}</p></div>
+        <div class="failure-col"><div class="failure-col-label">🔥 Diễn biến</div><p>${n.failureScenario.whatHappens||''}</p></div>
+        <div class="failure-col"><div class="failure-col-label">💥 Business Impact</div><p>${n.failureScenario.businessImpact||''}</p></div>
       </div>
     </div>`:''}`;
   document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
