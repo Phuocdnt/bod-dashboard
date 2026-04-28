@@ -305,7 +305,7 @@ let allData=[],filtered=[],currentItem=null;
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
 function normalizeItem(raw){
-  return{
+  const item={
     ID:raw.ID||raw.id||raw.Id,
     Title:raw.Title||raw.title||raw.name||'',
     EmployeeRole:raw.EmployeeRole||raw.employeeRole||raw.role||'',
@@ -326,6 +326,24 @@ function normalizeItem(raw){
     IEScoreI:Number(raw.IEScoreI||raw.ieScoreI||0),
     Created:raw.Created||raw.created||''
   };
+  // Version cũ không có điểm → tự recalculate từ Answers khi load
+  if((item.RedScore+item.YellowScore+item.GreenScore+item.BlueScore===0) && item.Answers){
+    const rc=recalcFromAnswers(item.Answers);
+    if(rc){
+      item.RedScore=rc.redScore; item.YellowScore=rc.yellowScore;
+      item.GreenScore=rc.greenScore; item.BlueScore=rc.blueScore;
+      item.PrimaryColor=rc.primaryColor; item.SecondaryColor=rc.secondaryColor;
+      if(rc.ieType)  item.IEType=rc.ieType;
+      if(rc.leadStyle)     item.LeadStyle=rc.leadStyle;
+      if(rc.stressBehavior)item.StressBehavior=rc.stressBehavior;
+      if(!item.Archetype){
+        const ARCH_MAP={'red-yellow':'Người Thúc Đẩy','red-blue':'Người Kiểm Soát','red-green':'Người Chỉ Đạo','yellow-red':'Người Truyền Cảm Hứng','yellow-green':'Người Trợ Lý Truyền Cảm','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình','green-blue':'Người Điều Phối','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách'};
+        item.Archetype=ARCH_MAP[`${rc.primaryColor}-${rc.secondaryColor}`]||`${rc.primaryColor} + ${rc.secondaryColor}`;
+      }
+      item._recalculated=true; // flag để debug
+    }
+  }
+  return item;
 }
 
 async function loadData(){
