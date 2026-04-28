@@ -200,8 +200,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .sb-sel-info span{color:#60a5fa;font-weight:700}
 .mgr-panel{background:rgba(232,57,42,.05);border:1px solid rgba(232,57,42,.2);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:none}
 .mgr-panel-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b5e;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.ws-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center;padding:20px}
+.ws-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center;padding:20px;pointer-events:none}
 .ws-modal{background:var(--sur);border:1px solid var(--bdr2,var(--bdr));border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:28px;position:relative}
+.ws-overlay[style*="flex"]{pointer-events:auto}
 .ws-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid var(--bdr);background:var(--sur2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted)}
 .tension-empty{font-size:13px;color:var(--muted);padding:12px 0}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
@@ -767,7 +768,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <div id="workshopAgenda"><p style="color:var(--muted)">Không thể tạo agenda</p></div>
       </div>
     </div>
-  <div class="ws-overlay" id="wsFlowOverlay">
+  <div class="ws-overlay" id="wsFlowOverlay" onclick="if(event.target===this)closeWorkshopFlow()">
   <div class="ws-modal">
     <button class="ws-close" onclick="closeWorkshopFlow()">✕</button>
     <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:16px">🎯 Workshop Facilitation Mode</div>
@@ -889,9 +890,9 @@ function generateDemoData(){
 }
 
 function renderAll(){
-  buildTensionMap();
-  buildRoleDist();
-  buildManagerPanel();
+  try{buildTensionMap();}catch(e){console.warn('buildTensionMap:',e);}
+  try{buildRoleDist();}catch(e){console.warn('buildRoleDist:',e);}
+  try{buildManagerPanel();}catch(e){console.warn('buildManagerPanel:',e);}
   renderSidebar();renderColorSummary();renderDonut();renderTeamWheel();
   renderMembersGrid();renderCompatMatrix();renderLeadChart();renderStressChart();
   renderConflictTeamDist();renderCommTeamNeeds();renderTeamRoleMap();
@@ -1898,7 +1899,19 @@ function startWorkshopFlow(){
   document.getElementById('wsFlowOverlay').style.display='flex';
   _renderWSStep();
 }
-function closeWorkshopFlow(){document.getElementById('wsFlowOverlay').style.display='none';}
+function closeWorkshopFlow(){
+  var ov=document.getElementById('wsFlowOverlay');
+  if(ov)ov.style.display='none';
+}
+// Close workshop overlay on Escape key
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var ov=document.getElementById('wsFlowOverlay');
+    if(ov&&ov.style.display==='flex')closeWorkshopFlow();
+    var ms=document.getElementById('msOverlay');
+    if(ms&&ms.style.display!=='none')closeMemberSelector();
+  }
+});
 function _wsNext(){if(_wsStep<WS_STEPS.length-1){_wsStep++;_renderWSStep();}}
 function _wsPrev(){if(_wsStep>0){_wsStep--;_renderWSStep();}}
 function _renderWSStep(){
