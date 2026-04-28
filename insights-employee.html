@@ -406,9 +406,17 @@ Trả về JSON thuần (không markdown):
     const data=await res.json();
     // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
     // PA trả về Claude API response nguyên vẹn
-    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
+    let txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/```json\n?|```/g,'').trim();
     if(!txt)throw new Error('Empty response from PA');
-    return JSON.parse(txt);
+    // Fix: AI đôi khi trả literal newline (0x0A) bên trong JSON string values
+    // → thay thế chỉ trong string values, giữ nguyên cấu trúc JSON
+    txt=txt.replace(/"((?:[^"\\]|\\.)*)"/gs,(m,c)=>'"'+c.replace(/\n/g,'\\n').replace(/\r/g,'\\r').replace(/\t/g,'\\t')+'"');
+    try{return JSON.parse(txt);}
+    catch(e2){
+      // Fallback: strip control chars còn sót, thử lại
+      const cleaned=txt.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
+      return JSON.parse(cleaned);
+    }
   }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
 function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
