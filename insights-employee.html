@@ -565,33 +565,54 @@ QUY TẮC BẮT BUỘC:
 4. Bắt buộc xác định: ít nhất 1 mâu thuẫn nội tại cụ thể, 1 rủi ro ẩn không hiển thị, 1 điểm nghẽn hiệu suất dưới áp lực
 5. Output chỉ mô tả mà không có hành động → SAI. Output chung chung không đặc thù người này → SAI.
 6. stressBehavior và leadStyle phải phản ánh trong mọi section liên quan — không tách biệt.
-PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown.`;
+PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown. KHÔNG dùng xuống dòng thật trong string — dùng \\n. KHÔNG dùng nháy kép trong string — dùng nháy đơn.`;
   const claudePayload={model:'claude-haiku-4-5-20251001',max_tokens:6000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
   const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
     if(!res.ok)throw new Error('PA Flow '+res.status);
     const data=await res.json();
     // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
     // PA trả về Claude API response nguyên vẹn
-    const txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
+    let txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
     if(!txt)throw new Error('Empty response from PA');
-    // Thử parse trực tiếp
+    if(!txt.startsWith('{')) txt=txt.substring(txt.indexOf('{'));
+
+    // ── JSON repair: fix unescaped newlines/tabs inside strings ──
+    function repairJSON(s){
+      let out='',inStr=false,esc=false;
+      for(let i=0;i<s.length;i++){
+        const c=s[i];
+        if(esc){out+=c;esc=false;continue;}
+        if(c==='\\'){out+=c;esc=true;continue;}
+        if(c==='"'){inStr=!inStr;out+=c;continue;}
+        if(inStr){
+          if(c==='\n'){out+='\\n';continue;}
+          if(c==='\r'){continue;}
+          if(c==='\t'){out+='\\t';continue;}
+        }
+        out+=c;
+      }
+      return out;
+    }
+
+    // Pass 1: direct parse
     try{ return JSON.parse(txt); }catch(e1){
-      // Recovery: JSON bị truncate do max_tokens → tìm } cuối hợp lệ và đóng
-      console.warn('JSON truncated, attempting recovery...');
-      try{
-        // Quét từ cuối lùi về — thử từng vị trí } cho đến khi parse được
-        for(let i=txt.length-1;i>200;i--){
-          if(txt[i]==='}'){
+      // Pass 2: repair (fix unescaped newlines) then parse
+      try{ return JSON.parse(repairJSON(txt)); }catch(e2){
+        // Pass 3: truncation recovery on repaired text
+        console.warn('JSON truncated, attempting recovery...');
+        const fixed=repairJSON(txt);
+        for(let i=fixed.length-1;i>200;i--){
+          if(fixed[i]==='}'){
             try{
-              const partial=JSON.parse(txt.substring(0,i+1));
+              const partial=JSON.parse(fixed.substring(0,i+1));
               console.warn('JSON recovery succeeded at pos',i);
               return partial;
-            }catch(e3){/* tiếp tục */}
+            }catch(e3){}
           }
         }
         console.warn('Recovery exhausted — no valid JSON found');
-      }catch(e2){console.warn('Recovery failed:',e2?.message);}
-      throw e1;
+        throw e1;
+      }
     }
   }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
@@ -606,7 +627,7 @@ function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
   const LL_FB={r:'định hướng kết quả rõ ràng',y:'truyền cảm hứng và kéo người theo tầm nhìn',g:'đặt con người lên trên và xây dựng tin tưởng',b:'phân tích sâu và xây dựng hệ thống bền vững'};
   const SL_FB={r:'có xu hướng kiểm soát và vi quản lý khi áp lực tăng',y:'dễ phân tán và mất tập trung khi quá tải',g:'thường thu mình và im lặng thay vì nói lên khó khăn',b:'có thể bị tê liệt bởi hoàn hảo chủ nghĩa khi stress'};
   const secWeakness={'r-b':'Căng thẳng nội tâm giữa hành động nhanh và phân tích kỹ đôi khi gây do dự','b-r':'Sức kéo giữa Blue và Red khiến khó cân bằng tốc độ và chất lượng','r-g':'Mâu thuẫn giữa quyết đoán và mong muốn hài hòa đôi khi làm chậm quyết định','y-b':'Sáng tạo bốc đồng và cẩn thận chi tiết tạo nên nội tâm phức tạp'};
-  const tensionNote=secWeakness[pr+'-'+sec]||`Sự kết hợp ${f.s[0]?.split(' ')[0]||'đặc trưng'} của ${name} tạo ra phong cách làm việc độc đáo`;
+  const tensionNote=secWeakness[pr+'-'+sec]||`Sự kết hợp ${CI[pr]?.l||'màu'} + ${CI[sec]?.l||'màu phụ'} tạo ra phong cách làm việc độc đáo cho ${name}`;
   return {
     personalStyle:`${name} là ${arch||f.s[0]} — sự kết hợp của ${F[pr]?.s[0]||'năng lực phân tích'} và ${secInfo.s[0]||'khả năng hành động'}. Đây là một trong những archetype hiếm gặp và có giá trị cao trong môi trường làm việc đòi hỏi cả chất lượng lẫn kết quả.
 
