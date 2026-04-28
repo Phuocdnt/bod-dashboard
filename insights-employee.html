@@ -63,15 +63,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 @media(max-width:540px){.opts{grid-template-columns:1fr}}
 .opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--sur2);cursor:pointer;text-align:left;transition:all .18s;width:100%}
 .opt:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
-.opt.sel-red{border-color:var(--red)!important;background:var(--red-s)!important}
-.opt.sel-yellow{border-color:var(--yellow)!important;background:var(--yellow-s)!important}
-.opt.sel-green{border-color:var(--green)!important;background:var(--green-s)!important}
-.opt.sel-blue{border-color:var(--blue)!important;background:var(--blue-s)!important}
+.opt.sel-red{border-color:rgba(255,255,255,.35)!important;background:rgba(255,255,255,.06)!important}
+.opt.sel-yellow{border-color:rgba(255,255,255,.35)!important;background:rgba(255,255,255,.06)!important}
+.opt.sel-green{border-color:rgba(255,255,255,.35)!important;background:rgba(255,255,255,.06)!important}
+.opt.sel-blue{border-color:rgba(255,255,255,.35)!important;background:rgba(255,255,255,.06)!important}
 .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.dot-r{background:var(--red);box-shadow:0 0 8px var(--red)}
-.dot-y{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
-.dot-g{background:var(--green);box-shadow:0 0 8px var(--green)}
-.dot-b{background:var(--blue);box-shadow:0 0 8px var(--blue)}
+.dot-r{background:rgba(255,255,255,.25)}
+.dot-y{background:rgba(255,255,255,.25)}
+.dot-g{background:rgba(255,255,255,.25)}
+.dot-b{background:rgba(255,255,255,.25)}
 .opt-lbl{font-size:13px;line-height:1.55;color:var(--txt)}
 .btn{display:block;width:100%;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;font-family:var(--ff);font-size:15px;font-weight:600;transition:all .2s;margin-top:10px}
 .btn-pri{background:linear-gradient(135deg,#2563EB,#1E40AF);color:#fff;box-shadow:0 4px 24px rgba(37,99,235,.35)}
@@ -340,7 +340,7 @@ async function submitResults(){
   document.getElementById('nextBtn').disabled=true;
   document.getElementById('nextBtn').innerHTML='<span class="spinner"></span>Đang xử lý…';
   show(2);
-  document.getElementById('profileContainer').innerHTML=`<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--yellow)">🤖 AI đang phân tích hồ sơ của bạn…</strong><br>Đang tạo profile cá nhân hóa. Vui lòng chờ 20–30 giây.</p></div>`;
+  document.getElementById('profileContainer').innerHTML=`<div class="card ai-loading"><div class="spinner-lg"></div><p><strong style="color:var(--green)">✅ Đang tạo quick profile…</strong><br>Kết quả sẽ hiển thị ngay.</p></div>`;
   try{
     if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
       fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,role,department:dept,answers:JSON.stringify(answers),redScore:d.sc.red,yellowScore:d.sc.yellow,greenScore:d.sc.green,blueScore:d.sc.blue,primaryColor:d.pr,secondaryColor:d.sec,ieType:d.ieType,leadStyle:d.leadStyle,stressBehavior:d.stressBehavior,archetype:d.archetype,ieScoreE:d.ie.E,ieScoreI:d.ie.I})}).catch(()=>{});
@@ -351,140 +351,70 @@ async function submitResults(){
 }
 
 async function genAIProfile(name,role,dept,d){
-  const LLABELS={red:'Lãnh đạo Kết quả (thúc đẩy, ra quyết định nhanh)',yellow:'Lãnh đạo Truyền cảm hứng (kết nối, tạo sự hứng khởi)',green:'Lãnh đạo Phục vụ (hỗ trợ, xây dựng đồng thuận)',blue:'Lãnh đạo Chiến lược (phân tích, hệ thống hóa)'};
-  const SLABELS={red:'Kiểm soát tăng cao — trở nên nóng nảy, áp đặt, mất kiên nhẫn với đồng nghiệp',yellow:'Phân tán, hời hợt — nói nhiều, khó tập trung, bỏ dở công việc dang dở',green:'Thu mình, im lặng — gánh một mình, không nói ra vấn đề, tránh mọi xung đột',blue:'Phân tích quá mức — tê liệt quyết định, perfectionism cực đoan, trì hoãn hành động'};
-  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Nhiệm vụ: tạo hồ sơ quản lý THỰC CHIẾN, không lý thuyết. Mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam.`;
-  const prompt=`DỮ LIỆU ĐẦU VÀO:
-Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
-Màu chính: ${CI[d.pr].l} (${d.pct(d.pr)}%) | Màu phụ: ${CI[d.sec].l} (${d.pct(d.sec)}%)
-Red ${d.pct('red')}% | Yellow ${d.pct('yellow')}% | Green ${d.pct('green')}% | Blue ${d.pct('blue')}%
-Archetype: ${d.archetype} | Năng lượng: ${d.ieType==='Extrovert'?'Hướng ngoại':'Hướng nội'} (${d.ieExtPct}% E / ${100-d.ieExtPct}% I)
-Phong cách lãnh đạo: ${LLABELS[d.leadStyle]}
-Hành vi dưới stress: ${SLABELS[d.stressBehavior]}
-
-QUY TẮC NGHIÊM NGẶT (vi phạm = output vô dụng):
-1. Tiếng Việt, trực tiếp, kinh doanh — KHÔNG dùng ngôn ngữ động lực sáo rỗng
-2. Gọi tên "${name}" ít nhất 4 lần trong toàn bộ output
-3. KHÔNG lặp ý giữa các section — mỗi section phải bổ sung thông tin mới
-4. Mỗi điểm yếu PHẢI nêu hậu quả cụ thể với công việc hoặc đồng nghiệp
-5. managerSnapshot phải đủ để manager hành động ngay không cần đọc phần còn lại
-6. failureScenario phải là kịch bản thực tế dành riêng cho vai trò ${role}
-7. Mỗi bullet tối đa 20 từ — súc tích, không vòng vo
-8. stressBehavior và leadershipStyle phải liên kết trực tiếp với điểm mạnh/yếu đã nêu
-
-Trả về JSON thuần, không markdown, không backtick, bắt đầu bằng { và kết thúc bằng }:
-{
-  "managerSnapshot": {
-    "thisWeek": ["hành động cụ thể manager nên làm trong 7 ngày tới #1 (động từ + đối tượng + kết quả mong đợi)","#2 tương tự","#3 tương tự"],
-    "biggestRisk": "Rủi ro lớn nhất với ${name} trong 30-60 ngày tới nếu không can thiệp — 1 câu cụ thể, ghi rõ hậu quả",
-    "bestUse": "Vai trò/bối cảnh cụ thể giúp ${name} phát huy tối đa — 1-2 câu, có thể triển khai ngay",
-    "warningSignals": ["dấu hiệu hành vi quan sát được khi ${name} đang có vấn đề #1","#2 — khác hoàn toàn #1"]
-  },
-  "summary": "Mô tả ${name} trong 2 câu tối đa: câu 1 là ai trong môi trường làm việc, câu 2 là rủi ro hoặc điều cần theo dõi — không sáo rỗng",
-  "strengths": ["điểm mạnh quan sát/đo lường được #1 — 15-20 từ","#2","#3","#4","#5"],
-  "weaknesses": ["điểm yếu + hậu quả cụ thể với công việc hoặc nhóm #1 — 15-20 từ","#2","#3","#4"],
-  "communication": {
-    "do": ["cách tiếp cận hiệu quả khi làm việc với ${name} #1","#2","#3","#4"],
-    "avoid": ["hành vi/cách nói gây phản ứng tiêu cực từ ${name} #1 — giải thích tại sao","#2","#3"]
-  },
-  "stressBehavior": "Mô tả cụ thể: (1) ${name} phản ứng thế nào khi áp lực tăng, (2) tác động đến hiệu suất nhóm ra sao, (3) dấu hiệu nhận biết sớm nhất là gì — 3 câu ngắn gọn, không trùng với weaknesses",
-  "leadershipStyle": "Mô tả cụ thể: (1) ${name} lãnh đạo người khác như thế nào trong thực tế, (2) điều kiện phát huy mạnh nhất — 2 câu, liên kết trực tiếp với màu ${CI[d.pr].l}",
-  "development": ["hành động phát triển cụ thể + có thể thực hiện trong 90 ngày #1","#2","#3","#4"],
-  "managingTips": ["hành động quản lý có thể làm trong 24-72h #1 — cụ thể với ${name}","#2 — thực hiện tuần này","tip dài hạn #3","#4","#5"],
-  "performancePositioning": "Bối cảnh cụ thể giúp ${name} đạt hiệu suất cao nhất (loại nhiệm vụ, cấu trúc nhóm, mức autonomy) và bối cảnh nào nên tránh — 2-3 câu, không trùng managerSnapshot",
-  "failureScenario": "Kịch bản thất bại cụ thể và thực tế nhất với ${name} ở vị trí ${role}: mô tả tình huống → hành vi dẫn đến thất bại → hậu quả → dấu hiệu cảnh báo sớm — 3 câu, không chung chung"
-}`;
-  try{
-    const proxyUrl='https://claude-proxy.donguyenthai-phuoc.workers.dev';
-    const res=await fetch(proxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      model:'claude-haiku-4-5-20251001',
-      max_tokens:6000,
-      system:SYSTEM,
-      messages:[{role:'user',content:prompt}]
-    })});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const data=await res.json();
-    if(data.error) throw new Error(data.error);
-    let text=(data.content||[]).map(b=>b.text||'').join('').trim();
-    text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
-    if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
-    return JSON.parse(text);
-  }catch(e){
-    console.error('AI profile failed:',e);
-    // Color-aware fallback — structured to match new schema
-    const clrData={
-      red:{
-        sumLine:`${name} hành động nhanh, kết quả cao — nhưng có thể gây căng thẳng cho nhóm nếu không kiểm soát được tốc độ.`,
-        str:['Ra quyết định nhanh và chịu trách nhiệm trong tình huống áp lực cao','Thúc đẩy tiến độ dự án khi nhóm chậm hoặc mất đà','Không ngại đối mặt trực tiếp với vấn đề khó','Tập trung cao vào kết quả đo lường được','Dẫn dắt nhóm trong bối cảnh thay đổi và bất định'],
-        wk:['Thiếu kiên nhẫn với quy trình chậm — gây áp lực không cần thiết lên đồng nghiệp','Có thể bỏ qua góc nhìn người khác khi tự tin vào quyết định của mình','Tốc độ hành động nhanh đôi khi bỏ sót chi tiết quan trọng','Phong cách trực tiếp có thể bị hiểu là thiếu tôn trọng'],
-        commDo:['Đi thẳng vào vấn đề, không vòng vo — nêu kết quả mong đợi trước','Đặt câu hỏi về mục tiêu và tiến độ, không về quy trình','Phản hồi ngắn gọn, rõ ràng, có số liệu cụ thể','Trao quyền và để tự quyết trong phạm vi đã thỏa thuận'],
-        commAvoid:['Không giải thích dài dòng hoặc đặt quá nhiều điều kiện — gây mất kiên nhẫn','Tránh phê bình trước đám đông — phản ứng phòng thủ mạnh','Không can thiệp quá mức vào cách thực hiện nếu kết quả đúng hướng'],
-        stress:`${name} dưới áp lực sẽ tăng tốc kiểm soát, trở nên nóng nảy và áp đặt lên người khác. Nhóm có thể bị "freeze" khi bị thúc ép liên tục. Dấu hiệu sớm: ngắt lời nhiều hơn, email/tin nhắn ngày càng ngắn và cụt.`,
-        lead:`${name} lãnh đạo bằng cách đặt mục tiêu cao và kỳ vọng rõ ràng, thúc đẩy bằng kết quả hơn là quan hệ. Phát huy mạnh nhất khi nhóm cần tốc độ và định hướng rõ ràng.`,
-        dev:['Thực hành lắng nghe trọn vẹn trong 3 cuộc họp tiếp theo trước khi đưa ra ý kiến','Tập đặt câu hỏi thay vì đưa ra giải pháp ngay khi đồng nghiệp báo cáo vấn đề','Yêu cầu phản hồi 360° từ 2 thành viên nhóm mỗi quý','Học 1 kỹ thuật quản lý xung đột có cấu trúc trong 30 ngày tới'],
-        tips:['Tuần này: đặt lịch 1-1 ngắn 15 phút với '+name+' để align kỳ vọng cụ thể','Tuần này: giao 1 dự án có deadline rõ và không can thiệp vào cách thực hiện','Dài hạn: cho phép tự quyết trong phạm vi đã thỏa thuận — giảm micromanagement','Dài hạn: công nhận thành tích bằng thách thức mới, không chỉ khen ngợi','Dài hạn: tránh họp dài — thay bằng brief + action items rõ ràng'],
-        pos:`${name} phát huy tốt nhất trong vai trò cần ra quyết định nhanh, dẫn dắt nhóm trong bối cảnh áp lực hoặc chuyển đổi. Tránh đặt vào vai trò hỗ trợ thuần túy hoặc công việc lặp đi lặp lại không có thách thức.`,
-        fail:`${name} dễ thất bại nhất khi bị đặt vào môi trường quá nhiều sự đồng thuận hoặc quy trình cứng nhắc: áp lực bộc phát thành xung đột với đồng nghiệp, dẫn đến mất uy tín nhóm. Dấu hiệu sớm: phàn nàn về "chậm quá" hoặc bypass quy trình bắt đầu xuất hiện.`,
-        snap:{tw:['Đặt 1-1 với '+name+' trong tuần này, hỏi về 1 việc đang bị chặn và tháo ngay','Giao 1 nhiệm vụ thách thức với kết quả đo lường được trong 2 tuần','Quan sát tần suất ngắt lời trong họp — nếu tăng, check workload ngay'],risk:'Nếu '+name+' không có đủ thách thức và autonomy trong 30 ngày tới, nguy cơ chủ động nghỉ hoặc gây xung đột nội bộ cao.',use:'Triển khai '+name+' vào vị trí cần tốc độ và quyết đoán: PM, lead nhóm nhỏ, hoặc xử lý khủng hoảng ngắn hạn.',warn:['Hay phàn nàn về tốc độ làm việc của người khác','Email/tin nhắn trở nên ngắn, thẳng thắn bất thường — dấu hiệu căng thẳng tích tụ']}
-      },
-      yellow:{
-        sumLine:`${name} tạo ra năng lượng và kết nối trong nhóm — nhưng cần cấu trúc rõ để không phân tán.`,
-        str:['Truyền cảm hứng và tạo động lực trong nhóm một cách tự nhiên','Kết nối nhanh với người mới, xây dựng quan hệ rộng','Tư duy sáng tạo — đặc biệt tốt trong brainstorm và ý tưởng mới','Duy trì không khí tích cực trong nhóm kể cả lúc căng thẳng','Linh hoạt và thích nghi tốt với thay đổi'],
-        wk:['Phân tán nhiệm vụ — khó duy trì tập trung khi có nhiều việc cùng lúc','Ưu tiên quan hệ có thể làm trì hoãn quyết định khó cần thiết','Thiếu theo dõi sát sao chi tiết — dễ bỏ sót deadline nhỏ','Lạc quan quá mức đôi khi che giấu rủi ro thực sự với cấp trên'],
-        commDo:['Bắt đầu bằng cách kết nối cá nhân trước khi vào vấn đề chính','Chia sẻ bức tranh lớn và tầm nhìn — '+name+' cần thấy ý nghĩa của công việc','Công nhận đóng góp cụ thể trước khi đưa ra phản hồi phát triển','Cho phép chia sẻ ý tưởng trước, sau đó mới cùng filter và ưu tiên'],
-        commAvoid:['Không vào thẳng chỉ trích mà không có bối cảnh tích cực trước — mất động lực ngay','Tránh họp thuần túy về số liệu và quy trình không có con người trong đó','Không giao việc đơn điệu dài hạn mà không có yếu tố sáng tạo hoặc tương tác'],
-        stress:`${name} dưới áp lực sẽ nói nhiều hơn, dễ bị phân tán và nhảy từ vấn đề này sang vấn đề khác. Nhóm bị ảnh hưởng vì thiếu quyết định rõ ràng từ người lẽ ra phải dẫn dắt. Dấu hiệu sớm: họp kéo dài không ra kết luận, nhiều ý tưởng mới nhưng ít follow-through.`,
-        lead:`${name} lãnh đạo bằng sức hút cá nhân và khả năng truyền cảm hứng, tạo ra sự tham gia tự nguyện. Phát huy mạnh nhất khi nhóm cần được motivate và cần sự sáng tạo để giải quyết vấn đề mới.`,
-        dev:['Áp dụng quy tắc "2 phút" — quyết định ngay những việc nhỏ thay vì để tồn đọng','Dùng checklist cuối ngày để đảm bảo không bỏ sót follow-up đã hứa','Thực hành viết tóm tắt họp trong 5 phút ngay sau khi kết thúc','Mỗi tuần chọn 1 nhiệm vụ "deep work" không bị interrupt để rèn tập trung'],
-        tips:['Tuần này: giao deadline cụ thể cho 1 dự án '+name+' đang làm và check-in giữa kỳ','Tuần này: yêu cầu update dạng bullet — kết quả, vướng mắc, bước tiếp theo','Dài hạn: pair '+name+' với người Blue/Green để cân bằng tốc độ và chi tiết','Dài hạn: công nhận công khai — '+name+' rất đáp ứng với recognition từ cấp trên và đồng nghiệp','Dài hạn: tạo cơ hội trình bày/pitch để phát huy điểm mạnh trước khán giả'],
-        pos:`${name} phát huy tốt nhất trong vai trò cần kết nối, thuyết phục, và tạo sự hứng khởi: sales, project lead, PR, hoặc culture champion nội bộ. Tránh vai trò cần kiểm soát chi tiết độc lập, hoặc làm việc một mình dài ngày.`,
-        fail:`${name} dễ thất bại nhất khi có quá nhiều deadline song song mà không có người hỗ trợ prioritize: bắt đầu nhiều thứ rồi bỏ dở, mất uy tín với đồng nghiệp và cấp trên. Dấu hiệu sớm: xin gia hạn liên tục, hoặc chủ đề "tôi đang bận quá" xuất hiện thường xuyên.`,
-        snap:{tw:['Đặt lịch 1-1 với '+name+' — hỏi đang hứng thú với gì nhất, align vào mục tiêu team','Review workload hiện tại với '+name+', ưu tiên lại top 3 việc cần hoàn thành tuần này','Tạo 1 cơ hội để '+name+' trình bày ý tưởng/update trước nhóm nhỏ trong tuần'],risk:'Nếu '+name+' không được công nhận hoặc cảm thấy bị cô lập trong 30 ngày tới, nguy cơ mất kết nối tâm lý với công việc và tìm kiếm cơ hội khác.',use:'Triển khai '+name+' vào việc cần thuyết phục, truyền thông, hoặc tạo sự gắn kết: đại diện nhóm, kick-off dự án, onboarding người mới.',warn:['Số lượng deadline bị trễ tăng mà không có cảnh báo trước','Trở nên im lặng trong họp — không còn đưa ra ý tưởng như bình thường']}
-      },
-      green:{
-        sumLine:`${name} là trụ cột ổn định của nhóm — nhưng sự im lặng khi gặp vấn đề là rủi ro quản lý cần theo dõi.`,
-        str:['Xây dựng lòng tin và quan hệ bền vững trong nhóm một cách tự nhiên','Lắng nghe chủ động và giúp mọi người cảm thấy được nghe','Ổn định và đáng tin cậy trong giai đoạn biến động','Hỗ trợ đồng nghiệp một cách chân thành không vụ lợi','Tạo môi trường làm việc hòa hợp, giảm xung đột nhóm'],
-        wk:['Tránh xung đột trực tiếp dẫn đến tích tụ vấn đề — ảnh hưởng chất lượng đầu ra','Khó nói không — nhận quá nhiều việc hỗ trợ người khác, ảnh hưởng công việc chính','Ra quyết định chậm khi thiếu đồng thuận — trở thành bottleneck trong nhóm','Giữ im lặng khi bất đồng — người khác không biết vấn đề tồn tại'],
-        commDo:['Tạo không gian an toàn — bắt đầu bằng cách hỏi về cảm nhận trước khi hỏi về kết quả','Thông báo thay đổi trước, cho thời gian thích nghi thay vì áp đặt ngay','Phản hồi 1-1 thay vì trước nhóm — '+name+' xử lý sâu hơn trong môi trường riêng tư','Hỏi trực tiếp "Em đang nghĩ gì về việc này?" — không để '+name+' tự giữ lại'],
-        commAvoid:['Không áp deadline đột ngột mà không báo trước — gây lo lắng và mất hiệu suất','Tránh phong cách giao tiếp thẳng thắn đến mức thiếu ấm áp — '+name+' đóng cửa lại ngay','Không bỏ qua khi '+name+' im lặng — im lặng thường là dấu hiệu có vấn đề, không phải đồng ý'],
-        stress:`${name} dưới áp lực sẽ thu mình, gánh việc một mình và không báo hiệu khi vấn đề vượt tầm kiểm soát. Nhóm có thể không biết có vấn đề cho đến khi đã quá trễ để can thiệp. Dấu hiệu sớm: ít tham gia hơn trong họp, trả lời "ổn" khi được hỏi thay vì chi tiết cụ thể.`,
-        lead:`${name} lãnh đạo bằng uy tín cá nhân và sự quan tâm chân thành đến từng thành viên, xây dựng đồng thuận trước khi hành động. Phát huy mạnh nhất khi nhóm cần sự ổn định và gắn kết lâu dài.`,
-        dev:['Thực hành nói "Tôi không đồng ý vì..." ít nhất 1 lần/tuần trong môi trường an toàn','Học kỹ thuật từ chối khéo: "Tôi muốn giúp nhưng hiện tại tôi đang ưu tiên X — mình hoãn lại được không?"','Đặt deadline tự cam kết cho bản thân trước khi ai yêu cầu — giảm phụ thuộc vào sự thúc đẩy từ bên ngoài','Tham gia 1 tình huống cần đưa ra ý kiến phản biện có cấu trúc trong 30 ngày tới'],
-        tips:['Tuần này: hỏi trực tiếp "+name+' đang gặp vướng mắc gì nhất" — không hỏi chung chung','Tuần này: assign 1 việc với deadline rõ và confirm '+name+' hiểu priority','Dài hạn: tạo 1-1 định kỳ để '+name+' có không gian nói thật về vấn đề','Dài hạn: protect khỏi overload — kiểm tra xem '+name+' đang gánh bao nhiêu "nhờ vả" từ đồng nghiệp','Dài hạn: giao vai trò dẫn dắt một nhóm nhỏ — phát triển sự tự tin lãnh đạo theo thời gian'],
-        pos:`${name} phát huy tốt nhất trong vai trò cần xây dựng quan hệ, hỗ trợ, và duy trì sự gắn kết lâu dài: team lead, HR, project coordinator, hoặc mentor. Tránh vai trò cần ra quyết định nhanh dưới áp lực cao hoặc môi trường cạnh tranh gay gắt.`,
-        fail:`${name} dễ thất bại nhất khi bị đặt vào tình huống phải đưa ra quyết định khó mà ảnh hưởng đến người khác: trì hoãn đến khi vấn đề leo thang, bị nhìn nhận là thiếu quyết đoán trong vai trò lãnh đạo. Dấu hiệu sớm: hay hỏi "mọi người nghĩ sao?" thay vì đưa ra hướng đi rõ ràng.`,
-        snap:{tw:['1-1 với '+name+' trong tuần — hỏi "Đang gánh việc gì ngoài công việc chính không?"','Xác nhận lại priority top 3 của '+name+' tuần này — đảm bảo không bị lệch vì nhờ vả từ người khác','Quan sát mức độ tham gia trong cuộc họp nhóm tiếp theo'],risk:'Nếu '+name+' đang gánh quá nhiều mà không nói ra, nguy cơ burnout âm thầm cao — không có warning rõ ràng cho đến khi ảnh hưởng hiệu suất.',use:'Triển khai '+name+' vào vai trò xây dựng đội nhóm, mentoring người mới, hoặc giữ ổn định trong giai đoạn nhóm có nhiều thay đổi.',warn:['Trả lời "ổn" hoặc "bình thường" liên tục khi được hỏi — thường che giấu vấn đề thực','Im lặng trong họp hoặc tránh cuộc trò chuyện trực tiếp — dấu hiệu đang có căng thẳng']}
-      },
-      blue:{
-        sumLine:`${name} đảm bảo chất lượng và tư duy hệ thống — nhưng có thể trở thành bottleneck nếu perfectionism không được quản lý.`,
-        str:['Phát hiện rủi ro và lỗ hổng trước khi chúng trở thành vấn đề nghiêm trọng','Xây dựng quy trình và hệ thống bền vững, có thể mở rộng','Tư duy phân tích giúp đưa ra quyết định dựa trên dữ liệu thay vì cảm tính','Duy trì tiêu chuẩn chất lượng cao ngay cả dưới áp lực','Đáng tin cậy về tính chính xác và sự tuân thủ quy trình'],
-        wk:['Perfectionism có thể trì hoãn deliverable — chi phí cơ hội cao với nhóm','Khó chia sẻ công việc vì lo chất lượng giảm — tạo bottleneck không cần thiết','Ra quyết định chậm khi thiếu đủ dữ liệu — trở thành điểm nghẽn trong môi trường nhanh','Giao tiếp quá chi tiết đôi khi mất đi ý chính với người nghe không chuyên'],
-        commDo:['Cung cấp context đầy đủ và data trước khi yêu cầu hành động — '+name+' cần hiểu "tại sao"','Cho thời gian chuẩn bị trước cuộc họp quan trọng — không hỏi quyết định ngay tại chỗ','Phản hồi bằng dữ liệu và ví dụ cụ thể, không phán xét cảm tính','Tôn trọng chuyên môn — đặt câu hỏi thay vì phủ nhận phân tích của '+name],
-        commAvoid:['Không ép quyết định ngay lập tức trong bối cảnh phức tạp — chất lượng sẽ giảm mạnh','Tránh thay đổi quy trình đột ngột mà không giải thích lý do — '+name+' cần logic, không chỉ chỉ đạo','Không bác bỏ phân tích mà không có cơ sở — làm giảm động lực đóng góp chuyên môn'],
-        stress:`${name} dưới áp lực sẽ phân tích liên tục mà không đến quyết định, tìm thêm dữ liệu thay vì hành động. Nhóm bị ảnh hưởng vì thiếu deliverable đúng hạn từ người được giao việc quan trọng. Dấu hiệu sớm: yêu cầu thêm thông tin, thêm review cycle, hoặc nêu nhiều rủi ro mà không đề xuất giải pháp.`,
-        lead:`${name} lãnh đạo bằng chuyên môn và tính nhất quán, xây dựng uy tín qua thời gian dài hơn là qua sức hút cá nhân. Phát huy mạnh nhất khi nhóm cần định hướng chiến lược dựa trên phân tích và cần người giữ tiêu chuẩn.`,
-        dev:['Thực hành "good enough decision" — đặt mức 80% đủ tốt để hành động, không cần 100%','Delegate 1 task cụ thể mỗi tuần cho người khác mà không review lại từng bước','Trình bày tóm tắt 2 phút thay vì báo cáo đầy đủ trong update nhanh hàng ngày','Yêu cầu feedback về giao tiếp từ 1 đồng nghiệp mỗi tháng — cụ thể về sự rõ ràng và ngắn gọn'],
-        tips:['Tuần này: đặt deadline rõ cho '+name+' và confirm "đây là đủ tốt — không cần thêm"','Tuần này: yêu cầu '+name+' gửi recommendation trong 24h với dữ liệu đang có — không chờ hoàn chỉnh','Dài hạn: tạo "decision framework" rõ ràng để '+name+' biết khi nào đủ thông tin để quyết định','Dài hạn: assign vai trò quality reviewer chính thức — phát huy điểm mạnh có cấu trúc','Dài hạn: pair với người Red hoặc Yellow để cân bằng tốc độ và độ chính xác'],
-        pos:`${name} phát huy tốt nhất trong vai trò cần độ chính xác cao, phân tích rủi ro, hoặc xây dựng hệ thống: QA, analyst, technical lead, hoặc compliance. Tránh vai trò cần ra quyết định trực giác nhanh hoặc phụ trách quan hệ khách hàng chính.`,
-        fail:`${name} dễ thất bại nhất khi bị đặt vào tình huống phải ra quyết định lớn với dữ liệu không đầy đủ và deadline gấp: phân tích song song với thực thi, dẫn đến trễ tiến độ và mâu thuẫn với nhóm. Dấu hiệu sớm: số lượng câu hỏi làm rõ tăng bất thường, hoặc tái cấu trúc kế hoạch đã được duyệt.`,
-        snap:{tw:['Đặt 1-1 với '+name+' — clarify priority và "đây là ngưỡng đủ tốt" cho 3 việc đang làm','Yêu cầu update dạng "3 bullets: đã làm, vướng mắc, bước tiếp theo" — tránh báo cáo dài','Kiểm tra xem '+name+' có đang hold quyết định nào chờ thêm data không'],risk:'Nếu '+name+' không được định nghĩa rõ "đủ tốt là gì", nguy cơ tạo bottleneck cho cả nhóm trong 30-60 ngày tới khi workload tăng.',use:'Triển khai '+name+' vào nhiệm vụ phân tích, xây dựng quy trình, hoặc đảm bảo chất lượng — đây là nơi tạo ra giá trị không ai thay thế được.',warn:['Yêu cầu thêm dữ liệu hoặc thêm review cycle liên tục trước khi hành động','Giải thích quá chi tiết trong email hoặc họp — thường che giấu lo lắng về sai sót']}
-      }
-    };
-    const cd=clrData[d.pr]||clrData.blue;
-    return {
-      managerSnapshot:{thisWeek:cd.snap.tw,biggestRisk:cd.snap.risk,bestUse:cd.snap.use,warningSignals:cd.snap.warn},
-      summary:cd.sumLine,
-      strengths:cd.str,
-      weaknesses:cd.wk,
-      communication:{do:cd.commDo,avoid:cd.commAvoid},
-      stressBehavior:cd.stress,
-      leadershipStyle:cd.lead,
-      development:cd.dev,
-      managingTips:cd.tips,
-      performancePositioning:cd.pos,
-      failureScenario:cd.fail
-    };
-  }
+  // Không gọi AI sau khảo sát — tiết kiệm credit
+  // Admin sẽ generate AI profile đầy đủ từ dashboard (2 loại: nhân viên / quản lý)
+  const fb={
+    red:{
+      ps:`${name} mang đến phong cách làm việc đặc trưng của Fiery Red — quyết đoán, tập trung kết quả và không ngại thách thức.\n${name} nạp năng lượng từ tương tác và hành động, thích đưa ra quyết định nhanh hơn là thảo luận dài.\nPhong cách lãnh đạo của ${name} là Kết quả — dẫn dắt bằng kỳ vọng cao và gương làm việc chăm chỉ.\nĐiều làm ${name} khác biệt: sự kết hợp với màu phụ tạo ra chiều sâu giúp ${name} linh hoạt hơn người Red thông thường.`,
+      str:['Quyết đoán và dứt khoát — hiệu quả khi nhóm cần hướng đi rõ ràng','Ra quyết định nhanh dưới áp lực mà không bị tê liệt','Tập trung cao độ vào mục tiêu, không dễ bị phân tâm','Thẳng thắn và minh bạch — người khác biết rõ đang nghĩ gì','Dẫn dắt bằng hành động — luôn làm đầu tiên','Hiệu suất cao trong môi trường áp lực','Không ngại xung đột cần thiết — sẵn sàng feedback khó','Thúc đẩy tiến độ nhóm khi mọi người bị chậm lại'],
+      wk:['Thiếu kiên nhẫn với quy trình chậm — đôi khi gây áp lực không cần thiết','Có thể bỏ qua chi tiết quan trọng vì muốn hành động nhanh','Phong cách trực tiếp đôi khi bị hiểu là thiếu quan tâm cảm xúc','Khó chịu khi bị kiểm soát — cần autonomy để phát huy tốt nhất','Khi stress: nóng nảy và mất kiên nhẫn rõ rệt, gây căng thẳng nhóm','Đôi khi áp đặt tốc độ của bản thân lên người khác'],
+      vt:['Đẩy tiến độ nhóm khi cần accelerate','Đưa ra quyết định trong tình huống không ai dám quyết','Thách thức nhóm đặt mục tiêu cao hơn','Nói thẳng điều cần nói dù khó','Tạo accountability bằng kỳ vọng rõ ràng','Đi đầu trong thay đổi và transformation'],
+      cd:['Đi thẳng vào vấn đề, không vòng vo','Tóm tắt ngắn gọn — kết quả mong đợi là gì','Phản hồi rõ ràng, kịp thời','Tôn trọng thời gian — họp ngắn, quyết định nhanh'],
+      ca:['Không giải thích quá dài mà không có action item','Tránh micromanage vào cách làm','Không phê bình trước đám đông','Tránh quy trình quan liêu không cần thiết','Không để vấn đề lơ lửng quá lâu'],
+      bs:`${name} thường không nhận ra tốc độ và sự trực tiếp của mình có thể làm người khác cảm thấy bị áp đảo.\nĐây là điểm mù của việc hoạt động hiệu quả ở tần suất cao — ${name} giỏi đến mức không nhận ra người khác cần thêm thời gian để theo kịp.`,
+      dv:['Thực hành lắng nghe trọn vẹn trong 3 cuộc họp tiếp theo trước khi đưa ý kiến','Tập đặt câu hỏi thay vì đưa giải pháp ngay khi ai báo vấn đề','Học 1 kỹ thuật quản lý xung đột có cấu trúc trong 30 ngày tới','Yêu cầu feedback 360° từ 2 đồng nghiệp mỗi quý','Tìm 1 mentor Green hoặc Blue để học cách pace phù hợp','Rèn sự kiên nhẫn chiến lược — chậm một chút để đi xa hơn'],
+      ie:['Môi trường cạnh tranh lành mạnh với KPI rõ ràng','Được trao quyền tự chủ trong phạm vi đã thỏa thuận','Thách thức liên tục — không có việc quá nhàm lặp lại','Đồng nghiệp có năng lực và tốc độ tương đương','Ít họp không cần thiết — nhiều thời gian thực thi'],
+      mt:['Giao việc với kết quả rõ, không can thiệp vào cách làm','Phản hồi thẳng thắn — không vòng vo, không xã giao','Tạo thách thức mới khi công việc hiện tại đã ổn định','Công nhận bằng cơ hội mới, không chỉ khen ngợi','Họp 1-1 ngắn, có agenda rõ']
+    },
+    yellow:{
+      ps:`${name} là nguồn năng lượng tích cực của nhóm — Sunshine Yellow mang đến sự nhiệt tình, sáng tạo và kết nối tự nhiên.\n${name} nạp năng lượng từ sự tương tác, càng gặp nhiều người càng có nhiều ý tưởng.\nPhong cách lãnh đạo Truyền cảm hứng của ${name} dựa vào khả năng làm người khác tin rằng mọi thứ đều có thể.\nĐiều làm ${name} khác biệt: không phải sự vui vẻ bề mặt mà là sự quan tâm chân thực ẩn dưới lớp năng lượng sôi nổi.`,
+      str:['Tạo không khí tích cực tự nhiên — không cần cố gắng, chỉ cần có mặt','Kết nối nhanh với người mới, xây dựng quan hệ rộng','Sáng tạo và linh hoạt — nhìn thấy khả năng trong mọi tình huống','Truyền cảm hứng và motivate nhóm trong giai đoạn khó','Nhìn thấy tiềm năng trong người khác trước khi họ tự thấy','Thích nghi nhanh với thay đổi, tìm điều thú vị trong cái mới','Kể chuyện và trình bày ý tưởng theo cách cuốn hút','Giữ năng lượng nhóm kể cả khi mọi thứ không theo hướng'],
+      wk:['Khó duy trì tập trung khi có nhiều việc hấp dẫn hơn đang xảy ra','Lạc quan quá mức đôi khi bỏ qua rủi ro thực sự','Dễ bắt đầu nhiều thứ nhưng khó hoàn thành — starter energy','Phụ thuộc vào việc được công nhận để duy trì động lực','Khi stress: phân tán, bỏ dở nhiều việc, mất uy tín deadline','Không thích chi tiết tỉ mỉ — điểm mù thực sự của Yellow'],
+      vt:['Tạo kết nối giữa người và bộ phận khác nhau','Khơi dậy ý tưởng khi nhóm bị stuck','Giữ morale và năng lượng tích cực trong giai đoạn khó','Đại diện nhóm trong sự kiện và cơ hội kết nối','Brainstorm — đặc biệt hiệu quả ở giai đoạn divergent thinking','Truyền đạt ý tưởng phức tạp theo cách dễ tiếp cận'],
+      cd:['Bắt đầu bằng kết nối cá nhân trước khi vào vấn đề','Chia sẻ bức tranh lớn và ý nghĩa của công việc','Công nhận đóng góp cụ thể trước khi đưa feedback','Cho không gian chia sẻ ý tưởng trước, filter sau'],
+      ca:['Không vào thẳng chỉ trích mà không có bối cảnh tích cực','Tránh họp thuần số liệu không có yếu tố con người','Không giao việc đơn điệu dài hạn mà không có tương tác','Đừng ngắt khi đang trong flow kể chuyện','Tránh tạo áp lực quá cao mà không có support'],
+      bs:`${name} đôi khi không nhận ra năng lượng cao và lạc quan của mình có thể che khuất tín hiệu quan trọng từ người đang cần được lắng nghe, không phải được cheered up.\n${name} cũng có xu hướng tin mọi thứ sẽ ổn vì năng lượng tốt — nhưng đôi khi cần plan B cụ thể hơn là optimism.`,
+      dv:['Thực hành "complete before starting" — hoàn thành việc hiện tại trước khi nhận việc mới','Dùng checklist cuối ngày track follow-up đã hứa','Tập viết tóm tắt họp trong 5 phút ngay sau khi kết thúc','Mỗi tuần chọn 1 việc "deep work" không interrupt để rèn tập trung','Phát triển kỹ năng prioritization — không phải mọi ý tưởng cần làm ngay','Xây dựng "accountability partner" để track commitment'],
+      ie:['Môi trường cởi mở, nhiều tương tác tự nhiên','Công việc đa dạng — không lặp lại một việc quá lâu','Được công nhận và thấy đóng góp có ý nghĩa','Đồng nghiệp có năng lượng tích cực và tinh thần hợp tác','Cơ hội gặp gỡ người mới thường xuyên'],
+      mt:['Công nhận công khai — rất đáp ứng với recognition từ cấp trên','Giao deadline cụ thể và check-in giữa kỳ — không để tự floating','Tạo cơ hội trình bày ý tưởng trước khán giả','Pair với người Blue hoặc Green để cân bằng tốc độ và chi tiết','Chia sẻ bức tranh lớn trước khi đi vào chi tiết']
+    },
+    green:{
+      ps:`${name} là người mà khi rời khỏi phòng, mọi người mới nhận ra sự ổn định đó đến từ đâu. Earth Green tạo nên trọng tâm rõ nét: quan tâm đến con người, quan hệ bền vững, ổn định cho nhóm.\n${name} nạp năng lượng từ không gian riêng và những cuộc trò chuyện có chiều sâu với ít người.\nPhong cách lãnh đạo của ${name} thể hiện qua việc tạo ra sự ổn định từ bên trong, đảm bảo mọi người có nền tảng để làm việc hiệu quả.\nĐiều làm ${name} khác: sự quan tâm của ${name} không phải lịch sự xã giao — mà chân thực và đủ sâu để người khác cảm nhận được.`,
+      str:['Xây dựng lòng tin bền vững — không cần chức vụ, chỉ cần nhất quán theo thời gian','Lắng nghe chủ động và có chiều sâu — nghe cả cảm xúc phía sau lời nói','Ổn định khi áp lực vừa phải — là anchor cho nhóm khi xung quanh hoảng loạn','Cam kết lâu dài — không bùng cháy rồi tắt như Yellow hay Red','Quan tâm đến từng cá nhân — nhớ chi tiết mà người khác bỏ qua','Giảm xung đột ngầm bằng sự hiện diện — không cần can thiệp trực tiếp','Tạo môi trường an toàn tâm lý cho cả nhóm','Hỗ trợ đồng nghiệp một cách chân thành, không vụ lợi'],
+      wk:['Tránh xung đột → vấn đề tích tụ ngầm, ảnh hưởng chất lượng đầu ra','Khó nói không → nhận quá nhiều việc hỗ trợ, hy sinh công việc chính','Ra quyết định chậm khi thiếu đồng thuận → bottleneck trong tình huống cần nhanh','Giữ im lặng khi bất đồng → người khác không biết vấn đề tồn tại','Undervalue bản thân → không chủ động lên tiếng, contribution bị bỏ qua','Khi stress: gánh một mình, không báo hiệu đến khi quá tải'],
+      vt:['Sợi chỉ vô hình kết nối mọi người trong nhóm','Người an toàn để đồng nghiệp chia sẻ điều khó nói','Bộ nhớ quy trình sống — nhớ chi tiết mà người khác đã quên','Đảm bảo không ai bị bỏ lại trong giai đoạn thay đổi','Giảm xung đột ngầm mà không cần hòa giải ồn ào','Cam kết thật — khi ${name} nói sẽ làm, đó là sự thật'],
+      cd:['Tạo không gian an toàn trước khi vào nội dung','Gửi thông tin trước cuộc họp — cần thời gian xử lý','Hỏi cụ thể: "Em nghĩ gì về điểm X?" thay vì "Em có ý kiến không?"','Xác nhận lại sau khi ${name} nói để biết được nghe và hiểu đúng'],
+      ca:['Không hỏi ý kiến đột xuất trước đám đông','Không thay đổi kế hoạch đột ngột mà không giải thích','Không diễn giải im lặng là đồng ý — thường nghĩa ngược lại','Không ép quyết định ngay cho vấn đề phức tạp','Không phê bình trước nhóm — tác động rất mạnh, lâu hồi phục'],
+      bs:`${name} thường đánh giá thấp tác động của sự im lặng đến người xung quanh. Khi nghĩ "mình giữ hòa khí bằng cách không nói", người xung quanh đôi khi hiểu là thờ ơ hoặc không đồng ý thụ động.\n${name} cũng có xu hướng underestimate ảnh hưởng thực sự của bản thân — dẫn đến không dám lên tiếng khi thực ra nhiều người đang chờ ${name} nói.`,
+      dv:['Thực hành nói "Tôi không đồng ý vì..." ít nhất 1 lần/tuần trong môi trường an toàn','Học kỹ thuật từ chối khéo: "Tôi muốn giúp nhưng đang ưu tiên X, hoãn lại được không?"','Tập tóm tắt đóng góp bản thân sau mỗi kết quả tốt — 1 câu là đủ','Đặt deadline tự cam kết cho bản thân trước khi ai yêu cầu','Tham gia 1 tình huống cần phản biện có cấu trúc trong 30 ngày tới','Xây dựng signal cá nhân khi workload vượt ngưỡng để người khác hỗ trợ kịp thời'],
+      ie:['Quy trình rõ ràng và thay đổi có lộ trình — không cần bất biến, chỉ cần predictable','Quan hệ tin tưởng thực sự — không phải môi trường cạnh tranh nội bộ','1-1 định kỳ để có không gian chia sẻ điều không tiện nói trong họp lớn','Vai trò điều phối hoặc hỗ trợ với impact rõ đến người cụ thể','Được trao quyền trong phạm vi đã thỏa thuận — không micromanage'],
+      mt:['Check in chủ động hàng tuần: "Đang gặp vướng mắc gì nhất?" — không chờ báo cáo','Công nhận cụ thể: "Cách xử lý tình huống X hôm đó rất hiệu quả" thay vì khen chung','Bảo vệ ít nhất 2h deep work mỗi ngày — ít interrupt','Chia sẻ context thay đổi trước khi announce với cả nhóm','Tạo cơ hội lãnh đạo nhỏ, có cấu trúc để build confidence dần dần']
+    },
+    blue:{
+      ps:`${name} đảm bảo chất lượng và tư duy hệ thống — Cool Blue là màu của sự chính xác, chiều sâu phân tích và cam kết với tiêu chuẩn cao.\n${name} là người hướng nội, cần thời gian và không gian để xử lý thông tin trước khi đưa ra ý kiến — đừng nhầm sự im lặng với sự thụ động.\nPhong cách lãnh đạo Chiến lược của ${name} thể hiện qua việc xây dựng hệ thống bền vững và quyết định dựa trên dữ liệu.\n${name} khác người Blue thông thường ở chỗ: phân tích để tạo ra chất lượng thực sự có giá trị, không phải phân tích vì thích phân tích.`,
+      str:['Phát hiện rủi ro và lỗ hổng trước khi chúng trở thành vấn đề nghiêm trọng','Xây dựng quy trình và hệ thống bền vững, có thể mở rộng','Đưa ra quyết định dựa trên dữ liệu, không phải cảm xúc hay áp lực xã hội','Duy trì tiêu chuẩn chất lượng cao ngay cả dưới áp lực','Đáng tin cậy về tính chính xác — khi ${name} nói đúng, đó là sự thật','Cẩn thận và tỉ mỉ — phát hiện lỗi mà người khác bỏ qua','Kiên nhẫn với sự phức tạp — không vội vàng đơn giản hóa vấn đề','Tư duy hệ thống — nhìn thấy kết nối giữa các phần mà người khác không thấy'],
+      wk:['Perfectionism có thể trì hoãn deliverable — chi phí cơ hội cao cho nhóm','Khó chia sẻ công việc vì lo chất lượng giảm — tạo bottleneck không cần thiết','Ra quyết định chậm khi thiếu đủ dữ liệu — điểm nghẽn trong môi trường nhanh','Giao tiếp quá chi tiết đôi khi mất đi ý chính với người nghe không chuyên','Khi stress: phân tích liên tục mà không ra được quyết định','Ít biểu lộ cảm xúc — đôi khi bị hiểu là xa cách hoặc không quan tâm'],
+      vt:['Đảm bảo chất lượng — người khác ngủ ngon vì có ${name}','Phát hiện vấn đề tiềm ẩn trước khi team gặp phải','Xây dựng documentation và hệ thống nhóm phụ thuộc lâu dài','Đưa ra góc nhìn phân tích khi nhóm bị cảm xúc chi phối','Đảm bảo quyết định có cơ sở dữ liệu, không phải chỉ ý kiến','Duy trì tiêu chuẩn — người giữ chất lượng của nhóm'],
+      cd:['Cung cấp context và data đầy đủ trước khi yêu cầu hành động','Cho thời gian chuẩn bị trước họp quan trọng — không hỏi quyết định tại chỗ','Phản hồi bằng dữ liệu và ví dụ cụ thể, không phán xét cảm tính','Tôn trọng chuyên môn — đặt câu hỏi thay vì phủ nhận phân tích'],
+      ca:['Không ép quyết định ngay trong bối cảnh phức tạp — chất lượng sẽ giảm mạnh','Tránh thay đổi quy trình đột ngột mà không giải thích logic','Không bác bỏ phân tích mà không có cơ sở','Đừng chỉ trích sự cẩn thận là "chậm" — đây là giá trị, không phải điểm yếu','Không giao phụ trách quan hệ xã giao mà không hứng thú'],
+      bs:`${name} thường không nhận ra sự cẩn thận và chi tiết của mình đôi khi làm chậm nhóm ở thời điểm cần tốc độ. 80% thông tin thường đủ để hành động — nhưng ${name} tự nhiên muốn đến 95-100%.\n${name} cũng đôi khi giao tiếp theo chiều sâu chuyên môn của mình và quên rằng không phải ai cũng có cùng nền tảng để hiểu ngay.`,
+      dv:['Thực hành "good enough decision" — 80% thông tin là đủ để hành động','Delegate 1 task cụ thể mỗi tuần mà không review lại từng bước','Trình bày tóm tắt 2 phút thay vì báo cáo đầy đủ trong update nhanh','Yêu cầu feedback giao tiếp từ 1 đồng nghiệp mỗi tháng','Thực hành nói ý kiến ngay trong họp — không chờ xử lý hoàn toàn xong','Xây dựng thói quen đưa recommendation cùng với phân tích — không chỉ trình bày vấn đề'],
+      ie:['Công việc đòi hỏi chuyên môn sâu và độ chính xác cao','Tiêu chuẩn và quy trình rõ ràng — biết mình được đánh giá dựa trên cái gì','Được công nhận về chuyên môn và chất lượng, không chỉ tốc độ','Đủ thời gian để làm đúng lần đầu, không phải rush và sửa sau','Môi trường ít bị interrupt — deep work được coi trọng'],
+      mt:['Đặt deadline rõ và confirm "đây là đủ tốt — không cần thêm"','Yêu cầu recommendation trong 24h với dữ liệu đang có — không chờ hoàn chỉnh','Tạo decision framework rõ ràng — khi nào đủ thông tin để quyết định','Assign vai trò quality reviewer chính thức — phát huy điểm mạnh có cấu trúc','Pair với người Red hoặc Yellow để cân bằng tốc độ và độ chính xác']
+    }
+  };
+  const f=fb[d.pr]||fb.blue;
+  return {
+    personalStyle:f.ps,
+    strengths:f.str,
+    weaknesses:f.wk,
+    valueToTeam:f.vt,
+    communication:{do:f.cd,avoid:f.ca},
+    blindSpots:f.bs,
+    development:f.dv,
+    idealEnvironment:f.ie,
+    managingTips:f.mt
+  };
 }
 
 function buildWheel(pr,sec,pct){
@@ -516,15 +446,13 @@ function renderProfile(name,role,dept,d,n){
   const {pr,sec,pct,ieType,ieExtPct,leadStyle,stressBehavior,archetype}=d;
   const LLABELS={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
   const SLABELS={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
-  const ms=n.managerSnapshot||{thisWeek:[],biggestRisk:'—',bestUse:'—',warningSignals:[]};
   const comm=n.communication||{do:[],avoid:[]};
   const bars=['red','yellow','green','blue'].map(c=>`<div class="cb"><div class="cb-header"><span class="cb-name" style="color:${CI[c].c}">${CI[c].e} ${CI[c].l}</span><span class="cb-pct" style="color:${CI[c].c}">${pct(c)}%</span></div><div class="cb-bar-bg"><div class="cb-bar-fill" style="width:${pct(c)}%;background:${CI[c].c}"></div></div></div>`).join('');
   const list=(arr,cls='')=>`<ul class="profile-list ${cls}">${(arr||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-  const paras=(txt)=>{if(!txt)return'<p>—</p>';const lines=String(txt).split(/\\n|\n/).filter(p=>p.trim());return lines.length>1?lines.map(p=>`<p>${p}</p>`).join(''):`<p>${txt}</p>`;};
+  const paras=(txt)=>{if(!txt)return'<p>—</p>';return String(txt).split(/\\n|\n/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')||`<p>${txt}</p>`;};
   const sec2=(icon,title,body)=>`<div class="profile-section"><div class="ps-label">${icon} ${title}</div><div class="ps-content">${body}</div></div>`;
-  document.getElementById('profileContainer').innerHTML=`
 
-    <!-- ── Wheel + Scores Card ── -->
+  document.getElementById('profileContainer').innerHTML=`
     <div class="card">
       <div class="profile-header">
         <div class="profile-name">${name}</div>
@@ -540,76 +468,36 @@ function renderProfile(name,role,dept,d,n){
         <div class="dim-card"><div class="dim-title">⚠️ Hành vi dưới áp lực</div><div class="dim-val" style="color:var(--${stressBehavior})">${SLABELS[stressBehavior]}</div></div>
       </div>
     </div>
-
-    <!-- ── Manager Snapshot — Decision-First ── -->
-    <div class="card" style="border:1px solid rgba(245,166,35,.25);background:linear-gradient(135deg,rgba(245,166,35,.04) 0%,var(--sur) 60%)">
-      <div class="ps-label" style="color:var(--yellow);margin-bottom:16px;font-size:11px;letter-spacing:2px">⚡ MANAGER SNAPSHOT — ĐỌC TRƯỚC, HÀNH ĐỘNG NGAY</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(245,166,35,.15)">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">📋 3 VIỆC PHẢI LÀM TUẦN NÀY</div>
-          ${list(ms.thisWeek)}
-        </div>
-        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(232,57,42,.2)">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">🚨 RỦI RO LỚN NHẤT (30–60 NGÀY)</div>
-          <p style="font-size:13px;line-height:1.65;color:var(--txt)">${ms.biggestRisk}</p>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(60,179,113,.15)">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px">🎯 TRIỂN KHAI TỐT NHẤT</div>
-          <p style="font-size:13px;line-height:1.65;color:var(--txt)">${ms.bestUse}</p>
-        </div>
-        <div style="background:var(--sur2);border-radius:10px;padding:14px;border:1px solid rgba(43,108,176,.2)">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px">👁️ DẤU HIỆU CẢNH BÁO</div>
-          ${list(ms.warningSignals,'neg')}
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Profile Core ── -->
     <div class="card">
-      ${sec2('👤','Tổng Quan',`<p>${n.summary||'—'}</p>`)}
-      ${sec2('💪','Điểm Mạnh',list(n.strengths))}
+      ${sec2('👤','Phong Cách Cá Nhân',paras(n.personalStyle))}
+      ${sec2('💪','Điểm Mạnh Nổi Bật',list(n.strengths))}
       ${sec2('🔧','Điểm Cần Phát Triển',list(n.weaknesses,'neg'))}
     </div>
-
-    <!-- ── Communication ── -->
     <div class="card">
-      <div class="profile-section">
-        <div class="ps-label">💬 Giao Tiếp</div>
-        <div class="ps-content">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px">✅ NÊN LÀM</div>
-          ${list(comm.do)}
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin:14px 0 8px">🚫 TRÁNH</div>
-          ${list(comm.avoid,'neg')}
+      ${sec2('🤝','Đóng Góp Cho Nhóm',list(n.valueToTeam,'neu'))}
+      ${sec2('🔍','Điểm Mù Tiềm Ẩn',paras(n.blindSpots))}
+    </div>
+    <div class="card">
+      <div class="profile-section"><div class="ps-label">💬 Giao Tiếp</div><div class="ps-content">
+        <div class="comm-2col">
+          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px">✅ NÊN LÀM</div>${list(comm.do)}</div>
+          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px">🚫 TRÁNH</div>${list(comm.avoid,'neg')}</div>
         </div>
-      </div>
+      </div></div>
     </div>
-
-    <!-- ── Behavioral Depth ── -->
-    <div class="card">
-      ${sec2('⚠️','Hành Vi Dưới Áp Lực & Stress',paras(n.stressBehavior))}
-      ${sec2('👑','Phong Cách Lãnh Đạo Thực Tế',paras(n.leadershipStyle))}
-    </div>
-
-    <!-- ── Positioning & Risk ── -->
-    <div class="card">
-      ${sec2('🎯','Vị Trí Phù Hợp — Hiệu Suất Cao Nhất',paras(n.performancePositioning))}
-      <div style="height:1px;background:rgba(232,57,42,.2);margin:4px 0 18px"></div>
-      ${sec2('🚨','Kịch Bản Thất Bại Nguy Hiểm Nhất',paras(n.failureScenario))}
-    </div>
-
-    <!-- ── Development & Managing ── -->
     <div class="card">
       ${sec2('🌱','Gợi Ý Phát Triển (90 Ngày)',list(n.development))}
-      ${sec2('💡','Cách Quản Lý & Tạo Động Lực',list(n.managingTips))}
+      ${sec2('🏡','Môi Trường Làm Việc Lý Tưởng',list(n.idealEnvironment,'neu'))}
     </div>
-
+    <div class="card">
+      ${sec2('💡','Cách Để Cộng Tác Hiệu Quả Nhất',list(n.managingTips))}
+    </div>
     <div class="card print-footer" style="text-align:center;padding:16px">
-      <p style="font-size:11px;color:var(--muted)">Insights Discovery Profile · ${name} · ${new Date().toLocaleDateString('vi-VN')}<br>Được tạo bởi Insights Discovery Tool nội bộ · DHI Co Ltd</p>
+      <p style="font-size:11px;color:var(--muted)">Insights Discovery Profile · ${name} · ${new Date().toLocaleDateString('vi-VN')}<br>DHI Co Ltd · Quick Profile (Admin sẽ tạo AI profile đầy đủ)</p>
     </div>`;
+
   document.getElementById('profileActions').style.display='grid';
-  toast('✅ Hồ sơ AI đã được tạo thành công!');
+  toast('✅ Hồ sơ đã được tạo!');
 }
 
 function resetForm(){
