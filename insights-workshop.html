@@ -10,218 +10,6 @@ const CONFIG = {
   flowReadUrl: "https://default57f5fed38cc1439ca9d79a10abf5b4.2c.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/343a2e160e9b4466a0af4d69c2a6d93c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lIOud4GYaQI5p2VStOFZBSOfgcbpBeTVCfBCdQoA5p8",
   workerUrl: "https://claude-proxy.donguyenthai-phuoc.workers.dev"
 };
-// ════════════════════════════════════════════════════════════
-// NEW MODULE A: TEAM TENSION MAP
-// ════════════════════════════════════════════════════════════
-function buildTensionMap(){
-  const el=document.getElementById('tensionMap');
-  if(!el)return;
-  if(!teamData.length){el.innerHTML='<p class="tension-empty">Tải dữ liệu để phân tích</p>';return;}
-  const TSCORE={'red-blue':3,'blue-red':3,'red-green':3,'green-red':3,'yellow-blue':2,'blue-yellow':2,'red-red':2,'yellow-yellow':1,'green-green':1,'blue-blue':2,'red-yellow':0,'yellow-red':0,'yellow-green':0,'green-yellow':0,'green-blue':0,'blue-green':0};
-  const TDESC={
-    'red-blue':'Quyết định nhanh (Red) vs phân tích kỹ (Blue) — Red cảm thấy Blue trì hoãn, Blue thấy Red hời hợt',
-    'blue-red':'Phân tích kỹ (Blue) vs quyết định nhanh (Red) — Blue bị áp lực ra quyết định trước khi có đủ dữ liệu',
-    'red-green':'Quyết đoán (Red) vs hài hòa (Green) — Red áp đặt không nhận ra, Green im lặng nhưng chưa thực sự đồng ý',
-    'green-red':'Hài hòa (Green) vs quyết đoán (Red) — Green bị áp lực, tích tụ frustration không nói ra',
-    'yellow-blue':'Sáng tạo bốc đồng (Yellow) vs cẩn thận chi tiết (Blue) — Yellow thấy Blue kìm hãm sáng tạo',
-    'blue-yellow':'Chi tiết (Blue) vs ý tưởng (Yellow) — Blue yêu cầu data, Yellow muốn thử ngay không cần proof',
-    'red-red':'Cùng Red — cạnh tranh về quyền lực và quyết định, risk friction về ai lead',
-    'blue-blue':'Cùng Blue — risk groupthink và phân tích quá mức, thiếu góc nhìn bên ngoài hệ thống'
-  };
-  const TSCEN={
-    'red-blue':'Họp chốt kế hoạch: Red muốn quyết định trong 10 phút, Blue cần xem thêm số liệu → họp kéo dài, cả hai khó chịu',
-    'blue-red':'Khi plan thay đổi gấp: Blue cần 24h xử lý, Red đã hành động → Blue cảm thấy không được tôn trọng',
-    'red-green':'Red đưa ra quyết định mà không hỏi Green → Green im lặng nhưng không thực sự commit → execution sai hướng',
-    'green-red':'Green có vấn đề nhưng không raise lên → Red phát hiện muộn → Red blame Green vì "không báo cáo"',
-    'yellow-blue':'Yellow có 10 ý tưởng chưa kiểm chứng → Blue phân tích tất cả từng cái một → Yellow mất năng lượng sáng tạo',
-    'blue-yellow':'Blue chỉ ra 15 lỗi chi tiết trong work của Yellow → Yellow cảm thấy bị dìm → mất động lực đóng góp',
-    'red-red':'Hai Red cùng muốn lead một dự án → friction về ai quyết định → team không biết follow ai',
-    'blue-blue':'Cả nhóm đồng ý quá nhanh → không ai đặt câu hỏi về risk thực sự → quyết định có lỗ hổng lớn'
-  };
-  const pairs=[];
-  for(let i=0;i<teamData.length;i++){
-    for(let j=i+1;j<teamData.length;j++){
-      const a=teamData[i],b=teamData[j];
-      const key=`${a.primaryColor}-${b.primaryColor}`;
-      const rkey=`${b.primaryColor}-${a.primaryColor}`;
-      const score=TSCORE[key]!==undefined?TSCORE[key]:(TSCORE[rkey]!==undefined?TSCORE[rkey]:0);
-      const desc=TDESC[key]||TDESC[rkey]||'Tương đối hài hòa — ít xung đột tiềm ẩn';
-      const scenario=TSCEN[key]||TSCEN[rkey]||'Ít friction rõ ràng giữa 2 màu này';
-      pairs.push({a,b,score,desc,scenario});
-    }
-  }
-  pairs.sort((x,y)=>y.score-x.score);
-  const top3=pairs.slice(0,Math.min(3,pairs.length));
-  const LEVEL=['🟢 Thấp','🟡 Trung bình','🟡 Trung bình','🔴 Cao'];
-  const BC={3:'rgba(232,57,42,.25)',2:'rgba(245,166,35,.2)',1:'var(--bdr)',0:'var(--bdr)'};
-  el.innerHTML=top3.map((p,idx)=>{
-    const an=p.a.Title.split(' ').slice(-2).join(' '),bn=p.b.Title.split(' ').slice(-2).join(' ');
-    const ac=CI[p.a.primaryColor||'blue'],bc=CI[p.b.primaryColor||'blue'];
-    return `<div style="background:var(--sur2);border:1px solid ${BC[p.score]};border-radius:12px;padding:16px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span style="font-weight:700;font-size:13px">${an}</span>
-          <span style="font-size:12px;padding:2px 8px;border-radius:99px;background:${ac.c}22;color:${ac.c}">${ac.e} ${ac.l}</span>
-          <span style="color:var(--muted);font-size:12px">vs</span>
-          <span style="font-weight:700;font-size:13px">${bn}</span>
-          <span style="font-size:12px;padding:2px 8px;border-radius:99px;background:${bc.c}22;color:${bc.c}">${bc.e} ${bc.l}</span>
-        </div>
-        <span style="font-size:11px;font-weight:700;flex-shrink:0;margin-left:8px">${LEVEL[Math.min(p.score,3)]}</span>
-      </div>
-      <p style="font-size:12px;color:rgba(232,237,243,.82);margin-bottom:8px;line-height:1.6">${p.desc}</p>
-      <div style="font-size:11px;color:var(--muted);border-top:1px solid var(--bdr);padding-top:8px;line-height:1.6;font-style:italic">💡 Ví dụ thực tế: ${p.scenario}</div>
-    </div>`;
-  }).join('');
-}
-
-// ════════════════════════════════════════════════════════════
-// NEW MODULE D: TEAM ROLE DISTRIBUTION (4 core roles)
-// ════════════════════════════════════════════════════════════
-function buildRoleDist(){
-  const el=document.getElementById('roleDistContent');
-  if(!el)return;
-  if(!teamData.length){el.innerHTML='<p class="tension-empty">Tải dữ liệu để phân tích</p>';return;}
-  const ROLE_MAP={
-    red:{role:'Decision Driver',icon:'🎯',desc:'Ra quyết định, thúc đẩy kết quả, không ngại áp lực',color:'#E8392A'},
-    yellow:{role:'People Connector',icon:'🌟',desc:'Kết nối con người, truyền cảm hứng, sáng tạo ý tưởng',color:'#F5A623'},
-    green:{role:'Stabilizer',icon:'🤝',desc:'Duy trì hài hòa, hỗ trợ đồng nghiệp, giữ team gắn kết',color:'#3CB371'},
-    blue:{role:'Quality Controller',icon:'📊',desc:'Phân tích dữ liệu, đảm bảo chất lượng, xây dựng hệ thống',color:'#2B6CB0'}
-  };
-  const dist={red:[],yellow:[],green:[],blue:[]};
-  teamData.forEach(m=>{const c=m.primaryColor;if(dist[c])dist[c].push(m.Title.split(' ').slice(-2).join(' '));});
-  const missing=Object.keys(ROLE_MAP).filter(r=>dist[r].length===0);
-  const overloaded=Object.keys(ROLE_MAP).filter(r=>dist[r].length>=2);
-  let html='<div class="role-grid">';
-  Object.keys(ROLE_MAP).forEach(color=>{
-    const r=ROLE_MAP[color],members=dist[color],isEmpty=members.length===0,isOver=members.length>=2;
-    html+=`<div class="role-card" style="background:${isEmpty?'var(--sur2)':r.color+'18'};border:1px solid ${isEmpty?'var(--bdr)':r.color+(isOver?'':'44')};${isOver?'box-shadow:0 0 0 2px '+r.color+'55':''}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:13px;font-weight:700;color:${isEmpty?'var(--muted)':r.color}">${r.icon} ${r.role}</span>
-        ${isOver?`<span style="font-size:9px;background:${r.color}33;color:${r.color};padding:2px 7px;border-radius:99px;font-weight:700">OVERLOADED</span>`:''}
-        ${isEmpty?`<span style="font-size:9px;background:rgba(232,57,42,.2);color:#ff6b5e;padding:2px 7px;border-radius:99px;font-weight:700">THIẾU</span>`:''}
-      </div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:10px">${r.desc}</p>
-      ${members.length?`<div style="display:flex;flex-wrap:wrap;gap:5px">${members.map(n=>`<span style="background:${r.color}33;color:${r.color};border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">${n}</span>`).join('')}</div>`:`<span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có ai đảm nhận</span>`}
-    </div>`;
-  });
-  html+='</div>';
-  if(missing.length)html+=`<div style="background:rgba(232,57,42,.08);border:1px solid rgba(232,57,42,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.82);margin-bottom:8px">⚠️ <strong>Vai trò thiếu:</strong> ${missing.map(c=>ROLE_MAP[c].icon+' '+ROLE_MAP[c].role).join(' · ')} — cân nhắc phân công hoặc phát triển thêm</div>`;
-  if(overloaded.length)html+=`<div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.82)">⚡ <strong>Quá tải:</strong> ${overloaded.map(c=>ROLE_MAP[c].icon+' '+ROLE_MAP[c].role).join(' · ')} — nhiều người cùng mạnh 1 vai trò, cần cân bằng trong phân công dự án</div>`;
-  el.innerHTML=html;
-}
-
-// ════════════════════════════════════════════════════════════
-// NEW MODULE E: MANAGER ACTION PANEL
-// ════════════════════════════════════════════════════════════
-function buildManagerPanel(){
-  const el=document.getElementById('managerPanel');
-  const content=document.getElementById('managerPanelContent');
-  if(!el||!content)return;
-  if(!teamData.length){el.style.display='none';return;}
-  el.style.display='block';
-  const dist=getColorDist(),total=teamData.length;
-  const risks=[];
-  if(dist.blue/total>=0.6)risks.push('Blue chiếm đa số — nguy cơ phân tích quá mức, quyết định chậm khi áp lực deadline');
-  if(dist.red===0)risks.push('Thiếu Red hoàn toàn — không có người thúc đẩy kết quả và ra quyết định quyết đoán');
-  if(dist.yellow===0)risks.push('Thiếu Yellow — nhóm thiếu năng lượng sáng tạo và người kết nối cảm xúc trong team');
-  if(dist.green/total>=0.5)risks.push('Green đa số — dễ né tránh conflict cần thiết, issue không được raise đúng lúc');
-  if(dist.red/total>=0.5)risks.push('Red đa số — friction về quyền lực cao, thiếu kiên nhẫn với process và con người');
-  if(!risks.length)risks.push('Nhóm đa dạng — rủi ro chính là miscommunication giữa các phong cách làm việc khác nhau');
-  const actions=[];
-  if(dist.blue/total>=0.5)actions.push('Đặt hard deadline cho mỗi quyết định ngay từ đầu — không để phân tích kéo dài vô thời hạn');
-  if(dist.red===0)actions.push('Assign rõ người chốt quyết định cuối cho mỗi dự án — không để "tập thể quyết định"');
-  if(dist.green>0)actions.push('Tạo kênh "safe to raise issue" — Green cần tâm lý an toàn trước khi nói lên khó khăn');
-  if(dist.yellow===0)actions.push('Dành 10 phút đầu mỗi họp cho brainstorm tự do — bổ sung Yellow energy thiếu trong nhóm');
-  actions.push('Check-in 1-on-1 hàng tuần với từng thành viên — đặc biệt Blue và Green không chủ động báo cáo khi struggle');
-  const monitors=[
-    `${CI.blue.e} Blue: email dài hơn bình thường, hỏi thêm nhiều câu → đang stress, sắp withdraw`,
-    `${CI.green.e} Green: im lặng trong họp khi có conflict → chưa đồng ý nhưng không nói`,
-    `${CI.red.e} Red: miss meeting hoặc late response → mất engagement, cần conversation ngay hôm nay`
-  ];
-  content.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-    <div>
-      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#ff6b5e;margin-bottom:10px">🔴 Top Risks</div>
-      ${risks.slice(0,3).map(r=>`<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">${r}</div>`).join('')}
-    </div>
-    <div>
-      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#f5c842;margin-bottom:10px">⚡ Làm ngay hôm nay</div>
-      ${actions.slice(0,3).map((a,i)=>`<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">${i+1}. ${a}</div>`).join('')}
-    </div>
-    <div>
-      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;margin-bottom:10px">👁️ Watch Signals</div>
-      ${monitors.map(m=>`<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">${m}</div>`).join('')}
-    </div>
-  </div>`;
-}
-
-// ════════════════════════════════════════════════════════════
-// NEW MODULE B: WORKSHOP FLOW MODE
-// ════════════════════════════════════════════════════════════
-let _wsStep=0;
-const WS_STEPS=[
-  {title:'Bước 1: Icebreaker — Khám phá bản thân',icon:'🎨',dur:'20 phút',
-   script:'Mỗi người chia sẻ màu chính và 1 từ mô tả phong cách làm việc của mình. Facilitator mở đầu: "Hôm nay chúng ta sẽ khám phá tại sao đôi khi chúng ta hiểu nhau sai — và làm thế nào để làm việc cùng nhau hiệu quả hơn. Không có màu nào tốt hơn màu nào. Bắt đầu bằng một câu hỏi đơn giản..."',
-   qs:['Nếu bạn là một màu sắc trong công việc, đó là màu gì và tại sao?','Điều gì khiến bạn có năng lượng nhất trong ngày làm việc?','Một điều người khác hay hiểu sai về bạn trong công việc là gì?'],
-   outcome:'Mọi người biết màu của nhau — bắt đầu thấy sự khác biệt là bình thường, không phải vấn đề.'},
-  {title:'Bước 2: Self Reflection — Nhìn lại bản thân',icon:'🔍',dur:'25 phút',
-   script:'Mỗi người đọc highlight từ profile cá nhân trong 5 phút im lặng. Sau đó chia sẻ: điều gì đúng nhất, điều gì ngạc nhiên nhất. Facilitator: "Không cần phải đồng ý với tất cả những gì trong profile. Điều quan trọng là nhận ra mình đang mang gì vào công việc mỗi ngày..."',
-   qs:['Điều nào trong profile khiến bạn gật đầu ngay lập tức?','Điều nào bạn không ngờ hoặc chưa sẵn sàng thừa nhận?','Điểm mù nào bạn nghĩ người trong nhóm đã nhận ra từ lâu nhưng chưa nói?'],
-   outcome:'Mỗi người có self-awareness về điểm mạnh thực sự và rủi ro hành vi của mình.'},
-  {title:'Bước 3: Differences — Hiểu sự khác biệt',icon:'🔄',dur:'35 phút',
-   script:'Facilitator giới thiệu Team Tension Map. Chọn 1-2 cặp có tension cao nhất để thảo luận cởi mở. "Chúng ta không cần đồng ý với nhau — chúng ta chỉ cần hiểu logic của nhau. Hãy thử giải thích góc nhìn của mình mà không phán xét góc nhìn của người kia..."',
-   qs:['Khi bạn cảm thấy frustrated với một đồng nghiệp, thực ra bạn đang bị ảnh hưởng bởi điều gì?','Màu của người kia đang cố gắng đóng góp điều gì mà bạn chưa nhận ra?','Có tình huống nào trong 2 tuần qua mà sự khác biệt màu sắc đã gây ra vấn đề không?'],
-   outcome:'Mọi người thấy logic sau hành vi của nhau — giảm phán xét, tăng hiểu biết.'},
-  {title:'Bước 4: Conflict Discussion — Xử lý xung đột thực',icon:'⚔️',dur:'40 phút',
-   script:'Nhóm chọn 1 conflict thực sự đang xảy ra (không cần đặt tên người). Thực hành SAID model. Facilitator: "Xung đột không phải vấn đề — né tránh xung đột cần thiết mới là vấn đề thực sự. Hôm nay chúng ta sẽ thực hành nói ra những điều khó nói theo cách mà người kia thực sự có thể nghe được..."',
-   qs:['Có điều gì trong nhóm mà ai cũng biết nhưng không ai nói ra không?','Khi có conflict, ai thường né tránh? Ai thường đối đầu? Điều đó tạo ra gì?','Chúng ta muốn conflict được nhận diện và giải quyết như thế nào trong tương lai?'],
-   outcome:'Nhóm có 1 protocol rõ ràng để raise và resolve conflict — không phụ thuộc vào mood của từng người.'},
-  {title:'Bước 5: Action Commitment — Cam kết thay đổi',icon:'🤝',dur:'20 phút',
-   script:'Mỗi người viết 3 cam kết hành vi cụ thể — không phải ý định chung chung. Chọn 1 accountability partner trong nhóm để check lại sau 2 tuần. Facilitator: "Insights chỉ có giá trị nếu chúng ta thay đổi hành vi. Mỗi người hôm nay chọn 1 điều cụ thể sẽ làm khác đi ngay từ ngày mai..."',
-   qs:['1 hành động cụ thể bạn sẽ làm khác đi ngay từ tuần tới là gì — đủ cụ thể để người khác quan sát được?','Ai trong nhóm bạn sẽ cần giao tiếp theo cách khác? Khác như thế nào cụ thể?','Dấu hiệu nào sau 30 ngày cho thấy workshop này đã thực sự tạo ra thay đổi?'],
-   outcome:'Mỗi người có 3 cam kết đo được, có accountability partner, có timeline check-in.'}
-];
-
-function startWorkshopFlow(){
-  if(!teamData.length){toast('Vui lòng tải dữ liệu trước',true);return;}
-  _wsStep=0;
-  document.getElementById('wsFlowOverlay').style.display='flex';
-  _renderWSStep();
-}
-function closeWorkshopFlow(){document.getElementById('wsFlowOverlay').style.display='none';}
-function _wsNext(){if(_wsStep<WS_STEPS.length-1){_wsStep++;_renderWSStep();}}
-function _wsPrev(){if(_wsStep>0){_wsStep--;_renderWSStep();}}
-function _renderWSStep(){
-  const s=WS_STEPS[_wsStep],total=WS_STEPS.length;
-  const dots=WS_STEPS.map((_,i)=>`<div style="width:${i===_wsStep?20:8}px;height:8px;border-radius:99px;background:${i===_wsStep?'var(--yellow)':'var(--bdr)'};transition:width .3s"></div>`).join('');
-  document.getElementById('wsFlowContent').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">${_wsStep+1} / ${total}</span>
-      <span style="font-size:12px;color:var(--yellow)">⏱ ${s.dur}</span>
-    </div>
-    <div style="font-size:2.5rem;margin-bottom:10px">${s.icon}</div>
-    <div style="font-size:17px;font-weight:700;margin-bottom:18px;line-height:1.3">${s.title}</div>
-    <div style="background:rgba(43,108,176,.1);border:1px solid rgba(43,108,176,.3);border-radius:10px;padding:16px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;margin-bottom:8px">📢 Facilitator Script</div>
-      <div style="font-size:13px;color:rgba(232,237,243,.85);line-height:1.75;font-style:italic">${s.script}</div>
-    </div>
-    <div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:16px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">❓ Câu hỏi thảo luận</div>
-      ${s.qs.map((q,i)=>`<div style="font-size:13px;color:rgba(232,237,243,.85);padding:9px 0;border-bottom:1px solid rgba(245,166,35,.1);line-height:1.6">${i+1}. ${q}</div>`).join('')}
-    </div>
-    <div style="background:rgba(60,179,113,.08);border:1px solid rgba(60,179,113,.2);border-radius:10px;padding:14px;margin-bottom:20px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:6px">🎯 Kết quả mong đợi</div>
-      <div style="font-size:13px;color:rgba(232,237,243,.85);line-height:1.6">${s.outcome}</div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <button onclick="_wsPrev()" style="padding:10px 20px;background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600;${_wsStep===0?'opacity:.4;cursor:not-allowed':''}">← Trước</button>
-      <div style="display:flex;gap:5px;align-items:center">${dots}</div>
-      ${_wsStep<total-1
-        ?`<button onclick="_wsNext()" style="padding:10px 20px;background:linear-gradient(135deg,#c8963e,#f5a623);color:#0A0E14;border:none;border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:700">Tiếp theo →</button>`
-        :`<button onclick="closeWorkshopFlow()" style="padding:10px 20px;background:var(--green);color:white;border:none;border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:700">✓ Hoàn thành Workshop</button>`
-      }
-    </div>`;
-}
-
 </script>
 <style>
 :root{
@@ -410,20 +198,14 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .btn-manage-members:hover{background:rgba(43,108,176,.2);border-style:solid}
 .sb-sel-info{font-size:11px;color:var(--muted);margin-top:6px;text-align:center}
 .sb-sel-info span{color:#60a5fa;font-weight:700}
-/* ── MANAGER PANEL ── */
 .mgr-panel{background:rgba(232,57,42,.05);border:1px solid rgba(232,57,42,.2);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:none}
 .mgr-panel-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b5e;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-/* ── WORKSHOP FLOW OVERLAY ── */
 .ws-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center;padding:20px}
-.ws-modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:28px;position:relative}
-.ws-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid var(--bdr);background:var(--sur2);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted)}
-.ws-close:hover{color:var(--txt)}
-/* ── TENSION MAP ── */
+.ws-modal{background:var(--sur);border:1px solid var(--bdr2,var(--bdr));border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:28px;position:relative}
+.ws-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid var(--bdr);background:var(--sur2);border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted)}
 .tension-empty{font-size:13px;color:var(--muted);padding:12px 0}
-/* ── ROLE DIST ── */
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .role-card{border-radius:10px;padding:14px}
-/* ── START WS BUTTON ── */
 .btn-ws{background:linear-gradient(135deg,#9B4CB0,#7B2C90);color:#fff;font-weight:700;border:none}
 .btn-ws:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(155,76,176,.4)}
 
@@ -501,9 +283,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 
     <div class="mgr-panel" id="managerPanel">
       <div class="mgr-panel-title">⚡ Manager Action Panel <span style="font-size:9px;background:rgba(232,57,42,.2);padding:2px 8px;border-radius:99px">Chỉ manager</span></div>
-      <div id="managerPanelContent">
-        <p style="font-size:12px;color:var(--muted)">Tải dữ liệu để xem phân tích</p>
-      </div>
+      <div id="managerPanelContent"><p style="font-size:12px;color:var(--muted)">Tải dữ liệu để xem phân tích</p></div>
     </div>
     <div class="tabs">
       <button class="tab" onclick="switchTab(&#39;overview&#39;)">📊 Tổng quan</button>
@@ -577,13 +357,13 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 
       <div class="card" id="tensionMapCard">
         <div class="card-title">⚡ Team Tension Map — Top 3 cặp xung đột tiềm ẩn</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Dựa trên sự kết hợp màu sắc giữa các thành viên. Dùng trong Workshop Bước 3.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Dùng trong Workshop Bước 3.</p>
         <div id="tensionMap"><p class="tension-empty">Tải dữ liệu để phân tích</p></div>
       </div>
 
       <div class="card" id="roleDistCard">
         <div class="card-title">🎯 Team Role Distribution — 4 vai trò cốt lõi</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Mapping từ màu chính sang vai trò tổ chức thực tế.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Mapping từ màu chính sang vai trò tổ chức.</p>
         <div id="roleDistContent"><p class="tension-empty">Tải dữ liệu để phân tích</p></div>
       </div>
 
@@ -1610,7 +1390,7 @@ Phân tích theo 5 framework:
 Tạo agenda workshop ${duration} tiếng với focus: ${focusLabel}.
 
 Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
-{"overallCharacter":"3-4 câu mô tả đặc trưng và văn hóa nhóm","strengths":["4-5 điểm mạnh tập thể cụ thể"],"blindSpots":["3-4 điểm mù theo màu"],"communicationTips":["4 lời khuyên giao tiếp dựa trên Communication Needs"],"conflictRisks":["3-4 nguy cơ xung đột dựa trên Thomas-Kilmann mix"],"teamModelAnalysis":"Phân tích Trust và Methods theo T.E.A.M. model","roleGaps":["2-3 vai trò Key Attributes đang thiếu"],"saidTips":["2-3 lời khuyên SAID feedback cho nhóm này"],"workshopFocus":["3 ưu tiên workshop quan trọng nhất"],"agendaItems":[{"time":"08:30","duration":"30 phút","title":"Tiêu đề module","activity":"Mô tả hoạt động cụ thể","purpose":"Mục tiêu học tập","notes":"Lưu ý facilitator"}],"conflictPrediction":{"who":"tên 2 người hoặc nhóm màu sẽ xung đột","when":"tình huống cụ thể — họp nào, deadline nào, bối cảnh nào trong 2 tuần tới","what":"diễn biến xung đột cụ thể sẽ xảy ra như thế nào","signal":"dấu hiệu sớm manager có thể nhận ra trước"},"managerIntervention":{"action":"1 hành động cụ thể manager PHẢI làm ngay để ngăn hoặc xử lý xung đột này","timing":"làm khi nào — trước hay sau tình huống","expected":"kết quả mong đợi sau khi thực hiện"}}`;
+{"overallCharacter":"3-4 câu mô tả đặc trưng và văn hóa nhóm","strengths":["4-5 điểm mạnh tập thể cụ thể"],"blindSpots":["3-4 điểm mù theo màu"],"communicationTips":["4 lời khuyên giao tiếp dựa trên Communication Needs"],"conflictRisks":["3-4 nguy cơ xung đột dựa trên Thomas-Kilmann mix"],"teamModelAnalysis":"Phân tích Trust và Methods theo T.E.A.M. model","roleGaps":["2-3 vai trò Key Attributes đang thiếu"],"saidTips":["2-3 lời khuyên SAID feedback cho nhóm này"],"workshopFocus":["3 ưu tiên workshop quan trọng nhất"],"agendaItems":[{"time":"08:30","duration":"30 phút","title":"Tiêu đề module","activity":"Mô tả hoạt động cụ thể","purpose":"Mục tiêu học tập","notes":"Lưu ý facilitator"}],"conflictPrediction":{"who":"2 người hoặc nhóm màu sẽ xung đột","when":"tình huống cụ thể trong 2 tuần tới","what":"diễn biến cụ thể","signal":"dấu hiệu sớm"},"managerIntervention":{"action":"1 hành động cụ thể manager phải làm","timing":"khi nào","expected":"kết quả mong đợi"}}`;
 
   document.getElementById('aiOverview').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang phân tích toàn diện…</div>';
   document.getElementById('aiDynamics').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang phân tích dynamics…</div>';
@@ -1658,23 +1438,7 @@ function renderAIInsights(ai){
       </div>
       ${ai.roleGaps?`<div style="background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:14px;margin-bottom:12px"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:8px">⭐ Khoảng trống vai trò nhóm</div><ul class="insight-list">${li(ai.roleGaps)}</ul></div>`:''}
       ${ai.saidTips?`<div style="background:rgba(60,179,113,.1);border:1px solid rgba(60,179,113,.3);border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:8px">📝 SAID Feedback Tips</div><ul class="insight-list">${li(ai.saidTips)}</ul></div>`:''}
-      ${ai.conflictPrediction?`<div style="margin-top:14px;background:rgba(232,57,42,.08);border:1px solid rgba(232,57,42,.25);border-radius:10px;padding:16px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ff6b5e;margin-bottom:10px">🔮 Conflict dự báo trong 2 tuần tới</div>
-        <div style="font-size:12px;color:rgba(232,237,243,.85);line-height:1.75">
-          <strong>Ai:</strong> ${ai.conflictPrediction.who||''}<br>
-          <strong>Khi nào:</strong> ${ai.conflictPrediction.when||''}<br>
-          <strong>Diễn biến:</strong> ${ai.conflictPrediction.what||''}<br>
-          <strong style="color:var(--yellow)">⚠️ Dấu hiệu sớm:</strong> ${ai.conflictPrediction.signal||''}
-        </div>
-        ${ai.managerIntervention?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(232,57,42,.2)">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:8px">⚡ Manager phải làm ngay</div>
-          <div style="font-size:12px;color:rgba(232,237,243,.85);line-height:1.75">
-            ${ai.managerIntervention.action||''}<br>
-            <span style="color:var(--muted)">Thời điểm: ${ai.managerIntervention.timing||''}</span><br>
-            <span style="color:var(--green)">Kết quả mong đợi: ${ai.managerIntervention.expected||''}</span>
-          </div>
-        </div>`:''}
-      </div>`:''}
+      ${ai.conflictPrediction?`<div style="margin-top:14px;background:rgba(232,57,42,.08);border:1px solid rgba(232,57,42,.25);border-radius:10px;padding:16px"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ff6b5e;margin-bottom:10px">🔮 Conflict dự báo 2 tuần tới</div><div style="font-size:12px;color:rgba(232,237,243,.85);line-height:1.75"><strong>Ai:</strong> ${ai.conflictPrediction.who}<br><strong>Khi nào:</strong> ${ai.conflictPrediction.when}<br><strong>Diễn biến:</strong> ${ai.conflictPrediction.what}<br><strong style="color:var(--yellow)">Dấu hiệu sớm:</strong> ${ai.conflictPrediction.signal}</div>${ai.managerIntervention?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(232,57,42,.2)"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:6px">⚡ Manager phải làm ngay</div><div style="font-size:12px;color:rgba(232,237,243,.85);line-height:1.75">${ai.managerIntervention.action}<br><span style="color:var(--muted)">Thời điểm: ${ai.managerIntervention.timing}</span><br><span style="color:var(--green)">Kết quả: ${ai.managerIntervention.expected}</span></div></div>`:""}</div>`:""}
     </div>`;
 
   // Agenda Timeline render
@@ -1962,6 +1726,213 @@ ${aiHTML}
   w.document.close();
   toast('✅ Report đã mở — nhấn 🖨️ để lưu PDF');
 }
+
+// ════════════════════════════════════════════════════════════
+// MODULE A: TEAM TENSION MAP
+// ════════════════════════════════════════════════════════════
+function buildTensionMap(){
+  const el=document.getElementById('tensionMap');
+  if(!el)return;
+  if(!teamData.length){el.innerHTML='<p class="tension-empty">Tải dữ liệu để phân tích</p>';return;}
+  const TS={'red-blue':3,'blue-red':3,'red-green':3,'green-red':3,'yellow-blue':2,'blue-yellow':2,'red-red':2,'blue-blue':2,'red-yellow':0,'yellow-red':0,'yellow-green':0,'green-yellow':0,'green-blue':0,'blue-green':0,'yellow-yellow':1,'green-green':1};
+  const TD={
+    'red-blue':'Quyết định nhanh (Red) vs phân tích kỹ (Blue) — Red thấy Blue trì hoãn, Blue thấy Red hời hợt',
+    'blue-red':'Phân tích kỹ (Blue) vs quyết định nhanh (Red) — Blue bị áp lực ra quyết định trước khi đủ dữ liệu',
+    'red-green':'Quyết đoán (Red) vs hài hòa (Green) — Red áp đặt, Green im lặng nhưng chưa thực sự đồng ý',
+    'green-red':'Hài hòa (Green) vs quyết đoán (Red) — Green bị áp lực, tích tụ frustration ngầm',
+    'yellow-blue':'Sáng tạo (Yellow) vs cẩn thận (Blue) — Yellow thấy Blue kìm hãm, Blue thấy Yellow thiếu nghiêm túc',
+    'blue-yellow':'Chi tiết (Blue) vs ý tưởng (Yellow) — Blue yêu cầu data, Yellow muốn thử ngay',
+    'red-red':'Cùng Red — cạnh tranh quyền lực, friction về ai lead',
+    'blue-blue':'Cùng Blue — risk groupthink và phân tích quá mức'
+  };
+  const TSC={
+    'red-blue':'Họp deadline: Red muốn quyết định ngay, Blue cần thêm data → ai cũng khó chịu',
+    'blue-red':'Plan thay đổi gấp: Blue cần 24h xử lý, Red đã hành động → Blue cảm thấy không được tôn trọng',
+    'red-green':'Red quyết định mà không hỏi Green → Green im lặng nhưng không commit → execution sai',
+    'green-red':'Green không raise vấn đề → Red phát hiện muộn → blame nhau',
+    'yellow-blue':'Yellow có 10 ý tưởng → Blue phân tích tất cả → Yellow mất năng lượng',
+    'blue-yellow':'Blue chỉ ra 15 lỗi → Yellow mất động lực đóng góp',
+    'red-red':'Hai Red muốn lead cùng dự án → team không biết follow ai',
+    'blue-blue':'Đồng ý quá nhanh → không ai hỏi về risk → quyết định có lỗ hổng'
+  };
+  const pairs=[];
+  for(let i=0;i<teamData.length;i++){
+    for(let j=i+1;j<teamData.length;j++){
+      const a=teamData[i],b=teamData[j];
+      const key=a.primaryColor+'-'+b.primaryColor;
+      const rkey=b.primaryColor+'-'+a.primaryColor;
+      const score=TS[key]!==undefined?TS[key]:(TS[rkey]!==undefined?TS[rkey]:0);
+      const desc=TD[key]||TD[rkey]||'Tương đối hài hòa';
+      const scen=TSC[key]||TSC[rkey]||'Ít friction rõ ràng';
+      pairs.push({a,b,score,desc,scen});
+    }
+  }
+  pairs.sort((x,y)=>y.score-x.score);
+  const top3=pairs.slice(0,Math.min(3,pairs.length));
+  const LV=['🟢 Thấp','🟡 TB','🟡 TB','🔴 Cao'];
+  const BC={3:'rgba(232,57,42,.25)',2:'rgba(245,166,35,.2)',1:'var(--bdr)',0:'var(--bdr)'};
+  el.innerHTML=top3.map(function(p){
+    var ac=CI[p.a.primaryColor||'blue']||CI.blue;
+    var bc2=CI[p.b.primaryColor||'blue']||CI.blue;
+    var an=p.a.Title.split(' ').slice(-2).join(' ');
+    var bn=p.b.Title.split(' ').slice(-2).join(' ');
+    return '<div style="background:var(--sur2);border:1px solid '+BC[p.score]+';border-radius:12px;padding:16px;margin-bottom:10px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+          '<span style="font-weight:700;font-size:13px">'+an+'</span>'+
+          '<span style="font-size:12px;padding:2px 8px;border-radius:99px;background:'+ac.c+'22;color:'+ac.c+'">'+ac.e+' '+ac.l+'</span>'+
+          '<span style="color:var(--muted);font-size:12px">vs</span>'+
+          '<span style="font-weight:700;font-size:13px">'+bn+'</span>'+
+          '<span style="font-size:12px;padding:2px 8px;border-radius:99px;background:'+bc2.c+'22;color:'+bc2.c+'">'+bc2.e+' '+bc2.l+'</span>'+
+        '</div>'+
+        '<span style="font-size:11px;font-weight:700;flex-shrink:0;margin-left:8px">'+LV[Math.min(p.score,3)]+'</span>'+
+      '</div>'+
+      '<p style="font-size:12px;color:rgba(232,237,243,.82);margin-bottom:8px;line-height:1.6">'+p.desc+'</p>'+
+      '<div style="font-size:11px;color:var(--muted);border-top:1px solid var(--bdr);padding-top:8px;font-style:italic">Ví dụ: '+p.scen+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// MODULE D: TEAM ROLE DISTRIBUTION
+// ════════════════════════════════════════════════════════════
+function buildRoleDist(){
+  const el=document.getElementById('roleDistContent');
+  if(!el)return;
+  if(!teamData.length){el.innerHTML='<p class="tension-empty">Tải dữ liệu để phân tích</p>';return;}
+  const RM={
+    red:{role:'Decision Driver',icon:'🎯',desc:'Ra quyết định, thúc đẩy kết quả',color:'#E8392A'},
+    yellow:{role:'People Connector',icon:'🌟',desc:'Kết nối, truyền cảm hứng, sáng tạo',color:'#F5A623'},
+    green:{role:'Stabilizer',icon:'🤝',desc:'Duy trì hài hòa, hỗ trợ đội nhóm',color:'#3CB371'},
+    blue:{role:'Quality Controller',icon:'📊',desc:'Phân tích, đảm bảo chất lượng, hệ thống',color:'#2B6CB0'}
+  };
+  var dist={red:[],yellow:[],green:[],blue:[]};
+  teamData.forEach(function(m){var col=m.primaryColor;if(dist[col])dist[col].push(m.Title.split(' ').slice(-2).join(' '));});
+  var missing=Object.keys(RM).filter(function(r){return dist[r].length===0;});
+  var overloaded=Object.keys(RM).filter(function(r){return dist[r].length>=2;});
+  var html='<div class="role-grid">';
+  Object.keys(RM).forEach(function(color){
+    var r=RM[color],members=dist[color],isEmpty=members.length===0,isOver=members.length>=2;
+    html+='<div class="role-card" style="background:'+(isEmpty?'var(--sur2)':r.color+'18')+';border:1px solid '+(isEmpty?'var(--bdr)':r.color+(isOver?'':'44'))+';">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
+        '<span style="font-size:13px;font-weight:700;color:'+(isEmpty?'var(--muted)':r.color)+'">'+r.icon+' '+r.role+'</span>'+
+        (isOver?'<span style="font-size:9px;background:'+r.color+'33;color:'+r.color+';padding:2px 7px;border-radius:99px;font-weight:700">OVERLOADED</span>':'')+
+        (isEmpty?'<span style="font-size:9px;background:rgba(232,57,42,.2);color:#ff6b5e;padding:2px 7px;border-radius:99px;font-weight:700">THIẾU</span>':'')+
+      '</div>'+
+      '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+r.desc+'</p>'+
+      (members.length?'<div style="display:flex;flex-wrap:wrap;gap:5px">'+members.map(function(n){return'<span style="background:'+r.color+'33;color:'+r.color+';border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">'+n+'</span>';}).join('')+'</div>':'<span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có ai đảm nhận</span>')+
+    '</div>';
+  });
+  html+='</div>';
+  if(missing.length)html+='<div style="background:rgba(232,57,42,.08);border:1px solid rgba(232,57,42,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.82);margin-bottom:8px">Vai trò thiếu: '+missing.map(function(c2){return RM[c2].icon+' '+RM[c2].role;}).join(' · ')+'</div>';
+  if(overloaded.length)html+='<div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.82)">Quá tải: '+overloaded.map(function(c2){return RM[c2].icon+' '+RM[c2].role;}).join(' · ')+'</div>';
+  el.innerHTML=html;
+}
+
+// ════════════════════════════════════════════════════════════
+// MODULE E: MANAGER ACTION PANEL
+// ════════════════════════════════════════════════════════════
+function buildManagerPanel(){
+  var el=document.getElementById('managerPanel');
+  var content=document.getElementById('managerPanelContent');
+  if(!el||!content)return;
+  if(!teamData.length){el.style.display='none';return;}
+  el.style.display='block';
+  var dist=getColorDist(),total=teamData.length;
+  var risks=[];
+  if(dist.blue/total>=0.6)risks.push('Blue chiếm đa số — nguy cơ phân tích quá mức, chậm quyết định');
+  if(dist.red===0)risks.push('Thiếu Red hoàn toàn — không có người thúc đẩy kết quả và ra quyết định nhanh');
+  if(dist.yellow===0)risks.push('Thiếu Yellow — nhóm thiếu năng lượng sáng tạo và kết nối cảm xúc');
+  if(dist.green/total>=0.5)risks.push('Green đa số — dễ né tránh conflict cần thiết, issue không được raise đúng lúc');
+  if(!risks.length)risks.push('Nhóm đa dạng — rủi ro chính là miscommunication giữa các phong cách khác nhau');
+  var actions=[];
+  if(dist.blue/total>=0.5)actions.push('Đặt hard deadline cho mỗi quyết định — không để phân tích kéo dài vô hạn');
+  if(dist.red===0)actions.push('Assign rõ người chốt quyết định cuối cho mỗi dự án');
+  if(dist.green>0)actions.push('Tạo kênh "safe to raise issue" — Green cần tâm lý an toàn trước khi nói');
+  actions.push('Check-in 1-on-1 hàng tuần với từng thành viên, đặc biệt Blue và Green');
+  var monitors=[
+    CI.blue.e+' Blue: email dài hơn, hỏi thêm nhiều câu → đang stress, sắp withdraw',
+    CI.green.e+' Green: im lặng trong họp khi có conflict → chưa đồng ý nhưng không nói',
+    CI.red.e+' Red: miss meeting hoặc late response → mất engagement, cần conversation ngay'
+  ];
+  content.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">'+
+    '<div><div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#ff6b5e;margin-bottom:10px">🔴 Top Risks</div>'+
+      risks.slice(0,3).map(function(r){return'<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">'+r+'</div>';}).join('')+'</div>'+
+    '<div><div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#f5c842;margin-bottom:10px">⚡ Làm ngay hôm nay</div>'+
+      actions.slice(0,3).map(function(a,i){return'<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">'+(i+1)+'. '+a+'</div>';}).join('')+'</div>'+
+    '<div><div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;margin-bottom:10px">👁 Watch Signals</div>'+
+      monitors.map(function(m){return'<div style="font-size:12px;color:rgba(232,237,243,.82);padding:7px 0;border-bottom:1px solid var(--bdr);line-height:1.5">'+m+'</div>';}).join('')+'</div>'+
+  '</div>';
+}
+
+// ════════════════════════════════════════════════════════════
+// MODULE B: WORKSHOP FLOW MODE
+// ════════════════════════════════════════════════════════════
+var _wsStep=0;
+var WS_STEPS=[
+  {title:'Bước 1: Icebreaker',icon:'🎨',dur:'20 phút',
+   script:'Mỗi người chia sẻ màu chính và 1 từ mô tả phong cách làm việc. "Hôm nay chúng ta khám phá tại sao đôi khi chúng ta hiểu nhau sai — không có màu nào tốt hơn màu nào."',
+   qs:['Nếu bạn là một màu sắc trong công việc, đó là màu gì và tại sao?','Điều gì khiến bạn có năng lượng nhất trong ngày làm việc?','Một điều người khác hay hiểu sai về bạn là gì?'],
+   outcome:'Mọi người biết màu của nhau — thấy sự khác biệt là bình thường, không phải vấn đề.'},
+  {title:'Bước 2: Self Reflection',icon:'🔍',dur:'25 phút',
+   script:'Mỗi người đọc highlight profile cá nhân trong 5 phút im lặng. Chia sẻ: điều gì đúng nhất, điều gì ngạc nhiên nhất. "Điều quan trọng là nhận ra mình đang mang gì vào công việc mỗi ngày."',
+   qs:['Điều nào trong profile khiến bạn gật đầu ngay?','Điều nào bạn không ngờ hoặc chưa muốn thừa nhận?','Điểm mù nào bạn nghĩ đồng nghiệp đã nhận ra từ lâu nhưng chưa nói?'],
+   outcome:'Mỗi người có self-awareness về điểm mạnh thực sự và rủi ro hành vi của mình.'},
+  {title:'Bước 3: Differences',icon:'🔄',dur:'35 phút',
+   script:'Giới thiệu Team Tension Map. Chọn 1-2 cặp tension cao để thảo luận. "Chúng ta không cần đồng ý — chúng ta chỉ cần hiểu logic của nhau."',
+   qs:['Khi frustrated với đồng nghiệp, thực ra bạn đang bị ảnh hưởng bởi điều gì?','Màu của người kia đang cố gắng đóng góp điều gì mà bạn chưa nhận ra?','Có tình huống nào trong 2 tuần qua mà sự khác biệt này gây ra vấn đề không?'],
+   outcome:'Mọi người thấy logic sau hành vi của nhau — giảm phán xét, tăng hiểu biết.'},
+  {title:'Bước 4: Conflict Discussion',icon:'⚔️',dur:'40 phút',
+   script:'Chọn 1 conflict thực sự đang xảy ra (không đặt tên người). Thực hành SAID model. "Xung đột không phải vấn đề — né tránh xung đột mới là vấn đề."',
+   qs:['Có điều gì trong nhóm mà ai cũng biết nhưng không ai nói ra không?','Khi có conflict, ai thường né? Ai thường đối đầu? Điều đó tạo ra gì?','Chúng ta muốn conflict được giải quyết như thế nào trong tương lai?'],
+   outcome:'Nhóm có protocol rõ ràng để raise và resolve conflict.'},
+  {title:'Bước 5: Action Commitment',icon:'🤝',dur:'20 phút',
+   script:'Mỗi người viết 3 cam kết hành vi cụ thể. Chọn 1 accountability partner. "Insights chỉ có giá trị nếu chúng ta thay đổi hành vi thực sự."',
+   qs:['1 hành động cụ thể bạn sẽ làm khác đi từ tuần tới — đủ cụ thể để người khác quan sát được?','Ai trong nhóm bạn sẽ cần giao tiếp theo cách khác? Khác thế nào?','Sau 30 ngày, dấu hiệu nào cho thấy workshop đã tạo ra thay đổi thực?'],
+   outcome:'Mỗi người có 3 cam kết đo được, có accountability partner, có timeline check-in.'}
+];
+
+function startWorkshopFlow(){
+  if(!teamData.length){toast('Vui lòng tải dữ liệu trước',true);return;}
+  _wsStep=0;
+  document.getElementById('wsFlowOverlay').style.display='flex';
+  _renderWSStep();
+}
+function closeWorkshopFlow(){document.getElementById('wsFlowOverlay').style.display='none';}
+function _wsNext(){if(_wsStep<WS_STEPS.length-1){_wsStep++;_renderWSStep();}}
+function _wsPrev(){if(_wsStep>0){_wsStep--;_renderWSStep();}}
+function _renderWSStep(){
+  var s=WS_STEPS[_wsStep],total=WS_STEPS.length;
+  var dots=WS_STEPS.map(function(_,i){return '<div style="width:'+(i===_wsStep?20:8)+'px;height:8px;border-radius:99px;background:'+(i===_wsStep?'var(--yellow)':'var(--bdr)')+'"></div>';}).join('');
+  var nextBtn=_wsStep<total-1
+    ?'<button onclick="_wsNext()" style="padding:10px 20px;background:linear-gradient(135deg,#c8963e,#f5a623);color:#0A0E14;border:none;border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:700">Tiếp theo →</button>'
+    :'<button onclick="closeWorkshopFlow()" style="padding:10px 20px;background:var(--green);color:white;border:none;border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:700">✓ Hoàn thành</button>';
+  var prevBtn='<button onclick="_wsPrev()" style="padding:10px 20px;background:var(--sur2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:600'+(_wsStep===0?';opacity:.4;cursor:not-allowed':'')+'">← Trước</button>';
+  document.getElementById('wsFlowContent').innerHTML=
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">'+
+      '<span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">'+(_wsStep+1)+' / '+total+'</span>'+
+      '<span style="font-size:12px;color:var(--yellow)">⏱ '+s.dur+'</span>'+
+    '</div>'+
+    '<div style="font-size:2.5rem;margin-bottom:10px">'+s.icon+'</div>'+
+    '<div style="font-size:17px;font-weight:700;margin-bottom:18px">'+s.title+'</div>'+
+    '<div style="background:rgba(43,108,176,.1);border:1px solid rgba(43,108,176,.3);border-radius:10px;padding:16px;margin-bottom:14px">'+
+      '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;margin-bottom:8px">Facilitator Script</div>'+
+      '<div style="font-size:13px;color:rgba(232,237,243,.85);line-height:1.75;font-style:italic">'+s.script+'</div>'+
+    '</div>'+
+    '<div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:16px;margin-bottom:14px">'+
+      '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">Câu hỏi thảo luận</div>'+
+      s.qs.map(function(q,i){return '<div style="font-size:13px;color:rgba(232,237,243,.85);padding:9px 0;border-bottom:1px solid rgba(245,166,35,.1);line-height:1.6">'+(i+1)+'. '+q+'</div>';}).join('')+
+    '</div>'+
+    '<div style="background:rgba(60,179,113,.08);border:1px solid rgba(60,179,113,.2);border-radius:10px;padding:14px;margin-bottom:20px">'+
+      '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:6px">Kết quả mong đợi</div>'+
+      '<div style="font-size:13px;color:rgba(232,237,243,.85)">'+s.outcome+'</div>'+
+    '</div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between">'+prevBtn+
+      '<div style="display:flex;gap:5px;align-items:center">'+dots+'</div>'+
+      nextBtn+
+    '</div>';
+}
+
 </script>
 
 
