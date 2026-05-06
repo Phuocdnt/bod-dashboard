@@ -627,20 +627,30 @@ async function genAdminProfile(type,id){
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
 
-    // ── JSON repair: fix common Haiku output issues ──
+    // ── JSON repair: fix unescaped newlines/tabs AND unescaped quotes inside strings ──
     function repairJSON(s){
-      // 1. Remove literal control characters inside strings (unescaped \n \r \t)
-      // Replace raw newlines inside JSON string values with \\n
-      let out='', inStr=false, esc=false;
+      let out='',inStr=false,esc=false;
       for(let i=0;i<s.length;i++){
         const c=s[i];
-        if(esc){ out+=c; esc=false; continue; }
-        if(c==='\\'){ out+=c; esc=true; continue; }
-        if(c==='"'){ inStr=!inStr; out+=c; continue; }
+        if(esc){out+=c;esc=false;continue;}
+        if(c==='\\'){out+=c;esc=true;continue;}
+        if(c==='"'){
+          if(!inStr){inStr=true;out+=c;continue;}
+          // Check if this closes the string: next non-space char is ,]}:
+          let j=i+1;
+          while(j<s.length&&(s[j]===' '||s[j]==='\t'))j++;
+          const nx=j<s.length?s[j]:'';
+          if(nx===','||nx===']'||nx==='}'||nx===':'||nx===''){
+            inStr=false;out+=c;
+          }else{
+            out+='\\"'; // escape internal quote
+          }
+          continue;
+        }
         if(inStr){
-          if(c==='\n'){ out+='\\n'; continue; }
-          if(c==='\r'){ continue; }
-          if(c==='\t'){ out+='\\t'; continue; }
+          if(c==='\n'){out+='\\n';continue;}
+          if(c==='\r'){continue;}
+          if(c==='\t'){out+='\\t';continue;}
         }
         out+=c;
       }
