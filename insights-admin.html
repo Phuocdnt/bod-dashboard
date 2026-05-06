@@ -292,7 +292,8 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <!-- PANE: Manager AI Profile -->
     <div class="m-pane" id="mp-manager"><div id="mMgrContent"></div></div>
     <div class="modal-footer">
-      <button class="btn-pdf" onclick="exportPDF()">📄 Xuất PDF</button>
+      <button class="btn-pdf" onclick="exportPDF('employee')" style="background:linear-gradient(135deg,#2563EB,#1E40AF);flex:1">🧑 Xuất PDF Nhân Viên</button>
+      <button class="btn-pdf" onclick="exportPDF('manager')" style="background:linear-gradient(135deg,#c8963e,#f5a623);color:#0A0E14;flex:1">📋 Xuất PDF Quản Lý</button>
       <button class="btn-close2" onclick="closeModal()">Đóng</button>
     </div>
   </div>
@@ -552,11 +553,20 @@ function mTab(id){
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open');currentItem=null;}
 function closeModalBg(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
-function exportPDF(){
+function exportPDF(type='employee'){
   if(!currentItem)return;
+  const id=currentItem.ID;
   const exportItem={...currentItem};
-  delete exportItem.AIProfile;
-  // Nếu thiếu điểm (version cũ) → recalculate từ Answers trước khi pass sang employee
+
+  // Dùng đúng cache theo loại — employee hoặc manager
+  const cached=aiCache[id]?.[type];
+  if(cached){
+    exportItem.AIProfile=JSON.stringify(cached);
+  } else {
+    delete exportItem.AIProfile; // employee page sẽ tự gọi AI
+  }
+
+  // Recalculate điểm nếu version cũ thiếu điểm
   const totalSc=(exportItem.RedScore||0)+(exportItem.YellowScore||0)+(exportItem.GreenScore||0)+(exportItem.BlueScore||0);
   if(totalSc===0 && exportItem.Answers){
     const rc=recalcFromAnswers(exportItem.Answers);
@@ -573,12 +583,18 @@ function exportPDF(){
       toast('ℹ️ Điểm được tính lại từ Answers (version cũ)');
     }
   }
+
   const data=btoa(unescape(encodeURIComponent(JSON.stringify(exportItem))));
   const baseUrl=location.origin+location.pathname.replace(/[^/]+$/, 'insights-employee.html');
-  const url=`${baseUrl}?data=${data}&print=1`;
+
+  // employee → ?empprint=1 (auto-print, KHÔNG hiện Manager Snapshot)
+  // manager  → ?print=1    (auto-print, CÓ hiện Manager Snapshot)
+  const printFlag = type==='manager' ? 'print=1' : 'empprint=1';
+  const url=`${baseUrl}?data=${data}&${printFlag}`;
+
   const popup=window.open(url,'_blank','width=900,height=700,scrollbars=yes,resizable=yes');
   if(!popup) toast('⚠️ Trình duyệt chặn popup. Vui lòng cho phép popup cho trang này.',true);
-  else toast('⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)');
+  else toast(`⏳ Đang mở ${type==='manager'?'Profile Quản Lý':'Profile Nhân Viên'} để in… (~10–30 giây nếu cần tạo AI)`);
 }
 // ────────────────────────────────────────
 // AI GENERATION CSS + FUNCTIONS
@@ -627,30 +643,20 @@ async function genAdminProfile(type,id){
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
 
-    // ── JSON repair: fix unescaped newlines/tabs AND unescaped quotes inside strings ──
+    // ── JSON repair: fix common Haiku output issues ──
     function repairJSON(s){
-      let out='',inStr=false,esc=false;
+      // 1. Remove literal control characters inside strings (unescaped \n \r \t)
+      // Replace raw newlines inside JSON string values with \\n
+      let out='', inStr=false, esc=false;
       for(let i=0;i<s.length;i++){
         const c=s[i];
-        if(esc){out+=c;esc=false;continue;}
-        if(c==='\\'){out+=c;esc=true;continue;}
-        if(c==='"'){
-          if(!inStr){inStr=true;out+=c;continue;}
-          // Check if this closes the string: next non-space char is ,]}:
-          let j=i+1;
-          while(j<s.length&&(s[j]===' '||s[j]==='\t'))j++;
-          const nx=j<s.length?s[j]:'';
-          if(nx===','||nx===']'||nx==='}'||nx===':'||nx===''){
-            inStr=false;out+=c;
-          }else{
-            out+='\\"'; // escape internal quote
-          }
-          continue;
-        }
+        if(esc){ out+=c; esc=false; continue; }
+        if(c==='\\'){ out+=c; esc=true; continue; }
+        if(c==='"'){ inStr=!inStr; out+=c; continue; }
         if(inStr){
-          if(c==='\n'){out+='\\n';continue;}
-          if(c==='\r'){continue;}
-          if(c==='\t'){out+='\\t';continue;}
+          if(c==='\n'){ out+='\\n'; continue; }
+          if(c==='\r'){ continue; }
+          if(c==='\t'){ out+='\\t'; continue; }
         }
         out+=c;
       }
