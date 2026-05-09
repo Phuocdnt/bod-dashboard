@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOD Dashboard v5.38 - Flagged Watchlist</title>
+    <title>BOD Dashboard v5.40 - LOI Management</title>
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -328,6 +328,95 @@
             background: #fff; min-height: 54px;
         }
         /* ===== end v5.38 ===== */
+
+        /* ===== v5.39 CHECKLIST STYLES ===== */
+        .checklist-section {
+            margin-top: 18px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .cl-commissioning { background: #fffbeb; border-color: #fde68a; }
+        .checklist-title {
+            font-size: 0.88em; font-weight: 700; color: #166534;
+            margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .cl-commissioning .checklist-title { color: #92400e; }
+        .cl-progress-bar { height: 6px; background: #d1fae5; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+        .cl-commissioning .cl-progress-bar { background: #fef3c7; }
+        .cl-progress-fill { height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e); border-radius: 3px; transition: width 0.3s; }
+        .cl-commissioning .cl-progress-fill { background: linear-gradient(90deg, #d97706, #f59e0b); }
+        .cl-badge { font-size: 0.8em; font-weight: 600; padding: 2px 9px; border-radius: 10px; background: #dcfce7; color: #15803d; }
+        .cl-commissioning .cl-badge { background: #fef3c7; color: #92400e; }
+        .cl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        @media (max-width: 700px) { .cl-grid { grid-template-columns: 1fr; } }
+        .cl-item {
+            display: flex; align-items: center; gap: 7px; padding: 6px 9px;
+            border-radius: 7px; cursor: pointer; border: 1px solid transparent;
+            transition: background 0.15s; user-select: none;
+        }
+        .cl-item:hover { background: #dcfce7; border-color: #86efac; }
+        .cl-commissioning .cl-item:hover { background: #fef3c7; border-color: #fde68a; }
+        .cl-item.cl-done .cl-label { text-decoration: line-through; color: #86efac; }
+        .cl-commissioning .cl-item.cl-done .cl-label { color: #fbbf24; }
+        .cl-box {
+            width: 17px; height: 17px; border-radius: 4px; border: 2px solid #86efac;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; flex-shrink: 0; background: white; transition: all 0.15s;
+        }
+        .cl-commissioning .cl-box { border-color: #fde68a; }
+        .cl-item.cl-done .cl-box { background: #16a34a; border-color: #16a34a; color: white; }
+        .cl-commissioning .cl-item.cl-done .cl-box { background: #d97706; border-color: #d97706; color: white; }
+        .cl-icon { font-size: 13px; flex-shrink: 0; }
+        .cl-label { font-size: 0.8em; color: #374151; line-height: 1.3; }
+        .cl-mini-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 2px 9px; border-radius: 10px; font-size: 0.78em; font-weight: 600; margin-top: 5px; cursor: pointer;
+        }
+        .cl-mini-commissioning { background: #fef3c7; color: #92400e; }
+        .cl-mini-handover { background: #d1fae5; color: #065f46; }
+        /* ===== end v5.39 ===== */
+
+        /* ===== v5.40 LOI (List of Outstanding Items) — Summary Mode ===== */
+        .loi-section {
+            margin-top: 14px;
+            background: #fff7ed;
+            border: 1.5px solid #fed7aa;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .loi-title {
+            font-size: 0.88em; font-weight: 700; color: #9a3412;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+        }
+        .loi-summary-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr; gap: 10px; align-items: end;
+        }
+        @media (max-width: 640px) { .loi-summary-grid { grid-template-columns: 1fr 1fr; } }
+        .loi-summary-field label {
+            font-size: 0.75em; font-weight: 700; color: #9a3412; display: block; margin-bottom: 4px;
+        }
+        .loi-summary-field input {
+            width: 100%; padding: 7px 10px; border: 1.5px solid #fed7aa;
+            border-radius: 7px; font-size: 0.9em; background: white; text-align: center;
+            font-weight: 700; transition: border-color 0.15s;
+        }
+        .loi-summary-field input:focus { outline: none; border-color: #f97316; }
+        .loi-open-display {
+            padding: 7px 10px; border-radius: 7px; text-align: center;
+            font-size: 0.9em; font-weight: 800; border: 1.5px solid transparent;
+        }
+        .loi-open-none  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .loi-open-some  { background: #fecaca; color: #b91c1c; border-color: #fca5a5; }
+        .loi-locked-hint {
+            display: flex; align-items: center; gap: 6px; padding: 7px 11px;
+            background: #fef9c3; border: 1px solid #fde047; border-radius: 7px;
+            font-size: 0.79em; color: #854d0e; margin-top: 10px;
+        }
+        .cl-mini-loi-open  { background: #fecaca; color: #b91c1c; }
+        .cl-mini-loi-clear { background: #d1fae5; color: #065f46; }
+        /* ===== end v5.40 LOI ===== */
 
 
 
@@ -2453,7 +2542,7 @@
             <h1>
                 <div class="header-icon">📊</div>
                 BOD Dashboard
-                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.38 - WATCHLIST</span>
+                <span style="background: rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 15px; font-size: 0.5em; font-weight: 600;">v5.40 - LOI</span>
             </h1>
             <div class="header-actions">
                 <button onclick="window.forceSyncNow()" style="background: #ff5722; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 0.85em; font-weight: 600;" onmouseover="this.style.background=&#39;#f44336&#39;" onmouseout="this.style.background=&#39;#ff5722&#39;">
@@ -4557,6 +4646,39 @@ VD: Cập nhật deadline theo yêu cầu khách hàng, Thay đổi nhân sự d
                 { id: 'commissioning', name: 'Commissioning', icon: '🔌' },
                 { id: 'handover', name: 'Handover', icon: '✅' }
             ];
+
+            // ============= v5.39 COMMISSIONING & HANDOVER CHECKLISTS ============= //
+            const COMMISSIONING_CHECKLIST = [
+                { id: 'power_connection',       label: 'Kiểm tra nguồn điện & đấu nối',             icon: '⚡' },
+                { id: 'control_system',         label: 'Kiểm tra hệ thống điều khiển (PLC/HMI)',     icon: '🖥️' },
+                { id: 'dry_run',                label: 'Chạy thử không tải (Dry Run)',               icon: '🔄' },
+                { id: 'load_test',              label: 'Chạy thử có tải (Load Test)',                icon: '⚙️' },
+                { id: 'safety_check',           label: 'Kiểm tra an toàn & bảo vệ',                 icon: '🛡️' },
+                { id: 'param_calibration',      label: 'Hiệu chỉnh thông số vận hành',              icon: '🎛️' },
+                { id: 'function_test',          label: 'Test chức năng theo spec kỹ thuật',          icon: '📋' },
+                { id: 'operation_log',          label: 'Ghi chép nhật ký vận hành',                 icon: '📝' },
+                { id: 'issue_resolution',       label: 'Xử lý sự cố phát sinh',                     icon: '🔧' },
+                { id: 'operational_acceptance', label: 'Xác nhận nghiệm thu vận hành',              icon: '✅' }
+            ];
+
+            const HANDOVER_CHECKLIST = [
+                { id: 'asbuilt_docs',          label: 'Hoàn thiện hồ sơ kỹ thuật (As-built)',        icon: '📐' },
+                { id: 'om_manual',             label: 'Bàn giao tài liệu vận hành & bảo trì',        icon: '📚' },
+                { id: 'operator_training',     label: 'Đào tạo vận hành cho khách hàng',             icon: '🎓' },
+                { id: 'spare_parts',           label: 'Bàn giao phụ tùng & vật tư dự phòng',         icon: '🗃️' },
+                { id: 'acceptance_protocol',   label: 'Ký biên bản nghiệm thu (Acceptance)',         icon: '📄' },
+                { id: 'warranty_docs',         label: 'Hoàn chỉnh hồ sơ bảo hành',                  icon: '🛡️' },
+                { id: 'tool_retrieval',        label: 'Thu hồi công cụ & thiết bị thi công',         icon: '🧰' },
+                { id: 'photo_record',          label: 'Chụp ảnh/quay video nghiệm thu',              icon: '📸' },
+                { id: 'contract_liquidation',  label: 'Thanh lý hợp đồng',                          icon: '💼' },
+                { id: 'archive_docs',          label: 'Lưu trữ hồ sơ nội bộ',                       icon: '🗄️' }
+            ];
+
+            const MILESTONE_CHECKLISTS = {
+                commissioning: COMMISSIONING_CHECKLIST,
+                handover: HANDOVER_CHECKLIST
+            };
+            // ============= end v5.39 CHECKLISTS ============= //
 
             // Azure Blob Storage Configuration
             const AZURE_CONFIG = {
@@ -7110,6 +7232,47 @@ window.projects = projects;
                                         ` : ''}
                                     </div>
                                 </div>
+                                ${(() => {
+                                    // v5.39: Show checklist progress badge if milestone has checklist
+                                    const clDef = MILESTONE_CHECKLISTS[current.id];
+                                    if (!clDef || clDef.length === 0) return '';
+                                    const clData = current.checklist || {};
+                                    const done = clDef.filter(i => clData[i.id]).length;
+                                    const total = clDef.length;
+                                    const pct = Math.round((done / total) * 100);
+                                    const cls = current.id === 'commissioning' ? 'cl-mini-commissioning' : 'cl-mini-handover';
+                                    const barColor = current.id === 'commissioning' ? '#d97706' : '#16a34a';
+                                    // v5.40: LOI badge for commissioning (summary mode)
+                                    let loiBadgeHTML = '';
+                                    if (current.id === 'commissioning') {
+                                        const loiSum = current.loi || {};
+                                        const loiTotalCnt  = loiSum.total  || 0;
+                                        const loiClosedCnt = loiSum.closed || 0;
+                                        const loiOpenCnt   = Math.max(0, loiTotalCnt - loiClosedCnt);
+                                        if (loiTotalCnt > 0) {
+                                            const loiCls = loiOpenCnt > 0 ? 'cl-mini-loi-open' : 'cl-mini-loi-clear';
+                                            const loiTxt = loiOpenCnt > 0
+                                                ? `🔴 LOI: ${loiOpenCnt}/${loiTotalCnt} open`
+                                                : `🟢 LOI: ${loiTotalCnt}/${loiTotalCnt} cleared`;
+                                            const dlTxt = loiSum.deadline && loiOpenCnt > 0
+                                                ? ` · 📅 ${new Date(loiSum.deadline).toLocaleDateString('vi-VN')}` : '';
+                                            loiBadgeHTML = `<span class="cl-mini-badge ${loiCls}" style="margin-left:4px;">${loiTxt}${dlTxt}</span>`;
+                                        }
+                                    }
+                                    return `
+                                        <div style="margin-top: 8px;">
+                                            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 4px;">
+                                                <span class="cl-mini-badge ${cls}">📋 Checklist: ${done}/${total}</span>
+                                                <span style="font-size: 0.78em; color: #6b7280;">(${pct}%)</span>
+                                                ${loiBadgeHTML}
+                                            </div>
+                                            <div style="height: 5px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                                                <div style="height: 100%; width: ${pct}%; background: ${barColor}; border-radius: 3px; transition: width 0.3s;"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                })()}
+                            </div>
                             `;
                         })()}
                         
@@ -10307,6 +10470,7 @@ ${conflict.workload.map(w => `
                 }
                 
                 renderMilestoneForm();
+                // v5.40: LOI summary loaded directly from existing.loi in render
                 
                 // v5.11: Render Installation Phases
                 renderInstallationPhases();
@@ -10501,118 +10665,93 @@ ${conflict.workload.map(w => `
                 // v5.11: Split milestones - Part 1 (before Installation), Part 2 (after Installation)
                 const part1Milestones = ['design', 'bom', 'price_calc', 'bidding', 'order', 'drawing-release', 'assembly', 'testing'];
                 const part2Milestones = ['commissioning', 'handover'];
-                
-                // Generate HTML for each part
-                const htmlPart1 = milestonesToRender
-                    .filter(m => part1Milestones.includes(m.id))
-                    .map(milestone => {
-                        const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
-                        const needsTeam = true;
-                        
-                        return `
-                        <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
-                            <div>
-                                <strong>${milestone.icon} ${milestone.name}</strong>
-                            </div>
-                            <div>
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label>👤 Người thực hiện</label>
-                                    <select class="milestone-person" data-milestone="${milestone.id}">
-                                        <option value="">Chọn người...</option>
-                                        ${teamMembers.map(m => `<option value="${m.id}" ${existing.person === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
-                                    </select>
-                                </div>
-                                
-                                ${needsTeam ? `
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label>👥 Team Members (Thành viên thực hiện)</label>
-                                    
-                                    <!-- Select + Add Button -->
-                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                                        <select id="member-select-${milestone.id}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                            <option value="">Chọn member...</option>
-                                            ${teamMembers.map(member => 
-                                                `<option value="${member.id}">${member.name}</option>`
-                                            ).join('')}
-                                        </select>
-                                        <button type="button" 
-                                                onclick="addTeamMember('${milestone.id}')"
-                                                style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
-                                            âž• Add
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Selected Members List -->
-                                    <div id="selected-members-${milestone.id}" 
-                                         class="selected-members-list"
-                                         style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
-                                        ${(existing.assignedMembers || []).map(memberId => {
-                                            const member = teamMembers.find(m => m.id === memberId);
-                                            if (!member) return '';
-                                            return `
-                                                <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
-                                                    <span>👤 ${member.name}</span>
-                                                    <button type="button" 
-                                                            onclick="removeTeamMember('${milestone.id}', '${memberId}')"
-                                                            style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
-                                                            title="Xóa">
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            `;
-                                        }).join('')}
-                                        <div class="empty-message" style="display: ${(existing.assignedMembers || []).length === 0 ? 'block' : 'none'}; text-align: center; color: #a0aec0; padding: 20px; font-size: 0.9em;">
-                                            Chưa có member nào. Click "Add" để thêm.
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Hidden input to store selected member IDs -->
-                                    <input type="hidden" class="milestone-members" data-milestone="${milestone.id}" value="${(existing.assignedMembers || []).join(',')}">
-                                </div>
-                                ` : ''}
-                                
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                    <!-- PLAN Column -->
-                                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
-                                        <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
-                                        <div class="form-group" style="margin-bottom: 10px;">
-                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
-                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}" 
-                                                   value="${existing.planStartDate || ''}">
-                                        </div>
-                                        <div class="form-group" style="margin-bottom: 0;">
-                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
-                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}" 
-                                                   value="${existing.planCompleteDate || ''}">
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- ACTUAL Column -->
-                                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
-                                        <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
-                                        <div class="form-group" style="margin-bottom: 10px;">
-                                            <label style="font-size: 0.85em;">Ngày bắt đầu</label>
-                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}" 
-                                                   value="${existing.actualStartDate || ''}">
-                                        </div>
-                                        <div class="form-group" style="margin-bottom: 0;">
-                                            <label style="font-size: 0.85em;">Ngày hoàn thành</label>
-                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}" 
-                                                   value="${existing.actualCompleteDate || ''}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    }).join('');
-                
+
+                // v5.39: Generate htmlPart2 with checklist for commissioning/handover
                 const htmlPart2 = milestonesToRender
                     .filter(m => part2Milestones.includes(m.id))
                     .map(milestone => {
                         const existing = currentEditingProject?.milestones?.find(m => m.id === milestone.id) || {};
                         const needsTeam = true;
-                        
+
+                        // v5.39: Build checklist HTML
+                        const checklistDef = MILESTONE_CHECKLISTS[milestone.id] || [];
+                        const existingCL = existing.checklist || {};
+                        const clDone = checklistDef.filter(item => existingCL[item.id]).length;
+                        const clTotal = checklistDef.length;
+                        const clPct = clTotal > 0 ? Math.round((clDone / clTotal) * 100) : 0;
+                        const isComm = milestone.id === 'commissioning';
+                        const clSectionClass = isComm ? 'cl-commissioning' : '';
+
+                        // v5.40: LOI summary for commissioning
+                        const loiData = isComm ? (existing.loi || {}) : {};
+                        const loiTotal  = loiData.total  || 0;
+                        const loiClosed = loiData.closed || 0;
+                        const loiOpen   = Math.max(0, loiTotal - loiClosed);
+                        const loiDeadline = loiData.deadline || '';
+                        const loiAllClear = loiTotal > 0 && loiOpen === 0;
+
+                        const loiSectionHTML = isComm ? `
+                        <div class="loi-section">
+                            <div class="loi-title">🗒️ LOI — List of Outstanding Items</div>
+                            <div class="loi-summary-grid">
+                                <div class="loi-summary-field">
+                                    <label>📋 Tổng số LOI</label>
+                                    <input type="number" id="loi-total" min="0" value="${loiTotal}"
+                                           oninput="updateLoiOpenCount()" placeholder="0">
+                                </div>
+                                <div class="loi-summary-field">
+                                    <label>🟢 Đã đóng (Closed)</label>
+                                    <input type="number" id="loi-closed" min="0" value="${loiClosed}"
+                                           oninput="updateLoiOpenCount()" placeholder="0">
+                                </div>
+                                <div class="loi-summary-field">
+                                    <label>🔴 Còn mở (Open)</label>
+                                    <div id="loi-open-display"
+                                         class="loi-open-display ${loiOpen > 0 ? 'loi-open-some' : 'loi-open-none'}">
+                                        ${loiOpen > 0 ? '🔴 ' + loiOpen : (loiTotal > 0 ? '🟢 All Clear' : '—')}
+                                    </div>
+                                </div>
+                                <div class="loi-summary-field">
+                                    <label>📅 Deadline clear hết LOI</label>
+                                    <input type="date" id="loi-deadline" value="${loiDeadline}"
+                                           style="text-align:left;font-weight:500;">
+                                </div>
+                            </div>
+                            ${loiOpen > 0 ? `
+                            <div class="loi-locked-hint">
+                                ⚠️ Còn <strong>${loiOpen} LOI chưa closed</strong> — Chủ đầu tư chưa thể ký biên bản nghiệm thu.
+                            </div>` : (loiAllClear ? `
+                            <div class="loi-locked-hint" style="background:#d1fae5;border-color:#6ee7b7;color:#065f46;">
+                                🎉 All LOI cleared — Có thể tiến hành ký biên bản nghiệm thu!
+                            </div>` : '')}
+                        </div>` : '';
+
+                        const checklistSectionHTML = clTotal > 0 ? `
+                        <div class="checklist-section ${clSectionClass}">
+                            <div class="checklist-title">
+                                <span>📋 Checklist công việc</span>
+                                <span class="cl-badge">${clDone}/${clTotal} hoàn thành</span>
+                            </div>
+                            <div class="cl-progress-bar">
+                                <div class="cl-progress-fill" style="width: ${clPct}%;"></div>
+                            </div>
+                            <div class="cl-grid">
+                                ${checklistDef.map(item => {
+                                    const isDone = !!existingCL[item.id];
+                                    const isLocked = isComm && item.id === 'operational_acceptance' && loiOpen > 0;
+                                    return `<div class="cl-item ${isDone ? 'cl-done' : ''}"
+                                                 onclick="${isLocked ? 'showLoiBlockedWarning()' : `toggleChecklistItemForm('${milestone.id}','${item.id}',this)`}"
+                                                 data-cl-item="${item.id}"
+                                                 style="${isLocked ? 'opacity:0.55;cursor:not-allowed;' : ''}">
+                                        <div class="cl-box">${isDone ? '✓' : (isLocked ? '🔒' : '')}</div>
+                                        <span class="cl-icon">${item.icon}</span>
+                                        <span class="cl-label">${item.label}</span>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                            ${loiSectionHTML}
+                        </div>` : '';
+
                         return `
                         <div class="milestone-form-row" style="grid-template-columns: 180px 1fr; gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
                             <div>
@@ -10630,24 +10769,18 @@ ${conflict.workload.map(w => `
                                 ${needsTeam ? `
                                 <div class="form-group" style="margin-bottom: 15px;">
                                     <label>👥 Team Members (Thành viên thực hiện)</label>
-                                    
-                                    <!-- Select + Add Button -->
                                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                                         <select id="member-select-${milestone.id}" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                             <option value="">Chọn member...</option>
-                                            ${teamMembers.map(member => 
-                                                `<option value="${member.id}">${member.name}</option>`
-                                            ).join('')}
+                                            ${teamMembers.map(member => `<option value="${member.id}">${member.name}</option>`).join('')}
                                         </select>
-                                        <button type="button" 
+                                        <button type="button"
                                                 onclick="addTeamMember('${milestone.id}')"
                                                 style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
-                                            âž• Add
+                                            ➕ Add
                                         </button>
                                     </div>
-                                    
-                                    <!-- Selected Members List -->
-                                    <div id="selected-members-${milestone.id}" 
+                                    <div id="selected-members-${milestone.id}"
                                          class="selected-members-list"
                                          style="min-height: 60px; max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8f9fa;">
                                         ${(existing.assignedMembers || []).map(memberId => {
@@ -10656,7 +10789,7 @@ ${conflict.workload.map(w => `
                                             return `
                                                 <div class="member-tag" data-member-id="${memberId}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border: 1px solid #cbd5e0; border-radius: 20px; margin: 4px; font-size: 0.9em;">
                                                     <span>👤 ${member.name}</span>
-                                                    <button type="button" 
+                                                    <button type="button"
                                                             onclick="removeTeamMember('${milestone.id}', '${memberId}')"
                                                             style="background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: bold; padding: 0; font-size: 1.2em; line-height: 1;"
                                                             title="Xóa">
@@ -10669,43 +10802,39 @@ ${conflict.workload.map(w => `
                                             Chưa có member nào. Click "Add" để thêm.
                                         </div>
                                     </div>
-                                    
-                                    <!-- Hidden input to store selected member IDs -->
                                     <input type="hidden" class="milestone-members" data-milestone="${milestone.id}" value="${(existing.assignedMembers || []).join(',')}">
                                 </div>
                                 ` : ''}
                                 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                    <!-- PLAN Column -->
                                     <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
                                         <div style="font-weight: 600; margin-bottom: 10px; color: #1976d2; font-size: 0.9em;">📅 PLAN</div>
                                         <div class="form-group" style="margin-bottom: 10px;">
                                             <label style="font-size: 0.85em;">Ngày bắt đầu</label>
-                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}" 
+                                            <input type="date" class="milestone-plan-start" data-milestone="${milestone.id}"
                                                    value="${existing.planStartDate || ''}">
                                         </div>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <label style="font-size: 0.85em;">Ngày hoàn thành</label>
-                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}" 
+                                            <input type="date" class="milestone-plan-complete" data-milestone="${milestone.id}"
                                                    value="${existing.planCompleteDate || ''}">
                                         </div>
                                     </div>
-                                    
-                                    <!-- ACTUAL Column -->
                                     <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
                                         <div style="font-weight: 600; margin-bottom: 10px; color: #388e3c; font-size: 0.9em;">✅ ACTUAL</div>
                                         <div class="form-group" style="margin-bottom: 10px;">
                                             <label style="font-size: 0.85em;">Ngày bắt đầu</label>
-                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}" 
+                                            <input type="date" class="milestone-actual-start" data-milestone="${milestone.id}"
                                                    value="${existing.actualStartDate || ''}">
                                         </div>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <label style="font-size: 0.85em;">Ngày hoàn thành</label>
-                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}" 
+                                            <input type="date" class="milestone-actual-complete" data-milestone="${milestone.id}"
                                                    value="${existing.actualCompleteDate || ''}">
                                         </div>
                                     </div>
                                 </div>
+                                ${checklistSectionHTML}
                             </div>
                         </div>
                     `;
@@ -10776,6 +10905,117 @@ ${conflict.workload.map(w => `
                 showToast('✅ Đã thêm member', 'success');
                 console.log('[addTeamMember] ✅ Complete!');
             };
+
+            // ============= v5.39 CHECKLIST FUNCTIONS ============= //
+
+            // Toggle checklist item in the edit form (no save, just visual + hidden state)
+            window.toggleChecklistItemForm = function(milestoneId, itemId, el) {
+                const item = el.closest('[data-cl-item]');
+                if (!item) return;
+                const isDone = item.classList.toggle('cl-done');
+                const box = item.querySelector('.cl-box');
+                if (box) box.textContent = isDone ? '✓' : '';
+                // Update progress bar
+                const section = item.closest('.checklist-section');
+                if (section) {
+                    const total = section.querySelectorAll('[data-cl-item]').length;
+                    const done = section.querySelectorAll('[data-cl-item].cl-done').length;
+                    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                    const bar = section.querySelector('.cl-progress-fill');
+                    const badge = section.querySelector('.cl-badge');
+                    if (bar) bar.style.width = pct + '%';
+                    if (badge) badge.textContent = done + '/' + total + ' hoàn thành';
+                }
+            };
+
+            // Toggle checklist item directly on project (instant save)
+            window.toggleChecklistItem = function(projectId, milestoneId, itemId) {
+                const project = projects.find(p => p.id === projectId);
+                if (!project) return;
+                const ms = (project.milestones || []).find(m => m.id === milestoneId);
+                if (!ms) return;
+                if (!ms.checklist) ms.checklist = {};
+                ms.checklist[itemId] = !ms.checklist[itemId];
+                // Immediate save
+                saveToStorage();
+                // Re-render project cards
+                renderProjects();
+                showToast(ms.checklist[itemId] ? '✅ Đã đánh dấu hoàn thành' : '↩️ Đã bỏ đánh dấu', 'success');
+            };
+            // ============= end v5.39 ============= //
+
+            // ============= v5.40 LOI FUNCTIONS (Summary mode) ============= //
+
+            // Realtime update: khi nhập total/closed thì tự tính open
+            window.updateLoiOpenCount = function() {
+                const totalEl  = document.getElementById('loi-total');
+                const closedEl = document.getElementById('loi-closed');
+                const display  = document.getElementById('loi-open-display');
+                if (!totalEl || !closedEl || !display) return;
+
+                const total  = Math.max(0, parseInt(totalEl.value)  || 0);
+                const closed = Math.max(0, parseInt(closedEl.value) || 0);
+                // Clamp closed ≤ total
+                if (closed > total) { closedEl.value = total; }
+                const open = Math.max(0, total - Math.min(closed, total));
+
+                display.textContent = open > 0 ? '🔴 ' + open : (total > 0 ? '🟢 All Clear' : '—');
+                display.className = 'loi-open-display ' + (open > 0 ? 'loi-open-some' : 'loi-open-none');
+
+                // Cập nhật locked hint
+                const section = display.closest('.loi-section');
+                if (section) {
+                    let hint = section.querySelector('.loi-locked-hint');
+                    if (open > 0) {
+                        if (!hint) {
+                            hint = document.createElement('div');
+                            hint.className = 'loi-locked-hint';
+                            section.appendChild(hint);
+                        }
+                        hint.style.cssText = '';
+                        hint.innerHTML = `⚠️ Còn <strong>${open} LOI chưa closed</strong> — Chủ đầu tư chưa thể ký biên bản nghiệm thu.`;
+                    } else if (total > 0) {
+                        if (!hint) {
+                            hint = document.createElement('div');
+                            hint.className = 'loi-locked-hint';
+                            section.appendChild(hint);
+                        }
+                        hint.style.cssText = 'background:#d1fae5;border-color:#6ee7b7;color:#065f46;';
+                        hint.innerHTML = '🎉 All LOI cleared — Có thể tiến hành ký biên bản nghiệm thu!';
+                    } else {
+                        if (hint) hint.remove();
+                    }
+                }
+
+                // Lock/unlock operational_acceptance
+                const clSection = display.closest('.checklist-section');
+                if (clSection) {
+                    const acceptItem = clSection.querySelector('[data-cl-item="operational_acceptance"]');
+                    if (acceptItem) {
+                        if (open > 0) {
+                            acceptItem.style.opacity = '0.55';
+                            acceptItem.style.cursor = 'not-allowed';
+                            acceptItem.setAttribute('onclick', 'showLoiBlockedWarning()');
+                            const box = acceptItem.querySelector('.cl-box');
+                            if (box && !acceptItem.classList.contains('cl-done')) box.textContent = '🔒';
+                        } else {
+                            acceptItem.style.opacity = '';
+                            acceptItem.style.cursor = '';
+                            acceptItem.setAttribute('onclick', "toggleChecklistItemForm('commissioning','operational_acceptance',this)");
+                            const box = acceptItem.querySelector('.cl-box');
+                            if (box && box.textContent === '🔒') box.textContent = '';
+                        }
+                    }
+                }
+            };
+
+            window.showLoiBlockedWarning = function() {
+                const open = Math.max(0,
+                    (parseInt(document.getElementById('loi-total')?.value) || 0) -
+                    (parseInt(document.getElementById('loi-closed')?.value) || 0));
+                showToast(`🔒 Còn ${open} LOI chưa closed! Clear hết LOI trước khi nghiệm thu.`, 'error');
+            };
+            // ============= end v5.40 LOI ============= //
 
             // v5.11: Survey Team Management Functions
             // v5.25 SOP-001 Functions
@@ -11668,6 +11908,45 @@ ${conflict.workload.map(w => `
                     const assignedMembers = membersInput && membersInput.value ? 
                         membersInput.value.split(',').filter(id => id.trim() !== '') : [];
                     
+                    // v5.39: Collect checklist for commissioning/handover
+                    const checklistDef = MILESTONE_CHECKLISTS[milestone.id] || [];
+                    const checklistData = {};
+                    if (checklistDef.length > 0) {
+                        const container = document.querySelector(`[data-milestone="${milestone.id}"] ~ div`) ||
+                            document.querySelector(`.milestone-form-row [data-cl-item]`)?.closest('.milestone-form-row');
+                        // Query all checklist items for this milestone from the DOM
+                        const allCheckItems = document.querySelectorAll(`[data-cl-item]`);
+                        // Filter by parent milestone section
+                        const msSection = (() => {
+                            const personInputs = document.querySelectorAll(`.milestone-person[data-milestone="${milestone.id}"]`);
+                            for (const el of personInputs) {
+                                const row = el.closest('.milestone-form-row');
+                                if (row) return row;
+                            }
+                            return null;
+                        })();
+                        if (msSection) {
+                            msSection.querySelectorAll('[data-cl-item]').forEach(itemEl => {
+                                const itemId = itemEl.getAttribute('data-cl-item');
+                                checklistData[itemId] = itemEl.classList.contains('cl-done');
+                            });
+                        }
+                    }
+
+                    // v5.40: Collect LOI summary for commissioning
+                    let loiToSave = undefined;
+                    if (milestone.id === 'commissioning') {
+                        const t = parseInt(document.getElementById('loi-total')?.value)  || 0;
+                        const c = parseInt(document.getElementById('loi-closed')?.value) || 0;
+                        const d = document.getElementById('loi-deadline')?.value || '';
+                        // Only save if user has entered data; otherwise preserve existing
+                        if (t > 0 || c > 0 || d) {
+                            loiToSave = { total: t, closed: Math.min(c, t), deadline: d };
+                        } else {
+                            loiToSave = currentEditingProject?.milestones?.find(m => m.id === 'commissioning')?.loi;
+                        }
+                    }
+
                     return { 
                         id: milestone.id, 
                         person,
@@ -11675,7 +11954,11 @@ ${conflict.workload.map(w => `
                         planCompleteDate,
                         actualStartDate,
                         actualCompleteDate,
-                        assignedMembers: assignedMembers.length > 0 ? assignedMembers : undefined
+                        assignedMembers: assignedMembers.length > 0 ? assignedMembers : undefined,
+                        checklist: Object.keys(checklistData).length > 0 ? checklistData : (
+                            currentEditingProject?.milestones?.find(m => m.id === milestone.id)?.checklist || undefined
+                        ),
+                        loi: loiToSave
                     };
                 });
 
@@ -13206,10 +13489,10 @@ ${conflict.workload.map(w => `
     <!-- Version Badge v5.38 -->
     <div class="version-badge" onclick="toggleVersionInfo()">
         <span class="version-badge-icon">ℹ️</span>
-        <span>v5.38</span>
+        <span>v5.40</span>
         <div class="version-info-tooltip" id="versionTooltip" onclick="event.stopPropagation()">
-            <div class="version-info-header">📋 BOD Dashboard v5.32 - PM & Date Fix</div>
-            <div class="version-info-item"><strong>Version:</strong> v5.38 - Flagged Watchlist</div>
+            <div class="version-info-header">📋 BOD Dashboard v5.40 - LOI Management</div>
+            <div class="version-info-item"><strong>Version:</strong> v5.40 - LOI Management</div>
             <div class="version-info-item"><strong>Build Date:</strong> 2026-04-08</div>
             <div class="version-info-item"><strong>v5.26 — Executive Risk Control:</strong>
                 <ul style="margin: 5px 0; padding-left: 20px;">
