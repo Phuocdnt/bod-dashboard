@@ -565,8 +565,15 @@ QUY TẮC BẮT BUỘC:
 4. Bắt buộc xác định: ít nhất 1 mâu thuẫn nội tại cụ thể, 1 rủi ro ẩn không hiển thị, 1 điểm nghẽn hiệu suất dưới áp lực
 5. Output chỉ mô tả mà không có hành động → SAI. Output chung chung không đặc thù người này → SAI.
 6. stressBehavior và leadStyle phải phản ánh trong mọi section liên quan — không tách biệt.
-PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown. KHÔNG dùng xuống dòng thật trong string — dùng \\n. KHÔNG dùng nháy kép trong string — dùng nháy đơn.`;
-  const claudePayload={model:'claude-haiku-4-5-20251001',max_tokens:8000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
+PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown. KHÔNG dùng xuống dòng thật trong string — dùng \\n. KHÔNG dùng nháy kép trong string — dùng nháy đơn.
+
+CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc tuyệt đối):
+- Viết tiếng Việt CHUẨN của người bản ngữ, văn phong doanh nghiệp Việt Nam. Mỗi cụm từ phải tự nhiên như một chuyên gia tư vấn người Việt viết.
+- TUYỆT ĐỐI KHÔNG dịch máy móc từ tiếng Anh. Không bịa cụm từ vô nghĩa. Nếu một khái niệm tiếng Anh khó dịch, hãy diễn đạt lại bằng cách nói tự nhiên trong tiếng Việt, không ghép từ thô.
+- Dùng đúng thuật ngữ quản trị tiếng Việt: "trao quyền/ủy quyền" (không "ủy thác sai"), "vi mô quản lý/quản lý vi mô", "không gian để suy nghĩ" (không "thôi miên suy nghĩ"), "khơi dậy/dẫn dắt team" (không "phất động"), "căng thẳng/bực bội" (không "nóng mắt").
+- Trước khi xuất mỗi câu, tự kiểm: câu này có phải tiếng Việt một người Việt thật sẽ nói không? Nếu nghe lạ tai hoặc gượng → viết lại.
+- Ưu tiên rõ ràng và chính xác hơn hoa mỹ. Câu ngắn, đúng ngữ pháp, đúng collocation tiếng Việt.`;
+  const claudePayload={model:'claude-sonnet-4-6',max_tokens:8000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
   const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',body:JSON.stringify(claudePayload)});
     if(!res.ok)throw new Error('Worker '+res.status);
     const data=await res.json();

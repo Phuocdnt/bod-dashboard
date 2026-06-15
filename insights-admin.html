@@ -621,9 +621,10 @@ async function genAdminProfile(type,id){
   const contentEl=document.getElementById(type==='employee'?'mEmpContent':'mMgrContent');
   contentEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;color:var(--muted)"><div style="width:28px;height:28px;border:2.5px solid rgba(255,255,255,.2);border-top-color:${type==='employee'?'var(--green)':'var(--yellow)'};border-radius:50%;animation:spin .7s linear infinite"></div><span style="font-size:13px">Đang tạo ${type==='employee'?'Profile Nhân Viên':'Profile Quản Lý'}…</span></div>`;
 
-  const SYSTEM=type==='employee'
+  const VN_QUALITY=` CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc): Viết tiếng Việt CHUẨN của người bản ngữ, văn phong doanh nghiệp Việt Nam. TUYỆT ĐỐI KHÔNG dịch máy móc từ tiếng Anh, không bịa cụm từ vô nghĩa. Dùng đúng thuật ngữ quản trị: "trao quyền/ủy quyền", "quản lý vi mô", "không gian để suy nghĩ", "khơi dậy/dẫn dắt team", "căng thẳng/bực bội". Mỗi câu phải tự nhiên như chuyên gia tư vấn người Việt viết — nếu nghe gượng hoặc lạ tai thì viết lại. Ưu tiên rõ ràng, đúng ngữ pháp và collocation tiếng Việt hơn hoa mỹ.`;
+  const SYSTEM=(type==='employee'
     ?`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`
-    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`;
+    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`)+VN_QUALITY;
 
   const data_line=`Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}\nRed ${pct(r)}% | Yellow ${pct(y)}% | Green ${pct(g)}% | Blue ${pct(b)}%\nMàu chính: ${CI[pr]?.l||pr} (${pct(r||y||g||b)}%) | Màu phụ: ${CI[sec]?.l||sec} | Archetype: ${arch}\nIE: ${ieDesc} | Lãnh đạo: ${LLABELS[lead]||lead} | Stress: ${SLABELS[stress]||stress}`;
 
@@ -633,7 +634,7 @@ async function genAdminProfile(type,id){
 
   try{
     const res=await fetch(CONFIG.claudeProxyUrl,{method:'POST',body:JSON.stringify({
-      model:'claude-haiku-4-5-20251001',max_tokens:6000,system:SYSTEM,
+      model:'claude-sonnet-4-6',max_tokens:6000,system:SYSTEM,
       messages:[{role:'user',content:type==='employee'?empPrompt:mgrPrompt}]
     })});
     if(!res.ok) throw new Error('HTTP '+res.status);

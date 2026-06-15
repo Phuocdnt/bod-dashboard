@@ -1399,7 +1399,7 @@ Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
 
   try{
     if(!CONFIG.workerUrl||CONFIG.workerUrl.includes('PASTE_'))throw new Error('Chưa cấu hình workerUrl trong CONFIG');
-    const res=await fetch(CONFIG.workerUrl,{method:'POST',body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:6000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(CONFIG.workerUrl,{method:'POST',body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:6000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
     if(data.error)throw new Error(typeof data.error==='string'?data.error:JSON.stringify(data.error));
