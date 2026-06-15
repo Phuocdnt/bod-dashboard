@@ -1399,10 +1399,35 @@ Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
 
   try{
     if(!CONFIG.workerUrl||CONFIG.workerUrl.includes('PASTE_'))throw new Error('Chưa cấu hình workerUrl trong CONFIG');
-    const res=await fetch(CONFIG.workerUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(CONFIG.workerUrl,{method:'POST',body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:6000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status);
-    const data=await res.json();
-    const rawText=data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
+
+    // ── Đọc SSE stream (true streaming passthrough) ──
+    let rawText='';
+    {
+      const reader=res.body.getReader();
+      const decoder=new TextDecoder('utf-8');
+      let buf='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n');
+        buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();
+          if(!d||d==='[DONE]')continue;
+          try{
+            const evt=JSON.parse(d);
+            if(evt.type==='content_block_delta'&&evt.delta?.type==='text_delta'){
+              rawText+=evt.delta.text||'';
+            }
+          }catch(_){}
+        }
+      }
+    }
+    rawText=('{'+rawText).trim().replace(/```json|```/g,'').trim();
     const jsonMatch=rawText.match(/\{[\s\S]*\}/);
     if(!jsonMatch)throw new Error('Không tìm thấy JSON trong response');
     const ai=JSON.parse(jsonMatch[0]);

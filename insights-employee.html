@@ -567,13 +567,39 @@ QUY TẮC BẮT BUỘC:
 6. stressBehavior và leadStyle phải phản ánh trong mọi section liên quan — không tách biệt.
 PHONG CÁCH: Tiếng Việt thuần túy. Sắc bén, thực tế, chuyên nghiệp. Không thơ văn, không câu sáo. Mỗi câu phải dùng được ngay. Trả về JSON thuần túy, không markdown. KHÔNG dùng xuống dòng thật trong string — dùng \\n. KHÔNG dùng nháy kép trong string — dùng nháy đơn.`;
   const claudePayload={model:'claude-haiku-4-5-20251001',max_tokens:8000,system:SYSTEM,messages:[{role:'user',content:prompt}]};
-  const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
-    if(!res.ok)throw new Error('PA Flow '+res.status);
-    const data=await res.json();
-    // PA flow trả về {text: "..."} hoặc trực tiếp JSON string
-    // PA trả về Claude API response nguyên vẹn
-    let txt=(data.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json|```$/g,'').trim();
-    if(!txt)throw new Error('Empty response from PA');
+  const res=await fetch(CONFIG.claudeFlowUrl,{method:'POST',body:JSON.stringify(claudePayload)});
+    if(!res.ok)throw new Error('Worker '+res.status);
+
+    // ── Đọc SSE stream (true streaming passthrough) ──
+    // Worker đẩy thẳng SSE từ Anthropic; ghép các text_delta lại.
+    // Prefill '{' nằm ở phía Anthropic nên client thêm lại '{' đầu.
+    let txt='';
+    {
+      const reader=res.body.getReader();
+      const decoder=new TextDecoder('utf-8');
+      let buf='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        // Tách theo dòng SSE; giữ phần dở dang ở cuối buf
+        const lines=buf.split('\n');
+        buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();
+          if(!d||d==='[DONE]')continue;
+          try{
+            const evt=JSON.parse(d);
+            if(evt.type==='content_block_delta'&&evt.delta?.type==='text_delta'){
+              txt+=evt.delta.text||'';
+            }
+          }catch(_){}
+        }
+      }
+    }
+    txt=('{'+txt).trim().replace(/^```json|```$/g,'').trim();
+    if(!txt||txt==='{')throw new Error('Empty stream response');
     if(!txt.startsWith('{')) txt=txt.substring(txt.indexOf('{'));
 
     // ── JSON repair: fix unescaped newlines/tabs inside strings ──

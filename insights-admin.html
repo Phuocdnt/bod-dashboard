@@ -632,14 +632,39 @@ async function genAdminProfile(type,id){
   const mgrPrompt=`${data_line}\n\nQUY TẮC: Gọi tên "${name}" ít nhất 4 lần. KHÔNG lặp ý. Mỗi điểm yếu nêu hậu quả cụ thể. managerSnapshot đủ để hành động ngay. failureScenario cụ thể cho vai trò ${role}. Tiếng Việt, trực tiếp, không sáo rỗng.\n\nJSON thuần:\n{"managerSnapshot":{"thisWeek":["3 việc tuần này — động từ + đối tượng + kết quả"],"biggestRisk":"1 rủi ro 30-60 ngày — cụ thể + hậu quả","bestUse":"cách triển khai ${name} tốt nhất — 1-2 câu","warningSignals":["2 dấu hiệu hành vi quan sát được"]},"summary":"2 câu — ai trong làm việc + điều cần theo dõi","strengths":["5 điểm — quan sát/đo lường được"],"weaknesses":["4 điểm — hậu quả cụ thể với công việc/nhóm"],"communication":{"do":["4 cách"],"avoid":["3 điều tránh + lý do"]},"stressBehavior":"3 câu: phản ứng → tác động nhóm → dấu hiệu sớm","leadershipStyle":"2 câu: cách lãnh đạo thực tế + điều kiện phát huy","development":["4 hành động — thực hiện 90 ngày"],"managingTips":["5 tips — 2 đầu trong 24-72h, 3 dài hạn"],"performancePositioning":"2-3 câu — bối cảnh tốt nhất + nên tránh","failureScenario":"3 câu — tình huống → hành vi → dấu hiệu sớm"}`;
 
   try{
-    const res=await fetch(CONFIG.claudeProxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    const res=await fetch(CONFIG.claudeProxyUrl,{method:'POST',body:JSON.stringify({
       model:'claude-haiku-4-5-20251001',max_tokens:6000,system:SYSTEM,
       messages:[{role:'user',content:type==='employee'?empPrompt:mgrPrompt}]
     })});
     if(!res.ok) throw new Error('HTTP '+res.status);
-    const data=await res.json();
-    if(data.error) throw new Error(JSON.stringify(data.error));
-    let text=(data.content||[]).map(b=>b.text||'').join('').trim();
+
+    // ── Đọc SSE stream (true streaming passthrough) ──
+    let text='';
+    {
+      const reader=res.body.getReader();
+      const decoder=new TextDecoder('utf-8');
+      let buf='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n');
+        buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();
+          if(!d||d==='[DONE]')continue;
+          try{
+            const evt=JSON.parse(d);
+            if(evt.type==='content_block_delta'&&evt.delta?.type==='text_delta'){
+              text+=evt.delta.text||'';
+            }
+            if(evt.type==='error') throw new Error(JSON.stringify(evt.error||evt));
+          }catch(_){}
+        }
+      }
+    }
+    text='{'+text;
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
 
