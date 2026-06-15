@@ -434,7 +434,7 @@ async function submitResults(){
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
   // Lưu SharePoint (fire and forget) — KHÔNG gọi AI ở đây
   if(CONFIG.flowWriteUrl&&!CONFIG.flowWriteUrl.includes('PASTE_YOUR')){
-    fetch(CONFIG.flowWriteUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    fetch(CONFIG.flowWriteUrl,{method:'POST',body:JSON.stringify({
       name,role,department:dept,answers:JSON.stringify(ANS),
       redScore:d.sc.r,yellowScore:d.sc.y,greenScore:d.sc.g,blueScore:d.sc.b,
       primaryColor:d.pPr,secondaryColor:d.pSec,archetype:d.arch,
