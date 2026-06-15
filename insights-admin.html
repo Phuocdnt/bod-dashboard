@@ -637,34 +637,10 @@ async function genAdminProfile(type,id){
       messages:[{role:'user',content:type==='employee'?empPrompt:mgrPrompt}]
     })});
     if(!res.ok) throw new Error('HTTP '+res.status);
-
-    // ── Đọc SSE stream (true streaming passthrough) ──
-    let text='';
-    {
-      const reader=res.body.getReader();
-      const decoder=new TextDecoder('utf-8');
-      let buf='';
-      while(true){
-        const{done,value}=await reader.read();
-        if(done)break;
-        buf+=decoder.decode(value,{stream:true});
-        const lines=buf.split('\n');
-        buf=lines.pop();
-        for(const line of lines){
-          if(!line.startsWith('data: '))continue;
-          const d=line.slice(6).trim();
-          if(!d||d==='[DONE]')continue;
-          try{
-            const evt=JSON.parse(d);
-            if(evt.type==='content_block_delta'&&evt.delta?.type==='text_delta'){
-              text+=evt.delta.text||'';
-            }
-            if(evt.type==='error') throw new Error(JSON.stringify(evt.error||evt));
-          }catch(_){}
-        }
-      }
-    }
-    text='{'+text;
+    const data=await res.json();
+    if(data.error) throw new Error(typeof data.error==='string'?data.error:JSON.stringify(data.error));
+    // Worker hybrid trả JSON sạch
+    let text=(data.content||[]).map(b=>b.text||'').join('').trim();
     text=text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
     if(!text.startsWith('{')) text=text.substring(text.indexOf('{'));
 
