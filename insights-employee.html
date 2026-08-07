@@ -877,7 +877,7 @@ function renderProfile(name,role,dept,d,n){
         <div class="failure-col"><div class="failure-col-label">💥 Business Impact</div><p>${n.failureScenario.businessImpact||''}</p></div>
       </div>
     </div>`:''}`;
-  document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')} · DHI CO LTD`;
+  document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')}`;
   document.getElementById('profileActions').style.display='grid';
   toast('✅ Profile của bạn đã được tạo thành công!');
   // Nếu đang ở chế độ print (admin popup) → trigger print sau khi render xong
