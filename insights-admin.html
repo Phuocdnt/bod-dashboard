@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Discovery – Admin Dashboard</title>
+<title>Spectra – Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 
 <script>
@@ -137,7 +137,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 <div class="topbar">
   <div class="tb-logo">
     <div class="tb-wheel"></div>
-    <span>Insights Discovery &nbsp;<em>Admin</em></span>
+    <span>Spectra &nbsp;<em>Admin</em></span>
   </div>
   <span class="tag-admin">Admin Only</span>
 </div>
@@ -161,10 +161,10 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
       <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option><option value="Ban Giám Đốc">Ban Giám Đốc</option><option value="Kỹ Thuật">Kỹ Thuật</option><option value="Sản Xuất">Sản Xuất</option></select>
       <select id="fColor" onchange="applyFilter()">
         <option value="">Tất cả màu chính</option>
-        <option value="red">🔴 Fiery Red</option>
-        <option value="yellow">🟡 Sunshine Yellow</option>
-        <option value="green">🟢 Earth Green</option>
-        <option value="blue">🔵 Cool Blue</option>
+        <option value="red">🔴 Quyết Đoán</option>
+        <option value="yellow">🟡 Nhiệt Tình</option>
+        <option value="green">🟢 Điềm Đạm</option>
+        <option value="blue">🔵 Chuẩn Xác</option>
       </select>
     </div>
   </aside>
@@ -182,59 +182,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
         <button class="btn-refresh" onclick="loadData()">🔄 Làm mới</button>
         <button class="btn-recalc" id="btnRecalc" onclick="recalcAll()" title="Tính lại điểm màu theo weighted IE (×0.5) từ Answers gốc">⚖️ Recalculate All</button>
       </div>
-      <div id="tableBody"><table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody><tr onclick="openModal(6)">
-      <td><div class="name-cell"><span class="nm">Nguyễn Lê Thành Lạc</span><span class="rl">QA Manager</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Ban Giám Đốc</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.25" title="Red:7"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:1"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:7"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.4642857142857143" title="Blue:13"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
-      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
-    </tr><tr onclick="openModal(7)">
-      <td><div class="name-cell"><span class="nm">Hồ Việt Khánh</span><span class="rl">Nhân viên</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2857142857142857" title="Red:8"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.25" title="Yellow:7"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.2" title="Green:2"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.42857142857142855" title="Blue:12"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Cải Cách (Reformer)</td>
-      <td style="color:var(--muted);font-size:12px">17/3/2026</td>
-    </tr><tr onclick="openModal(8)">
-      <td><div class="name-cell"><span class="nm">BÙI HÀ ĐỨC AN</span><span class="rl">WORKSHOP MANAGER</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Kỹ Thuật</td>
-      <td><span class="pill" style="background:#2B6CB022;color:#2B6CB0">🔵 Cool Blue</span></td>
-      <td><span class="pill" style="background:#3CB37118;color:#3CB371">🟢 Earth Green</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:4"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:2"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.25" title="Green:7"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.6071428571428571" title="Blue:17"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Quan Sát (Observer)</td>
-      <td style="color:var(--muted);font-size:12px">18/3/2026</td>
-    </tr><tr onclick="openModal(9)">
-      <td><div class="name-cell"><span class="nm">Tung Nguyen Hoang Thanh</span><span class="rl">OMS</span></div></td>
-      <td style="color:var(--muted);font-size:13px">Sản Xuất</td>
-      <td><span class="pill" style="background:#3CB37122;color:#3CB371">🟢 Earth Green</span></td>
-      <td><span class="pill" style="background:#E8392A18;color:#E8392A">🔴 Fiery Red</span></td>
-      <td><div class="score-mini">
-        <div class="score-seg" style="background:var(--red);opacity:0.2" title="Red:0"></div>
-        <div class="score-seg" style="background:var(--yellow);opacity:0.2" title="Yellow:0"></div>
-        <div class="score-seg" style="background:var(--green);opacity:0.8571428571428571" title="Green:24"></div>
-        <div class="score-seg" style="background:var(--blue);opacity:0.2" title="Blue:0"></div>
-      </div></td>
-      <td style="font-size:12px;color:var(--muted)">Người Hỗ Trợ Kiên Định</td>
-      <td style="color:var(--muted);font-size:12px">19/3/2026</td>
-    </tr></tbody></table></div>
+      <div id="tableBody"><div class="spinner-row"><div class="spinner"></div></div></div>
     </div>
   </div>
 </div>
@@ -244,7 +192,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
   <div class="modal">
     <div class="modal-hero" id="mHero" style="background: linear-gradient(135deg, rgb(10, 22, 40), rgb(30, 58, 95));">
       <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="m-badge" id="mBadge">🔵 Cool Blue  ·  Chuyên Gia Phân Tích &amp; Chất Lượng</div>
+      <div class="m-badge" id="mBadge">🔵 Chuẩn Xác  ·  Chuyên Gia Phân Tích &amp; Chất Lượng</div>
       <div class="m-name" id="mName">Nguyễn Lê Thành Lạc</div>
       <div class="m-sub" id="mSub">QA Manager · Ban Giám Đốc · 17/3/2026</div>
     </div>
@@ -259,13 +207,13 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <div class="m-pane" id="mp-scores">
       <div class="m-label" style="margin-bottom:10px">Phân Bổ Năng Lượng</div>
       <div class="energy-row" id="mEnergyRow">
-    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#E8392A">🔴 Fiery Red</span><span class="e-score">7/28 (25%)</span></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#E8392A">🔴 Quyết Đoán</span><span class="e-score">7/28 (25%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width: 25%; background: rgb(232, 57, 42);" data-w="25%"></div></div></div>
-    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#F5A623">🟡 Sunshine Yellow</span><span class="e-score">1/28 (4%)</span></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#F5A623">🟡 Nhiệt Tình</span><span class="e-score">1/28 (4%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width: 4%; background: rgb(245, 166, 35);" data-w="4%"></div></div></div>
-    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#3CB371">🟢 Earth Green</span><span class="e-score">7/28 (25%)</span></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#3CB371">🟢 Điềm Đạm</span><span class="e-score">7/28 (25%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width: 25%; background: rgb(60, 179, 113);" data-w="25%"></div></div></div>
-    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#2B6CB0">🔵 Cool Blue</span><span class="e-score">13/28 (46%)</span></div>
+    <div class="e-box"><div class="e-top"><span class="e-name" style="color:#2B6CB0">🔵 Chuẩn Xác</span><span class="e-score">13/28 (46%)</span></div>
     <div class="e-bar-bg"><div class="e-bar-fill" style="width: 46%; background: rgb(43, 108, 176);" data-w="46%"></div></div></div></div>
       <div class="dims3" id="mDims">
     <div class="dim-card"><div class="dim-title">🔋 Định hướng</div><div class="dim-val" style="color:var(--blue)">🌙 Hướng nội</div></div>
@@ -279,9 +227,9 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <div class="m-label">Màu Phụ &amp; Archetype</div>
     <div style="padding:12px;background:var(--sur2);border-radius:10px;border:1px solid var(--bdr);margin-bottom:14px">
       <span style="font-size:12px;color:var(--muted)">Màu phụ: </span>
-      <span class="pill" style="background:#E8392A20;color:#E8392A">🔴 Fiery Red</span>
+      <span class="pill" style="background:#E8392A20;color:#E8392A">🔴 Quyết Đoán</span>
       <span style="font-size:12px;color:var(--muted);margin-left:8px">Nhà Lãnh Đạo Quyết Đoán</span>
-      <div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 Người Cải Cách (Reformer)</div>
+      <div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--yellow)">🎭 Chuẩn Xác & Quyết Đoán</div>
     </div>
     <div class="m-label">Hồ Sơ Cá Nhân</div>
     <div class="p2col">
@@ -310,10 +258,10 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
 <div id="toast" class="" style="background: rgb(30, 41, 59);">⏳ Đang mở profile để in… (~10–30 giây nếu cần tạo AI)</div>
 
 <script>
-const CI={red:{l:'Fiery Red',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
-yellow:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623',tag:'Người Truyền Cảm Hứng Sáng Tạo',grad:'linear-gradient(135deg,#3d2000,#78350f)',s:['Nhiệt tình, tạo động lực cho người khác','Sáng tạo và linh hoạt trong tiếp cận','Xây dựng mối quan hệ và không khí tích cực','Nhìn thấy tiềm năng trong mọi tình huống'],b:['Thiếu tập trung, dễ bị phân tâm','Lạc quan quá mức, bỏ qua rủi ro','Khó hoàn thành việc chi tiết, tỉ mỉ'],t:['Tạo không gian chia sẻ ý tưởng','Phản hồi nhiệt tình','Giúp họ tập trung ưu tiên chính','Công nhận đóng góp thường xuyên']},
-green:{l:'Earth Green',e:'🟢',c:'#3CB371',tag:'Người Kết Nối Đội Nhóm',grad:'linear-gradient(135deg,#052e16,#14532d)',s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn, ổn định trong mọi tình huống','Đảm bảo hòa hợp và đồng thuận nhóm'],b:['Khó nói "không", dễ bị quá tải','Tránh xung đột dù đôi khi cần thiết','Quyết định chậm khi có nhiều ý kiến'],t:['Tạo không gian an toàn để chia sẻ','Không ép quyết định quá nhanh','Công nhận sự đóng góp thầm lặng','Thể hiện sự quan tâm thực sự']},
-blue:{l:'Cool Blue',e:'🔵',c:'#2B6CB0',tag:'Chuyên Gia Phân Tích & Chất Lượng',grad:'linear-gradient(135deg,#0a1628,#1e3a5f)',s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và đảm bảo chất lượng cao','Cẩn thận và chính xác trong từng bước','Duy trì tiêu chuẩn và quy trình rõ ràng'],b:['Phân tích quá lâu, chậm ra quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, có vẻ xa cách'],t:['Cung cấp tài liệu chi tiết trước họp','Trình bày bằng dữ liệu và logic','Tôn trọng thời gian phân tích','Không ép quyết định nhanh']}};
+const CI={red:{l:'Quyết Đoán',e:'🔴',c:'#E8392A',tag:'Nhà Lãnh Đạo Quyết Đoán',grad:'linear-gradient(135deg,#3d0c0c,#7f1d1d)',s:['Quyết đoán, dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó khăn','Hiệu quả, không ngại thách thức'],b:['Có thể bỏ qua cảm xúc người khác','Thiếu kiên nhẫn với quy trình chi tiết','Đôi khi quá áp lực đội nhóm'],t:['Giao việc với kết quả rõ ràng','Tránh micromanage','Tôn trọng quyết định và thời gian','Trực tiếp, không vòng vo']},
+yellow:{l:'Nhiệt Tình',e:'🟡',c:'#F5A623',tag:'Người Kết Nối Sôi Nổi',grad:'linear-gradient(135deg,#3d2000,#78350f)',s:['Nhiệt tình, tạo động lực cho người khác','Sáng tạo và linh hoạt trong tiếp cận','Xây dựng mối quan hệ và không khí tích cực','Nhìn thấy tiềm năng trong mọi tình huống'],b:['Thiếu tập trung, dễ bị phân tâm','Lạc quan quá mức, bỏ qua rủi ro','Khó hoàn thành việc chi tiết, tỉ mỉ'],t:['Tạo không gian chia sẻ ý tưởng','Phản hồi nhiệt tình','Giúp họ tập trung ưu tiên chính','Công nhận đóng góp thường xuyên']},
+green:{l:'Điềm Đạm',e:'🟢',c:'#3CB371',tag:'Người Kết Nối Đội Nhóm',grad:'linear-gradient(135deg,#052e16,#14532d)',s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn, ổn định trong mọi tình huống','Đảm bảo hòa hợp và đồng thuận nhóm'],b:['Khó nói "không", dễ bị quá tải','Tránh xung đột dù đôi khi cần thiết','Quyết định chậm khi có nhiều ý kiến'],t:['Tạo không gian an toàn để chia sẻ','Không ép quyết định quá nhanh','Công nhận sự đóng góp thầm lặng','Thể hiện sự quan tâm thực sự']},
+blue:{l:'Chuẩn Xác',e:'🔵',c:'#2B6CB0',tag:'Chuyên Gia Phân Tích & Chất Lượng',grad:'linear-gradient(135deg,#0a1628,#1e3a5f)',s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và đảm bảo chất lượng cao','Cẩn thận và chính xác trong từng bước','Duy trì tiêu chuẩn và quy trình rõ ràng'],b:['Phân tích quá lâu, chậm ra quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, có vẻ xa cách'],t:['Cung cấp tài liệu chi tiết trước họp','Trình bày bằng dữ liệu và logic','Tôn trọng thời gian phân tích','Không ép quyết định nhanh']}};
 const LL={red:'🎯 Lãnh đạo Kết quả',yellow:'⚡ Truyền cảm hứng',green:'🤝 Lãnh đạo Phục vụ',blue:'📊 Lãnh đạo Chiến lược'};
 const SL={red:'⚔️ Kiểm soát tăng cao',yellow:'🌀 Phân tán, hời hợt',green:'🐢 Thu mình, im lặng',blue:'🔍 Phân tích quá mức'};
 let allData=[],filtered=[],currentItem=null;
@@ -355,7 +303,7 @@ function normalizeItem(raw){
       if(rc.leadStyle)     item.LeadStyle=rc.leadStyle;
       if(rc.stressBehavior)item.StressBehavior=rc.stressBehavior;
       if(!item.Archetype){
-        const ARCH_MAP={'red-yellow':'Người Thúc Đẩy','red-blue':'Người Kiểm Soát','red-green':'Người Chỉ Đạo','yellow-red':'Người Truyền Cảm Hứng','yellow-green':'Người Trợ Lý Truyền Cảm','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình','green-blue':'Người Điều Phối','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách'};
+        const ARCH_MAP={'red-yellow':'Quyết Đoán & Nhiệt Tình','red-blue':'Quyết Đoán & Chuẩn Xác','red-green':'Quyết Đoán & Điềm Đạm','yellow-red':'Nhiệt Tình & Quyết Đoán','yellow-green':'Nhiệt Tình & Điềm Đạm','yellow-blue':'Nhiệt Tình & Chuẩn Xác','green-yellow':'Điềm Đạm & Nhiệt Tình','green-blue':'Điềm Đạm & Chuẩn Xác','green-red':'Điềm Đạm & Quyết Đoán','blue-green':'Chuẩn Xác & Điềm Đạm','blue-yellow':'Chuẩn Xác & Nhiệt Tình','blue-red':'Chuẩn Xác & Quyết Đoán'};
         item.Archetype=ARCH_MAP[`${rc.primaryColor}-${rc.secondaryColor}`]||`${rc.primaryColor} + ${rc.secondaryColor}`;
       }
       item._recalculated=true; // flag để debug
@@ -688,8 +636,8 @@ async function genAdminProfile(type,id){
 
   const VN_QUALITY=` CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc): Viết tiếng Việt CHUẨN của người bản ngữ, văn phong doanh nghiệp Việt Nam. TUYỆT ĐỐI KHÔNG dịch máy móc từ tiếng Anh, không bịa cụm từ vô nghĩa. Dùng đúng thuật ngữ quản trị: "trao quyền/ủy quyền", "quản lý vi mô", "không gian để suy nghĩ", "khơi dậy/dẫn dắt team", "căng thẳng/bực bội". Mỗi câu phải tự nhiên như chuyên gia tư vấn người Việt viết — nếu nghe gượng hoặc lạ tai thì viết lại. Ưu tiên rõ ràng, đúng ngữ pháp và collocation tiếng Việt hơn hoa mỹ.`;
   const SYSTEM=(type==='employee'
-    ?`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`
-    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng Insights Discovery. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`)+VN_QUALITY;
+    ?`Bạn là chuyên gia tâm lý học tổ chức và phân tích phong cách hành vi. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`
+    :`Bạn là chuyên gia tâm lý tổ chức ứng dụng mô hình phân tích 4 sắc thái. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`)+VN_QUALITY;
 
   const data_line=`Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}\nRed ${pct(r)}% | Yellow ${pct(y)}% | Green ${pct(g)}% | Blue ${pct(b)}%\nMàu chính: ${CI[pr]?.l||pr} (${pct(r||y||g||b)}%) | Màu phụ: ${CI[sec]?.l||sec} | Archetype: ${arch}\nIE: ${ieDesc} | Lãnh đạo: ${LLABELS[lead]||lead} | Stress: ${SLABELS[stress]||stress}`;
 
