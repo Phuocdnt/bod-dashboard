@@ -193,8 +193,8 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <div class="modal-hero" id="mHero" style="background: linear-gradient(135deg, rgb(10, 22, 40), rgb(30, 58, 95));">
       <button class="modal-close" onclick="closeModal()">✕</button>
       <div class="m-badge" id="mBadge">🔵 Chuẩn Xác  ·  Chuyên Gia Phân Tích &amp; Chất Lượng</div>
-      <div class="m-name" id="mName">Nguyễn Lê Thành Lạc</div>
-      <div class="m-sub" id="mSub">QA Manager · Ban Giám Đốc · 17/3/2026</div>
+      <div class="m-name" id="mName">—</div>
+      <div class="m-sub" id="mSub">—</div>
     </div>
     <div class="modal-tabs">
       <button class="m-tab" onclick="mTab(&#39;scores&#39;)">📊 Kết quả</button>
@@ -634,7 +634,8 @@ async function genAdminProfile(type,id){
   const contentEl=document.getElementById(type==='employee'?'mEmpContent':'mMgrContent');
   contentEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;color:var(--muted)"><div style="width:28px;height:28px;border:2.5px solid rgba(255,255,255,.2);border-top-color:${type==='employee'?'var(--green)':'var(--yellow)'};border-radius:50%;animation:spin .7s linear infinite"></div><span style="font-size:13px">Đang tạo ${type==='employee'?'Profile Nhân Viên':'Profile Quản Lý'}…</span></div>`;
 
-  const VN_QUALITY=` CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc): Viết tiếng Việt CHUẨN của người bản ngữ, văn phong doanh nghiệp Việt Nam. TUYỆT ĐỐI KHÔNG dịch máy móc từ tiếng Anh, không bịa cụm từ vô nghĩa. Dùng đúng thuật ngữ quản trị: "trao quyền/ủy quyền", "quản lý vi mô", "không gian để suy nghĩ", "khơi dậy/dẫn dắt team", "căng thẳng/bực bội". Mỗi câu phải tự nhiên như chuyên gia tư vấn người Việt viết — nếu nghe gượng hoặc lạ tai thì viết lại. Ưu tiên rõ ràng, đúng ngữ pháp và collocation tiếng Việt hơn hoa mỹ.`;
+  const THEORY=` KHUNG LÝ THUYẾT NỀN (phân tích sâu hơn, KHÔNG nhắc tên nhãn hiệu trong output): Bốn sắc thái tương ứng khung hành vi kinh điển — Quyết Đoán ≈ định hướng kết quả/thống trị (chủ động, kiểm soát, tốc độ); Nhiệt Tình ≈ ảnh hưởng/tương tác (hướng ngoại, thuyết phục, kết nối); Điềm Đạm ≈ ổn định/kiên định (hợp tác, kiên nhẫn, nhất quán); Chuẩn Xác ≈ tuân thủ/tận tâm (phân tích, chính xác, quy trình). Kết hợp trục hướng nội–hướng ngoại (Jung) và các chiều tính cách phổ quát (hướng ngoại, tận tâm, dễ chịu, cởi mở, ổn định cảm xúc) để làm rõ hành vi. Đan xen góc quan sát được và động lực bên trong. TUYỆT ĐỐI không dùng tên viết tắt hay tên thương mại của bất kỳ công cụ đánh giá tính cách nào.`;
+  const VN_QUALITY=` CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc): Viết tiếng Việt CHUẨN của người bản ngữ, văn phong doanh nghiệp Việt Nam. TUYỆT ĐỐI KHÔNG dịch máy móc từ tiếng Anh, không bịa cụm từ vô nghĩa. Dùng đúng thuật ngữ quản trị: "trao quyền/ủy quyền", "quản lý vi mô", "không gian để suy nghĩ", "khơi dậy/dẫn dắt team", "căng thẳng/bực bội". Mỗi câu phải tự nhiên như chuyên gia tư vấn người Việt viết — nếu nghe gượng hoặc lạ tai thì viết lại. Ưu tiên rõ ràng, đúng ngữ pháp và collocation tiếng Việt hơn hoa mỹ.`+THEORY;
   const SYSTEM=(type==='employee'
     ?`Bạn là chuyên gia tâm lý học tổ chức và phân tích phong cách hành vi. Tạo hồ sơ CÁ NHÂN HÓA SÂU cho nhân viên tự đọc về bản thân — giọng ấm áp, chân thành, không directive, không sáo rỗng. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`
     :`Bạn là chuyên gia tâm lý tổ chức ứng dụng mô hình phân tích 4 sắc thái. Tạo hồ sơ quản lý THỰC CHIẾN — mỗi điểm phải có thể quan sát hoặc hành động ngay trong môi trường doanh nghiệp Việt Nam. QUY TẮC JSON: KHÔNG dùng xuống dòng thật (Enter) trong string — dùng \\n thay thế. KHÔNG dùng nháy kép " trong string — dùng nháy đơn. Trả về JSON hợp lệ 100%.`)+VN_QUALITY;
