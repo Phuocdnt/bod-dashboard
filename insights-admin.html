@@ -157,6 +157,7 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     <span class="sb-lbl">Lọc &amp; Tìm Kiếm</span>
     <div class="filter-wrap">
       <input id="fSearch" placeholder="Tìm tên, chức danh…" oninput="applyFilter()">
+      <select id="fOrg" onchange="applyFilter()"><option value="">Tất cả tổ chức</option></select>
       <select id="fDept" onchange="applyFilter()"><option value="">Tất cả phòng ban</option><option value="Ban Giám Đốc">Ban Giám Đốc</option><option value="Kỹ Thuật">Kỹ Thuật</option><option value="Sản Xuất">Sản Xuất</option></select>
       <select id="fColor" onchange="applyFilter()">
         <option value="">Tất cả màu chính</option>
@@ -168,6 +169,13 @@ table.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
     </div>
   </aside>
   <div class="content">
+    <div class="tbl-wrap" id="pendingRegPanel" style="display:none;margin-bottom:20px;border:1.5px solid #f59e0b">
+      <div class="tbl-hdr">
+        <h2>🔔 Đăng Ký Chờ Duyệt (<span id="pendingCount">0</span>)</h2>
+        <button class="btn-refresh" onclick="loadPendingRegistrations()">🔄 Làm mới</button>
+      </div>
+      <div id="pendingRegBody"></div>
+    </div>
     <div class="tbl-wrap">
       <div class="tbl-hdr">
         <h2 id="tableTitle">Tất cả phản hồi (4)</h2>
@@ -333,7 +341,8 @@ function normalizeItem(raw){
     AIProfile:raw.AIProfile||raw.aiProfile||null,
     IEScoreE:Number(raw.IEScoreE||raw.ieScoreE||0),
     IEScoreI:Number(raw.IEScoreI||raw.ieScoreI||0),
-    Created:raw.Created||raw.created||''
+    Created:raw.Created||raw.created||'',
+    Organization:raw.Organization||raw.organization||''
   };
   // Version cũ không có điểm → tự recalculate từ Answers khi load
   if((item.RedScore+item.YellowScore+item.GreenScore+item.BlueScore===0) && item.Answers){
@@ -364,9 +373,53 @@ async function loadData(){
     const json=await res.json();
     const raw=Array.isArray(json)?json:(json.value||json.items||json.d?.results||[]);
     allData=raw.map(normalizeItem).filter(m=>m.Title);
+    populateOrgFilter();
     applyFilter();updateSidebar();
     toast(`✅ Đã tải ${allData.length} phản hồi`);
   }catch(e){showError(e.message);}
+  loadPendingRegistrations();
+}
+
+// ── Đăng ký chờ duyệt ──
+async function loadPendingRegistrations(){
+  try{
+    const base=CONFIG.flowReadUrl.replace(/\?.*$/,'');
+    const res=await fetch(base+'?action=pendingRegistrations');
+    const json=await res.json();
+    const list=json.value||[];
+    const panel=document.getElementById('pendingRegPanel');
+    const body=document.getElementById('pendingRegBody');
+    document.getElementById('pendingCount').textContent=list.length;
+    if(list.length===0){panel.style.display='none';return;}
+    panel.style.display='block';
+    body.innerHTML=list.map(r=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-weight:600">${r.name||'(chưa nhập tên)'}</div>
+          <div style="font-size:13px;color:var(--muted)">${r.email} · Tổ chức: <strong>${r.organization}</strong></div>
+        </div>
+        <button class="btn-refresh" style="background:#16a34a;color:#fff;border-color:#16a34a" onclick="approveRegistration('${r.email.replace(/'/g,"\\'")}','${r.organization.replace(/'/g,"\\'")}',this)">✅ Duyệt</button>
+      </div>`).join('');
+  }catch(e){/* im lặng — panel không hiển thị nếu lỗi */}
+}
+async function approveRegistration(email,org,btnEl){
+  btnEl.disabled=true;btnEl.textContent='Đang duyệt…';
+  try{
+    const res=await fetch(CONFIG.flowWriteUrl,{method:'POST',body:JSON.stringify({
+      approveRoster:true,email,organization:org
+    })});
+    const data=await res.json();
+    if(data.success){
+      toast(`✅ Đã duyệt ${email}`);
+      loadPendingRegistrations();
+    }else{
+      toast('❌ Lỗi: '+(data.error||'unknown'),true);
+      btnEl.disabled=false;btnEl.textContent='✅ Duyệt';
+    }
+  }catch(e){
+    toast('❌ Lỗi kết nối',true);
+    btnEl.disabled=false;btnEl.textContent='✅ Duyệt';
+  }
 }
 
 function showError(m){
@@ -375,27 +428,39 @@ function showError(m){
 
 function applyFilter(){
   const s=(document.getElementById('fSearch').value||'').toLowerCase();
+  const o=document.getElementById('fOrg').value;
   const d=document.getElementById('fDept').value;
   const c=document.getElementById('fColor').value;
   filtered=allData.filter(i=>{
     const matchS=!s||((i.Title+i.EmployeeRole).toLowerCase().includes(s));
+    const matchO=!o||i.Organization===o;
     const matchD=!d||i.Department===d;
     const matchC=!c||i.PrimaryColor===c;
-    return matchS&&matchD&&matchC;
+    return matchS&&matchO&&matchD&&matchC;
   });
   renderTable();
   document.getElementById('tableTitle').textContent=filtered.length===allData.length?`Tất cả phản hồi (${allData.length})`:`Lọc: ${filtered.length} / ${allData.length}`;
 }
+// Điền dropdown Organization động dựa trên data thực tế đã load
+function populateOrgFilter(){
+  const sel=document.getElementById('fOrg');
+  if(!sel)return;
+  const cur=sel.value;
+  const orgs=[...new Set(allData.map(i=>i.Organization).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Tất cả tổ chức</option>'+orgs.map(o=>`<option value="${o}">${o}</option>`).join('');
+  if(orgs.includes(cur)) sel.value=cur;
+}
 
 function renderTable(){
   if(!filtered.length){document.getElementById('tableBody').innerHTML='<div class="empty"><div class="big">📭</div><p>Không có dữ liệu phù hợp</p></div>';return;}
-  let html=`<table class="tbl"><thead><tr><th>Nhân Viên</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody>`;
+  let html=`<table class="tbl"><thead><tr><th>Nhân Viên</th><th>Tổ Chức</th><th>Phòng Ban</th><th>Màu Chính</th><th>Màu Phụ</th><th>Phân Bổ</th><th>Archetype</th><th>Ngày</th></tr></thead><tbody>`;
   filtered.forEach(item=>{
     const p=CI[item.PrimaryColor]||CI.blue,s=CI[item.SecondaryColor]||CI.green;
     const r=item.RedScore,y=item.YellowScore,g=item.GreenScore,b=item.BlueScore;
     const date=item.Created?new Date(item.Created).toLocaleDateString('vi-VN'):'–';
     html+=`<tr onclick="openModal(${JSON.stringify(item.ID||'').replace(/"/g,'&quot;')})">
       <td><div class="name-cell"><span class="nm">${item.Title}</span><span class="rl">${item.EmployeeRole||''}</span></div></td>
+      <td style="color:var(--muted);font-size:13px">${item.Organization||'–'}</td>
       <td style="color:var(--muted);font-size:13px">${item.Department||'–'}</td>
       <td><span class="pill" style="background:${p.c}22;color:${p.c}">${p.e} ${p.l}</span></td>
       <td><span class="pill" style="background:${s.c}18;color:${s.c}">${s.e} ${s.l}</span></td>
