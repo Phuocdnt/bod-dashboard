@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Discovery – Khảo Sát & Profile</title>
+<title>Spectra – Khảo Sát & Hồ Sơ Phong Cách</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -247,9 +247,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 <div class="wrap">
   <div class="hdr">
     <div class="wheel-icon"></div>
-    <div class="hdr-badge">&#128269; Insights Discovery</div>
+    <div class="hdr-badge">&#128269; Spectra</div>
     <h1>Khám Phá<br><em>Phong Cách</em> Của Bạn</h1>
-    <p>Bộ câu hỏi 48 mục giúp xác định phong cách làm việc, giao tiếp và lãnh đạo theo mô hình Insights Discovery.</p>
+    <p>Bộ câu hỏi 48 mục giúp xác định phong cách làm việc, giao tiếp và lãnh đạo theo phương pháp phân tích 4 sắc thái Spectra.</p>
   </div>
   <div class="prog-wrap" id="progWrap">
     <div class="prog-lbl"><span id="progLbl">0 / 48 câu</span><span id="progPct">0%</span></div>
@@ -271,10 +271,10 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="card">
       <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
       <div class="color-grid">
-        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">&#128308; Fiery Red</h3><p>Quyết đoán, tập trung kết quả, kiểm soát</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">&#128993; Sunshine Yellow</h3><p>Nhiệt tình, truyền cảm hứng, sáng tạo</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">&#128994; Earth Green</h3><p>Đồng cảm, ổn định, gắn kết, hỗ trợ</p></div></div>
-        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">&#128309; Cool Blue</h3><p>Phân tích, cẩn thận, chính xác, có hệ thống</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--red)"></div><div><h3 style="color:var(--red)">&#128308; Quyết Đoán</h3><p>Hành động nhanh, tập trung kết quả, thích kiểm soát</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--yellow)"></div><div><h3 style="color:var(--yellow)">&#128993; Nhiệt Tình</h3><p>Truyền cảm hứng, sáng tạo, hướng ngoại</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--green)"></div><div><h3 style="color:var(--green)">&#128994; Điềm Đạm</h3><p>Đồng cảm, ổn định, gắn kết, hỗ trợ</p></div></div>
+        <div class="ci"><div class="ci-bar" style="background:var(--blue)"></div><div><h3 style="color:var(--blue)">&#128309; Chuẩn Xác</h3><p>Phân tích sâu, cẩn thận, có hệ thống</p></div></div>
       </div>
     </div>
     <div class="card">
@@ -383,9 +383,9 @@ const QS=[
   {t:"Trong tình huống bất ngờ không theo kế hoạch, bạn:",o:{r:"Thích nghi nhanh và ngay lập tức kiểm soát tình hình",y:"Coi đó là phiêu lưu thú vị và cảm thấy hứng khởi",g:"Lo lắng về tác động đến mọi người xung quanh",b:"Cần thời gian để xử lý và tìm lại sự trật tự"},d:"stress"},
   {t:"Điều giúp bạn duy trì hiệu suất tốt nhất lâu dài:",o:{r:"Mục tiêu rõ ràng, thách thức và quyền tự chủ cao",y:"Môi trường tích cực, được công nhận và tương tác nhiều",g:"Sự ổn định, quan hệ tốt trong nhóm và ít xung đột",b:"Quy trình rõ ràng, đủ thời gian để làm đúng và chất lượng"},d:"stress"}
 ];
-const CI={r:{l:'Fiery Red',e:'🔴',c:'#E8392A'},y:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623'},g:{l:'Earth Green',e:'🟢',c:'#3CB371'},b:{l:'Cool Blue',e:'🔵',c:'#2B6CB0'}};
+const CI={r:{l:'Quyết Đoán',e:'🔴',c:'#E8392A'},y:{l:'Nhiệt Tình',e:'🟡',c:'#F5A623'},g:{l:'Điềm Đạm',e:'🟢',c:'#3CB371'},b:{l:'Chuẩn Xác',e:'🔵',c:'#2B6CB0'}};
 const CIMAP={red:CI.r,yellow:CI.y,green:CI.g,blue:CI.b};
-const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Người Kiểm Soát (Director)','red-green':'Người Chỉ Đạo (Commander)','yellow-red':'Người Truyền Cảm Hứng (Inspirer)','yellow-green':'Người Trợ Lý Truyền Cảm (Inspiring Helper)','yellow-blue':'Người Điều Phối Sáng Tạo','green-yellow':'Người Hỗ Trợ Nhiệt Tình (Supportive Helper)','green-blue':'Người Điều Phối (Coordinator)','green-red':'Người Hỗ Trợ Kiên Định','blue-green':'Người Quan Sát (Observer)','blue-yellow':'Người Cải Cách Sáng Tạo','blue-red':'Người Cải Cách (Reformer)'};
+const ARCH={'red-yellow':'Quyết Đoán & Nhiệt Tình','red-blue':'Quyết Đoán & Chuẩn Xác','red-green':'Quyết Đoán & Điềm Đạm','yellow-red':'Nhiệt Tình & Quyết Đoán','yellow-green':'Nhiệt Tình & Điềm Đạm','yellow-blue':'Nhiệt Tình & Chuẩn Xác','green-yellow':'Điềm Đạm & Nhiệt Tình','green-blue':'Điềm Đạm & Chuẩn Xác','green-red':'Điềm Đạm & Quyết Đoán','blue-green':'Chuẩn Xác & Điềm Đạm','blue-yellow':'Chuẩn Xác & Nhiệt Tình','blue-red':'Chuẩn Xác & Quyết Đoán'};
 let ANS={},BATCH_IDX=0;
 const BSIZE=6;
 const CORE_N=24;
@@ -647,7 +647,7 @@ async function genAIProfile(name,role,dept,d){
     if((d.pr==='y'&&d.sec==='b')||(d.pr==='b'&&d.sec==='y')) return 'Mâu thuẫn giữa sáng tạo bốc đồng (Yellow) và cẩn thận chi tiết (Blue)';
     return 'Hai màu chính hỗ trợ lẫn nhau, ít căng thẳng nội tâm';
   })();
-  const prompt=`Bạn là chuyên gia tâm lý học tổ chức và Insights Discovery cấp cao. Tạo hồ sơ CÁ NHÂN HÓA SÂU — KHÔNG dùng mô tả chung chung của màu sắc.
+  const prompt=`Bạn là chuyên gia tâm lý học tổ chức và phân tích phong cách hành vi cấp cao. Tạo hồ sơ CÁ NHÂN HÓA SÂU — KHÔNG dùng mô tả chung chung của màu sắc.
 
 DỮ LIỆU: Tên: ${name} | Chức danh: ${role}${dept?' | Phòng ban: '+dept:''}
 Điểm số: Red ${d.pct('r')}% / Yellow ${d.pct('y')}% / Green ${d.pct('g')}% / Blue ${d.pct('b')}%
@@ -666,12 +666,12 @@ YÊU CẦU BẮT BUỘC:
 5. Viết tiếng Việt, giọng chuyên nghiệp và ấm áp
 
 Trả về JSON thuần (không markdown):
-{"personalStyle":"4 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ: (1) tổng quan archetype+màu+IE, (2) phong cách tương tác thực tế, (3) phong cách lãnh đạo, (4) điểm KHÁC so với người cùng màu chính ${CI[d.pr].l}","strengths":["8 điểm — mỗi điểm tối đa 25 từ, nêu rõ nguồn gốc từ màu/IE/stress"],"weaknesses":["6 điểm — mỗi điểm tối đa 25 từ, gắn với stress behavior cụ thể"],"valueToTeam":["6 đóng góp — mỗi điểm tối đa 20 từ"],"effectiveCommunication":["6 cách — mỗi cách tối đa 20 từ, dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — mỗi điều tối đa 20 từ, gắn với hành vi stress"],"blindSpots":"2 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ","conflictStyle":["5 điểm — mỗi điểm tối đa 22 từ"],"development":["6 gợi ý — mỗi gợi ý tối đa 25 từ, ưu tiên chiều còn yếu"],"idealEnvironment":["5 môi trường — mỗi điểm tối đa 20 từ"],"leadershipJourney":"2 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ","managingTips":["6 cách — mỗi cách tối đa 25 từ, actionable"],"colorInteractions":{"withRed":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips làm việc với Fiery Red","withYellow":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Sunshine Yellow","withGreen":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Earth Green","withBlue":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Cool Blue"},"actionPlan90":{"week1_2":["3 hành động tuần đầu — mỗi hành động tối đa 20 từ"],"month1":["3 mục tiêu tháng 1 — mỗi mục tiêu tối đa 20 từ"],"month2_3":["3 mục tiêu tháng 2-3 — mỗi mục tiêu tối đa 20 từ"],"longterm":"1-2 câu định hướng dài hạn tối đa 40 từ"},"managerSnapshot":{"immediateActions":["3 hành động manager làm TUẦN NÀY — mỗi hành động tối đa 25 từ"],"biggestRisk":"1-2 câu tối đa 40 từ về rủi ro nếu không can thiệp","howToUseBest":["3 cách dùng ${name} tốt nhất — mỗi cách tối đa 20 từ"],"watchSignals":["3 dấu hiệu cảnh báo — mỗi dấu hiệu tối đa 20 từ"]},"performancePositioning":{"level":"Above average / At average / Below average","explanation":"1-2 câu tối đa 40 từ"},"failureScenario":{"trigger":"1 câu tối đa 30 từ","whatHappens":"2-3 câu tối đa 50 từ","businessImpact":"1 câu tối đa 25 từ"},"whatToDoNow":["5 hành động manager làm NGAY HÔM NAY — mỗi hành động tối đa 20 từ"]}}}}` ;
+{"personalStyle":"4 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ: (1) tổng quan archetype+màu+IE, (2) phong cách tương tác thực tế, (3) phong cách lãnh đạo, (4) điểm KHÁC so với người cùng màu chính ${CI[d.pr].l}","strengths":["8 điểm — mỗi điểm tối đa 25 từ, nêu rõ nguồn gốc từ màu/IE/stress"],"weaknesses":["6 điểm — mỗi điểm tối đa 25 từ, gắn với stress behavior cụ thể"],"valueToTeam":["6 đóng góp — mỗi điểm tối đa 20 từ"],"effectiveCommunication":["6 cách — mỗi cách tối đa 20 từ, dựa trên IE type và màu chính"],"communicationBarriers":["5 điều tránh — mỗi điều tối đa 20 từ, gắn với hành vi stress"],"blindSpots":"2 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ","conflictStyle":["5 điểm — mỗi điểm tối đa 22 từ"],"development":["6 gợi ý — mỗi gợi ý tối đa 25 từ, ưu tiên chiều còn yếu"],"idealEnvironment":["5 môi trường — mỗi điểm tối đa 20 từ"],"leadershipJourney":"2 đoạn cách nhau \\n — mỗi đoạn tối đa 45 từ","managingTips":["6 cách — mỗi cách tối đa 25 từ, actionable"],"colorInteractions":{"withRed":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips làm việc với Quyết Đoán","withYellow":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Nhiệt Tình","withGreen":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Điềm Đạm","withBlue":"2-3 câu tối đa 40 từ tổng: điểm hợp + tips với Chuẩn Xác"},"actionPlan90":{"week1_2":["3 hành động tuần đầu — mỗi hành động tối đa 20 từ"],"month1":["3 mục tiêu tháng 1 — mỗi mục tiêu tối đa 20 từ"],"month2_3":["3 mục tiêu tháng 2-3 — mỗi mục tiêu tối đa 20 từ"],"longterm":"1-2 câu định hướng dài hạn tối đa 40 từ"},"managerSnapshot":{"immediateActions":["3 hành động manager làm TUẦN NÀY — mỗi hành động tối đa 25 từ"],"biggestRisk":"1-2 câu tối đa 40 từ về rủi ro nếu không can thiệp","howToUseBest":["3 cách dùng ${name} tốt nhất — mỗi cách tối đa 20 từ"],"watchSignals":["3 dấu hiệu cảnh báo — mỗi dấu hiệu tối đa 20 từ"]},"performancePositioning":{"level":"Above average / At average / Below average","explanation":"1-2 câu tối đa 40 từ"},"failureScenario":{"trigger":"1 câu tối đa 30 từ","whatHappens":"2-3 câu tối đa 50 từ","businessImpact":"1 câu tối đa 25 từ"},"whatToDoNow":["5 hành động manager làm NGAY HÔM NAY — mỗi hành động tối đa 20 từ"]}}}}` ;
   try{
     // Gọi qua Power Automate proxy — API key lưu an toàn trong PA, không lộ trong HTML
   if(!CONFIG.claudeFlowUrl||CONFIG.claudeFlowUrl.includes('PASTE_'))throw new Error('Chưa cấu hình Claude Flow URL');
   // Gửi full Claude API payload — PA chỉ cần forward thẳng đến api.anthropic.com
-  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức và tư vấn lãnh đạo cấp cao. Bạn KHÔNG phải content writer. Nhiệm vụ: phân tích hành vi lãnh đạo cá nhân dựa trên dữ liệu Insights Discovery.
+  const SYSTEM=`Bạn là chuyên gia tâm lý tổ chức và tư vấn lãnh đạo cấp cao. Bạn KHÔNG phải content writer. Nhiệm vụ: phân tích hành vi lãnh đạo cá nhân dựa trên dữ liệu khảo sát 4 sắc thái.
 
 QUY TẮC BẮT BUỘC:
 1. Ưu tiên: Behavioral patterns > biểu hiện thực tế > lý thuyết màu sắc
@@ -785,10 +785,10 @@ CHẤT LƯỢNG TIẾNG VIỆT (bắt buộc tuyệt đối):
   }catch(e){console.error('AI Error:',e?.message||e);console.error('Status:',e?.status);return fallback(name,d.pr,d.sec,d.ieType,d.leadStyle,d.stressBehavior,d.arch);}
 }
 function fallback(name,pr,sec,ieType,leadStyle,stressBehavior,arch){
-  const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Fiery Red chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
-  y:{s:['Truyền cảm hứng và tạo động lực','Sáng tạo và luôn có ý tưởng mới','Giao tiếp tự nhiên, xây dựng quan hệ tốt','Linh hoạt và thích nghi nhanh','Nhìn thấy tiềm năng trong mọi người','Tạo không khí tích cực','Nhiệt tình và đam mê','Tư duy rộng'],p:`${name} mang năng lượng Sunshine Yellow đặc trưng — nhiệt tình, sáng tạo và truyền cảm hứng tự nhiên cho mọi người xung quanh.\n\nPhong cách làm việc của ${name} linh hoạt, cởi mở và luôn hướng đến sự đổi mới và kết nối con người.`},
-  g:{s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn và ổn định','Đảm bảo hòa hợp nhóm','Hỗ trợ đồng nghiệp chân thành','Trung thành và đáng tin cậy','Trung gian hòa giải hiệu quả','Quan tâm sự phát triển của người khác'],p:`${name} là trái tim kết nối của đội nhóm. Với màu Earth Green chiếm ưu thế, ${name} mang đến sự đồng cảm, ổn định và luôn sẵn sàng hỗ trợ mọi người.\n\nPhong cách làm việc của ${name} hướng đến sự hài hòa, tin tưởng lẫn nhau và đảm bảo mọi người đều được lắng nghe.`},
-  b:{s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và chất lượng','Cẩn thận và chính xác','Duy trì tiêu chuẩn cao','Lập kế hoạch tỉ mỉ','Tư duy phản biện tốt','Đáng tin cậy về chuyên môn','Kiên định với nguyên tắc'],p:`${name} là chuyên gia phân tích và chất lượng của nhóm. Với Cool Blue chiếm ưu thế, ${name} đảm bảo mọi việc được thực hiện đúng và có căn cứ rõ ràng.\n\nPhong cách làm việc của ${name} có hệ thống, cẩn thận và luôn đặt chất lượng lên hàng đầu.`}};
+  const F={r:{s:['Quyết đoán và dứt khoát trong ra quyết định','Tập trung cao độ vào mục tiêu và kết quả','Dẫn dắt tốt trong tình huống khó','Hiệu quả và không ngại thách thức','Trực tiếp và tiết kiệm thời gian','Chịu trách nhiệm cao','Làm việc độc lập tốt','Thúc đẩy tiến độ nhóm'],p:`${name} là người quyết đoán và tập trung kết quả. Với năng lượng Quyết Đoán chiếm ưu thế, ${name} luôn hướng đến hành động cụ thể và kết quả đo lường được.\n\nTrong môi trường làm việc, ${name} thường là người chủ động dẫn dắt và đưa ra quyết định khi cần thiết.`},
+  y:{s:['Truyền cảm hứng và tạo động lực','Sáng tạo và luôn có ý tưởng mới','Giao tiếp tự nhiên, xây dựng quan hệ tốt','Linh hoạt và thích nghi nhanh','Nhìn thấy tiềm năng trong mọi người','Tạo không khí tích cực','Nhiệt tình và đam mê','Tư duy rộng'],p:`${name} mang năng lượng Nhiệt Tình đặc trưng — nhiệt tình, sáng tạo và truyền cảm hứng tự nhiên cho mọi người xung quanh.\n\nPhong cách làm việc của ${name} linh hoạt, cởi mở và luôn hướng đến sự đổi mới và kết nối con người.`},
+  g:{s:['Đồng cảm sâu sắc và lắng nghe chủ động','Xây dựng lòng tin và quan hệ bền vững','Kiên nhẫn và ổn định','Đảm bảo hòa hợp nhóm','Hỗ trợ đồng nghiệp chân thành','Trung thành và đáng tin cậy','Trung gian hòa giải hiệu quả','Quan tâm sự phát triển của người khác'],p:`${name} là trái tim kết nối của đội nhóm. Với màu Điềm Đạm chiếm ưu thế, ${name} mang đến sự đồng cảm, ổn định và luôn sẵn sàng hỗ trợ mọi người.\n\nPhong cách làm việc của ${name} hướng đến sự hài hòa, tin tưởng lẫn nhau và đảm bảo mọi người đều được lắng nghe.`},
+  b:{s:['Phân tích logic và tư duy hệ thống','Chú trọng chi tiết và chất lượng','Cẩn thận và chính xác','Duy trì tiêu chuẩn cao','Lập kế hoạch tỉ mỉ','Tư duy phản biện tốt','Đáng tin cậy về chuyên môn','Kiên định với nguyên tắc'],p:`${name} là chuyên gia phân tích và chất lượng của nhóm. Với Chuẩn Xác chiếm ưu thế, ${name} đảm bảo mọi việc được thực hiện đúng và có căn cứ rõ ràng.\n\nPhong cách làm việc của ${name} có hệ thống, cẩn thận và luôn đặt chất lượng lên hàng đầu.`}};
   const f=F[pr]||F.y;
   const secInfo=F[sec]||F.b;
   const ieDesc=ieType==='Extrovert'?'hướng ngoại, nạp năng lượng từ tương tác và thích suy nghĩ bằng cách nói ra':'hướng nội, cần thời gian riêng để nạp lại năng lượng và suy nghĩ chín chắn trước khi chia sẻ';
@@ -826,7 +826,7 @@ Việc phát triển nhận thức về điểm mù này sẽ giúp ${name} tr�
 function buildWheel(pr,sec,pct){
   const cx=160,cy=160,R=150,r2=62;
   const SC=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
-  const SL=['Director','Motivator','Inspirer','Insp.Helper','Supporter','Coordinator','Observer','Reformer'];
+  const SL=['Táo Bạo','Sôi Nổi','Cởi Mở','Ấm Áp','Tận Tâm','Nhất Quán','Thận Trọng','Nghiêm Cẩn'];
   const PM={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7};
   const kmap={r:'red',y:'yellow',g:'green',b:'blue'};
   const hl=PM[`${kmap[pr]}-${kmap[sec]}`]??0;
@@ -945,7 +945,7 @@ function renderProfile(name,role,dept,d,n){
       <div class="profile-section">
         <div class="ps-label">🎨 Tương Tác Với Các Màu Khác</div>
         <div class="ps-content">
-          ${[['🔴','Fiery Red','withRed','#E8392A'],['🟡','Sunshine Yellow','withYellow','#F5A623'],['🟢','Earth Green','withGreen','#3CB371'],['🔵','Cool Blue','withBlue','#2B6CB0']].map(([e,l,k,c])=>n.colorInteractions[k]?`
+          ${[['🔴','Quyết Đoán','withRed','#E8392A'],['🟡','Nhiệt Tình','withYellow','#F5A623'],['🟢','Điềm Đạm','withGreen','#3CB371'],['🔵','Chuẩn Xác','withBlue','#2B6CB0']].map(([e,l,k,c])=>n.colorInteractions[k]?`
           <div style="margin-bottom:16px;padding:14px;background:var(--sur2);border-radius:12px;border-left:3px solid ${c}">
             <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${c};margin-bottom:6px">${e} ${l}</div>
             <div style="font-size:13px;line-height:1.75;color:rgba(232,237,243,.85)">${n.colorInteractions[k]}</div>
@@ -992,7 +992,7 @@ function renderProfile(name,role,dept,d,n){
         <div class="failure-col"><div class="failure-col-label">💥 Business Impact</div><p>${n.failureScenario.businessImpact||''}</p></div>
       </div>
     </div>`:''}`;
-  document.getElementById('printFooterTxt').textContent=`Insights Discovery Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')}`;
+  document.getElementById('printFooterTxt').textContent=`Spectra Profile · ${name} · ${role}${dept?' · '+dept:''} · ${new Date().toLocaleDateString('vi-VN')}`;
   document.getElementById('profileActions').style.display='grid';
   toast('✅ Profile của bạn đã được tạo thành công!');
   // Nếu đang ở chế độ print (admin popup) → trigger print sau khi render xong
