@@ -3,7 +3,7 @@
 <html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insights Workshop – Team Dashboard v2</title>
+<title>Spectra – Team Workshop Dashboard</title>
 <link href="./insights-workshop_Github_files/css2" rel="stylesheet">
 <script>
 const CONFIG = {
@@ -151,7 +151,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 .conflict-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
 .conflict-card{border-radius:12px;padding:16px;border:1px solid var(--bdr)}
 .conflict-mode-badge{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:5px;display:inline-block;margin-bottom:8px}
-/* Key Attributes */
+/* Nhom vai tro */
 .key-attr-wheel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 @media(max-width:700px){.key-attr-wheel{grid-template-columns:1fr 1fr}}
 .ka-cell{border-radius:10px;padding:12px;border:1px solid var(--bdr);text-align:center}
@@ -252,8 +252,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="sb-section">
       <div class="sb-title">Thống kê</div>
       <div class="sb-stats">
-        <div class="sb-stat"><div class="sb-stat-n" id="statTotal">4</div><div class="sb-stat-l">Thành viên</div></div>
-        <div class="sb-stat"><div class="sb-stat-n" id="statDept">3</div><div class="sb-stat-l">Phòng ban</div></div>
+        <div class="sb-stat"><div class="sb-stat-n" id="statTotal"></div><div class="sb-stat-l">Thành viên</div></div>
+        <div class="sb-stat"><div class="sb-stat-n" id="statDept"></div><div class="sb-stat-l">Phòng ban</div></div>
       </div>
     </div>
     <div class="sb-section">
@@ -261,7 +261,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         Thành viên
         <span id="sbSelBadge" style="font-size:11px;color:#60a5fa;font-weight:700;background:rgba(43,108,176,.2);border-radius:99px;padding:1px 7px"></span>
       </div>
-      <div id="memberList"><button class="sb-member" onclick="focusMember(&#39;Nguyễn Lê Thành Lạc&#39;)"><div class="sb-avatar" style="background:#2B6CB0">TL</div><div><div class="sb-mname">Thành Lạc</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;Hồ Việt Khánh&#39;)"><div class="sb-avatar" style="background:#2B6CB0">VK</div><div><div class="sb-mname">Việt Khánh</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;BÙI HÀ ĐỨC AN&#39;)"><div class="sb-avatar" style="background:#2B6CB0">ĐA</div><div><div class="sb-mname">ĐỨC AN</div><div class="sb-mcolor">🔵 Cool Blue</div></div></button><button class="sb-member" onclick="focusMember(&#39;Tung Nguyen Hoang Thanh&#39;)"><div class="sb-avatar" style="background:#3CB371">HT</div><div><div class="sb-mname">Hoang Thanh</div><div class="sb-mcolor">🟢 Earth Green</div></div></button></div>
+      <div id="memberList"></div>
     </div>
     <button class="btn-manage-members" onclick="openMemberSelector()">⚙️ Chọn thành viên Workshop…</button>
     <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="loadTeamData()">↻ Làm mới dữ liệu</button>
@@ -272,7 +272,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="top-bar">
       <div>
         <div class="top-title">Team <em>Insights</em><br>Workshop Dashboard</div>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px" id="lastUpdate">Cập nhật: 15:40:41 20/3/2026</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px" id="lastUpdate"></p>
       </div>
       <div class="top-actions">
         <button class="btn btn-sec" onclick="generateAIInsights()">🤖 AI Phân tích nhóm</button>
@@ -300,21 +300,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       <div class="grid2">
         <div class="card">
           <div class="card-title">🎨 Phân bổ màu năng lượng</div>
-          <div class="chart-wrap" id="donutChart"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
-    <div class="donut-wrap"><svg viewBox="0 0 180 180" style="width:160px;height:160px"><path d="M90 10A80 80 0 0 1 170 90L140 90A50 50 0 0 0 90 40Z" fill="#3CB371" opacity=".9"></path><path d="M170 90A80 80 0 1 1 89.99999999999999 10L89.99999999999999 40A50 50 0 1 0 140 90Z" fill="#2B6CB0" opacity=".9"></path><circle cx="90" cy="90" r="48" fill="var(--sur)"></circle><text x="90" y="84" text-anchor="middle" fill="#2B6CB0" font-size="24">●</text><text x="90" y="100" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans">75%</text></svg></div>
-    <div class="legend"><div class="legend-item"><div class="legend-dot" style="background:#3CB371"></div>Earth Green<span class="legend-pct">1 người · 25%</span></div><div class="legend-item"><div class="legend-dot" style="background:#2B6CB0"></div>Cool Blue<span class="legend-pct">3 người · 75%</span></div></div></div></div>
+          <div class="chart-wrap" id="donutChart"></div>
+    <div class="legend"><div class="legend-item"><div class="legend-dot" style="background:#3CB371"></div>Điềm Đạm<span class="legend-pct">1 người · 25%</span></div><div class="legend-item"><div class="legend-dot" style="background:#2B6CB0"></div>Chuẩn Xác<span class="legend-pct">3 người · 75%</span></div></div></div></div>
         </div>
         <div class="card">
-          <div class="card-title">📍 Team Insights Wheel</div>
-          <div class="team-wheel-wrap" id="teamWheel"><svg viewBox="0 0 320 320" style="width:100%;max-width:320px;filter:drop-shadow(0 8px 24px rgba(0,0,0,.5))"><path d="M137.0389940580946 104.5672280493228L102.59748514523653 21.41807012330699A150 150 0 0 1 217.40251485476347 21.41807012330699L182.9610059419054 104.5672280493228A60 60 0 0 0 137.0389940580946 104.5672280493228Z" fill="#E8392A" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="160" y="55" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Director</text><path d="M182.9610059419054 104.5672280493228L217.40251485476347 21.41807012330699A150 150 0 0 1 298.58192987669304 102.59748514523653L215.4327719506772 137.0389940580946A60 60 0 0 0 182.9610059419054 104.5672280493228Z" fill="#E8823B" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="234.2462120245875" y="85.75378797541252" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Motivator</text><path d="M215.4327719506772 137.0389940580946L298.58192987669304 102.59748514523653A150 150 0 0 1 298.58192987669304 217.40251485476347L215.4327719506772 182.9610059419054A60 60 0 0 0 215.4327719506772 137.0389940580946Z" fill="#F5A623" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="265" y="160" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Inspirer</text><path d="M215.4327719506772 182.9610059419054L298.58192987669304 217.40251485476347A150 150 0 0 1 217.40251485476347 298.58192987669304L182.9610059419054 215.4327719506772A60 60 0 0 0 215.4327719506772 182.9610059419054Z" fill="#7DB85E" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="234.2462120245875" y="234.24621202458746" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Insp.Helper</text><path d="M182.9610059419054 215.4327719506772L217.40251485476347 298.58192987669304A150 150 0 0 1 102.59748514523653 298.58192987669304L137.0389940580946 215.4327719506772A60 60 0 0 0 182.9610059419054 215.4327719506772Z" fill="#3CB371" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="160" y="265" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Supporter</text><text x="160" y="279" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><path d="M137.0389940580946 215.4327719506772L102.59748514523653 298.58192987669304A150 150 0 0 1 21.41807012330699 217.40251485476347L104.5672280493228 182.9610059419054A60 60 0 0 0 137.0389940580946 215.4327719506772Z" fill="#2B96A0" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="85.75378797541252" y="234.2462120245875" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Coordinator</text><text x="85.75378797541252" y="248.2462120245875" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><path d="M104.5672280493228 182.9610059419054L21.41807012330699 217.40251485476347A150 150 0 0 1 21.41807012330696 102.59748514523662L104.56722804932278 137.03899405809466A60 60 0 0 0 104.5672280493228 182.9610059419054Z" fill="#2B6CB0" opacity="0.25" stroke="rgba(0,0,0,.2)" stroke-width="1"></path><text x="55" y="160" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="400" opacity="0.5">Observer</text><path d="M104.56722804932278 137.03899405809466L21.41807012330696 102.59748514523662A150 150 0 0 1 102.59748514523658 21.41807012330696L137.03899405809463 104.56722804932278A60 60 0 0 0 104.56722804932278 137.03899405809466Z" fill="#9B4CB0" opacity="0.75" stroke="rgba(255,255,255,.5)" stroke-width="1.5"></path><text x="85.7537879754125" y="85.75378797541252" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8.5" font-family="DM Sans,sans-serif" font-weight="700" opacity="1">Reformer</text><text x="85.7537879754125" y="99.75378797541252" text-anchor="middle" fill="white" font-size="11" font-weight="800" opacity=".9">1</text><circle cx="146.01310335351343" cy="60.478059091472176" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="146.01310335351343" y="60.478059091472176" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">L</text><circle cx="79.38982694473357" cy="79.38982694473358" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="79.38982694473357" y="79.38982694473358" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">K</text><circle cx="79.73713124024707" cy="220.48240982678084" r="11" fill="#2B6CB0" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="79.73713124024707" y="220.48240982678084" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">A</text><circle cx="175.8657335094475" cy="272.890559836539" r="11" fill="#3CB371" stroke="var(--sur)" stroke-width="2" opacity=".95"></circle><text x="175.8657335094475" y="272.890559836539" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="DM Sans" font-weight="700">T</text><circle cx="160" cy="160" r="58" fill="var(--sur)" stroke="rgba(255,255,255,.1)" stroke-width="1"></circle><text x="160" y="154" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="DM Sans">TEAM</text><text x="160" y="168" text-anchor="middle" fill="var(--txt)" font-size="14" font-family="DM Sans" font-weight="600">4</text></svg></div>
+          <div class="card-title">📍 Bản Đồ Nhóm Spectra</div>
+          <div class="team-wheel-wrap" id="teamWheel"></div>
         </div>
       </div>
-      <div class="grid3" id="colorSummary">
-    <div class="card-sm">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:600;color:#E8392A">🔴 Fiery Red</span>
-        <span style="font-size:1.4rem;font-weight:700;color:#E8392A">0</span>
-      </div>
+      <div class="grid3" id="colorSummary"></div>
       <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
         <div style="height:100%;width:0%;background:#E8392A;border-radius:99px;transition:width .8s ease"></div>
       </div>
@@ -322,7 +316,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     </div>
     <div class="card-sm">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:600;color:#F5A623">🟡 Sunshine Yellow</span>
+        <span style="font-size:13px;font-weight:600;color:#F5A623">🟡 Nhiệt Tình</span>
         <span style="font-size:1.4rem;font-weight:700;color:#F5A623">0</span>
       </div>
       <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
@@ -332,7 +326,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     </div>
     <div class="card-sm">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:600;color:#3CB371">🟢 Earth Green</span>
+        <span style="font-size:13px;font-weight:600;color:#3CB371">🟢 Điềm Đạm</span>
         <span style="font-size:1.4rem;font-weight:700;color:#3CB371">1</span>
       </div>
       <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
@@ -342,7 +336,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     </div>
     <div class="card-sm">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:600;color:#2B6CB0">🔵 Cool Blue</span>
+        <span style="font-size:13px;font-weight:600;color:#2B6CB0">🔵 Chuẩn Xác</span>
         <span style="font-size:1.4rem;font-weight:700;color:#2B6CB0">3</span>
       </div>
       <div style="height:5px;background:var(--bdr);border-radius:99px;overflow:hidden">
@@ -359,34 +353,18 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       <div class="card" id="tensionMapCard">
         <div class="card-title">⚡ Team Tension Map — Top 3 cặp xung đột tiềm ẩn</div>
         <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Dùng trong Workshop Bước 3.</p>
-        <div id="tensionMap"><p class="tension-empty">Tải dữ liệu để phân tích</p></div>
+        <div id="tensionMap"></div>
       </div>
 
       <div class="card" id="roleDistCard">
         <div class="card-title">🎯 Team Role Distribution — 4 vai trò cốt lõi</div>
         <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Mapping từ màu chính sang vai trò tổ chức.</p>
-        <div id="roleDistContent"><p class="tension-empty">Tải dữ liệu để phân tích</p></div>
+        <div id="roleDistContent"></div>
       </div>
 
     <!-- MEMBERS TAB -->
     <div class="tab-content" id="tab-members">
-      <div class="member-grid" id="membersGrid"><div class="member-card" onclick="focusMember(&#39;Nguyễn Lê Thành Lạc&#39;)">
-      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">TL</div>
-      <div><div class="mc-name">Nguyễn Lê Thành Lạc<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Cải Cách (Reformer)</span></div>
-      <div class="mc-role"> · Ban Giám Đốc </div></div></div>
-      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#E8392A"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#F5A623"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#3CB371"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#2B6CB0"></div></div><span class="mc-bar-pct">0%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;Hồ Việt Khánh&#39;)">
-      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">VK</div>
-      <div><div class="mc-name">Hồ Việt Khánh<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Cải Cách (Reformer)</span></div>
-      <div class="mc-role"> · Kỹ Thuật <span style="font-size:9px;color:var(--muted)">🌟 Extrovert</span></div></div></div>
-      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:8%;background:#E8392A"></div></div><span class="mc-bar-pct">8%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:7%;background:#F5A623"></div></div><span class="mc-bar-pct">7%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:2%;background:#3CB371"></div></div><span class="mc-bar-pct">2%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:12%;background:#2B6CB0"></div></div><span class="mc-bar-pct">12%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;BÙI HÀ ĐỨC AN&#39;)">
-      <div class="mc-top"><div class="mc-avatar" style="background:#2B6CB0">ĐA</div>
-      <div><div class="mc-name">BÙI HÀ ĐỨC AN<span style="font-size:9px;background:#2B6CB022;color:#2B6CB0;border-radius:10px;padding:2px 6px;margin-left:4px">Người Quan Sát (Observer)</span></div>
-      <div class="mc-role"> · Kỹ Thuật <span style="font-size:9px;color:var(--muted)">🌙 Introvert</span></div></div></div>
-      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:4%;background:#E8392A"></div></div><span class="mc-bar-pct">4%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:2%;background:#F5A623"></div></div><span class="mc-bar-pct">2%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:7%;background:#3CB371"></div></div><span class="mc-bar-pct">7%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:17%;background:#2B6CB0"></div></div><span class="mc-bar-pct">17%</span></div></div></div><div class="member-card" onclick="focusMember(&#39;Tung Nguyen Hoang Thanh&#39;)">
-      <div class="mc-top"><div class="mc-avatar" style="background:#3CB371">HT</div>
-      <div><div class="mc-name">Tung Nguyen Hoang Thanh<span style="font-size:9px;background:#3CB37122;color:#3CB371;border-radius:10px;padding:2px 6px;margin-left:4px">Người Hỗ Trợ Kiên Định</span></div>
-      <div class="mc-role"> · Sản Xuất <span style="font-size:9px;color:var(--muted)">🌙 Introvert</span></div></div></div>
-      <div class="mc-bars"><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#E8392A">🔴</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#E8392A"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#F5A623">🟡</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#F5A623"></div></div><span class="mc-bar-pct">0%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#3CB371">🟢</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:24%;background:#3CB371"></div></div><span class="mc-bar-pct">24%</span></div><div class="mc-bar-row"><span class="mc-bar-lbl" style="color:#2B6CB0">🔵</span><div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%;background:#2B6CB0"></div></div><span class="mc-bar-pct">0%</span></div></div></div></div>
+      <div class="member-grid" id="membersGrid"></div>
     </div>
 
     <!-- DYNAMICS TAB -->
@@ -394,38 +372,38 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       <div class="card">
         <div class="card-title">⚡ Ma trận tương thích màu sắc</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Các cặp màu trong nhóm và mức độ cần chú ý khi hợp tác</p>
-        <div id="compatMatrix"><table style="width:100%;border-collapse:collapse;font-size:12px"><tbody><tr><td style="padding:8px;color:var(--muted)"></td><td style="padding:8px;text-align:center;color:#E8392A;font-weight:600">🔴</td><td style="padding:8px;text-align:center;color:#F5A623;font-weight:600">🟡</td><td style="padding:8px;text-align:center;color:#3CB371;font-weight:600">🟢</td><td style="padding:8px;text-align:center;color:#2B6CB0;font-weight:600">🔵</td></tr><tr><td style="padding:8px;color:#E8392A;font-weight:600">🔴 Fiery Red</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Cùng năng lượng cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần chú ý</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td></tr><tr><td style="padding:8px;color:#F5A623;font-weight:600">🟡 Sunshine Yellow</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Sáng tạo cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Hài hòa tốt</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td></tr><tr><td style="padding:8px;color:#3CB371;font-weight:600">🟢 Earth Green</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần chú ý</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Hài hòa tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Ổn định cao</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td></tr><tr><td style="padding:8px;color:#2B6CB0;font-weight:600">🔵 Cool Blue</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td><td class="cc-cell cc-tension" style="padding:6px 4px;text-align:center">Cần cân bằng</td><td class="cc-cell cc-strong" style="padding:6px 4px;text-align:center">Bổ sung tốt</td><td class="cc-cell cc-medium" style="padding:6px 4px;text-align:center">Cẩn thận chi tiết</td></tr></tbody></table></div>
+        <div id="compatMatrix"></div>
       </div>
       <div class="card">
         <div class="card-title">⚔️ Phong cách xử lý xung đột (Thomas-Kilmann)</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Mỗi màu năng lượng có xu hướng phản ứng xung đột khác nhau</p>
         <div class="conflict-grid">
           <div class="conflict-card" style="border-color:rgba(232,57,42,.3);background:rgba(232,57,42,.05)">
-            <div class="conflict-mode-badge" style="background:rgba(232,57,42,.2);color:#E8392A">🔴 Fiery Red</div>
+            <div class="conflict-mode-badge" style="background:rgba(232,57,42,.2);color:#E8392A">🔴 Quyết Đoán</div>
             <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#E8392A">Competing — Cạnh tranh</div>
             <div style="font-size:12px;color:var(--muted);line-height:1.65">Quyết đoán cao, ít nhượng bộ. Muốn <strong>thắng</strong> và kiểm soát tình huống. Hiệu quả khi cần quyết định nhanh, nhưng có thể tạo căng thẳng quan hệ.</div>
             <div style="margin-top:10px;font-size:11px;color:rgba(232,57,42,.8);font-weight:600">→ Tip: Đưa ra dữ liệu và business case rõ ràng để chuyển sang Collaborating</div>
           </div>
           <div class="conflict-card" style="border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)">
-            <div class="conflict-mode-badge" style="background:rgba(245,166,35,.2);color:#F5A623">🟡 Sunshine Yellow</div>
+            <div class="conflict-mode-badge" style="background:rgba(245,166,35,.2);color:#F5A623">🟡 Nhiệt Tình</div>
             <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#F5A623">Collaborating — Hợp tác</div>
             <div style="font-size:12px;color:var(--muted);line-height:1.65">Muốn tìm giải pháp <strong>win-win</strong>, mở rộng các lựa chọn. Tích hợp quan điểm nhiều phía. Tốt cho vấn đề phức tạp cần sáng tạo.</div>
             <div style="margin-top:10px;font-size:11px;color:rgba(245,166,35,.8);font-weight:600">→ Tip: Cho không gian brainstorm tự do để tận dụng năng lượng này</div>
           </div>
           <div class="conflict-card" style="border-color:rgba(60,179,113,.3);background:rgba(60,179,113,.05)">
-            <div class="conflict-mode-badge" style="background:rgba(60,179,113,.2);color:#3CB371">🟢 Earth Green</div>
+            <div class="conflict-mode-badge" style="background:rgba(60,179,113,.2);color:#3CB371">🟢 Điềm Đạm</div>
             <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#3CB371">Accommodating / Avoiding</div>
             <div style="font-size:12px;color:var(--muted);line-height:1.65">Ưu tiên <strong>duy trì hòa khí</strong> và quan hệ. Có thể nhượng bộ quá mức hoặc né tránh xung đột trực tiếp, giữ ý kiến cho mình.</div>
             <div style="margin-top:10px;font-size:11px;color:rgba(60,179,113,.8);font-weight:600">→ Tip: Tạo không gian an toàn, hỏi ý kiến riêng trước khi họp chung</div>
           </div>
           <div class="conflict-card" style="border-color:rgba(43,108,176,.3);background:rgba(43,108,176,.05)">
-            <div class="conflict-mode-badge" style="background:rgba(43,108,176,.2);color:#2B6CB0">🔵 Cool Blue</div>
+            <div class="conflict-mode-badge" style="background:rgba(43,108,176,.2);color:#2B6CB0">🔵 Chuẩn Xác</div>
             <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#2B6CB0">Compromising / Avoiding</div>
             <div style="font-size:12px;color:var(--muted);line-height:1.65">Phân tích kỹ trước khi hành động. Tìm <strong>điểm trung dung</strong> hợp lý. Có thể trì hoãn quyết định để thu thập thêm thông tin.</div>
             <div style="margin-top:10px;font-size:11px;color:rgba(43,108,176,.8);font-weight:600">→ Tip: Đặt deadline rõ ràng và cung cấp đủ dữ liệu để họ tự tin quyết định</div>
           </div>
         </div>
-        <div id="conflictTeamDist"><div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Phân bổ phong cách xử lý xung đột</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px"><div style="background:#E8392A18;border:1px solid #E8392A44;border-radius:10px;padding:12px">
+        <div id="conflictTeamDist"></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px"><div style="background:#E8392A18;border:1px solid #E8392A44;border-radius:10px;padding:12px">
       <div style="font-size:12px;font-weight:600;color:#E8392A;margin-bottom:4px">🔴 Competing</div>
       <div style="font-size:1.6rem;font-weight:800;color:#E8392A">0<span style="font-size:12px;font-weight:500;opacity:.7"> người</span></div>
       <div style="margin-top:6px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden"><div style="height:100%;width:0%;background:#E8392A;border-radius:99px"></div></div>
@@ -557,7 +535,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Theo tài liệu Insights — mỗi màu năng lượng cần được giao tiếp theo cách khác nhau để hiệu quả nhất</p>
         <div class="comm-needs-grid">
           <div class="comm-card" style="border-color:rgba(43,108,176,.3);background:rgba(43,108,176,.05)">
-            <div class="comm-card-title" style="color:#2B6CB0">🔵 Cool Blue — Cần được cung cấp</div>
+            <div class="comm-card-title" style="color:#2B6CB0">🔵 Chuẩn Xác — Cần được cung cấp</div>
             <div>
               <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">📊 Dữ liệu &amp; thống kê</span>
               <span class="comm-tag" style="background:rgba(43,108,176,.2);color:#7db8f5">📄 Handout/tài liệu</span>
@@ -568,7 +546,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Vội vàng kết luận thiếu dữ liệu · Đổi chủ đề đột ngột · Áp lực ra quyết định ngay</div></div>
           </div>
           <div class="comm-card" style="border-color:rgba(60,179,113,.3);background:rgba(60,179,113,.05)">
-            <div class="comm-card-title" style="color:#3CB371">🟢 Earth Green — Cần được cung cấp</div>
+            <div class="comm-card-title" style="color:#3CB371">🟢 Điềm Đạm — Cần được cung cấp</div>
             <div>
               <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">🛡️ Không gian an toàn</span>
               <span class="comm-tag" style="background:rgba(60,179,113,.2);color:#7de8a8">🤝 Lợi ích quan hệ</span>
@@ -579,7 +557,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Cứng nhắc hoặc đe dọa · Bỏ qua cảm xúc · Chỉ tập trung kết quả mà không quan tâm người</div></div>
           </div>
           <div class="comm-card" style="border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)">
-            <div class="comm-card-title" style="color:#F5A623">🟡 Sunshine Yellow — Cần được cung cấp</div>
+            <div class="comm-card-title" style="color:#F5A623">🟡 Nhiệt Tình — Cần được cung cấp</div>
             <div>
               <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">🎭 Tương tác &amp; giao lưu</span>
               <span class="comm-tag" style="background:rgba(245,166,35,.2);color:#f5d08a">⚡ Ngắn gọn &amp; sinh động</span>
@@ -590,7 +568,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
             <div class="comm-section"><div class="comm-section-lbl">❌ Tránh</div><div style="font-size:12px;color:rgba(232,237,243,.75);line-height:1.7">Quá nhiều chi tiết khô khan · Không cho không gian sáng tạo · Tập trung quá mức vào quá khứ/vấn đề</div></div>
           </div>
           <div class="comm-card" style="border-color:rgba(232,57,42,.3);background:rgba(232,57,42,.05)">
-            <div class="comm-card-title" style="color:#E8392A">🔴 Fiery Red — Cần được cung cấp</div>
+            <div class="comm-card-title" style="color:#E8392A">🔴 Quyết Đoán — Cần được cung cấp</div>
             <div>
               <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">⚡ Thẳng thắn &amp; trực tiếp</span>
               <span class="comm-tag" style="background:rgba(232,57,42,.2);color:#f5918a">🏆 Tập trung kết quả</span>
@@ -624,8 +602,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
       </div>
       <div class="card">
         <div class="card-title">📍 Phân bổ nhu cầu giao tiếp trong nhóm</div>
-        <div id="commTeamNeeds"><div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
-      <div style="width:80px;font-size:12px;font-weight:600;color:#2B6CB0;flex-shrink:0">🔵 Cool</div>
+        <div id="commTeamNeeds"></div>
       <div style="flex:1;height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="height:100%;width:75%;background:#2B6CB0;border-radius:99px"></div></div>
       <div style="width:28px;text-align:right;font-size:12px;font-weight:700;color:#2B6CB0">3</div>
       <div style="font-size:11px;color:var(--muted);flex:2">Gửi tài liệu trước, cung cấp đầy đủ data và thời gian</div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
@@ -648,7 +625,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
           <div>
             <div style="background:var(--sur2);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--bdr)">
               <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Người nhận feedback</div>
-              <select class="person-select" id="saidReceiver" onchange="updateSaidTip()"><option value="">-- Chọn từ danh sách nhóm --</option><option value="Nguyễn Lê Thành Lạc" data-color="blue">Nguyễn Lê Thành Lạc (🔵 Cool Blue)</option><option value="Hồ Việt Khánh" data-color="blue">Hồ Việt Khánh (🔵 Cool Blue)</option><option value="BÙI HÀ ĐỨC AN" data-color="blue">BÙI HÀ ĐỨC AN (🔵 Cool Blue)</option><option value="Tung Nguyen Hoang Thanh" data-color="green">Tung Nguyen Hoang Thanh (🟢 Earth Green)</option></select>
+              <select class="person-select" id="saidReceiver" onchange="updateSaidTip()"><option value="">-- Chọn từ danh sách nhóm --</option></select>
               <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Loại feedback</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <button class="btn" style="flex:1;padding:8px;font-size:12px;background:rgba(60,179,113,.2);color:#3CB371;border:1px solid rgba(60,179,113,.4)" onclick="setFBType(&#39;positive&#39;,this)">👍 Tích cực</button>
@@ -685,43 +662,19 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <!-- WORKSHOP TAB -->
     <div class="tab-content active" id="tab-workshop">
       <div class="card">
-        <div class="card-title">⭐ 8 Vai trò chính trong nhóm — Key Attributes</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Theo mô hình Insights Wheel — mỗi vị trí mang bộ kỹ năng đặc trưng. Nhóm hiệu suất cao cần đủ 8 vai trò này.</p>
+        <div class="card-title">⭐ 8 Nhóm Vai Trò Trong Đội</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Mỗi vị trí mang một bộ thế mạnh đặc trưng. Đội hiệu suất cao thường cân bằng đủ các nhóm vai trò này.</p>
         <div class="key-attr-wheel">
-          <div class="ka-cell" style="border-color:rgba(232,57,42,.4);background:rgba(232,57,42,.07)"><div class="ka-role" style="color:#E8392A">🔴 Director</div><div class="ka-attrs">Determination · Results focus · Decisive · Assertive · Drive · Discipline</div></div>
-          <div class="ka-cell" style="border-color:rgba(232,130,59,.4);background:rgba(232,130,59,.07)"><div class="ka-role" style="color:#E8823B">🟠 Motivator</div><div class="ka-attrs">Enthusiasm · Persuasive · Positive Thinking · Drive · People Skills · Assertive</div></div>
-          <div class="ka-cell" style="border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.07)"><div class="ka-role" style="color:#F5A623">🟡 Inspirer</div><div class="ka-attrs">Enthusiasm · Creative · People Skills · Shares Ideas · Persuasive · Positive Thinking</div></div>
-          <div class="ka-cell" style="border-color:rgba(125,184,94,.4);background:rgba(125,184,94,.07)"><div class="ka-role" style="color:#7DB85E">🌿 Inspiring Helper</div><div class="ka-attrs">Helps Others · Flexible · Shares Ideas · Listens · People Skills · Creative</div></div>
-          <div class="ka-cell" style="border-color:rgba(60,179,113,.4);background:rgba(60,179,113,.07)"><div class="ka-role" style="color:#3CB371">🟢 Supporter</div><div class="ka-attrs">Listens · Loyal · Team Approach · Helps Others · Flexible · Reliability</div></div>
-          <div class="ka-cell" style="border-color:rgba(43,150,160,.4);background:rgba(43,150,160,.07)"><div class="ka-role" style="color:#2B96A0">🔷 Coordinator</div><div class="ka-attrs">Planning · Organisation · Time Management · Team Approach · Loyalty · Listens</div></div>
-          <div class="ka-cell" style="border-color:rgba(43,108,176,.4);background:rgba(43,108,176,.07)"><div class="ka-role" style="color:#2B6CB0">🔵 Observer</div><div class="ka-attrs">Analysis · Product Knowledge · Sets Standards · Planning · Organisation · Monitoring</div></div>
-          <div class="ka-cell" style="border-color:rgba(155,76,176,.4);background:rgba(155,76,176,.07)"><div class="ka-role" style="color:#9B4CB0">🟣 Reformer</div><div class="ka-attrs">Discipline · Sets Standards · Monitoring Performance · Analysis · Results Focus · Decisiveness</div></div>
+          <div class="ka-cell" style="border-color:rgba(232,57,42,.4);background:rgba(232,57,42,.07)"><div class="ka-role" style="color:#E8392A">🔴 Táo Bạo</div><div class="ka-attrs">Quyết đoán · Định hướng kết quả · Dứt khoát · Chủ động · Động lực cao · Kỷ luật</div></div>
+          <div class="ka-cell" style="border-color:rgba(232,130,59,.4);background:rgba(232,130,59,.07)"><div class="ka-role" style="color:#E8823B">🟠 Sôi Nổi</div><div class="ka-attrs">Nhiệt huyết · Thuyết phục · Tư duy tích cực · Động lực · Kỹ năng con người · Chủ động</div></div>
+          <div class="ka-cell" style="border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.07)"><div class="ka-role" style="color:#F5A623">🟡 Cởi Mở</div><div class="ka-attrs">Nhiệt huyết · Sáng tạo · Kỹ năng con người · Chia sẻ ý tưởng · Thuyết phục · Lạc quan</div></div>
+          <div class="ka-cell" style="border-color:rgba(125,184,94,.4);background:rgba(125,184,94,.07)"><div class="ka-role" style="color:#7DB85E">🌿 Ấm Áp</div><div class="ka-attrs">Hỗ trợ người khác · Linh hoạt · Chia sẻ ý tưởng · Lắng nghe · Kỹ năng con người · Sáng tạo</div></div>
+          <div class="ka-cell" style="border-color:rgba(60,179,113,.4);background:rgba(60,179,113,.07)"><div class="ka-role" style="color:#3CB371">🟢 Tận Tâm</div><div class="ka-attrs">Lắng nghe · Trung thành · Tinh thần đồng đội · Giúp đỡ · Linh hoạt · Đáng tin cậy</div></div>
+          <div class="ka-cell" style="border-color:rgba(43,150,160,.4);background:rgba(43,150,160,.07)"><div class="ka-role" style="color:#2B96A0">🔷 Nhất Quán</div><div class="ka-attrs">Lập kế hoạch · Tổ chức · Quản lý thời gian · Tinh thần đồng đội · Trung thành · Lắng nghe</div></div>
+          <div class="ka-cell" style="border-color:rgba(43,108,176,.4);background:rgba(43,108,176,.07)"><div class="ka-role" style="color:#2B6CB0">🔵 Thận Trọng</div><div class="ka-attrs">Phân tích · Hiểu biết chuyên môn · Thiết lập tiêu chuẩn · Lập kế hoạch · Tổ chức · Giám sát</div></div>
+          <div class="ka-cell" style="border-color:rgba(155,76,176,.4);background:rgba(155,76,176,.07)"><div class="ka-role" style="color:#9B4CB0">🟣 Nghiêm Cẩn</div><div class="ka-attrs">Kỷ luật · Thiết lập tiêu chuẩn · Giám sát hiệu suất · Phân tích · Định hướng kết quả · Dứt khoát</div></div>
         </div>
-        <div id="teamRoleMap" style="background:var(--sur2);border:1px solid var(--bdr);border-radius:12px;padding:16px"><div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">📍 Mapping thành viên → vai trò <span style="color:#F5A623;margin-left:8px">4/8 vai trò được cover</span></div><div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#E8392A;flex-shrink:0">Director</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#E8823B;flex-shrink:0">Motivator</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#F5A623;flex-shrink:0">Inspirer</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--sur);border:1px solid var(--bdr)">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#7DB85E;flex-shrink:0">Inspiring Helper</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="font-size:11px;color:var(--muted);font-style:italic">Chưa có — cân nhắc phát triển hoặc phân công</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#3CB37118;border:1px solid #3CB37144">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#3CB371;flex-shrink:0">Supporter</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="background:#3CB37133;border:1px solid #3CB37166;color:#3CB371;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Thanh</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#2B96A018;border:1px solid #2B96A044">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#2B96A0;flex-shrink:0">Coordinator</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="background:#2B96A033;border:1px solid #2B96A066;color:#2B96A0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">AN</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#2B6CB018;border:1px solid #2B6CB044">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#2B6CB0;flex-shrink:0">Observer</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="background:#2B6CB033;border:1px solid #2B6CB066;color:#2B6CB0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Lạc</span></div></div><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#9B4CB018;border:1px solid #9B4CB044">
-      <div style="width:140px;font-size:11px;font-weight:700;color:#9B4CB0;flex-shrink:0">Reformer</div>
-      <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
-        <span style="background:#9B4CB033;border:1px solid #9B4CB066;color:#9B4CB0;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">Khánh</span></div></div></div><div style="margin-top:12px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:12px;font-size:12px;color:rgba(232,237,243,.8)">⚠️ <strong>Khoảng trống vai trò:</strong> Director, Motivator, Inspirer, Inspiring Helper</div></div>
+        <div id="teamRoleMap"></div>
       </div>
       <div class="card">
         <div class="card-title">💡 Application Tips — Cách áp dụng Insights vào thực tế</div>
@@ -738,11 +691,11 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
         <div class="card-title">🎭 Hoạt động Workshop được đề xuất</div>
         <div class="workshop-act">
           <div class="wa-card"><div class="wa-icon">🎨</div><div class="wa-title">Khám phá màu sắc cá nhân</div><div class="wa-desc">Mỗi người chia sẻ màu chính, 3 điểm mạnh và 1 điều người khác ít biết về mình.</div><div class="wa-time">⏱ 30 phút · Opener</div></div>
-          <div class="wa-card"><div class="wa-icon">🗺️</div><div class="wa-title">Team Wheel Mapping</div><div class="wa-desc">Đặt tên thành viên lên Insights Wheel. Thảo luận: "Nhóm mình đang thiếu gì?"</div><div class="wa-time">⏱ 25 phút · Awareness</div></div>
+          <div class="wa-card"><div class="wa-icon">🗺️</div><div class="wa-title">Team Wheel Mapping</div><div class="wa-desc">Đặt tên thành viên lên Bản Đồ Sắc Thái. Thảo luận: "Nhóm mình đang thiếu gì?"</div><div class="wa-time">⏱ 25 phút · Awareness</div></div>
           <div class="wa-card"><div class="wa-icon">💬</div><div class="wa-title">Cross-Color Communication</div><div class="wa-desc">Roleplay: Cặp Red-Green, Yellow-Blue thực hành giao tiếp và nhận ra rào cản.</div><div class="wa-time">⏱ 45 phút · Skills</div></div>
           <div class="wa-card"><div class="wa-icon">⚔️</div><div class="wa-title">Conflict Simulation</div><div class="wa-desc">Tình huống xung đột thực tế. Thực hành Thomas-Kilmann để tìm hướng Collaborating.</div><div class="wa-time">⏱ 40 phút · Practice</div></div>
           <div class="wa-card"><div class="wa-icon">📝</div><div class="wa-title">SAID Feedback Practice</div><div class="wa-desc">Từng cặp thực hành đưa và nhận feedback theo mô hình SAID.</div><div class="wa-time">⏱ 50 phút · Application</div></div>
-          <div class="wa-card"><div class="wa-icon">🏆</div><div class="wa-title">Strengths &amp; Roles Map</div><div class="wa-desc">Nhóm vẽ bản đồ 8 vai trò Key Attributes. Ai đang giỏi gì? Khoảng trống nào?</div><div class="wa-time">⏱ 35 phút · Strategy</div></div>
+          <div class="wa-card"><div class="wa-icon">🏆</div><div class="wa-title">Strengths &amp; Roles Map</div><div class="wa-desc">Nhóm vẽ bản đồ 8 nhóm vai trò. Ai đang giỏi gì? Khoảng trống nào?</div><div class="wa-time">⏱ 35 phút · Strategy</div></div>
           <div class="wa-card"><div class="wa-icon">🤝</div><div class="wa-title">Team Contract</div><div class="wa-desc">Nhóm cùng viết "Working Agreement" — cam kết tôn trọng sự khác biệt màu sắc.</div><div class="wa-time">⏱ 30 phút · Commitment</div></div>
           <div class="wa-card"><div class="wa-icon">🚀</div><div class="wa-title">Personal Action Plan</div><div class="wa-desc">Mỗi người viết 3 hành động cụ thể sẽ thay đổi sau workshop.</div><div class="wa-time">⏱ 20 phút · Closure</div></div>
         </div>
@@ -783,10 +736,10 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
 
 <script>
 const CI = {
-  red:{l:'Fiery Red',e:'🔴',c:'#E8392A'},
-  yellow:{l:'Sunshine Yellow',e:'🟡',c:'#F5A623'},
-  green:{l:'Earth Green',e:'🟢',c:'#3CB371'},
-  blue:{l:'Cool Blue',e:'🔵',c:'#2B6CB0'}
+  red:{l:'Quyết Đoán',e:'🔴',c:'#E8392A'},
+  yellow:{l:'Nhiệt Tình',e:'🟡',c:'#F5A623'},
+  green:{l:'Điềm Đạm',e:'🟢',c:'#3CB371'},
+  blue:{l:'Chuẩn Xác',e:'🔵',c:'#2B6CB0'}
 };
 const COMPAT = {
   'red-red':'Cùng năng lượng cao','red-yellow':'Bổ sung tốt','red-green':'Cần chú ý','red-blue':'Cần cân bằng',
@@ -975,7 +928,7 @@ function renderMsItems(){
   });
   const CI_COLOR={red:'#E8392A',yellow:'#F5A623',green:'#3CB371',blue:'#2B6CB0'};
   const CI_E={red:'🔴',yellow:'🟡',green:'🟢',blue:'🔵'};
-  const CI_LBL={red:'Fiery Red',yellow:'Sunshine Yellow',green:'Earth Green',blue:'Cool Blue'};
+  const CI_LBL={red:'Quyết Đoán',yellow:'Nhiệt Tình',green:'Điềm Đạm',blue:'Chuẩn Xác'};
   document.getElementById('msBody').innerHTML=filtered.length===0
     ?'<div style="text-align:center;color:var(--muted);padding:32px;font-size:13px">Không tìm thấy</div>'
     :filtered.map(m=>{
@@ -1101,7 +1054,7 @@ function renderDonut(){
 function renderTeamWheel(){
   const cx=160,cy=160,R=150,r=60;
   const SEG_COLORS=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
-  const SEG_LABELS=['Director','Motivator','Inspirer','Insp.Helper','Supporter','Coordinator','Observer','Reformer'];
+  const SEG_LABELS=['Táo Bạo','Sôi Nổi','Cởi Mở','Ấm Áp','Tận Tâm','Nhất Quán','Thận Trọng','Nghiêm Cẩn'];
   const posMap={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7,'red-red':0,'yellow-yellow':2,'green-green':4,'blue-blue':6};
   const toRad=d=>d*Math.PI/180;
   const polar=(r2,deg)=>[cx+r2*Math.cos(toRad(deg)),cy+r2*Math.sin(toRad(deg))];
@@ -1255,7 +1208,7 @@ function renderCommTeamNeeds(){
 }
 
 const posMap8={'red-yellow':1,'red-blue':7,'red-green':0,'yellow-red':2,'yellow-green':3,'yellow-blue':2,'green-yellow':4,'green-blue':5,'green-red':4,'blue-green':5,'blue-yellow':6,'blue-red':7,'red-red':0,'yellow-yellow':2,'green-green':4,'blue-blue':6};
-const ROLE8=['Director','Motivator','Inspirer','Inspiring Helper','Supporter','Coordinator','Observer','Reformer'];
+const ROLE8=['Táo Bạo','Sôi Nổi','Cởi Mở','Ấm Áp','Tận Tâm','Nhất Quán','Thận Trọng','Nghiêm Cẩn'];
 const ROLE8_COLOR=['#E8392A','#E8823B','#F5A623','#7DB85E','#3CB371','#2B96A0','#2B6CB0','#9B4CB0'];
 
 function renderTeamRoleMap(){
@@ -1369,15 +1322,15 @@ async function generateAIInsights(){
   const focusLabel={balanced:'cân bằng tất cả module',communication:'tập trung giao tiếp',conflict:'tập trung xung đột & Thomas-Kilmann',leadership:'tập trung lãnh đạo',teambuilding:'Team Building & Trust theo T.E.A.M. model'}[focus]||'cân bằng';
   const memberDetail=teamData.map(m=>`${m.Title}(${m.role||''}, ${CI[m.primaryColor||'blue'].l}/${CI[m.secondaryColor||m.primaryColor||'blue']?.l||''}, ${m.ieType||''}, Lead:${m.leadStyle||'?'}, Stress:${m.stressBehavior||'?'})`).join('; ');
 
-  const prompt=`Bạn là chuyên gia Insights Discovery được đào tạo bài bản theo chương trình Insights Learning & Development.
+  const prompt=`Bạn là chuyên gia phân tích động lực nhóm và phong cách hành vi, thành thạo phương pháp phân tích 4 sắc thái Spectra.
 
 Phân tích nhóm ${total} người tại công ty VBL/DHI:
 
 PHÂN BỔ MÀU NĂNG LƯỢNG:
-- Fiery Red: ${dist.red} người (${Math.round(dist.red/total*100)}%)
-- Sunshine Yellow: ${dist.yellow} người (${Math.round(dist.yellow/total*100)}%)
-- Earth Green: ${dist.green} người (${Math.round(dist.green/total*100)}%)
-- Cool Blue: ${dist.blue} người (${Math.round(dist.blue/total*100)}%)
+- Quyết Đoán: ${dist.red} người (${Math.round(dist.red/total*100)}%)
+- Nhiệt Tình: ${dist.yellow} người (${Math.round(dist.yellow/total*100)}%)
+- Điềm Đạm: ${dist.green} người (${Math.round(dist.green/total*100)}%)
+- Chuẩn Xác: ${dist.blue} người (${Math.round(dist.blue/total*100)}%)
 
 THÀNH VIÊN: ${memberDetail}
 
@@ -1385,13 +1338,13 @@ Phân tích theo 5 framework:
 1. SAID Feedback Model (Situation-Actions-Impact-Do)
 2. Thomas-Kilmann Conflict Modes cho từng màu
 3. T.E.A.M. Model (Trust-Methods → Shared Success)
-4. Key Attributes 8 Team Roles
+4. Tám nhóm vai trò trong đội
 5. Colourful Communication Needs
 
 Tạo agenda workshop ${duration} tiếng với focus: ${focusLabel}.
 
 Trả về CHÍNH XÁC JSON (không markdown, không text ngoài JSON):
-{"overallCharacter":"3-4 câu mô tả đặc trưng và văn hóa nhóm","strengths":["4-5 điểm mạnh tập thể cụ thể"],"blindSpots":["3-4 điểm mù theo màu"],"communicationTips":["4 lời khuyên giao tiếp dựa trên Communication Needs"],"conflictRisks":["3-4 nguy cơ xung đột dựa trên Thomas-Kilmann mix"],"teamModelAnalysis":"Phân tích Trust và Methods theo T.E.A.M. model","roleGaps":["2-3 vai trò Key Attributes đang thiếu"],"saidTips":["2-3 lời khuyên SAID feedback cho nhóm này"],"workshopFocus":["3 ưu tiên workshop quan trọng nhất"],"agendaItems":[{"time":"08:30","duration":"30 phút","title":"Tiêu đề module","activity":"Mô tả hoạt động cụ thể","purpose":"Mục tiêu học tập","notes":"Lưu ý facilitator"}],"conflictPrediction":{"who":"2 người hoặc nhóm màu sẽ xung đột","when":"tình huống cụ thể trong 2 tuần tới","what":"diễn biến cụ thể","signal":"dấu hiệu sớm"},"managerIntervention":{"action":"1 hành động cụ thể manager phải làm","timing":"khi nào","expected":"kết quả mong đợi"}}`;
+{"overallCharacter":"3-4 câu mô tả đặc trưng và văn hóa nhóm","strengths":["4-5 điểm mạnh tập thể cụ thể"],"blindSpots":["3-4 điểm mù theo màu"],"communicationTips":["4 lời khuyên giao tiếp dựa trên Communication Needs"],"conflictRisks":["3-4 nguy cơ xung đột dựa trên Thomas-Kilmann mix"],"teamModelAnalysis":"Phân tích Trust và Methods theo T.E.A.M. model","roleGaps":["2-3 nhóm vai trò đang thiếu"],"saidTips":["2-3 lời khuyên SAID feedback cho nhóm này"],"workshopFocus":["3 ưu tiên workshop quan trọng nhất"],"agendaItems":[{"time":"08:30","duration":"30 phút","title":"Tiêu đề module","activity":"Mô tả hoạt động cụ thể","purpose":"Mục tiêu học tập","notes":"Lưu ý facilitator"}],"conflictPrediction":{"who":"2 người hoặc nhóm màu sẽ xung đột","when":"tình huống cụ thể trong 2 tuần tới","what":"diễn biến cụ thể","signal":"dấu hiệu sớm"},"managerIntervention":{"action":"1 hành động cụ thể manager phải làm","timing":"khi nào","expected":"kết quả mong đợi"}}`;
 
   document.getElementById('aiOverview').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang phân tích toàn diện…</div>';
   document.getElementById('aiDynamics').innerHTML='<div class="loading-msg"><span class="spinner"></span>AI đang phân tích dynamics…</div>';
@@ -1497,7 +1450,7 @@ function exportTeamReport(){
     green:['Khó nói "không", dễ bị quá tải','Tránh xung đột dù cần thiết','Quyết định chậm khi nhiều ý kiến'],
     blue:['Phân tích quá lâu, chậm quyết định','Đôi khi quá hoàn hảo chủ nghĩa','Ít biểu lộ cảm xúc, có vẻ xa cách']
   };
-  const CN={red:'Fiery Red',yellow:'Sunshine Yellow',green:'Earth Green',blue:'Cool Blue'};
+  const CN={red:'Quyết Đoán',yellow:'Nhiệt Tình',green:'Điềm Đạm',blue:'Chuẩn Xác'};
   const CH={red:'#E8392A',yellow:'#F5A623',green:'#3CB371',blue:'#2B6CB0'};
   const CG={red:'linear-gradient(135deg,#7f1d1d,#E8392A)',yellow:'linear-gradient(135deg,#78350f,#F5A623)',green:'linear-gradient(135deg,#14532d,#3CB371)',blue:'linear-gradient(135deg,#1e3a5f,#2B6CB0)'};
   const IE={Extrovert:'🌟 Hướng ngoại',Introvert:'🌙 Hướng nội'};
@@ -1554,7 +1507,7 @@ function exportTeamReport(){
           </div>
         </div>
       </div>
-      <div class="pf">Insights Discovery · ${name} · DHI Co Ltd · ${now}</div>
+      <div class="pf">Spectra · ${name} · ${now}</div>
     </div>`;
   }).join('');
 
@@ -1582,7 +1535,7 @@ function exportTeamReport(){
 
   const aiHTML=hasAI?`
     <div class="rp">
-      <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">🤖 AI Insights — Phân Tích Nhóm</div></div>
+      <div class="rph"><div class="rpo">Spectra</div><div class="rpt">🤖 AI Insights — Phân Tích Nhóm</div></div>
       <div style="padding:24px 40px;flex:1">
         <div style="background:#fffbf0;border:1px solid rgba(245,166,35,.3);border-radius:12px;padding:16px;margin-bottom:16px">
           ${aiOverviewEl.querySelector('.ai-insights')?.innerHTML||''}
@@ -1591,16 +1544,16 @@ function exportTeamReport(){
           ${aiDynamicsEl.querySelector('.ai-insights')?.innerHTML||''}
         </div>
       </div>
-      <div class="pf">Insights Discovery · AI Analysis · DHI Co Ltd · ${now}</div>
+      <div class="pf">Spectra · AI Analysis · ${now}</div>
     </div>
     <div class="rp">
-      <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">📋 Workshop Agenda & Ưu Tiên</div></div>
+      <div class="rph"><div class="rpo">Spectra</div><div class="rpt">📋 Workshop Agenda & Ưu Tiên</div></div>
       <div style="padding:24px 40px;flex:1">
         <div style="background:#fffbf0;border:1px solid rgba(245,166,35,.3);border-radius:12px;padding:16px">
           ${agendaEl.querySelector('.ai-insights')?.innerHTML||'<p style="color:#888">Chưa tạo AI agenda.</p>'}
         </div>
       </div>
-      <div class="pf">Insights Discovery · Workshop Agenda · DHI Co Ltd · ${now}</div>
+      <div class="pf">Spectra · Workshop Agenda · ${now}</div>
     </div>`:'';
 
   const html=`<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
@@ -1635,9 +1588,9 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
   <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,#2B6CB0,#3CB371);border-radius:50%;filter:blur(80px);opacity:.12;bottom:-60px;left:-60px"></div>
   <div style="position:relative;z-index:1">
     <div style="width:72px;height:72px;border-radius:50%;background:conic-gradient(#E8392A 0 90deg,#F5A623 90deg 180deg,#3CB371 180deg 270deg,#2B6CB0 270deg 360deg);margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,.4)"></div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Insights Discovery</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Spectra</div>
     <div style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;line-height:1.1;margin-bottom:8px">Team <span style="font-style:italic;background:linear-gradient(135deg,#F5A623,#E8392A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Workshop</span><br>Report</div>
-    <div style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:48px">DHI Co Ltd · ${now}</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:48px">${now}</div>
     <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;margin-bottom:16px">
       ${['red','yellow','green','blue'].filter(c=>dist[c]>0).map(c=>`<div style="flex:${dist[c]};background:${CH[c]};border-radius:2px"></div>`).join('')}
     </div>
@@ -1655,7 +1608,7 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
 
 <!-- OVERVIEW -->
 <div class="rp">
-  <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">📊 Tổng Quan Nhóm</div></div>
+  <div class="rph"><div class="rpo">Spectra</div><div class="rpt">📊 Tổng Quan Nhóm</div></div>
   <div style="padding:24px 40px;flex:1">
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
       ${['red','yellow','green','blue'].map(c=>`<div style="border-radius:12px;padding:16px;text-align:center;border:1px solid ${CH[c]}33">
@@ -1678,7 +1631,7 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
         </div>
       </div>
       <div>
-        <div class="rl" style="margin-bottom:12px">Team Insights Wheel</div>
+        <div class="rl" style="margin-bottom:12px">Bản Đồ Nhóm Spectra</div>
         <div style="display:flex;justify-content:center">${teamWheelSVG}</div>
       </div>
     </div>
@@ -1699,12 +1652,12 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
       </tbody>
     </table>
   </div>
-  <div class="pf">Insights Discovery · Team Overview · DHI Co Ltd · ${now}</div>
+  <div class="pf">Spectra · Team Overview · ${now}</div>
 </div>
 
 <!-- DYNAMICS -->
 <div class="rp">
-  <div class="rph"><div class="rpo">DHI Co Ltd · Insights Discovery</div><div class="rpt">🔗 Team Dynamics</div></div>
+  <div class="rph"><div class="rpo">Spectra</div><div class="rpt">🔗 Team Dynamics</div></div>
   <div style="padding:24px 40px;flex:1">
     <div class="rl" style="margin-bottom:12px">Ma Trận Tương Thích Màu Sắc</div>
     <table style="width:100%;border-collapse:separate;border-spacing:4px;margin-bottom:24px">
@@ -1716,7 +1669,7 @@ body{font-family:'DM Sans',sans-serif;background:#e8edf2;color:#1a202c}
       <div><div class="rl" style="margin-bottom:12px">⚠️ Hành Vi Dưới Áp Lực</div>${barChart(stDist,SL,maxSt)}</div>
     </div>
   </div>
-  <div class="pf">Insights Discovery · Team Dynamics · DHI Co Ltd · ${now}</div>
+  <div class="pf">Spectra · Team Dynamics · ${now}</div>
 </div>
 
 ${memberPages}
