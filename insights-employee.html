@@ -255,8 +255,19 @@ body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100v
     <div class="prog-lbl"><span id="progLbl">0 / 48 câu</span><span id="progPct">0%</span></div>
     <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
+  <!-- STEP GATE: Xác thực email trước khi vào khảo sát -->
+  <div class="step active" id="sGate">
+    <div class="card">
+      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Xác Thực Trước Khi Bắt Đầu</p>
+      <p id="gateOrgLine" style="color:var(--muted);font-size:14px;margin-bottom:16px"></p>
+      <div class="field"><label>Email *</label><input id="gateEmail" type="email" placeholder="ten.ban@congty.com" autocomplete="email"></div>
+      <div class="field" id="gateNameField" style="display:none"><label>Họ và Tên</label><input id="gateName" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+      <div id="gateMsg" style="display:none;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:12px"></div>
+      <button class="btn btn-gold" id="gateBtn" onclick="checkGateAccess()">Xác nhận &#8594;</button>
+    </div>
+  </div>
   <!-- STEP 0: Intro -->
-  <div class="step active" id="s0">
+  <div class="step" id="s0">
     <div class="card">
       <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Bốn Màu Năng Lượng</p>
       <div class="color-grid">
@@ -378,7 +389,111 @@ const ARCH={'red-yellow':'Người Thúc Đẩy (Motivator)','red-blue':'Ngườ
 let ANS={},BATCH_IDX=0;
 const BSIZE=6;
 const CORE_N=24;
+let VERIFIED_EMAIL='';
+let GATE_MODE='check'; // 'check' | 'register'
+// ── Mã tổ chức lấy từ URL: ?org=CODE (bắt buộc, phân biệt khách hàng) ──
+const ORG_CODE=(new URLSearchParams(location.search).get('org')||'').trim();
 function show(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function gateMsg(text,isErr){
+  const el=document.getElementById('gateMsg');
+  el.style.display='block';
+  el.style.background=isErr?'#7f1d1d':'#14532d';
+  el.style.color='#fff';
+  el.textContent=text;
+}
+// Khởi tạo gate: nếu thiếu ?org= trên URL → chặn ngay, không cho nhập email
+(function initGate(){
+  const orgLine=document.getElementById('gateOrgLine');
+  if(!ORG_CODE){
+    if(orgLine) orgLine.textContent='';
+    document.getElementById('gateEmail').disabled=true;
+    document.getElementById('gateBtn').disabled=true;
+    gateMsg('Link không hợp lệ — thiếu mã tổ chức. Vui lòng dùng đúng link được cung cấp.',true);
+    return;
+  }
+  if(orgLine) orgLine.innerHTML='Khảo sát dành cho: <strong>'+ORG_CODE.toUpperCase()+'</strong>. Vui lòng nhập email của bạn để tiếp tục.';
+})();
+async function checkGateAccess(){
+  if(!ORG_CODE) return; // đã chặn ở initGate
+  if(GATE_MODE==='register') return registerGateAccess();
+
+  const email=document.getElementById('gateEmail').value.trim().toLowerCase();
+  if(!email||!email.includes('@')) return gateMsg('Vui lòng nhập email hợp lệ.',true);
+  const btn=document.getElementById('gateBtn');
+  btn.disabled=true;btn.textContent='Đang kiểm tra…';
+  try{
+    const res=await fetch(CONFIG.flowWriteUrl.replace(/\/exec.*$/,'/exec')+'?action=checkRoster&email='+encodeURIComponent(email)+'&org='+encodeURIComponent(ORG_CODE));
+    const data=await res.json();
+
+    if(data.allowed){
+      if(data.alreadySubmitted){
+        gateMsg('Email này đã hoàn thành khảo sát trước đó. Mỗi người chỉ được làm 1 lần.',true);
+        btn.disabled=false;btn.textContent='Xác nhận →';
+        return;
+      }
+      // Hợp lệ + đã duyệt + chưa làm — cho vào khảo sát
+      VERIFIED_EMAIL=email;
+      document.getElementById('sGate').classList.remove('active');
+      document.getElementById('s0').classList.add('active');
+      return;
+    }
+
+    if(data.reason==='not_registered'){
+      // Chưa từng đăng ký → chuyển sang chế độ đăng ký
+      GATE_MODE='register';
+      document.getElementById('gateEmail').disabled=true;
+      document.getElementById('gateNameField').style.display='block';
+      gateMsg('Email này chưa được đăng ký cho tổ chức "'+ORG_CODE+'". Nhập họ tên và bấm "Đăng ký" để gửi yêu cầu — bạn sẽ được duyệt trước khi làm khảo sát.',false);
+      btn.disabled=false;btn.textContent='Đăng ký →';
+      return;
+    }
+    if(data.reason==='pending_approval'){
+      gateMsg('Email này đã đăng ký và đang chờ duyệt. Vui lòng quay lại link này sau khi được thông báo đã duyệt.',true);
+      btn.disabled=false;btn.textContent='Kiểm tra lại';
+      return;
+    }
+    const reasonMap={
+      roster_not_configured:'Hệ thống chưa cấu hình danh sách duyệt. Vui lòng liên hệ Admin.',
+      missing_email:'Vui lòng nhập email.',
+      missing_org:'Link không hợp lệ — thiếu mã tổ chức.'
+    };
+    gateMsg(reasonMap[data.reason]||'Bạn không có quyền truy cập khảo sát này.',true);
+    btn.disabled=false;btn.textContent='Xác nhận →';
+  }catch(err){
+    gateMsg('Lỗi kết nối. Vui lòng thử lại.',true);
+    btn.disabled=false;btn.textContent='Xác nhận →';
+  }
+}
+async function registerGateAccess(){
+  const email=document.getElementById('gateEmail').value.trim().toLowerCase();
+  const name=document.getElementById('gateName').value.trim();
+  const btn=document.getElementById('gateBtn');
+  btn.disabled=true;btn.textContent='Đang gửi…';
+  try{
+    const res=await fetch(CONFIG.flowWriteUrl,{method:'POST',body:JSON.stringify({
+      registerRoster:true,email,name,organization:ORG_CODE
+    })});
+    const data=await res.json();
+    if(data.error){
+      gateMsg('Lỗi đăng ký: '+data.error,true);
+      btn.disabled=false;btn.textContent='Đăng ký →';
+      return;
+    }
+    if(data.alreadyRegistered&&data.approved){
+      gateMsg('Email này đã được duyệt trước đó. Bấm nút bên dưới để vào khảo sát.',false);
+      GATE_MODE='check';
+      document.getElementById('gateEmail').disabled=false;
+      document.getElementById('gateNameField').style.display='none';
+      btn.disabled=false;btn.textContent='Xác nhận →';
+      return;
+    }
+    gateMsg('✅ Đăng ký thành công! Yêu cầu của bạn đang chờ duyệt. Vui lòng quay lại link này sau khi được thông báo đã duyệt.',false);
+    btn.disabled=true;btn.textContent='Đã gửi yêu cầu';
+  }catch(err){
+    gateMsg('Lỗi kết nối. Vui lòng thử lại.',true);
+    btn.disabled=false;btn.textContent='Đăng ký →';
+  }
+}
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.style.background=e?'#7f1d1d':'#1e293b';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 function startQuiz(){
   const n=document.getElementById('iName').value.trim(),r=document.getElementById('iRole').value.trim();
@@ -439,7 +554,7 @@ async function submitResults(){
       redScore:d.sc.r,yellowScore:d.sc.y,greenScore:d.sc.g,blueScore:d.sc.b,
       primaryColor:d.pPr,secondaryColor:d.pSec,archetype:d.arch,
       ieType:d.ieType,leadStyle:kmap[d.leadStyle],stressBehavior:kmap[d.stressBehavior],
-      ieScoreE:d.ie.E,ieScoreI:d.ie.I
+      ieScoreE:d.ie.E,ieScoreI:d.ie.I,verifiedEmail:VERIFIED_EMAIL,organization:ORG_CODE
     })}).catch(()=>{});
   }
   // Hiện màn hình cảm ơn — AI profile chỉ được tạo khi admin xuất PDF
