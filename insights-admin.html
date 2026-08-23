@@ -302,10 +302,9 @@ function normalizeItem(raw){
       if(rc.ieType)  item.IEType=rc.ieType;
       if(rc.leadStyle)     item.LeadStyle=rc.leadStyle;
       if(rc.stressBehavior)item.StressBehavior=rc.stressBehavior;
-      if(!item.Archetype){
-        const ARCH_MAP={'red-yellow':'Quyết Đoán & Nhiệt Tình','red-blue':'Quyết Đoán & Chuẩn Xác','red-green':'Quyết Đoán & Điềm Đạm','yellow-red':'Nhiệt Tình & Quyết Đoán','yellow-green':'Nhiệt Tình & Điềm Đạm','yellow-blue':'Nhiệt Tình & Chuẩn Xác','green-yellow':'Điềm Đạm & Nhiệt Tình','green-blue':'Điềm Đạm & Chuẩn Xác','green-red':'Điềm Đạm & Quyết Đoán','blue-green':'Chuẩn Xác & Điềm Đạm','blue-yellow':'Chuẩn Xác & Nhiệt Tình','blue-red':'Chuẩn Xác & Quyết Đoán'};
-        item.Archetype=ARCH_MAP[`${rc.primaryColor}-${rc.secondaryColor}`]||`${rc.primaryColor} + ${rc.secondaryColor}`;
-      }
+      // Luôn tính lại archetype theo hệ thống thuật ngữ hiện tại (ghi đè tên cũ)
+      const ARCH_MAP={'red-yellow':'Quyết Đoán & Nhiệt Tình','red-blue':'Quyết Đoán & Chuẩn Xác','red-green':'Quyết Đoán & Điềm Đạm','yellow-red':'Nhiệt Tình & Quyết Đoán','yellow-green':'Nhiệt Tình & Điềm Đạm','yellow-blue':'Nhiệt Tình & Chuẩn Xác','green-yellow':'Điềm Đạm & Nhiệt Tình','green-blue':'Điềm Đạm & Chuẩn Xác','green-red':'Điềm Đạm & Quyết Đoán','blue-green':'Chuẩn Xác & Điềm Đạm','blue-yellow':'Chuẩn Xác & Nhiệt Tình','blue-red':'Chuẩn Xác & Quyết Đoán'};
+      item.Archetype=ARCH_MAP[`${rc.primaryColor}-${rc.secondaryColor}`]||`${rc.primaryColor} + ${rc.secondaryColor}`;
       item._recalculated=true; // flag để debug
     }
   }
@@ -834,6 +833,7 @@ async function recalcAll(){
           greenScore:result.greenScore, blueScore:result.blueScore,
           primaryColor:result.primaryColor, secondaryColor:result.secondaryColor,
           ieType:result.ieType, leadStyle:result.leadStyle, stressBehavior:result.stressBehavior,
+          archetype:item.Archetype,
           aiProfile:'' // Xóa AIProfile cũ → bắt buộc gen lại AI với điểm mới
         })
       });
